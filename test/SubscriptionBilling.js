@@ -18,6 +18,7 @@ contract('SubscriptionBilling', (accounts) => {
   let token;
 
   const VERSION = '0.1';
+  const MAX_FEDERATION_MEMBERS = 100;
   const TIME_ERROR_MARGIN = 10; // 10 seconds
 
   let now;
@@ -104,6 +105,31 @@ contract('SubscriptionBilling', (accounts) => {
     const federationMembers = [accounts[7], accounts[8], accounts[9]];
     const minimalMonthlySubscription = 100;
 
+    it('should not allow to initialize with a null token', async () => {
+      await expectRevert(SubscriptionBillingMock.new(null, federationMembers, minimalMonthlySubscription));
+    });
+
+    it('should not allow to initialize with an empty array of federation members', async () => {
+      await expectRevert(SubscriptionBillingMock.new(token.address, [], minimalMonthlySubscription));
+    });
+
+    it('should not allow to initialize with too many federation members', async () => {
+      const tooManyCooks = TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS + 1);
+      expect(tooManyCooks).to.have.length.above(MAX_FEDERATION_MEMBERS);
+
+      await expectRevert(SubscriptionBillingMock.new(token.address, tooManyCooks, minimalMonthlySubscription));
+    });
+
+    it('should not allow to initialize with duplicate federation members', async () => {
+      const duplicateMembers = [accounts[1], accounts[0], accounts[1], accounts[3]];
+
+      await expectRevert(SubscriptionBillingMock.new(token.address, duplicateMembers, minimalMonthlySubscription));
+    });
+
+    it('should not allow to initialize with a 0 minimal subscription allocation', async () => {
+      await expectRevert(SubscriptionBillingMock.new(token.address, federationMembers, 0));
+    });
+
     it('should correctly initialize the minimal monthly subscription', async () => {
       const billing = await SubscriptionBillingMock.new(token.address, federationMembers, minimalMonthlySubscription);
 
@@ -126,6 +152,7 @@ contract('SubscriptionBilling', (accounts) => {
       { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7], accounts[8]] },
       { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7], accounts[8], accounts[9]] },
       { federationMembers: TEST_ACCOUNTS.slice(30, 50) },
+      { federationMembers: TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS) },
     ].forEach((spec) => {
       context(`with ${spec.federationMembers.length} federation members`, async () => {
         const minimalMonthlySubscription = 100;
@@ -206,6 +233,11 @@ contract('SubscriptionBilling', (accounts) => {
           const userTokens = (await token.balanceOf.call(user1)).toNumber();
           await expectRevert(subscribeForCurrentMonth(billing, id, profile, userTokens + 1, user1));
           await expectRevert(subscribeForNextMonth(billing, id, profile, userTokens + 1, user1));
+        });
+
+        it('should error when directly called with a past date', async () => {
+          const lastYear = moment.unix(now).utc().subtract(1, 'year').unix();
+          await expectRevert(billing.subscribeByTime(id, profile, value, lastYear));
         });
 
         it('should error when fetching current monthly subscription with an empty id', async () => {
