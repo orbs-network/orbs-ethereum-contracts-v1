@@ -174,7 +174,7 @@ contract SubscriptionBilling is HasNoContracts {
     /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent subscriptions.
     /// @param _value uint256 The amount of tokens to fund the subscription.
     /// @param _startTime uint256 The start time of the subscription.
-    function subscribe(bytes32 _id, string _profile, uint256 _value, uint256 _startTime) private {
+    function subscribe(bytes32 _id, string _profile, uint256 _value, uint256 _startTime) internal {
         require(_id != EMPTY, "ID must not be empty!");
         require(bytes(_profile).length > 0, "Profile must not be empty!");
         require(_value > 0, "Value be greater than 0!");
