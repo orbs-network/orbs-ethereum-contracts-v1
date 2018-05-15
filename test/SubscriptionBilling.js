@@ -19,7 +19,7 @@ contract('SubscriptionBilling', (accounts) => {
 
   const VERSION = '0.1';
   const MAX_FEDERATION_MEMBERS = 100;
-  const TIME_ERROR_MARGIN = 10; // 10 seconds
+  const TIME_ERROR_MARGIN = 30; // 30 seconds
 
   let now;
 
