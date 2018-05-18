@@ -4,7 +4,7 @@ import "../contracts/SubscriptionBilling.sol";
 
 
 contract SubscriptionBillingMock is SubscriptionBilling {
-    constructor(OrbsToken _orbs, address[] _federationMembers,
+    constructor(ERC20 _orbs, address[] _federationMembers,
         uint256 _minimalMonthlySubscription) public SubscriptionBilling(_orbs, _federationMembers,
         _minimalMonthlySubscription) {
     }

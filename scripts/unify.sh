@@ -19,5 +19,4 @@ unify ../node_modules/zeppelin-solidity/contracts/token/ERC20/ERC20.sol
 unify ../node_modules/zeppelin-solidity/contracts/token/ERC20/SafeERC20.sol
 
 unify ../contracts/DateTime.sol
-unify ../contracts/OrbsToken.sol
 unify ../contracts/SubscriptionBilling.sol

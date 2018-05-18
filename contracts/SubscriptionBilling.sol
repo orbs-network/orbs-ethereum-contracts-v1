@@ -2,10 +2,9 @@ pragma solidity 0.4.23;
 
 import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 import "./DateTime.sol";
-import "./OrbsToken.sol";
-
 
 /// @title Orbs billing and subscriptions smart contract.
 contract SubscriptionBilling is HasNoContracts {
@@ -18,7 +17,7 @@ contract SubscriptionBilling is HasNoContracts {
     uint public constant MAX_FEDERATION_MEMBERS = 100;
 
     // The address of the previous deployed OrbsToken smart contract.
-    OrbsToken public orbs;
+    ERC20 public orbs;
 
     // Array of federations members.
     address[] public federationMembers;
@@ -49,10 +48,10 @@ contract SubscriptionBilling is HasNoContracts {
     event DistributedFees(address indexed federationMember, uint256 value);
 
     /// @dev Constructor that initializes the address of the Orbs billing contract.
-    /// @param _orbs OrbsToken The address of the previously deployed OrbsToken contract.
+    /// @param _orbs ERC20 The address of the previously deployed OrbsToken contract.
     /// @param _federationMembers address[] The public addresses of the federation members.
     /// @param _minimalMonthlySubscription uint256 The minimal monthly subscription allocation.
-    constructor(OrbsToken _orbs, address[] _federationMembers,
+    constructor(ERC20 _orbs, address[] _federationMembers,
         uint256 _minimalMonthlySubscription) public {
         require(_orbs != address(0), "Address must not be 0!");
         require(isFedererationMembersListValid(_federationMembers), "Invalid federation members list!");
