@@ -140,7 +140,7 @@ contract SubscriptionBilling is HasNoContracts {
     }
 
     /// @dev Receives subscription payment for the current month. This method needs to be called after the caller
-    ///   approves the smart contract to transfer _value ORBS tokens on its behalf.
+    /// approves the smart contract to transfer _value ORBS tokens on its behalf.
     /// @param _id bytes32 The ID of the subscription.
     /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent subscriptions.
     /// @param _value uint256 The amount of tokens to fund the subscription.
@@ -149,7 +149,7 @@ contract SubscriptionBilling is HasNoContracts {
     }
 
     /// @dev Receives subscription payment for the next month. This method needs to be called after the caller approves
-    ///   the smart contract to transfer _value ORBS tokens on its behalf.
+    /// the smart contract to transfer _value ORBS tokens on its behalf.
     /// @param _id bytes32 The ID of the subscription.
     /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent subscriptions.
     /// @param _value uint256 The amount of tokens to fund the subscription.
@@ -167,8 +167,8 @@ contract SubscriptionBilling is HasNoContracts {
         subscribe(_id, _profile, _value, DateTime.getBeginningOfMonth(nextYear, nextMonth));
     }
 
-    /// @dev Receives subscription payment. This method needs to be called by an ERC223 transfer with a valid amount of
-    /// Orbs tokens.
+    /// @dev Receives subscription payment. This method needs to be called after the caller approves
+    /// the smart contract to transfer _value ORBS tokens on its behalf.
     /// @param _id bytes32 The ID of the subscription.
     /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent subscriptions.
     /// @param _value uint256 The amount of tokens to fund the subscription.
