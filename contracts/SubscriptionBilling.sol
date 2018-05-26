@@ -176,7 +176,7 @@ contract SubscriptionBilling is HasNoContracts {
     function subscribe(bytes32 _id, string _profile, uint256 _value, uint256 _startTime) internal {
         require(_id != EMPTY, "ID must not be empty!");
         require(bytes(_profile).length > 0, "Profile must not be empty!");
-        require(_value > 0, "Value be greater than 0!");
+        require(_value > 0, "Value must be greater than 0!");
         require(_startTime >= now, "Starting time must be in the future");
 
         // Verify that the subscriber approved enough tokens to pay for the subscription.
