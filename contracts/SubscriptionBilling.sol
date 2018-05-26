@@ -203,7 +203,7 @@ contract SubscriptionBilling is HasNoContracts {
         // Make sure that the total monthly subscription allocation is above the minimal requirement.
         require(subscription.tokens >= minimalMonthlySubscription, "Subscription value is too low!");
 
-        // Update this month's total subscription allocations.
+        // Update selected month's total subscription allocations.
         monthlySubscription.totalTokens = monthlySubscription.totalTokens.add(_value);
 
         emit Subscribed(msg.sender, _id, _value, _startTime);
