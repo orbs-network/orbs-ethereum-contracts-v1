@@ -76,9 +76,8 @@ library DateTime {
 
     /// @dev Returns the year of the current UNIX timestamp.
     /// @param _timestamp uint256 The UNIX timestamp to parse.
-    function getYear(uint256 _timestamp) public pure returns (uint16) {
+    function getYear(uint256 _timestamp) public pure returns (uint16 year) {
         uint256 secondsAccountedFor = 0;
-        uint16 year;
         uint16 numLeapYears;
 
         // Year
@@ -97,8 +96,6 @@ library DateTime {
 
             year = uint16(year.sub(1));
         }
-
-        return year;
     }
 
     /// @dev Returns the month of the current UNIX timestamp.
@@ -226,8 +223,6 @@ library DateTime {
 
         // Seconds
         timestamp = timestamp.add(_seconds);
-
-        return timestamp;
     }
 
     /// @dev Parses a UNIX timestamp to a DT struct.
