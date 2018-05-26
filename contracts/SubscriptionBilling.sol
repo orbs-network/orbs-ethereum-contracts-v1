@@ -73,13 +73,7 @@ contract SubscriptionBilling is HasNoContracts {
         uint8 currentMonth;
         (currentYear, currentMonth) = getCurrentTime();
 
-        MonthlySubscriptions storage monthlySubscription = subscriptions[currentYear][currentMonth];
-        Subscription memory subscription = monthlySubscription.subscriptions[_id];
-
-        id = subscription.id;
-        profile = subscription.profile;
-        startTime = subscription.startTime;
-        tokens = subscription.tokens;
+        return getSubscriptionDataByTime(_id, currentYear, currentMonth);
     }
 
     /// @dev Returns the monthly subscription status.
