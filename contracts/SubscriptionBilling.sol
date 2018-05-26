@@ -53,7 +53,7 @@ contract SubscriptionBilling is HasNoContracts {
     /// @param _minimalMonthlySubscription uint256 The minimal monthly subscription allocation.
     constructor(ERC20 _orbs, address[] _federationMembers,
         uint256 _minimalMonthlySubscription) public {
-        require(_orbs != address(0), "Address must not be 0!");
+        require(address(_orbs) != address(0), "Address must not be 0!");
         require(isFedererationMembersListValid(_federationMembers), "Invalid federation members list!");
         require(_minimalMonthlySubscription != 0, "Minimal subscription value must be greater than 0!");
 
