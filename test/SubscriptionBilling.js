@@ -120,6 +120,12 @@ contract('SubscriptionBilling', (accounts) => {
       await expectRevert(SubscriptionBillingMock.new(token.address, tooManyCooks, minimalMonthlySubscription));
     });
 
+    it('should not allow to initialize with 0x address federation members', async () => {
+      const invalidFederationMembers = [accounts[7], accounts[8], null, accounts[9]];
+
+      await expectRevert(SubscriptionBillingMock.new(token.address, invalidFederationMembers, minimalMonthlySubscription));
+    });
+
     it('should not allow to initialize with duplicate federation members', async () => {
       const duplicateMembers = [accounts[1], accounts[0], accounts[1], accounts[3]];
 
