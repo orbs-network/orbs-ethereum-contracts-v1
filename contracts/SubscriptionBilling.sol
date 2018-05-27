@@ -53,7 +53,7 @@ contract SubscriptionBilling is HasNoContracts {
     /// @param _minimalMonthlySubscription uint256 The minimal monthly subscription allocation.
     constructor(ERC20 _orbs, address[] _federationMembers,
         uint256 _minimalMonthlySubscription) public {
-        require(_orbs != address(0), "Address must not be 0!");
+        require(address(_orbs) != address(0), "Address must not be 0!");
         require(isFedererationMembersListValid(_federationMembers), "Invalid federation members list!");
         require(_minimalMonthlySubscription != 0, "Minimal subscription value must be greater than 0!");
 
@@ -73,13 +73,7 @@ contract SubscriptionBilling is HasNoContracts {
         uint8 currentMonth;
         (currentYear, currentMonth) = getCurrentTime();
 
-        MonthlySubscriptions storage monthlySubscription = subscriptions[currentYear][currentMonth];
-        Subscription memory subscription = monthlySubscription.subscriptions[_id];
-
-        id = subscription.id;
-        profile = subscription.profile;
-        startTime = subscription.startTime;
-        tokens = subscription.tokens;
+        return getSubscriptionDataByTime(_id, currentYear, currentMonth);
     }
 
     /// @dev Returns the monthly subscription status.
@@ -134,7 +128,7 @@ contract SubscriptionBilling is HasNoContracts {
 
             monthlySubscription.totalTokens = monthlySubscription.totalTokens.sub(memberFee);
 
-            orbs.transfer(member, memberFee);
+            require(orbs.transfer(member, memberFee));
             emit DistributedFees(member, memberFee);
         }
     }
@@ -176,7 +170,7 @@ contract SubscriptionBilling is HasNoContracts {
     function subscribe(bytes32 _id, string _profile, uint256 _value, uint256 _startTime) internal {
         require(_id != EMPTY, "ID must not be empty!");
         require(bytes(_profile).length > 0, "Profile must not be empty!");
-        require(_value > 0, "Value be greater than 0!");
+        require(_value > 0, "Value must be greater than 0!");
         require(_startTime >= now, "Starting time must be in the future");
 
         // Verify that the subscriber approved enough tokens to pay for the subscription.
@@ -203,7 +197,7 @@ contract SubscriptionBilling is HasNoContracts {
         // Make sure that the total monthly subscription allocation is above the minimal requirement.
         require(subscription.tokens >= minimalMonthlySubscription, "Subscription value is too low!");
 
-        // Update this month's total subscription allocations.
+        // Update selected month's total subscription allocations.
         monthlySubscription.totalTokens = monthlySubscription.totalTokens.add(_value);
 
         emit Subscribed(msg.sender, _id, _value, _startTime);
@@ -232,8 +226,12 @@ contract SubscriptionBilling is HasNoContracts {
             return false;
         }
 
-        // Make sure there are no duplicates in the federation members list.
+        // Make sure there are no zero addresses or duplicates in the federation members list.
         for (uint i = 0; i < _federationMembers.length - 1; ++i) {
+            if (_federationMembers[i] == address(0)) {
+                return false;
+            }
+
             for (uint j = i + 1; j < _federationMembers.length; ++j) {
                 if (_federationMembers[i] == _federationMembers[j]) {
                     return false;

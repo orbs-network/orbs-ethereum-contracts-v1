@@ -19,14 +19,14 @@ library DateTime {
         uint8 weekday;
     }
 
-    uint public constant DAY_IN_SECONDS = 86400;
-    uint public constant YEAR_IN_SECONDS = 31536000;
-    uint public constant LEAP_YEAR_IN_SECONDS = 31622400;
+    uint public constant SECONDS_IN_DAY = 86400;
+    uint public constant SECONDS_IN_YEAR = 31536000;
+    uint public constant SECONDS_IN_LEAP_YEAR = 31622400;
     uint public constant DAYS_IN_WEEK = 7;
     uint public constant HOURS_IN_DAY = 24;
     uint public constant MINUTES_IN_HOUR = 60;
-    uint public constant HOUR_IN_SECONDS = 3600;
-    uint public constant MINUTE_IN_SECONDS = 60;
+    uint public constant SECONDS_IN_HOUR = 3600;
+    uint public constant SECONDS_IN_MINUTE = 60;
 
     uint16 public constant ORIGIN_YEAR = 1970;
 
@@ -76,29 +76,26 @@ library DateTime {
 
     /// @dev Returns the year of the current UNIX timestamp.
     /// @param _timestamp uint256 The UNIX timestamp to parse.
-    function getYear(uint256 _timestamp) public pure returns (uint16) {
-        uint256 secondsAccountedFor = 0;
-        uint16 year;
+    function getYear(uint256 _timestamp) public pure returns (uint16 year) {
+        uint256 secondsAccountedFor;
         uint16 numLeapYears;
 
         // Year
-        year = uint16(ORIGIN_YEAR.add(_timestamp.div(YEAR_IN_SECONDS)));
+        year = uint16(ORIGIN_YEAR.add(_timestamp.div(SECONDS_IN_YEAR)));
         numLeapYears = uint16(leapYearsBefore(year).sub(leapYearsBefore(ORIGIN_YEAR)));
 
-        secondsAccountedFor = secondsAccountedFor.add(LEAP_YEAR_IN_SECONDS.mul(numLeapYears));
-        secondsAccountedFor = secondsAccountedFor.add(YEAR_IN_SECONDS.mul((year.sub(ORIGIN_YEAR).sub(numLeapYears))));
+        secondsAccountedFor = secondsAccountedFor.add(SECONDS_IN_LEAP_YEAR.mul(numLeapYears));
+        secondsAccountedFor = secondsAccountedFor.add(SECONDS_IN_YEAR.mul((year.sub(ORIGIN_YEAR).sub(numLeapYears))));
 
         while (secondsAccountedFor > _timestamp) {
             if (isLeapYear(uint16(year.sub(1)))) {
-                secondsAccountedFor = secondsAccountedFor.sub(LEAP_YEAR_IN_SECONDS);
+                secondsAccountedFor = secondsAccountedFor.sub(SECONDS_IN_LEAP_YEAR);
             } else {
-                secondsAccountedFor = secondsAccountedFor.sub(YEAR_IN_SECONDS);
+                secondsAccountedFor = secondsAccountedFor.sub(SECONDS_IN_YEAR);
             }
 
             year = uint16(year.sub(1));
         }
-
-        return year;
     }
 
     /// @dev Returns the month of the current UNIX timestamp.
@@ -116,25 +113,25 @@ library DateTime {
     /// @dev Returns the hour of the current UNIX timestamp.
     /// @param _timestamp uint256 The UNIX timestamp to parse.
     function getHour(uint256 _timestamp) public pure returns (uint8) {
-        return uint8((_timestamp.div(HOUR_IN_SECONDS)) % HOURS_IN_DAY);
+        return uint8((_timestamp.div(SECONDS_IN_HOUR)) % HOURS_IN_DAY);
     }
 
     /// @dev Returns the minutes of the current UNIX timestamp.
     /// @param _timestamp uint256 The UNIX timestamp to parse.
     function getMinute(uint256 _timestamp) public pure returns (uint8) {
-        return uint8((_timestamp.div(MINUTE_IN_SECONDS)) % MINUTES_IN_HOUR);
+        return uint8((_timestamp.div(SECONDS_IN_MINUTE)) % MINUTES_IN_HOUR);
     }
 
     /// @dev Returns the seconds of the current UNIX timestamp.
     /// @param _timestamp uint256 The UNIX timestamp to parse.
     function getSecond(uint256 _timestamp) public pure returns (uint8) {
-        return uint8(_timestamp % MINUTE_IN_SECONDS);
+        return uint8(_timestamp % SECONDS_IN_MINUTE);
     }
 
     /// @dev Returns the weekday of the current UNIX timestamp.
     /// @param _timestamp uint256 The UNIX timestamp to parse.
     function getWeekday(uint256 _timestamp) public pure returns (uint8) {
-        return uint8((_timestamp.div(DAY_IN_SECONDS).add(4)) % DAYS_IN_WEEK);
+        return uint8((_timestamp.div(SECONDS_IN_DAY).add(4)) % DAYS_IN_WEEK);
     }
 
     /// @dev Returns the timestamp of the beginning of the month.
@@ -186,9 +183,9 @@ library DateTime {
         // Year
         for (i = ORIGIN_YEAR; i < _year; ++i) {
             if (isLeapYear(i)) {
-                timestamp = timestamp.add(LEAP_YEAR_IN_SECONDS);
+                timestamp = timestamp.add(SECONDS_IN_LEAP_YEAR);
             } else {
-                timestamp = timestamp.add(YEAR_IN_SECONDS);
+                timestamp = timestamp.add(SECONDS_IN_YEAR);
             }
         }
 
@@ -212,28 +209,26 @@ library DateTime {
         monthDayCounts[11] = 31;
 
         for (i = 1; i < _month; ++i) {
-            timestamp = timestamp.add(DAY_IN_SECONDS.mul(monthDayCounts[i.sub(1)]));
+            timestamp = timestamp.add(SECONDS_IN_DAY.mul(monthDayCounts[i.sub(1)]));
         }
 
         // Day
-        timestamp = timestamp.add(DAY_IN_SECONDS.mul(_day == 0 ? 0 : _day.sub(1)));
+        timestamp = timestamp.add(SECONDS_IN_DAY.mul(_day == 0 ? 0 : _day.sub(1)));
 
         // Hour
-        timestamp = timestamp.add(HOUR_IN_SECONDS.mul(_hour));
+        timestamp = timestamp.add(SECONDS_IN_HOUR.mul(_hour));
 
         // Minutes
-        timestamp = timestamp.add(MINUTE_IN_SECONDS.mul(_minutes));
+        timestamp = timestamp.add(SECONDS_IN_MINUTE.mul(_minutes));
 
         // Seconds
         timestamp = timestamp.add(_seconds);
-
-        return timestamp;
     }
 
     /// @dev Parses a UNIX timestamp to a DT struct.
     /// @param _timestamp uint256 The UNIX timestamp to parse.
     function parseTimestamp(uint256 _timestamp) internal pure returns (DT dt) {
-        uint256 secondsAccountedFor = 0;
+        uint256 secondsAccountedFor;
         uint256 buf;
         uint8 i;
 
@@ -241,13 +236,13 @@ library DateTime {
         dt.year = getYear(_timestamp);
         buf = leapYearsBefore(dt.year) - leapYearsBefore(ORIGIN_YEAR);
 
-        secondsAccountedFor = secondsAccountedFor.add(LEAP_YEAR_IN_SECONDS.mul(buf));
-        secondsAccountedFor = secondsAccountedFor.add(YEAR_IN_SECONDS.mul((dt.year.sub(ORIGIN_YEAR).sub(buf))));
+        secondsAccountedFor = secondsAccountedFor.add(SECONDS_IN_LEAP_YEAR.mul(buf));
+        secondsAccountedFor = secondsAccountedFor.add(SECONDS_IN_YEAR.mul((dt.year.sub(ORIGIN_YEAR).sub(buf))));
 
         // Month
         uint256 secondsInMonth;
         for (i = 1; i <= 12; ++i) {
-            secondsInMonth = DAY_IN_SECONDS.mul(getDaysInMonth(dt.year, i));
+            secondsInMonth = SECONDS_IN_DAY.mul(getDaysInMonth(dt.year, i));
             if (secondsInMonth.add(secondsAccountedFor) > _timestamp) {
                 dt.month = i;
                 break;
@@ -257,11 +252,11 @@ library DateTime {
 
         // Day
         for (i = 1; i <= getDaysInMonth(dt.year, dt.month); ++i) {
-            if (DAY_IN_SECONDS.add(secondsAccountedFor) > _timestamp) {
+            if (SECONDS_IN_DAY.add(secondsAccountedFor) > _timestamp) {
                 dt.day = i;
                 break;
             }
-            secondsAccountedFor = secondsAccountedFor.add(DAY_IN_SECONDS);
+            secondsAccountedFor = secondsAccountedFor.add(SECONDS_IN_DAY);
         }
 
         // Hour
