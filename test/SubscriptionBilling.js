@@ -121,7 +121,11 @@ contract('SubscriptionBilling', (accounts) => {
     });
 
     it('should not allow to initialize with 0x address federation members', async () => {
-      const invalidFederationMembers = [accounts[7], accounts[8], null, accounts[9]];
+      let invalidFederationMembers = [accounts[7], accounts[8], null, accounts[9]];
+
+      await expectRevert(SubscriptionBillingMock.new(token.address, invalidFederationMembers, minimalMonthlySubscription));
+
+      invalidFederationMembers = [accounts[7], accounts[8], accounts[9], null];
 
       await expectRevert(SubscriptionBillingMock.new(token.address, invalidFederationMembers, minimalMonthlySubscription));
     });

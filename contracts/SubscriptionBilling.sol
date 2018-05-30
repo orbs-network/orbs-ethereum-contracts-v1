@@ -239,6 +239,11 @@ contract SubscriptionBilling is HasNoContracts {
             }
         }
 
+        // Make sure to check the last federation member as well.
+        if (_federationMembers[_federationMembers.length - 1] == address(0)) {
+            return false;
+        }
+
         return true;
     }
 }
