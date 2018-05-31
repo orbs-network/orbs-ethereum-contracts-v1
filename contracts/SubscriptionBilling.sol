@@ -227,7 +227,7 @@ contract SubscriptionBilling is HasNoContracts {
         }
 
         // Make sure there are no zero addresses or duplicates in the federation members list.
-        for (uint i = 0; i < _federationMembers.length - 1; ++i) {
+        for (uint i = 0; i < _federationMembers.length; ++i) {
             if (_federationMembers[i] == address(0)) {
                 return false;
             }
