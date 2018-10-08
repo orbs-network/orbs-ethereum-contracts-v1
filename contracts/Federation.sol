@@ -29,6 +29,12 @@ contract Federation is HasNoContracts, HasNoTokens {
         members = _members;
     }
 
+    /// @dev Returns the array federation members. Please note that this method is only required due to the current
+    //  Solidity's version inability to support accessing another contract's array using its built-in getter.
+    function getMembers() public view returns (address[]) {
+        return members;
+    }
+
     /// @dev Checks federation members list for correctness.
     /// @param _members address[] The federation members list to check.
     function isFedererationMembersListValid(address[] _members) private pure returns (bool) {
