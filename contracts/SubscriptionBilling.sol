@@ -43,8 +43,8 @@ contract SubscriptionBilling is HasNoContracts {
 
     bytes32 constant public EMPTY = bytes32(0);
 
-    event Subscribe(address indexed subscriber, bytes32 indexed id, uint256 value, uint256 startFrom);
-    event FeesDistribution(address indexed federationMember, uint256 value);
+    event Subscribed(address indexed subscriber, bytes32 indexed id, uint256 value, uint256 startFrom);
+    event DistributedFees(address indexed federationMember, uint256 value);
 
     /// @dev Constructor that initializes the address of the Orbs billing contract.
     /// @param _orbs ERC20 The address of the OrbsToken contract.
@@ -129,7 +129,7 @@ contract SubscriptionBilling is HasNoContracts {
             monthlySubscription.totalTokens = monthlySubscription.totalTokens.sub(memberFee);
 
             require(orbs.transfer(member, memberFee));
-            emit FeesDistribution(member, memberFee);
+            emit DistributedFees(federationMember, value);(member, memberFee);
         }
     }
 
@@ -203,7 +203,7 @@ contract SubscriptionBilling is HasNoContracts {
         // Update selected month's total subscription allocations.
         monthlySubscription.totalTokens = monthlySubscription.totalTokens.add(_value);
 
-        emit Subscribe(msg.sender, _id, _value, _startTime);
+        emit Subscribed(msg.sender, _id, _value, _startTime);
     }
 
     /// @dev Returns the current year and month.

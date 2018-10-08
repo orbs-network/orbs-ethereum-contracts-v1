@@ -18,8 +18,8 @@ contract Federation is HasNoContracts, HasNoTokens {
     // Array of the federations members.
     address[] public members;
 
-    event MemberAddition(address indexed member);
-    event MemberRemoval(address indexed member);
+    event MemberAdded(address indexed member);
+    event MemberRemoved(address indexed member);
 
     /// @dev Constructor that initializes the Orbs federation contract.
     /// @param _members address[] The public addresses of the federation members.
