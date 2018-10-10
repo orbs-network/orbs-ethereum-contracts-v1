@@ -1,9 +1,12 @@
 import chai from 'chai';
 import dirtyChai from 'dirty-chai';
+import assertArrays from 'chai-arrays';
 
 import expectRevert from './helpers/expectRevert';
 
 const { expect } = chai;
+
+chai.use(assertArrays);
 chai.use(dirtyChai);
 
 const TEST_ACCOUNTS = require('./accounts.json').accounts;
@@ -57,10 +60,122 @@ contract('Federation', (accounts) => {
 
     it('should initialize federation members', async () => {
       const federation = await Federation.new(members);
+      expect(await federation.getMembers()).to.be.equalTo(members);
+    });
+  });
 
-      for (let i = 0; i < members.length; ++i) {
-        expect(await federation.members.call(i)).to.eql(members[i]);
-      }
+  describe('management', async () => {
+    const owner = accounts[0];
+
+    describe('addMember', async () => {
+      context('as an owner', async () => {
+        it('should add a member', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          const newMember = accounts[1];
+          await federation.addMember(newMember);
+          expect(await federation.getMembers()).to.be.containing(newMember);
+
+          const newMember2 = accounts[2];
+          await federation.addMember(newMember2);
+          expect(await federation.getMembers()).to.be.containing(newMember2);
+        });
+
+        it('should not allow to add a more than the maximum possible members', async () => {
+          const members = TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS - 1);
+          const federation = await Federation.new(members, { from: owner });
+
+          const newMember = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS - 1];
+          await federation.addMember(newMember);
+          expect(await federation.getMembers()).to.be.containing(newMember);
+
+          const newMember2 = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS];
+          await expectRevert(federation.addMember(newMember2));
+        });
+
+        it('should not allow to add a 0x0 member', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          await expectRevert(federation.addMember(ZERO_ADDRESS));
+        });
+
+        it('should not allow to add an existing member', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          await expectRevert(federation.addMember(members[1]));
+        });
+      });
+
+      context('as not an owner', async () => {
+        const notOwner = accounts[1];
+
+        it('should not allow to add a member', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          const newMember = accounts[2];
+          await expectRevert(federation.addMember(newMember, { from: notOwner }));
+        });
+      });
+    });
+
+    describe('removeMember', async () => {
+      context('owner', async () => {
+        it('should remove a member', async () => {
+          const members = [accounts[5], accounts[6], accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          const existingMember = members[0];
+          await federation.removeMember(existingMember);
+          expect(await federation.getMembers()).not.to.be.containing(existingMember);
+
+          const existingMember2 = members[4];
+          await federation.removeMember(existingMember2);
+          expect(await federation.getMembers()).not.to.be.containing(existingMember2);
+        });
+
+        it('should not allow to remove all the members', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          await federation.removeMember(members[0]);
+          await federation.removeMember(members[1]);
+
+          expect(await federation.getMembers()).to.equalTo([members[2]]);
+          await expectRevert(federation.removeMember(members[2]));
+        });
+
+        it('should not allow to remove a 0x0 member', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          await expectRevert(federation.removeMember(ZERO_ADDRESS));
+        });
+
+        it('should not allow to remove a non-existing member', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          const nonMember = accounts[5];
+          expect(await federation.getMembers()).not.to.be.containing(nonMember);
+          await expectRevert(federation.removeMember(nonMember));
+        });
+      });
+
+      context('not an owner', async () => {
+        const notOwner = accounts[1];
+
+        it('should not allow to remove a member, if requested by not an owner', async () => {
+          const members = [accounts[7], accounts[8], accounts[9]];
+          const federation = await Federation.new(members, { from: owner });
+
+          const existingMember = members[2];
+          await expectRevert(federation.removeMember(existingMember, { from: notOwner }));
+        });
+      });
     });
   });
 });

@@ -1,12 +1,13 @@
 pragma solidity 0.4.24;
 
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
 import "zeppelin-solidity/contracts/ownership/HasNoTokens.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 /// @title Orbs federation smart contract.
-contract Federation is HasNoContracts, HasNoTokens {
+contract Federation is Ownable, HasNoContracts, HasNoTokens {
     using SafeMath for uint256;
 
     // The version of the current SubscriptionBilling smart contract.
@@ -33,6 +34,56 @@ contract Federation is HasNoContracts, HasNoTokens {
     //  Solidity's version inability to support accessing another contract's array using its built-in getter.
     function getMembers() public view returns (address[]) {
         return members;
+    }
+
+    /// @dev Adds new member to the federation.
+    /// @param _member address The public address of the new member.
+    function addMember(address _member) public onlyOwner {
+        require(_member != address(0), "Address must not be 0!");
+        require(members.length + 1 <= MAX_FEDERATION_MEMBERS, "Can't add more members!");
+
+        // Check for duplicates.
+        for (uint i = 0; i < members.length; ++i) {
+            require(members[i] != _member, "Can't add a duplicate member!");
+        }
+
+        members.push(_member);
+    }
+
+    /// @dev Removes existing member from the federation.
+    /// @param _member address The public address of the existing member.
+    function removeMember(address _member) public onlyOwner {
+        require(_member != address(0), "Address must not be 0!");
+        require(members.length - 1 > 0, "Can't remove all members!");
+
+        // Check for existence.
+        (uint i, bool exists) = findMemberIndex(_member);
+        require(exists, "Member doesn't exist!");
+
+        removeMemberByIndex(i);
+    }
+
+    /// @dev Returns an index of an existing member. Returns whether the member exist.
+    /// @param _member address The public address of the member to look for.
+    function findMemberIndex(address _member) private view returns(uint, bool) {
+        for (uint i = 0; i < members.length; ++i) {
+            if (members[i] == _member) {
+                return (i, true);
+            }
+        }
+
+        return (i, false);
+    }
+
+    /// @dev Removes a member by an index.
+    /// @param _i uint The index of the member to be removed.
+    function removeMemberByIndex(uint _i) private {
+        while (_i < members.length - 1) {
+            members[_i] = members[_i + 1];
+            _i++;
+        }
+
+        members.length--;
     }
 
     /// @dev Checks federation members list for correctness.
