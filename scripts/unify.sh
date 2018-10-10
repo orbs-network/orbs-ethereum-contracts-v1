@@ -11,7 +11,6 @@ echo "pragma solidity 0.4.24;" > Unified.sol
 unify ../node_modules/zeppelin-solidity/contracts/math/Math.sol
 unify ../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol
 unify ../node_modules/zeppelin-solidity/contracts/ownership/Ownable.sol
-unify ../node_modules/zeppelin-solidity/contracts/ownership/CanReclaimToken.sol
 unify ../node_modules/zeppelin-solidity/contracts/ownership/HasNoContracts.sol
 unify ../node_modules/zeppelin-solidity/contracts/ownership/HasNoTokens.sol
 unify ../node_modules/zeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol
