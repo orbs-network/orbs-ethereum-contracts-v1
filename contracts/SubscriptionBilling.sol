@@ -129,7 +129,7 @@ contract SubscriptionBilling is HasNoContracts {
             monthlySubscription.totalTokens = monthlySubscription.totalTokens.sub(memberFee);
 
             require(orbs.transfer(member, memberFee));
-            emit DistributedFees(federationMember, value);(member, memberFee);
+            emit DistributedFees(member, memberFee);
         }
     }
 
