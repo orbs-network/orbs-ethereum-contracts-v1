@@ -48,6 +48,7 @@ contract Federation is Ownable, HasNoContracts, HasNoTokens {
         }
 
         members.push(_member);
+        emit MemberAdded(_member);
     }
 
     /// @dev Removes existing member from the federation.
@@ -61,6 +62,7 @@ contract Federation is Ownable, HasNoContracts, HasNoTokens {
         require(exists, "Member doesn't exist!");
 
         removeMemberByIndex(i);
+        emit MemberRemoved(_member);
     }
 
     /// @dev Returns an index of an existing member. Returns whether the member exist.

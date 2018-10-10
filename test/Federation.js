@@ -60,7 +60,7 @@ contract('Federation', (accounts) => {
 
     it('should initialize federation members', async () => {
       const federation = await Federation.new(members);
-      expect(await federation.getMembers()).to.be.equalTo(members);
+      expect(await federation.getMembers.call()).to.be.equalTo(members);
     });
   });
 
@@ -74,12 +74,20 @@ contract('Federation', (accounts) => {
           const federation = await Federation.new(members, { from: owner });
 
           const newMember = accounts[1];
-          await federation.addMember(newMember);
-          expect(await federation.getMembers()).to.be.containing(newMember);
+          const tx = await federation.addMember(newMember);
+          expect(await federation.getMembers.call()).to.be.containing(newMember);
+          expect(tx.logs).to.have.length(1);
+          const event = tx.logs[0];
+          expect(event.event).to.eql('MemberAdded');
+          expect(event.args.member).to.eql(newMember);
 
           const newMember2 = accounts[2];
-          await federation.addMember(newMember2);
-          expect(await federation.getMembers()).to.be.containing(newMember2);
+          const tx2 = await federation.addMember(newMember2);
+          expect(await federation.getMembers.call()).to.be.containing(newMember2);
+          expect(tx2.logs).to.have.length(1);
+          const event2 = tx2.logs[0];
+          expect(event2.event).to.eql('MemberAdded');
+          expect(event2.args.member).to.eql(newMember2);
         });
 
         it('should not allow to add a more than the maximum possible members', async () => {
@@ -88,7 +96,7 @@ contract('Federation', (accounts) => {
 
           const newMember = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS - 1];
           await federation.addMember(newMember);
-          expect(await federation.getMembers()).to.be.containing(newMember);
+          expect(await federation.getMembers.call()).to.be.containing(newMember);
 
           const newMember2 = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS];
           await expectRevert(federation.addMember(newMember2));
@@ -129,12 +137,20 @@ contract('Federation', (accounts) => {
           const federation = await Federation.new(members, { from: owner });
 
           const existingMember = members[0];
-          await federation.removeMember(existingMember);
-          expect(await federation.getMembers()).not.to.be.containing(existingMember);
+          const tx = await federation.removeMember(existingMember);
+          expect(await federation.getMembers.call()).not.to.be.containing(existingMember);
+          expect(tx.logs).to.have.length(1);
+          const event = tx.logs[0];
+          expect(event.event).to.eql('MemberRemoved');
+          expect(event.args.member).to.eql(existingMember);
 
           const existingMember2 = members[4];
-          await federation.removeMember(existingMember2);
-          expect(await federation.getMembers()).not.to.be.containing(existingMember2);
+          const tx2 = await federation.removeMember(existingMember2);
+          expect(await federation.getMembers.call()).not.to.be.containing(existingMember2);
+          expect(tx2.logs).to.have.length(1);
+          const event2 = tx2.logs[0];
+          expect(event2.event).to.eql('MemberRemoved');
+          expect(event2.args.member).to.eql(existingMember2);
         });
 
         it('should not allow to remove all the members', async () => {
@@ -144,7 +160,7 @@ contract('Federation', (accounts) => {
           await federation.removeMember(members[0]);
           await federation.removeMember(members[1]);
 
-          expect(await federation.getMembers()).to.equalTo([members[2]]);
+          expect(await federation.getMembers.call()).to.equalTo([members[2]]);
           await expectRevert(federation.removeMember(members[2]));
         });
 
@@ -160,7 +176,7 @@ contract('Federation', (accounts) => {
           const federation = await Federation.new(members, { from: owner });
 
           const nonMember = accounts[5];
-          expect(await federation.getMembers()).not.to.be.containing(nonMember);
+          expect(await federation.getMembers.call()).not.to.be.containing(nonMember);
           await expectRevert(federation.removeMember(nonMember));
         });
       });
