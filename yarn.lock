@@ -2760,6 +2760,11 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
+openzeppelin-solidity@^1.12.0:
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/openzeppelin-solidity/-/openzeppelin-solidity-1.12.0.tgz#7b9c55975e73370d4541e3442b30cb3d91ac973a"
+  integrity sha512-WlorzMXIIurugiSdw121RVD5qA3EfSI7GybTn+/Du0mPNgairjt29NpVTAaH8eLjAeAwlw46y7uQKy0NYem/gA==
+
 optimist@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
@@ -3966,8 +3971,3 @@ yargs@^4.6.0, yargs@^4.7.1:
     window-size "^0.2.0"
     y18n "^3.2.1"
     yargs-parser "^2.4.1"
-
-zeppelin-solidity@1.12.0:
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/zeppelin-solidity/-/zeppelin-solidity-1.12.0.tgz#427edf8e0041ec8600875d3cb8fc9395f33ccfff"
-  integrity sha512-dgjPPnTmx14hAbTeOpTKemDeDCDdwglS0nquOAJG8h5o9zlb43FZafQSrMlIUUSp1EisDZfehrp5loGEYXHZBA==

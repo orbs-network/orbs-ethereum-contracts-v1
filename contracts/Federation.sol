@@ -1,9 +1,9 @@
 pragma solidity 0.4.24;
 
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
-import "zeppelin-solidity/contracts/ownership/HasNoTokens.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/ownership/HasNoContracts.sol";
+import "openzeppelin-solidity/contracts/ownership/HasNoTokens.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 /// @title Orbs federation smart contract.
