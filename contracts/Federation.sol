@@ -68,7 +68,8 @@ contract Federation is Ownable, HasNoContracts, HasNoTokens {
     /// @dev Returns an index of an existing member. Returns whether the member exist.
     /// @param _member address The public address of the member to look for.
     function findMemberIndex(address _member) private view returns(uint, bool) {
-        for (uint i = 0; i < members.length; ++i) {
+        uint i;
+        for (i = 0; i < members.length; ++i) {
             if (members[i] == _member) {
                 return (i, true);
             }
