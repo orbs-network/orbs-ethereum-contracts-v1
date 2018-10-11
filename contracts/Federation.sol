@@ -14,7 +14,7 @@ contract Federation is Ownable {
     // Maximum number of the federation members.
     uint public constant MAX_FEDERATION_MEMBERS = 100;
 
-    // Array of the federations members' public addresses.
+    // Array of the federation members' public addresses.
     address[] public members;
 
     event MemberAdded(address indexed member);
