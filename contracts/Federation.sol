@@ -10,13 +10,13 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
 contract Federation is Ownable, HasNoContracts, HasNoTokens {
     using SafeMath for uint256;
 
-    // The version of the current SubscriptionBilling smart contract.
+    // The version of the current Federation smart contract.
     string public constant VERSION = "0.1";
 
-    // Maximum number of federation members.
+    // Maximum number of the federation members.
     uint public constant MAX_FEDERATION_MEMBERS = 100;
 
-    // Array of the federations members.
+    // Array of the federations members' public addresses.
     address[] public members;
 
     event MemberAdded(address indexed member);
@@ -30,8 +30,8 @@ contract Federation is Ownable, HasNoContracts, HasNoTokens {
         members = _members;
     }
 
-    /// @dev Returns the array federation members. Please note that this method is only required due to the current
-    //  Solidity's version inability to support accessing another contract's array using its built-in getter.
+    /// @dev Returns the federation members. Please note that this method is only required due to the current Solidity's
+    /// version inability to support accessing another contract's array using its built-in getter.
     function getMembers() public view returns (address[]) {
         return members;
     }
