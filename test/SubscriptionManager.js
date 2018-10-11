@@ -12,10 +12,10 @@ chai.use(dirtyChai);
 const TEST_ACCOUNTS = require('./accounts.json').accounts;
 
 const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
-const SubscriptionBillingMock = artifacts.require('./SubscriptionBillingMock.sol');
+const SubscriptionManagerMock = artifacts.require('./SubscriptionManagerMock.sol');
 const Federation = artifacts.require('./Federation.sol');
 
-contract('SubscriptionBilling', (accounts) => {
+contract('SubscriptionManager', (accounts) => {
   let token;
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -116,25 +116,25 @@ contract('SubscriptionBilling', (accounts) => {
     });
 
     it('should not allow to initialize with a 0x0 token', async () => {
-      await expectRevert(SubscriptionBillingMock.new(ZERO_ADDRESS, federation.address, minimalMonthlySubscription));
+      await expectRevert(SubscriptionManagerMock.new(ZERO_ADDRESS, federation.address, minimalMonthlySubscription));
     });
 
     it('should not allow to initialize with a 0x0 federation', async () => {
-      await expectRevert(SubscriptionBillingMock.new(token.address, ZERO_ADDRESS, minimalMonthlySubscription));
+      await expectRevert(SubscriptionManagerMock.new(token.address, ZERO_ADDRESS, minimalMonthlySubscription));
     });
 
     it('should not allow to initialize with a 0 minimal subscription allocation', async () => {
-      await expectRevert(SubscriptionBillingMock.new(token.address, federation.address, 0));
+      await expectRevert(SubscriptionManagerMock.new(token.address, federation.address, 0));
     });
 
     it('should correctly initialize the minimal monthly subscription', async () => {
-      const billing = await SubscriptionBillingMock.new(token.address, federation.address, minimalMonthlySubscription);
+      const billing = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription);
 
       expect(await billing.minimalMonthlySubscription.call()).to.be.bignumber.equal(minimalMonthlySubscription);
     });
 
     it('should report version', async () => {
-      const billing = await SubscriptionBillingMock.new(token.address, federation.address, minimalMonthlySubscription);
+      const billing = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription);
 
       expect(await billing.VERSION.call()).to.be.bignumber.equal(VERSION);
     });
@@ -175,15 +175,15 @@ contract('SubscriptionBilling', (accounts) => {
           await increaseTime(beginningOfNextMonth.unix() - now);
         };
 
-        const checkSubscription = async (subscriptionBilling, subscriptionId, subscriptionProfile, startTime, year,
+        const checkSubscription = async (subscriptionManager, subscriptionId, subscriptionProfile, startTime, year,
           month, subscriptionValue) => {
-          const subscription = await getMonthlySubscription(subscriptionBilling, subscriptionId, year, month);
+          const subscription = await getMonthlySubscription(subscriptionManager, subscriptionId, year, month);
           expect(subscription.id).to.eql(subscriptionId);
           expect(subscription.tokens).to.be.bignumber.equal(subscriptionValue);
 
           const timeNow = getCurrentTime();
           if (year === timeNow.year && month === timeNow.month) {
-            const currentSubscription = await getCurrentMonthlySubscription(subscriptionBilling, subscriptionId);
+            const currentSubscription = await getCurrentMonthlySubscription(subscriptionManager, subscriptionId);
             expect(currentSubscription.id).to.eql(subscriptionId);
             expect(currentSubscription.profile).to.eql(subscriptionProfile);
             expect(currentSubscription.startTime.toNumber()).to.be.closeTo(startTime, TIME_ERROR_MARGIN);
@@ -191,8 +191,8 @@ contract('SubscriptionBilling', (accounts) => {
           }
         };
 
-        const checkTotal = async (subscriptionBilling, year, month, totalValue) => {
-          expect(await subscriptionBilling.getTotalMonthlySubscriptionsTokens.call(year, month))
+        const checkTotal = async (subscriptionManager, year, month, totalValue) => {
+          expect(await subscriptionManager.getTotalMonthlySubscriptionsTokens.call(year, month))
             .to.be.bignumber.equal(totalValue);
         };
 
@@ -203,7 +203,7 @@ contract('SubscriptionBilling', (accounts) => {
           await token.assign(user1, initialValue);
           await token.assign(user2, initialValue);
 
-          billing = await SubscriptionBillingMock.new(token.address, federation.address, minimalMonthlySubscription);
+          billing = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription);
         });
 
         it('should error when called with an empty id', async () => {

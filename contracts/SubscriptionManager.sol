@@ -9,10 +9,10 @@ import "./Federation.sol";
 
 
 /// @title Orbs billing and subscription smart contract.
-contract SubscriptionBilling is HasNoContracts {
+contract SubscriptionManager is HasNoContracts {
     using SafeMath for uint256;
 
-    // The version of the current SubscriptionBilling smart contract.
+    // The version of the current SubscriptionManager smart contract.
     string public constant VERSION = "0.2";
 
     // The OrbsToken smart contract.

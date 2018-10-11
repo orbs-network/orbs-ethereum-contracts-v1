@@ -19,4 +19,4 @@ unify ../node_modules/openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol
 
 unify ../contracts/DateTime.sol
 unify ../contracts/Federation.sol
-unify ../contracts/SubscriptionBilling.sol
+unify ../contracts/SubscriptionManager.sol

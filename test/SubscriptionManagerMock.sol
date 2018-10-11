@@ -1,11 +1,11 @@
 pragma solidity 0.4.24;
 
-import "../contracts/SubscriptionBilling.sol";
+import "../contracts/SubscriptionManager.sol";
 
 
-contract SubscriptionBillingMock is SubscriptionBilling {
+contract SubscriptionManagerMock is SubscriptionManager {
     constructor(ERC20 _orbs, Federation _federation, uint256 _minimalMonthlySubscription) public
-        SubscriptionBilling(_orbs, _federation, _minimalMonthlySubscription) {
+        SubscriptionManager(_orbs, _federation, _minimalMonthlySubscription) {
     }
 
     function getTotalMonthlySubscriptionsTokens(uint16 _year, uint8 _month) public view returns (uint256) {
