@@ -1,6 +1,5 @@
 pragma solidity 0.4.24;
 
-import "openzeppelin-solidity/contracts/ownership/HasNoContracts.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
@@ -9,7 +8,7 @@ import "./Federation.sol";
 
 
 /// @title Orbs billing and subscription smart contract.
-contract SubscriptionManager is HasNoContracts {
+contract SubscriptionManager {
     using SafeMath for uint256;
 
     // The version of the current SubscriptionManager smart contract.
