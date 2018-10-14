@@ -11,8 +11,7 @@
   "main": "truffle-config.js",
   "scripts": {
     "coverage": "scripts/coverage.sh",
-    "test": "scripts/test.sh",
-    "install": "node scripts/fix-solidity-coverage.js"
+    "test": "scripts/test.sh"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
