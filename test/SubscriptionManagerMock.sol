@@ -44,6 +44,6 @@ contract SubscriptionManagerMock is SubscriptionManager {
         upgradeContext.called = true;
         upgradeContext.newContract = _newContract;
 
-        return true;
+        return super.onUpgrade(_newContract);
     }
 }
