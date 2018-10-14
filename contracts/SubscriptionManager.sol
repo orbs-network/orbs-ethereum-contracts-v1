@@ -5,10 +5,11 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 import "./DateTime.sol";
 import "./Federation.sol";
+import "./Upgradable.sol";
 
 
 /// @title Orbs billing and subscription smart contract.
-contract SubscriptionManager {
+contract SubscriptionManager is Upgradable {
     using SafeMath for uint256;
 
     // The version of the current SubscriptionManager smart contract.
@@ -203,6 +204,11 @@ contract SubscriptionManager {
         monthlySubscription.totalTokens = monthlySubscription.totalTokens.add(_value);
 
         emit Subscribed(msg.sender, _id, _value, _startTime);
+    }
+
+    /// @dev A callback which will be called during an upgrade and will return the status of the of upgrade.
+    function onUpgrade(Upgradable /*_newContract*/) internal returns (bool) {
+        return true;
     }
 
     /// @dev Returns the current year and month.
