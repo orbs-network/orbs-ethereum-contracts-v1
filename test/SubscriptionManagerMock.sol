@@ -29,11 +29,14 @@ contract SubscriptionManagerMock is SubscriptionManager {
         super.subscribe(_id, _profile, _value, _startTime);
     }
 
+    /// @dev Sets the expectation of the smart contract's upgrade to fail either in a graceful way (by returning false
+    /// from its callback) or by triggering a revert.
     function setUpgradeFail(bool _gracefully) public {
         upgradeContext.shouldFailGracefully = _gracefully;
         upgradeContext.shouldRevert = !_gracefully;
     }
 
+    /// @dev An upgrade callback used as a mock/spy.
     function onUpgrade(Upgradable _newContract) internal returns (bool) {
         if (upgradeContext.shouldFailGracefully) {
             return false;
