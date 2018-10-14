@@ -14,6 +14,7 @@ function fix(fileName, tokens) {
 
 fix('./node_modules/solidity-coverage/lib/app.js', [
   { prev: 'events.push', next: 'coverage.processEvent' },
+  { prev: 'coverage.generate', next: 'coverage.processEvent' },
 ]);
 
 fix('./node_modules/solidity-coverage/lib/coverageMap.js', [
