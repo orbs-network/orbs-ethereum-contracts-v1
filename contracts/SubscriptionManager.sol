@@ -12,13 +12,13 @@ import "./Upgradable.sol";
 contract SubscriptionManager is Upgradable {
     using SafeMath for uint256;
 
-    // The version of the current SubscriptionManager smart contract.
+    // The version of the current subscription manager smart contract.
     string public constant VERSION = "0.2";
 
-    // The OrbsToken smart contract.
+    // The Orbs token smart contract.
     ERC20 public orbs;
 
-    // The Federation smart contract.
+    // The federation smart contract.
     Federation public federation;
 
     // The minimal monthly subscription allocation.

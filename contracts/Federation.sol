@@ -10,7 +10,7 @@ import "./Upgradable.sol";
 contract Federation is Ownable {
     using SafeMath for uint256;
 
-    // The version of the current Federation smart contract.
+    // The version of the current federation smart contract.
     string public constant VERSION = "0.1";
 
     // The address of the current subscription manager.
