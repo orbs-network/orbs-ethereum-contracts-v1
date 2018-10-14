@@ -11,7 +11,8 @@
   "main": "truffle-config.js",
   "scripts": {
     "coverage": "scripts/coverage.sh",
-    "test": "scripts/test.sh"
+    "test": "scripts/test.sh",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -38,6 +39,8 @@
     "ganache-cli": "^6.1.8",
     "mocha-lcov-reporter": "^1.3.0",
     "moment": "^2.22.2",
+    "patch-package": "^5.1.1",
+    "postinstall-postinstall": "^1.0.0",
     "solidity-coverage": "0.5.11",
     "web3-eth-abi": "^1.0.0-beta.36"
   }
