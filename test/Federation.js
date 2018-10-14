@@ -71,7 +71,7 @@ contract('Federation', (accounts) => {
     const owner = accounts[0];
     const notOwner = accounts[1];
 
-    describe('addMember', async () => {
+    describe('add member', async () => {
       context('as an owner', async () => {
         it('should add a member', async () => {
           const members = [accounts[7], accounts[8], accounts[9]];
@@ -132,7 +132,7 @@ contract('Federation', (accounts) => {
       });
     });
 
-    describe('removeMember', async () => {
+    describe('remove member', async () => {
       context('owner', async () => {
         it('should remove a member', async () => {
           const members = [accounts[5], accounts[6], accounts[7], accounts[8], accounts[9]];
@@ -194,7 +194,7 @@ contract('Federation', (accounts) => {
       });
     });
 
-    describe('upgradeSubscriptionManager', async () => {
+    describe('upgrade subscription manager', async () => {
       const buildSubscriptionManager = async (token, federation) => {
         const minimalMonthlySubscription = 100;
 
