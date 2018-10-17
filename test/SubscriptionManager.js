@@ -17,6 +17,7 @@ const Federation = artifacts.require('./Federation.sol');
 
 contract('SubscriptionManager', (accounts) => {
   let token;
+  const owner = accounts[0];
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
   const VERSION = '0.2';
@@ -112,29 +113,33 @@ contract('SubscriptionManager', (accounts) => {
 
     beforeEach(async () => {
       const federationMembers = [accounts[7], accounts[8], accounts[9]];
-      federation = await Federation.new(federationMembers);
+      federation = await Federation.new(federationMembers, { from: owner });
     });
 
     it('should not allow to initialize with a 0x0 token', async () => {
-      await expectRevert(SubscriptionManagerMock.new(ZERO_ADDRESS, federation.address, minimalMonthlySubscription));
+      await expectRevert(SubscriptionManagerMock.new(ZERO_ADDRESS, federation.address, minimalMonthlySubscription,
+        { from: owner }));
     });
 
     it('should not allow to initialize with a 0x0 federation', async () => {
-      await expectRevert(SubscriptionManagerMock.new(token.address, ZERO_ADDRESS, minimalMonthlySubscription));
+      await expectRevert(SubscriptionManagerMock.new(token.address, ZERO_ADDRESS, minimalMonthlySubscription,
+        { from: owner }));
     });
 
     it('should not allow to initialize with a 0 minimal subscription allocation', async () => {
-      await expectRevert(SubscriptionManagerMock.new(token.address, federation.address, 0));
+      await expectRevert(SubscriptionManagerMock.new(token.address, federation.address, 0, { from: owner }));
     });
 
     it('should correctly initialize the minimal monthly subscription', async () => {
-      const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription);
+      const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
+        { from: owner });
 
       expect(await manager.minimalMonthlySubscription.call()).to.be.bignumber.equal(minimalMonthlySubscription);
     });
 
     it('should report version', async () => {
-      const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription);
+      const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
+        { from: owner });
 
       expect(await manager.VERSION.call()).to.be.bignumber.equal(VERSION);
     });
@@ -154,7 +159,7 @@ contract('SubscriptionManager', (accounts) => {
       let federation;
 
       beforeEach(async () => {
-        federation = await Federation.new(spec.federationMembers);
+        federation = await Federation.new(spec.federationMembers, { from: owner });
       });
 
       context(`with ${spec.federationMembers.length} federation members`, async () => {
@@ -203,7 +208,8 @@ contract('SubscriptionManager', (accounts) => {
           await token.assign(user1, initialValue);
           await token.assign(user2, initialValue);
 
-          manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription);
+          manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
+            { from: owner });
         });
 
         it('should error when called with an empty id', async () => {
@@ -381,6 +387,22 @@ contract('SubscriptionManager', (accounts) => {
             // Make sure that distributed again fees, since there are no active subscriptions present.
             await expectRevert(manager.distributeFees());
           });
+
+          it('should be able to subscribe after an upgrade', async () => {
+            await subscribeForCurrentMonth(manager, id, profile, value, user1);
+            await checkSubscription(manager, id, profile, now, currentTime.year, currentTime.month, value);
+            await checkTotal(manager, currentTime.year, currentTime.month, value);
+
+            const newManager = await SubscriptionManagerMock.new(token.address, federation.address,
+              minimalMonthlySubscription, { from: owner });
+            await newManager.transferOwnership(federation.address);
+            await federation.upgradeSubscriptionManager(newManager.address, { from: owner });
+            expect(await federation.subscriptionManager.call()).to.eql(newManager.address);
+
+            await subscribeForCurrentMonth(newManager, id, profile, value * 2, user1);
+            await checkSubscription(newManager, id, profile, now, currentTime.year, currentTime.month, value * 2);
+            await checkTotal(newManager, currentTime.year, currentTime.month, value * 2);
+          });
         });
 
         context('next month', async () => {
@@ -465,6 +487,24 @@ contract('SubscriptionManager', (accounts) => {
 
             // Make sure that distributed again fees, since there are no active subscriptions present.
             await expectRevert(manager.distributeFees());
+          });
+
+          it('should be able to subscribe after an upgrade', async () => {
+            await subscribeForNextMonth(manager, id, profile, value, user1);
+            await checkSubscription(manager, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+              beginningOfNextMonth.month, value);
+            await checkTotal(manager, beginningOfNextMonth.year, beginningOfNextMonth.month, value);
+
+            const newManager = await SubscriptionManagerMock.new(token.address, federation.address,
+              minimalMonthlySubscription, { from: owner });
+            await newManager.transferOwnership(federation.address);
+            await federation.upgradeSubscriptionManager(newManager.address, { from: owner });
+            expect(await federation.subscriptionManager.call()).to.eql(newManager.address);
+
+            await subscribeForNextMonth(newManager, id, profile, value * 2, user1);
+            await checkSubscription(newManager, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+              beginningOfNextMonth.month, value * 2);
+            await checkTotal(newManager, beginningOfNextMonth.year, beginningOfNextMonth.month, value * 2);
           });
         });
 
