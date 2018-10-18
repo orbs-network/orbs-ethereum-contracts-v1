@@ -4,13 +4,13 @@ import dirtyChai from 'dirty-chai';
 const { expect } = chai;
 chai.use(dirtyChai);
 
-const DateTimeWrapper = artifacts.require('./DateTimeWrapper.sol');
+const DateTime = artifacts.require('./DateTime.sol');
 
 contract('DateTime', () => {
   let dateTime;
 
   beforeEach(async () => {
-    dateTime = await DateTimeWrapper.new();
+    dateTime = await DateTime.new();
   });
 
   describe('getDay', async () => {
@@ -488,7 +488,7 @@ contract('DateTime', () => {
     });
   });
 
-  describe('toTimeStamp', async () => {
+  describe('DateToUnix', async () => {
     [
       {
         date: {
@@ -531,9 +531,9 @@ contract('DateTime', () => {
 
       it(`should return ${JSON.stringify(res)} for ${JSON.stringify(date)}`, async () => {
         if (!date.hours && !date.minutes && !date.seconds) {
-          expect(await dateTime.toTimestamp.call(date.year, date.month, date.day)).to.be.bignumber.equal(res);
+          expect(await dateTime.DateToUnix.call(date.year, date.month, date.day)).to.be.bignumber.equal(res);
         } else {
-          expect(await dateTime.toTimestampFull.call(date.year, date.month, date.day, date.hours, date.minutes,
+          expect(await dateTime.DateTimeToUnix.call(date.year, date.month, date.day, date.hours, date.minutes,
             date.seconds)).to.be.bignumber.equal(res);
         }
       });
