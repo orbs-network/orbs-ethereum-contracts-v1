@@ -81,11 +81,16 @@ contract Federation is Ownable, HasNoContracts, HasNoTokens {
     /// @dev Removes a member by an index.
     /// @param _i uint The index of the member to be removed.
     function removeMemberByIndex(uint _i) private {
+        if (_i > members.length - 1 || members.length == 0) {
+            return;
+        }
+
         while (_i < members.length - 1) {
             members[_i] = members[_i + 1];
             _i++;
         }
 
+        delete members[_i];
         members.length--;
     }
 
