@@ -138,7 +138,7 @@ library DateTime {
     /// @param _month uint8 The month to check.
     /// @param _year uint16 The year of the month to check.
     function getBeginningOfMonth(uint16 _year, uint8 _month) public pure returns (uint256) {
-        return DateToUnix(_year, _month, 1);
+        return toTimestamp(_year, _month, 1);
     }
 
     /// @dev Returns the timestamp of the beginning of the month.
@@ -157,9 +157,16 @@ library DateTime {
     /// @dev Converts date to timestamp.
     /// @param _year uint16 The year of the date.
     /// @param _month uint8 The month of the date.
+    function toTimestamp(uint16 _year, uint8 _month) public pure returns (uint) {
+        return toTimestamp(_year, _month, 0, 0, 0, 0);
+    }
+
+    /// @dev Converts date to timestamp.
+    /// @param _year uint16 The year of the date.
+    /// @param _month uint8 The month of the date.
     /// @param _day uint8 The day of the date.
-    function DateToUnix(uint16 _year, uint8 _month, uint8 _day) public pure returns (uint) {
-        return DateTimeToUnix(_year, _month, _day, 0, 0, 0);
+    function toTimestamp(uint16 _year, uint8 _month, uint8 _day) public pure returns (uint) {
+        return toTimestamp(_year, _month, _day, 0, 0, 0);
     }
 
     /// @dev Converts date to timestamp.
@@ -169,7 +176,7 @@ library DateTime {
     /// @param _hour uint8 The hour of the date.
     /// @param _minutes uint8 The minutes of the date.
     /// @param _seconds uint8 The seconds of the date.
-    function DateTimeToUnix(uint16 _year, uint8 _month, uint8 _day, uint8 _hour, uint8 _minutes,
+    function toTimestamp(uint16 _year, uint8 _month, uint8 _day, uint8 _hour, uint8 _minutes,
         uint8 _seconds) public pure returns (uint256 timestamp) {
         uint16 i;
 

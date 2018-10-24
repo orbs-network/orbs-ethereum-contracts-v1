@@ -108,7 +108,7 @@ contract SubscriptionManager is Upgradable {
         (currentYear, currentMonth) = getCurrentTime();
 
         // Don't allow distribution of any future fees (specifically, next month's subscription fees).
-        require(currentYear > _year || (currentYear == _year && currentMonth >= _month),
+        require(DateTime.toTimestamp(currentYear, currentMonth) >= DateTime.toTimestamp(_year, _month),
             "Can't distribute future fees!");
 
         address[] memory members = federation.getMembers();
