@@ -111,7 +111,7 @@ contract('SubscriptionBilling', (accounts) => {
     const minimalMonthlySubscription = 100;
 
     beforeEach(async () => {
-      const federationMembers = [accounts[7], accounts[8], accounts[9]];
+      const federationMembers = accounts.slice(7, 10);
       federation = await Federation.new(federationMembers);
     });
 
@@ -144,10 +144,10 @@ contract('SubscriptionBilling', (accounts) => {
     [
       { federationMembers: [accounts[7]] },
       { federationMembers: [accounts[3], accounts[5]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7], accounts[8]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7], accounts[8], accounts[9]] },
+      { federationMembers: accounts.slice(3, 6) },
+      { federationMembers: accounts.slice(3, 7) },
+      { federationMembers: accounts.slice(3, 8) },
+      { federationMembers: accounts.slice(3, 10) },
       { federationMembers: TEST_ACCOUNTS.slice(30, 50) },
       { federationMembers: TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS) },
     ].forEach((spec) => {
