@@ -13,11 +13,13 @@ const TEST_ACCOUNTS = require('./accounts.json').accounts;
 
 const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
 const SubscriptionBillingMock = artifacts.require('./SubscriptionBillingMock.sol');
+const Federation = artifacts.require('./Federation.sol');
 
 contract('SubscriptionBilling', (accounts) => {
   let token;
 
-  const VERSION = '0.1';
+  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+  const VERSION = '0.2';
   const MAX_FEDERATION_MEMBERS = 100;
   const TIME_ERROR_MARGIN = 60; // 60 seconds
 
@@ -51,11 +53,14 @@ contract('SubscriptionBilling', (accounts) => {
     return method(toBytes32(id), profile, value, { from });
   };
 
+  /* eslint-disable implicit-arrow-linebreak */
   const subscribeForCurrentMonth = async (billing, id, profile, value, from) =>
     subscribe(billing, id, profile, value, from, true);
 
   const subscribeForNextMonth = async (billing, id, profile, value, from) =>
     subscribe(billing, id, profile, value, from, false);
+
+  /* eslint-enable implicit-arrow-linebreak */
 
   const getCurrentMonthlySubscription = async (billing, id) => {
     const subscription = await billing.getSubscriptionData.call(toBytes32(id));
@@ -102,52 +107,34 @@ contract('SubscriptionBilling', (accounts) => {
   });
 
   describe('construction', async () => {
-    const federationMembers = [accounts[7], accounts[8], accounts[9]];
+    let federation;
     const minimalMonthlySubscription = 100;
 
-    it('should not allow to initialize with a null token', async () => {
-      await expectRevert(SubscriptionBillingMock.new(null, federationMembers, minimalMonthlySubscription));
+    beforeEach(async () => {
+      const federationMembers = accounts.slice(7, 10);
+      federation = await Federation.new(federationMembers);
     });
 
-    it('should not allow to initialize with an empty array of federation members', async () => {
-      await expectRevert(SubscriptionBillingMock.new(token.address, [], minimalMonthlySubscription));
+    it('should not allow to initialize with a 0x0 token', async () => {
+      await expectRevert(SubscriptionBillingMock.new(ZERO_ADDRESS, federation.address, minimalMonthlySubscription));
     });
 
-    it('should not allow to initialize with too many federation members', async () => {
-      const tooManyCooks = TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS + 1);
-      expect(tooManyCooks).to.have.length.above(MAX_FEDERATION_MEMBERS);
-
-      await expectRevert(SubscriptionBillingMock.new(token.address, tooManyCooks, minimalMonthlySubscription));
-    });
-
-    it('should not allow to initialize with 0x address federation members', async () => {
-      let invalidFederationMembers = [accounts[7], accounts[8], null, accounts[9]];
-
-      await expectRevert(SubscriptionBillingMock.new(token.address, invalidFederationMembers, minimalMonthlySubscription));
-
-      invalidFederationMembers = [accounts[7], accounts[8], accounts[9], null];
-
-      await expectRevert(SubscriptionBillingMock.new(token.address, invalidFederationMembers, minimalMonthlySubscription));
-    });
-
-    it('should not allow to initialize with duplicate federation members', async () => {
-      const duplicateMembers = [accounts[1], accounts[0], accounts[1], accounts[3]];
-
-      await expectRevert(SubscriptionBillingMock.new(token.address, duplicateMembers, minimalMonthlySubscription));
+    it('should not allow to initialize with a 0x0 federation', async () => {
+      await expectRevert(SubscriptionBillingMock.new(token.address, ZERO_ADDRESS, minimalMonthlySubscription));
     });
 
     it('should not allow to initialize with a 0 minimal subscription allocation', async () => {
-      await expectRevert(SubscriptionBillingMock.new(token.address, federationMembers, 0));
+      await expectRevert(SubscriptionBillingMock.new(token.address, federation.address, 0));
     });
 
     it('should correctly initialize the minimal monthly subscription', async () => {
-      const billing = await SubscriptionBillingMock.new(token.address, federationMembers, minimalMonthlySubscription);
+      const billing = await SubscriptionBillingMock.new(token.address, federation.address, minimalMonthlySubscription);
 
       expect(await billing.minimalMonthlySubscription.call()).to.be.bignumber.equal(minimalMonthlySubscription);
     });
 
     it('should report version', async () => {
-      const billing = await SubscriptionBillingMock.new(token.address, federationMembers, minimalMonthlySubscription);
+      const billing = await SubscriptionBillingMock.new(token.address, federation.address, minimalMonthlySubscription);
 
       expect(await billing.VERSION.call()).to.be.bignumber.equal(VERSION);
     });
@@ -157,13 +144,19 @@ contract('SubscriptionBilling', (accounts) => {
     [
       { federationMembers: [accounts[7]] },
       { federationMembers: [accounts[3], accounts[5]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7], accounts[8]] },
-      { federationMembers: [accounts[3], accounts[4], accounts[5], accounts[7], accounts[8], accounts[9]] },
+      { federationMembers: accounts.slice(3, 6) },
+      { federationMembers: accounts.slice(3, 7) },
+      { federationMembers: accounts.slice(3, 8) },
+      { federationMembers: accounts.slice(3, 10) },
       { federationMembers: TEST_ACCOUNTS.slice(30, 50) },
       { federationMembers: TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS) },
     ].forEach((spec) => {
+      let federation;
+
+      beforeEach(async () => {
+        federation = await Federation.new(spec.federationMembers);
+      });
+
       context(`with ${spec.federationMembers.length} federation members`, async () => {
         const minimalMonthlySubscription = 100;
         const initialValue = 100000000;
@@ -210,8 +203,7 @@ contract('SubscriptionBilling', (accounts) => {
           await token.assign(user1, initialValue);
           await token.assign(user2, initialValue);
 
-          billing = await SubscriptionBillingMock.new(token.address, spec.federationMembers,
-            minimalMonthlySubscription);
+          billing = await SubscriptionBillingMock.new(token.address, federation.address, minimalMonthlySubscription);
         });
 
         it('should error when called with an empty id', async () => {

@@ -1,16 +1,11 @@
-pragma solidity 0.4.23;
+pragma solidity 0.4.24;
 
 import "../contracts/SubscriptionBilling.sol";
 
 
 contract SubscriptionBillingMock is SubscriptionBilling {
-    constructor(ERC20 _orbs, address[] _federationMembers,
-        uint256 _minimalMonthlySubscription) public SubscriptionBilling(_orbs, _federationMembers,
-        _minimalMonthlySubscription) {
-    }
-
-    function getFederationMembers() public view returns (address[]) {
-        return federationMembers;
+    constructor(ERC20 _orbs, Federation _federation, uint256 _minimalMonthlySubscription) public
+        SubscriptionBilling(_orbs, _federation, _minimalMonthlySubscription) {
     }
 
     function getTotalMonthlySubscriptionsTokens(uint16 _year, uint8 _month) public view returns (uint256) {

@@ -1,26 +1,25 @@
-pragma solidity 0.4.23;
+pragma solidity 0.4.24;
 
-import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
-import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/ownership/HasNoContracts.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 import "./DateTime.sol";
+import "./Federation.sol";
 
-/// @title Orbs billing and subscriptions smart contract.
+
+/// @title Orbs billing and subscription smart contract.
 contract SubscriptionBilling is HasNoContracts {
     using SafeMath for uint256;
 
     // The version of the current SubscriptionBilling smart contract.
-    string public constant VERSION = "0.1";
+    string public constant VERSION = "0.2";
 
-    // Maximum number of federation members.
-    uint public constant MAX_FEDERATION_MEMBERS = 100;
-
-    // The address of the previous deployed OrbsToken smart contract.
+    // The OrbsToken smart contract.
     ERC20 public orbs;
 
-    // Array of federations members.
-    address[] public federationMembers;
+    // The Federation smart contract.
+    Federation public federation;
 
     // The minimal monthly subscription allocation.
     uint public minimalMonthlySubscription;
@@ -48,17 +47,16 @@ contract SubscriptionBilling is HasNoContracts {
     event DistributedFees(address indexed federationMember, uint256 value);
 
     /// @dev Constructor that initializes the address of the Orbs billing contract.
-    /// @param _orbs ERC20 The address of the previously deployed OrbsToken contract.
-    /// @param _federationMembers address[] The public addresses of the federation members.
+    /// @param _orbs ERC20 The address of the OrbsToken contract.
+    /// @param _federation Federation The address of the Federation contract.
     /// @param _minimalMonthlySubscription uint256 The minimal monthly subscription allocation.
-    constructor(ERC20 _orbs, address[] _federationMembers,
-        uint256 _minimalMonthlySubscription) public {
+    constructor(ERC20 _orbs, Federation _federation, uint256 _minimalMonthlySubscription) public {
         require(address(_orbs) != address(0), "Address must not be 0!");
-        require(isFedererationMembersListValid(_federationMembers), "Invalid federation members list!");
+        require(address(_federation) != address(0), "Federation must not be 0!");
         require(_minimalMonthlySubscription != 0, "Minimal subscription value must be greater than 0!");
 
         orbs = _orbs;
-        federationMembers = _federationMembers;
+        federation = _federation;
         minimalMonthlySubscription = _minimalMonthlySubscription;
     }
 
@@ -113,17 +111,19 @@ contract SubscriptionBilling is HasNoContracts {
         require(DateTime.toTimestamp(currentYear, currentMonth) >= DateTime.toTimestamp(_year, _month),
             "Can't distribute future fees!");
 
+        address[] memory members = federation.getMembers();
+
         MonthlySubscriptions storage monthlySubscription = subscriptions[_year][_month];
-        uint256 fee = monthlySubscription.totalTokens.div(federationMembers.length);
+        uint256 fee = monthlySubscription.totalTokens.div(members.length);
         require(fee > 0, "Fee must be greater than 0!");
 
-        for (uint i = 0; i < federationMembers.length; ++i) {
-            address member = federationMembers[i];
+        for (uint i = 0; i < members.length; ++i) {
+            address member = members[i];
             uint256 memberFee = fee;
 
             // Distribute the remainder to the first node.
             if (i == 0) {
-                memberFee = memberFee.add(monthlySubscription.totalTokens % federationMembers.length);
+                memberFee = memberFee.add(monthlySubscription.totalTokens % members.length);
             }
 
             monthlySubscription.totalTokens = monthlySubscription.totalTokens.sub(memberFee);
@@ -136,7 +136,8 @@ contract SubscriptionBilling is HasNoContracts {
     /// @dev Receives subscription payment for the current month. This method needs to be called after the caller
     /// approves the smart contract to transfer _value ORBS tokens on its behalf.
     /// @param _id bytes32 The ID of the subscription.
-    /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent subscriptions.
+    /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent
+    /// subscriptions.
     /// @param _value uint256 The amount of tokens to fund the subscription.
     function subscribeForCurrentMonth(bytes32 _id, string _profile, uint256 _value) public {
         subscribe(_id, _profile, _value, now);
@@ -145,7 +146,8 @@ contract SubscriptionBilling is HasNoContracts {
     /// @dev Receives subscription payment for the next month. This method needs to be called after the caller approves
     /// the smart contract to transfer _value ORBS tokens on its behalf.
     /// @param _id bytes32 The ID of the subscription.
-    /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent subscriptions.
+    /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent
+    /// subscriptions.
     /// @param _value uint256 The amount of tokens to fund the subscription.
     function subscribeForNextMonth(bytes32 _id, string _profile, uint256 _value) public {
         // Get the current year and month.
@@ -164,7 +166,8 @@ contract SubscriptionBilling is HasNoContracts {
     /// @dev Receives subscription payment. This method needs to be called after the caller approves
     /// the smart contract to transfer _value ORBS tokens on its behalf.
     /// @param _id bytes32 The ID of the subscription.
-    /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent subscriptions.
+    /// @param _profile string The name of the subscription profile. This parameter is ignored for subsequent
+    /// subscriptions.
     /// @param _value uint256 The amount of tokens to fund the subscription.
     /// @param _startTime uint256 The start time of the subscription.
     function subscribe(bytes32 _id, string _profile, uint256 _value, uint256 _startTime) internal {
@@ -217,28 +220,5 @@ contract SubscriptionBilling is HasNoContracts {
     function getTime(uint256 _time) private pure returns (uint16 year, uint8 month) {
         year = DateTime.getYear(_time);
         month = DateTime.getMonth(_time);
-    }
-
-    /// @dev Checks federation members list for correctness.
-    /// @param _federationMembers address[] The federation members list to check.
-    function isFedererationMembersListValid(address[] _federationMembers) private pure returns (bool) {
-        if (_federationMembers.length == 0 || _federationMembers.length > MAX_FEDERATION_MEMBERS) {
-            return false;
-        }
-
-        // Make sure there are no zero addresses or duplicates in the federation members list.
-        for (uint i = 0; i < _federationMembers.length; ++i) {
-            if (_federationMembers[i] == address(0)) {
-                return false;
-            }
-
-            for (uint j = i + 1; j < _federationMembers.length; ++j) {
-                if (_federationMembers[i] == _federationMembers[j]) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }
