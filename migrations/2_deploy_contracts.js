@@ -1,6 +1,7 @@
 const DateTime = artifacts.require('./DateTime.sol');
 const DateTimeWrapper = artifacts.require('../test/helpers/DateTimeWrapper.sol');
-const SubscriptionBillingMock = artifacts.require('../test/SubscriptionBillingMock.sol');
+const SubscriptionManager = artifacts.require('../test/SubscriptionManager.sol');
+const SubscriptionManagerMock = artifacts.require('../test/SubscriptionManagerMock.sol');
 
 module.exports = async (deployer, network) => {
   // We're only using these migrations during development and testing.
@@ -10,5 +11,6 @@ module.exports = async (deployer, network) => {
 
   await deployer.deploy(DateTime);
   await deployer.link(DateTime, DateTimeWrapper);
-  await deployer.link(DateTime, SubscriptionBillingMock);
+  await deployer.link(DateTime, SubscriptionManager);
+  await deployer.link(DateTime, SubscriptionManagerMock);
 };

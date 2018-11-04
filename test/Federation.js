@@ -12,6 +12,8 @@ chai.use(dirtyChai);
 const TEST_ACCOUNTS = require('./accounts.json').accounts;
 
 const Federation = artifacts.require('./Federation.sol');
+const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
+const SubscriptionManagerMock = artifacts.require('./SubscriptionManagerMock.sol');
 
 contract('Federation', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -58,16 +60,18 @@ contract('Federation', (accounts) => {
       expect(await federation.VERSION.call()).to.be.bignumber.equal(VERSION);
     });
 
-    it('should initialize federation members', async () => {
+    it('should initialize state variables', async () => {
       const federation = await Federation.new(members);
       expect(await federation.getMembers.call()).to.be.equalTo(members);
+      expect(await federation.subscriptionManager.call()).to.eql(ZERO_ADDRESS);
     });
   });
 
   describe('management', async () => {
     const owner = accounts[0];
+    const notOwner = accounts[1];
 
-    describe('addMember', async () => {
+    describe('add member', async () => {
       context('as an owner', async () => {
         it('should add a member', async () => {
           const members = accounts.slice(7, 10);
@@ -118,8 +122,6 @@ contract('Federation', (accounts) => {
       });
 
       context('as not an owner', async () => {
-        const notOwner = accounts[1];
-
         it('should not allow to add a member', async () => {
           const members = accounts.slice(7, 10);
           const federation = await Federation.new(members, { from: owner });
@@ -130,7 +132,7 @@ contract('Federation', (accounts) => {
       });
     });
 
-    describe('removeMember', async () => {
+    describe('remove member', async () => {
       context('owner', async () => {
         it('should remove a member', async () => {
           const members = accounts.slice(4, 9);
@@ -178,14 +180,106 @@ contract('Federation', (accounts) => {
       });
 
       context('not an owner', async () => {
-        const notOwner = accounts[1];
-
-        it('should not allow to remove a member, if requested by not an owner', async () => {
+        it('should not allow to remove a member', async () => {
           const members = accounts.slice(7, 10);
           const federation = await Federation.new(members, { from: owner });
 
           const existingMember = members[2];
           await expectRevert(federation.removeMember(existingMember, { from: notOwner }));
+        });
+      });
+    });
+
+    describe('upgrade subscription manager', async () => {
+      const buildSubscriptionManager = async (token, federation) => {
+        const minimalMonthlySubscription = 100;
+
+        const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
+          { from: owner });
+        await manager.transferOwnership(federation.address);
+
+        return manager;
+      };
+
+      const getUpgradeContext = async (manager) => {
+        const context = await manager.upgradeContext.call();
+        return { called: context[0], newContract: context[1] };
+      };
+
+      let token;
+      let federation;
+      let oldManager;
+
+      beforeEach(async () => {
+        token = await OrbsTokenMock.new();
+
+        const members = [accounts[7], accounts[8], accounts[9]];
+        federation = await Federation.new(members, { from: owner });
+
+        oldManager = await buildSubscriptionManager(token, federation);
+        await federation.upgradeSubscriptionManager(oldManager.address, { from: owner });
+        expect(await federation.subscriptionManager.call()).to.eql(oldManager.address);
+      });
+
+      context('owner', async () => {
+        it('should be able to use the upgrade method to initially set the subscription manager', async () => {
+          const members = [accounts[1], accounts[2]];
+          const initialFederation = await Federation.new(members, { from: owner });
+          const newManager = await buildSubscriptionManager(token, federation);
+
+          await initialFederation.upgradeSubscriptionManager(newManager.address, { from: owner });
+          expect(await initialFederation.subscriptionManager.call()).to.eql(newManager.address);
+
+          const upgradeContext = await getUpgradeContext(oldManager);
+          expect(upgradeContext.called).to.be.false();
+        });
+
+        it('should upgrade the subscription manager', async () => {
+          const newManager = await buildSubscriptionManager(token, federation);
+
+          await federation.upgradeSubscriptionManager(newManager.address, { from: owner });
+          expect(await federation.subscriptionManager.call()).to.eql(newManager.address);
+
+          const upgradeContext = await getUpgradeContext(oldManager);
+          expect(upgradeContext.called).to.be.true();
+          expect(upgradeContext.newContract).to.be.eql(newManager.address);
+        });
+
+        it('should not allow to upgrade the subscription manager to a 0x0 address', async () => {
+          await expectRevert(federation.upgradeSubscriptionManager(ZERO_ADDRESS, { from: owner }));
+        });
+
+        it('should not allow to upgrade the subscription manager to the same address', async () => {
+          await expectRevert(federation.upgradeSubscriptionManager(oldManager.address, { from: owner }));
+        });
+
+        it('should not allow to upgrade the subscription manager with a different owner', async () => {
+          const minimalMonthlySubscription = 100;
+          const newManager = await SubscriptionManagerMock.new(token.address, federation.address,
+            minimalMonthlySubscription, { from: notOwner });
+
+          await expectRevert(federation.upgradeSubscriptionManager(newManager.address, { from: owner }));
+        });
+
+        it('should revert if the upgrade fails gracefully', async () => {
+          await oldManager.setUpgradeFail(true);
+
+          const newManager = await buildSubscriptionManager(token, federation);
+          await expectRevert(federation.upgradeSubscriptionManager(newManager.address, { from: owner }));
+        });
+
+        it('should revert if the upgrade reverts', async () => {
+          await oldManager.setUpgradeFail(false);
+
+          const newManager = await buildSubscriptionManager(token, federation);
+          await expectRevert(federation.upgradeSubscriptionManager(newManager.address, { from: owner }));
+        });
+      });
+
+      context('not an owner', async () => {
+        it('should not allow to upgrade the subscription manager', async () => {
+          const newManager = await buildSubscriptionManager(token, federation);
+          await expectRevert(federation.upgradeSubscriptionManager(newManager.address, { from: notOwner }));
         });
       });
     });

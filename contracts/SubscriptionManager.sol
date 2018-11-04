@@ -1,24 +1,24 @@
 pragma solidity 0.4.24;
 
-import "openzeppelin-solidity/contracts/ownership/HasNoContracts.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 import "./DateTime.sol";
 import "./Federation.sol";
+import "./Upgradable.sol";
 
 
 /// @title Orbs billing and subscription smart contract.
-contract SubscriptionBilling is HasNoContracts {
+contract SubscriptionManager is Upgradable {
     using SafeMath for uint256;
 
-    // The version of the current SubscriptionBilling smart contract.
+    // The version of the current subscription manager smart contract.
     string public constant VERSION = "0.2";
 
-    // The OrbsToken smart contract.
+    // The Orbs token smart contract.
     ERC20 public orbs;
 
-    // The Federation smart contract.
+    // The federation smart contract.
     Federation public federation;
 
     // The minimal monthly subscription allocation.
@@ -204,6 +204,11 @@ contract SubscriptionBilling is HasNoContracts {
         monthlySubscription.totalTokens = monthlySubscription.totalTokens.add(_value);
 
         emit Subscribed(msg.sender, _id, _value, _startTime);
+    }
+
+    /// @dev A callback which will be called during an upgrade and will return the status of the of upgrade.
+    function onUpgrade(Upgradable /*_newContract*/) internal returns (bool) {
+        return true;
     }
 
     /// @dev Returns the current year and month.

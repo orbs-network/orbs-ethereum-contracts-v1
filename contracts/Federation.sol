@@ -1,22 +1,25 @@
 pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/ownership/HasNoContracts.sol";
-import "openzeppelin-solidity/contracts/ownership/HasNoTokens.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+
+import "./Upgradable.sol";
 
 
 /// @title Orbs federation smart contract.
-contract Federation is Ownable, HasNoContracts, HasNoTokens {
+contract Federation is Ownable {
     using SafeMath for uint256;
 
-    // The version of the current Federation smart contract.
+    // The version of the current federation smart contract.
     string public constant VERSION = "0.1";
+
+    // The address of the current subscription manager.
+    Upgradable public subscriptionManager;
 
     // Maximum number of the federation members.
     uint public constant MAX_FEDERATION_MEMBERS = 100;
 
-    // Array of the federations members' public addresses.
+    // Array of the federation members' public addresses.
     address[] public members;
 
     event MemberAdded(address indexed member);
@@ -63,6 +66,15 @@ contract Federation is Ownable, HasNoContracts, HasNoTokens {
 
         removeMemberByIndex(i);
         emit MemberRemoved(_member);
+    }
+
+    /// @dev Upgrades the Subscription Manager.
+    function upgradeSubscriptionManager(Upgradable _newSubscriptionManager) public onlyOwner {
+        if (address(subscriptionManager) != address(0)) {
+            subscriptionManager.upgrade(_newSubscriptionManager);
+        }
+
+        subscriptionManager = _newSubscriptionManager;
     }
 
     /// @dev Returns an index of an existing member. Returns whether the member exist.
