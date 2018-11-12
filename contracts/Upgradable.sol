@@ -10,7 +10,7 @@ contract Upgradable is Ownable {
     function upgrade(Upgradable _newContract) public onlyOwner {
         require(address(_newContract) != address(0), "Address must not be 0!");
         require(address(_newContract) != address(this), "Can't upgrade to the same contract!");
-        require(_newContract.owner() == owner, "The old and the new contracts should share the same owners!");
+        require(_newContract.owner() == owner(), "The old and the new contracts should share the same owners!");
 
         require(onUpgrade(_newContract), "Upgrade has failed!");
     }

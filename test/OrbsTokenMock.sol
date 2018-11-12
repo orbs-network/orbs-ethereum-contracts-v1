@@ -1,10 +1,11 @@
 pragma solidity 0.4.24;
 
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 
-contract OrbsTokenMock is StandardToken {
-    function assign(address _account, uint _balance) public {
-        balances[_account] = _balance;
+contract OrbsTokenMock is ERC20 {
+    function assign(address _account, uint _value) public {
+        _burn(_account, balanceOf(_account));
+        _mint(_account, _value);
     }
 }
