@@ -6,7 +6,7 @@ function unify() {
 	grep -v "^[pragma|import]" $DIR/$1 >> Unified.sol
 }
 
-echo "pragma solidity 0.4.25;" > Unified.sol
+echo "pragma solidity 0.4.24;" > Unified.sol
 
 unify ../node_modules/openzeppelin-solidity/contracts/math/Math.sol
 unify ../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol
