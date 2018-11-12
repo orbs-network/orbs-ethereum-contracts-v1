@@ -6,6 +6,7 @@ OUTPUT=${DIR}/../build/output
 declare -a CONTRACTS=(
     "Federation"
     "SubscriptionManager"
+    "AutonomousSwapBridge"
 )
 
 mkdir -p ${OUTPUT}
