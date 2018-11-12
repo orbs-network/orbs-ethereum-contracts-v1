@@ -12,6 +12,7 @@
   "scripts": {
     "coverage": "scripts/coverage.sh",
     "test": "scripts/test.sh",
+    "build": "./node_modules/.bin/truffle compile && scripts/flatten.sh",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "patch-package": "^5.1.1",
     "postinstall-postinstall": "^2.0.0",
     "solidity-coverage": "0.5.11",
+    "truffle-flattener": "^1.2.9",
     "web3-eth-abi": "^1.0.0-beta.36"
   }
 }
