@@ -130,10 +130,12 @@ contract('SubscriptionManager', (accounts) => {
       await expectRevert(SubscriptionManagerMock.new(token.address, federation.address, 0, { from: owner }));
     });
 
-    it('should correctly initialize the minimal monthly subscription', async () => {
+    it('should correctly initialize fields', async () => {
       const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
         { from: owner });
 
+      expect(await manager.orbs.call()).to.be.bignumber.equal(token.address);
+      expect(await manager.federation.call()).to.be.bignumber.equal(federation.address);
       expect(await manager.minimalMonthlySubscription.call()).to.be.bignumber.equal(minimalMonthlySubscription);
     });
 
