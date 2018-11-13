@@ -49,10 +49,10 @@ contract('AutonomousSwapBridge', (accounts) => {
       const asb = await AutonomousSwapBridge.new(VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         federation.address, { from: owner });
 
-      expect(await asb.virtualChainId.call()).to.be.bignumber.equal(VIRTUAL_CHAIN_ID);
+      expect(await asb.virtualChainId.call()).to.eql(VIRTUAL_CHAIN_ID);
       expect(await asb.orbsASBContractName.call()).to.be.equal(ORBS_ASB_CONTRACT_NAME);
-      expect(await asb.token.call()).to.be.bignumber.equal(token.address);
-      expect(await asb.federation.call()).to.be.bignumber.equal(federation.address);
+      expect(await asb.token.call()).to.eql(token.address);
+      expect(await asb.federation.call()).to.eql(federation.address);
     });
 
     it('should report version', async () => {
