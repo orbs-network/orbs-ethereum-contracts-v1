@@ -11,7 +11,7 @@ const Federation = artifacts.require('./Federation.sol');
 const TokenMock = artifacts.require('./OrbsTokenMock.sol');
 
 contract('AutonomousSwapBridge', (accounts) => {
-  const VIRTUAL_CHAIN_ID = '0x6b696e';
+  const VIRTUAL_CHAIN_ID = 0x6b696e;
   const ORBS_ASB_CONTRACT_NAME = 'asb';
   const VERSION = '0.1';
   const EMPTY = '';
@@ -49,7 +49,7 @@ contract('AutonomousSwapBridge', (accounts) => {
       const asb = await AutonomousSwapBridge.new(VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         federation.address, { from: owner });
 
-      expect(await asb.virtualChainId.call()).to.eql(VIRTUAL_CHAIN_ID);
+      expect(await asb.virtualChainId.call()).to.be.bignumber.equal(VIRTUAL_CHAIN_ID);
       expect(await asb.orbsASBContractName.call()).to.be.equal(ORBS_ASB_CONTRACT_NAME);
       expect(await asb.token.call()).to.eql(token.address);
       expect(await asb.federation.call()).to.eql(federation.address);
