@@ -86,7 +86,7 @@ contract('AutonomousSwapBridge', (accounts) => {
       const value = 100;
       await token.approve(asb.address, value, { from: user1 });
 
-      const asbBalance = await token.balanceOf(asb.address);
+      const asbBalance = await token.balanceOf.call(asb.address);
       const tx = await asb.transferOut(orbsUser1Address, value, { from: user1 });
 
       expect(tx.logs).to.have.length(1);
@@ -97,7 +97,7 @@ contract('AutonomousSwapBridge', (accounts) => {
       expect(event.args.value).to.be.bignumber.equal(value);
       expect(event.args.tuid).to.be.bignumber.equal(1);
 
-      expect(await token.balanceOf(asb.address)).to.be.bignumber.equal(asbBalance.plus(value));
+      expect(await token.balanceOf.call(asb.address)).to.be.bignumber.equal(asbBalance.plus(value));
     });
 
     it('should transfer out tokens more than once', async () => {
@@ -106,7 +106,7 @@ contract('AutonomousSwapBridge', (accounts) => {
 
       const times = 20;
       for (let i = 0; i < times; ++i) {
-        const asbBalance = await token.balanceOf(asb.address);
+        const asbBalance = await token.balanceOf.call(asb.address);
         const tx = await asb.transferOut(orbsUser1Address, value / times, { from: user1 });
         expect(tx.logs).to.have.length(1);
         const event = tx.logs[0];
@@ -116,7 +116,7 @@ contract('AutonomousSwapBridge', (accounts) => {
         expect(event.args.value).to.be.bignumber.equal(value / times);
         expect(event.args.tuid).to.be.bignumber.equal(i + 1);
 
-        expect(await token.balanceOf(asb.address)).to.be.bignumber.equal(asbBalance.plus(value / times));
+        expect(await token.balanceOf.call(asb.address)).to.be.bignumber.equal(asbBalance.plus(value / times));
       }
     });
 
@@ -140,7 +140,7 @@ contract('AutonomousSwapBridge', (accounts) => {
       for (let i = 0; i < scenarios.length; ++i) {
         const spec = scenarios[i];
 
-        const asbBalance = await token.balanceOf(asb.address);
+        const asbBalance = await token.balanceOf.call(asb.address);
 
         const tx = await asb.transferOut(spec.to, spec.value, { from: spec.from });
         expect(tx.logs).to.have.length(1);
@@ -151,7 +151,7 @@ contract('AutonomousSwapBridge', (accounts) => {
         expect(event.args.value).to.be.bignumber.equal(spec.value);
         expect(event.args.tuid).to.be.bignumber.equal(i + 1);
 
-        expect(await token.balanceOf(asb.address)).to.be.bignumber.equal(asbBalance.plus(spec.value));
+        expect(await token.balanceOf.call(asb.address)).to.be.bignumber.equal(asbBalance.plus(spec.value));
       }
     });
 
