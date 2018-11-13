@@ -14,6 +14,7 @@ contract('AutonomousSwapBridge', (accounts) => {
   const VIRTUAL_CHAIN_ID = '0x6b696e';
   const ORBS_ASB_CONTRACT_NAME = 'asb';
   const VERSION = '0.1';
+  const EMPTY = '';
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
   const owner = accounts[0];
@@ -30,7 +31,7 @@ contract('AutonomousSwapBridge', (accounts) => {
 
   describe('construction', async () => {
     it('should not allow to create with an empty Orbs ASB contract name', async () => {
-      await expectRevert(AutonomousSwapBridge.new(VIRTUAL_CHAIN_ID, '', token.address, federation.address,
+      await expectRevert(AutonomousSwapBridge.new(VIRTUAL_CHAIN_ID, EMPTY, token.address, federation.address,
         { from: owner }));
     });
 
