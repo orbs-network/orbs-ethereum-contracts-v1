@@ -1,6 +1,5 @@
 import chai from 'chai';
 import dirtyChai from 'dirty-chai';
-import BigNumber from 'bignumber.js';
 
 import expectRevert from './helpers/expectRevert';
 
