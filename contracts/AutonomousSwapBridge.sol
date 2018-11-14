@@ -29,7 +29,7 @@ contract AutonomousSwapBridge {
     // Incremental counter for Transaction Unique Identifiers (TUID).
     uint256 public tuidCounter = 0;
 
-    event TransferredOut(address indexed from, bytes20 indexed to, uint256 value, uint256 tuid);
+    event TransferredOut(uint256 indexed tuid, address indexed from, bytes20 indexed to, uint256 value);
 
     /// @dev Constructor that initializes the ASB contract.
     /// @param _virtualChainId uint32 The virtual chain ID of the underlying token on the Orbs network.
@@ -61,7 +61,7 @@ contract AutonomousSwapBridge {
         // instance of the ASB smart contract).
         tuidCounter = tuidCounter.add(1);
 
-        emit TransferredOut(msg.sender, _to, _value, tuidCounter);
+        emit TransferredOut(tuidCounter, msg.sender, _to, _value);
     }
 
     /// @dev Checks Orbs address for correctness.
