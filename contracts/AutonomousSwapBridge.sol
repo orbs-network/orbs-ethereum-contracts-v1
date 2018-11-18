@@ -47,7 +47,7 @@ contract AutonomousSwapBridge {
     }
 
     /// @dev Transfer tokens to Orbs. The method retrieves and locks the tokens and emits the TransferredOut event.
-    /// @param _to string The Orbs address to transfer to.
+    /// @param _to bytes20 The Orbs address to transfer to.
     /// @param _value uint256 The amount to be transferred.
     function transferOut(bytes20 _to, uint256 _value) public {
         require(isOrbsAddressValid(_to), "Orbs address is invalid!");
