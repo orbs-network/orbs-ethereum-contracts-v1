@@ -29,7 +29,11 @@ contract AutonomousSwapBridge {
     // Incremental counter for Transaction Unique Identifiers (TUID).
     uint256 public tuidCounter = 0;
 
+    // Mapping of spent TUIDs.
+    mapping(uint256 => bool) public spentTuids;
+
     event TransferredOut(uint256 indexed tuid, address indexed from, bytes20 indexed to, uint256 value);
+    event TransferredIn(uint256 indexed tuid, bytes20 indexed from, address indexed to, uint256 value);
 
     /// @dev Constructor that initializes the ASB contract.
     /// @param _virtualChainId uint32 The virtual chain ID of the underlying token on the Orbs network.
@@ -50,7 +54,7 @@ contract AutonomousSwapBridge {
     /// @param _to bytes20 The Orbs address to transfer to.
     /// @param _value uint256 The amount to be transferred.
     function transferOut(bytes20 _to, uint256 _value) public {
-        require(isOrbsAddressValid(_to), "Orbs address is invalid!");
+        require(AutonomousSwapProofVerifier.isOrbsAddressValid(_to), "Orbs address is invalid!");
         require(_value > 0, "Value must be greater than 0!");
 
         // Verify that the requested approved enough tokens to transfer out.
@@ -64,14 +68,21 @@ contract AutonomousSwapBridge {
         emit TransferredOut(tuidCounter, msg.sender, _to, _value);
     }
 
-    /// @dev Checks Orbs address for correctness.
-    /// @param _address bytes20 The Orbs address to check.
-    function isOrbsAddressValid(bytes20 _address) private pure returns (bool) {
-        // Check for empty address.
-        if (_address == bytes20(0)) {
-            return false;
-        }
+    /// @dev Transfer tokens from Orbs.
+    /// @param _proof bytes TransferIn proof.
+    function transferIn(bytes _proof) public {
+        (bytes20 from, address to, uint256 value, uint256 tuid) = AutonomousSwapProofVerifier.processProof(_proof);
 
-        return true;
+        require(to != address(0), "Destination address can't be 0!");
+        require(value > 0, "Value must be greater than 0!");
+
+        // Make sure that the transaction wasn't already spent and mark it as such;
+        require(!spentTuids[tuid], "TUID was already spent!");
+        spentTuids[tuid] = true;
+
+        // Transfer the token.
+        require(token.transfer(to, value), "Insufficient funds!");
+
+        emit TransferredIn(tuid, from, to, value);
     }
 }
