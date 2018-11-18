@@ -6,7 +6,7 @@ const DateTimeWrapper = artifacts.require('../test/helpers/DateTimeWrapper.sol')
 const SubscriptionManager = artifacts.require('../test/SubscriptionManager.sol');
 const SubscriptionManagerMock = artifacts.require('../test/SubscriptionManagerMock.sol');
 
-async function deploy(deployer, network) {
+const deploy = async (deployer, network) => {
   // We're only using these migrations during development and testing.
   if (network !== 'development' && network !== 'coverage') {
     return;
@@ -20,7 +20,7 @@ async function deploy(deployer, network) {
 
   await deployer.deploy(AutonomousSwapProofVerifier);
   await deployer.link(AutonomousSwapProofVerifier, AutonomousSwapBridge);
-}
+};
 
 module.exports = (deployer, network) => {
   deployer.then(async () => {
