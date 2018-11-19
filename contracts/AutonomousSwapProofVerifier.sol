@@ -1,14 +1,16 @@
 pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-
 import "solidity-bytes-utils/contracts/BytesLib.sol";
+
+import "./BytesLibEx.sol";
 
 
 /// @title ASB proof verification library
 library AutonomousSwapProofVerifier {
     using SafeMath for uint256;
     using BytesLib for bytes;
+    using BytesLibEx for bytes;
 
     // The version of the current proof verifier library.
     string public constant VERSION = "0.1";
@@ -26,12 +28,18 @@ library AutonomousSwapProofVerifier {
     /// @return value uint256 The amount to be transferred.
     /// @return tuid uint256 The TUID of the corresponding transaction.
     function processProof(bytes _proof) public pure returns(bytes20 from, address to, uint256 value, uint256 tuid) {
-        // TODO: properly process and verify the proof.
-        _proof = _proof;
-        from = hex"fc70f4fecdd6eced5b1b2e5c979a67cf8d272d94";
-        to = 0x3e2bad0311D2718d96e86c02556886d0fdA1c208; // TBD
-        value = 1000; // TBD
-        tuid = 5;
+        // TODO: implement the finalized proof spec.
+
+        // This is only a place-holder format:
+        //   0 - 19     [20]    Orbs source address.
+        //   20 - 51    [32]    Ethereum destination address.
+        //   52 - 83    [32]    Amount of tokens transfer.
+        //   84 - 116   [32]    Orbs tuid.
+
+        from = _proof.toBytes20(0);
+        to = _proof.toAddress(20);
+        value = _proof.toUint(52);
+        tuid = _proof.toUint(84);
     }
 
     /// @dev Checks Orbs address for correctness.
