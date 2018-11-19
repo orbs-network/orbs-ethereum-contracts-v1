@@ -10,6 +10,15 @@ library AutonomousSwapProofVerifier {
     using SafeMath for uint256;
     using BytesLib for bytes;
 
+    // The version of the current proof verifier library.
+    string public constant VERSION = "0.1";
+
+    /// @dev Returns the version of the current proof verifier library. Please note that this is only requires since
+    /// this is a library.
+    function getVersion() public pure returns(string) {
+        return VERSION;
+    }
+
     /// @dev Parses and validates the raw transfer proof.
     /// @param _proof bytes The raw transfer proof.
     /// @return from bytes20 from The Orbs address to transfer from.
