@@ -9,7 +9,7 @@ BigNumber.prototype.equals = BigNumber.prototype.isEqualTo;
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
-  .should();
+  .expect();
 
 module.exports = {
   networks: {
