@@ -29,8 +29,8 @@ contract AutonomousSwapBridge {
     // Incremental counter for Transaction Unique Identifiers (TUID).
     uint256 public tuidCounter = 0;
 
-    // Mapping of spent TUIDs.
-    mapping(uint256 => bool) public spentTuids;
+    // Mapping of spent Orbs TUIDs.
+    mapping(uint256 => bool) public spentOrbsTuids;
 
     event TransferredOut(uint256 indexed tuid, address indexed from, bytes20 indexed to, uint256 value);
     event TransferredIn(uint256 indexed tuid, bytes20 indexed from, address indexed to, uint256 value);
@@ -77,8 +77,8 @@ contract AutonomousSwapBridge {
         require(value > 0, "Value must be greater than 0!");
 
         // Make sure that the transaction wasn't already spent and mark it as such;
-        require(!spentTuids[tuid], "TUID was already spent!");
-        spentTuids[tuid] = true;
+        require(!spentOrbsTuids[tuid], "TUID was already spent!");
+        spentOrbsTuids[tuid] = true;
 
         // Transfer the token.
         require(token.transfer(to, value), "Insufficient funds!");

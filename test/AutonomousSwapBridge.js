@@ -183,4 +183,12 @@ contract('AutonomousSwapBridge', (accounts) => {
       await expectRevert(asb.transferOut(orbsUser1Address, 0, { from: user1 }));
     });
   });
+
+  describe('transfer tokens from Orbs', async () => {
+    it.skip('should error if double spend', async () => {
+    });
+
+    it.skip('should error if there is an attempt to transfer too many tokens', async () => {
+    });
+  });
 });
