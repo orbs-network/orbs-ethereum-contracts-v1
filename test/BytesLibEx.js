@@ -8,7 +8,7 @@ chai.use(dirtyChai);
 
 const BytesLibExWrapper = artifacts.require('./BytesLibExWrapper.sol');
 
-contract.only('BytesLibEx', () => {
+contract('BytesLibEx', () => {
   let bytesLib;
 
   beforeEach(async () => {
