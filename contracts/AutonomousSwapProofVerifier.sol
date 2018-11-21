@@ -5,23 +5,18 @@ import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
+import "./IAutonomousSwapProofVerifier.sol";
 import "./BytesLibEx.sol";
 
 
 /// @title ASB proof verification library
-library AutonomousSwapProofVerifier {
+contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     using SafeMath for uint256;
     using BytesLib for bytes;
     using BytesLibEx for bytes;
 
     // The version of the current proof verifier library.
     string public constant VERSION = "0.1";
-
-    /// @dev Returns the version of the current proof verifier library. Please note that this is only requires since
-    /// this is a library.
-    function getVersion() public pure returns(string) {
-        return VERSION;
-    }
 
     /// @dev Parses and validates the raw transfer proof.
     /// @param _proof bytes The raw transfer proof.

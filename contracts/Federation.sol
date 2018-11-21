@@ -3,11 +3,12 @@ pragma solidity 0.4.24;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
+import "./IFederation.sol";
 import "./Upgradable.sol";
 
 
 /// @title Orbs federation smart contract.
-contract Federation is Ownable {
+contract Federation is IFederation, Ownable {
     using SafeMath for uint256;
 
     // The version of the current federation smart contract.

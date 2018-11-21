@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 import "./IFederation.sol";
-import "./AutonomousSwapProofVerifier.sol";
+import "./IAutonomousSwapProofVerifier.sol";
 
 
 /// @title Autonomous Swap Bridge (ASB) smart contract.
@@ -26,6 +26,9 @@ contract AutonomousSwapBridge {
     // The federation smart contract.
     IFederation public federation;
 
+    // The ASB proof verifier.
+    IAutonomousSwapProofVerifier public verifier;
+
     // Incremental counter for Transaction Unique Identifiers (TUID).
     uint256 public tuidCounter = 0;
 
@@ -39,22 +42,27 @@ contract AutonomousSwapBridge {
     /// @param _virtualChainId uint32 The virtual chain ID of the underlying token on the Orbs network.
     /// @param _orbsASBContractName string The address of the Federation contract.
     /// @param _token IERC20 The swappable ERC20 token.
-    constructor(uint32 _virtualChainId, string _orbsASBContractName, IERC20 _token, IFederation _federation) public {
+    /// @param _federation IFederation The federation smart contract.
+    /// @param _verifier IAutonomousSwapProofVerifier The ASB proof verifier.
+    constructor(uint32 _virtualChainId, string _orbsASBContractName, IERC20 _token, IFederation _federation,
+        IAutonomousSwapProofVerifier _verifier) public {
         require(bytes(_orbsASBContractName).length > 0, "Orbs ASB contract name must not be empty!");
         require(address(_token) != address(0), "Token must not be 0!");
         require(address(_federation) != address(0), "Federation must not be 0!");
+        require(address(_verifier) != address(0), "Verifier must not be 0!");
 
         virtualChainId = _virtualChainId;
         orbsASBContractName = _orbsASBContractName;
         token = _token;
         federation = _federation;
+        verifier = _verifier;
     }
 
     /// @dev Transfer tokens to Orbs. The method retrieves and locks the tokens and emits the TransferredOut event.
     /// @param _to bytes20 The Orbs address to transfer to.
     /// @param _value uint256 The amount to be transferred.
     function transferOut(bytes20 _to, uint256 _value) public {
-        require(AutonomousSwapProofVerifier.isOrbsAddressValid(_to), "Orbs address is invalid!");
+        require(verifier.isOrbsAddressValid(_to), "Orbs address is invalid!");
         require(_value > 0, "Value must be greater than 0!");
 
         // Verify that the requested approved enough tokens to transfer out.
@@ -71,7 +79,7 @@ contract AutonomousSwapBridge {
     /// @dev Transfer tokens from Orbs.
     /// @param _proof bytes TransferIn proof.
     function transferIn(bytes _proof) public {
-        (bytes20 from, address to, uint256 value, uint256 tuid) = AutonomousSwapProofVerifier.processProof(_proof);
+        (bytes20 from, address to, uint256 value, uint256 tuid) = verifier.processProof(_proof);
 
         require(to != address(0), "Destination address can't be 0!");
         require(value > 0, "Value must be greater than 0!");

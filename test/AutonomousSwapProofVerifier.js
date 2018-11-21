@@ -6,7 +6,7 @@ import expectRevert from './helpers/expectRevert';
 const { expect } = chai;
 chai.use(dirtyChai);
 
-const AutonomousSwapProofVerifierWrapper = artifacts.require('./AutonomousSwapProofVerifierWrapper.sol');
+const AutonomousSwapProofVerifier = artifacts.require('../contracts/AutonomousSwapProofVerifier.sol');
 
 contract('AutonomousSwapProofVerifier', (accounts) => {
   const VERSION = '0.1';
@@ -15,11 +15,11 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
   let verifier;
 
   beforeEach(async () => {
-    verifier = await AutonomousSwapProofVerifierWrapper.new();
+    verifier = await AutonomousSwapProofVerifier.new();
   });
 
   it('should report version', async () => {
-    expect(await verifier.getVersion.call()).to.be.bignumber.equal(VERSION);
+    expect(await verifier.VERSION.call()).to.be.bignumber.equal(VERSION);
   });
 
   describe('proof validation', async () => {
@@ -38,7 +38,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     });
   });
 
-  describe.only('ECDSA signature validation', async () => {
+  describe('ECDSA signature validation', async () => {
     const signer = '0xf5486570e389004a726081366396827f56ea5bf1';
     const secretKey = Buffer.from('264306acaa51ab181dd52e9c8822121e4569bbfe4df5937e170aff25d02acb0d', 'hex');
 
