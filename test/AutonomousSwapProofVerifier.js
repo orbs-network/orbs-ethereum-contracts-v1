@@ -8,7 +8,7 @@ chai.use(dirtyChai);
 
 const AutonomousSwapProofVerifierWrapper = artifacts.require('./AutonomousSwapProofVerifierWrapper.sol');
 
-contract.only('AutonomousSwapProofVerifier', (accounts) => {
+contract('AutonomousSwapProofVerifier', (accounts) => {
   const VERSION = '0.1';
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
