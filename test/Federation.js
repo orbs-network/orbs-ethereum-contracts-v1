@@ -284,4 +284,28 @@ contract('Federation', (accounts) => {
       });
     });
   });
+
+  describe('consensus threshold', async () => {
+    [
+      { members: 1, threshold: 1 },
+      { members: 2, threshold: 2 },
+      { members: 3, threshold: 2 },
+      { members: 5, threshold: 4 },
+      { members: 6, threshold: 4 },
+      { members: 21, threshold: 14 },
+      { members: 22, threshold: 15 },
+      { members: 100, threshold: 67 },
+    ].forEach((spec) => {
+      let federation;
+      const owner = accounts[0];
+
+      beforeEach(async () => {
+        federation = await Federation.new(TEST_ACCOUNTS.slice(0, spec.members), { from: owner });
+      });
+
+      it(`should returns ${spec.threshold} for a federation of size ${spec.members}`, async () => {
+        expect(await federation.getConsensusThreshold.call()).to.be.bignumber.equal(spec.threshold);
+      });
+    });
+  });
 });

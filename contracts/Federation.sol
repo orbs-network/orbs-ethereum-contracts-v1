@@ -39,6 +39,12 @@ contract Federation is Ownable {
         return members;
     }
 
+    /// @dev Returns the required threshold for consensus.
+    function getConsensusThreshold() public view returns (uint) {
+        // Return 2/3 of the current federation size using the ceil(x / y) = (x + y - 1) / y round up trick.
+        return (members.length.mul(2).add(3).sub(1)).div(3);
+    }
+
     /// @dev Adds new member to the federation.
     /// @param _member address The public address of the new member.
     function addMember(address _member) public onlyOwner {
