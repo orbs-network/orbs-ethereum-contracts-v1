@@ -1,6 +1,8 @@
 pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
+
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 import "./BytesLibEx.sol";
@@ -40,6 +42,19 @@ library AutonomousSwapProofVerifier {
         to = _proof.toAddress(20);
         value = _proof.toUint(52);
         tuid = _proof.toUint(84);
+    }
+
+    /// @dev Verifies ECDSA signature of a given KECCAK-256 message hash.
+    /// @param _hash bytes32 The KECCAK-256 hash which is the signed message.
+    /// @param _signature bytes The signature to verify.
+    /// @param _address The public address of the signer (allegedly).
+    function isECDSASignatureValid(bytes32 _hash, bytes _signature, address _address) public pure returns (bool) {
+        if (_address == address(0)) {
+            return false;
+        }
+
+        address recovered = ECDSA.recover(_hash, _signature);
+        return recovered != address(0) && recovered == _address;
     }
 
     /// @dev Checks Orbs address for correctness.
