@@ -60,7 +60,7 @@ contract.only('AutonomousSwapProofVerifier', (accounts) => {
     it('should verify correct signatures', async () => {
       for (let i = 0; i < signatures.length; ++i) {
         const signature = signatures[i];
-        expect(await verifier.isECDSASignatureValid(signature.messageHash, signature.signature, signer)).to.be.true();
+        expect(await verifier.isECDSASignatureValid.call(signature.messageHash, signature.signature, signer)).to.be.true();
       }
     });
 
@@ -72,25 +72,25 @@ contract.only('AutonomousSwapProofVerifier', (accounts) => {
       const wrongHash = `0x${utils.keccak256('Goodbye World!').toString('hex')}`;
       const wrongSignature = signatures[1].signature;
 
-      expect(await verifier.isECDSASignatureValid(correctHash, correctSignature, wrongSigner)).to.be.false();
-      expect(await verifier.isECDSASignatureValid(wrongHash, correctSignature, signer)).to.be.false();
-      expect(await verifier.isECDSASignatureValid(correctHash, wrongSignature, signer)).to.be.false();
+      expect(await verifier.isECDSASignatureValid.call(correctHash, correctSignature, wrongSigner)).to.be.false();
+      expect(await verifier.isECDSASignatureValid.call(wrongHash, correctSignature, signer)).to.be.false();
+      expect(await verifier.isECDSASignatureValid.call(correctHash, wrongSignature, signer)).to.be.false();
     });
 
     it('should return false on a 0x0 address', async () => {
       const signature = signatures[0];
-      expect(await verifier.isECDSASignatureValid(signature.messageHash, signature.signature, ZERO_ADDRESS)).to.be.false();
+      expect(await verifier.isECDSASignatureValid.call(signature.messageHash, signature.signature, ZERO_ADDRESS)).to.be.false();
     });
 
     it('should return false on a signature which is too short', async () => {
       const signature = signatures[0];
-      expect(await verifier.isECDSASignatureValid(signature.messageHash, signature.signature.slice(0,
+      expect(await verifier.isECDSASignatureValid.call(signature.messageHash, signature.signature.slice(0,
         signature.signature.length - 1), signer)).to.be.false();
     });
 
     it('should return false on a signature which is too long', async () => {
       const signature = signatures[0];
-      expect(await verifier.isECDSASignatureValid(signature.messageHash, `${signature.signature}ab`,
+      expect(await verifier.isECDSASignatureValid.call(signature.messageHash, `${signature.signature}ab`,
         signer)).to.be.false();
     });
   });
