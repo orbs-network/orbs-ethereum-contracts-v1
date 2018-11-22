@@ -78,20 +78,24 @@ contract('Federation', (accounts) => {
           const federation = await Federation.new(members, { from: owner });
 
           const newMember = accounts[1];
+          expect(await federation.isMember.call(newMember)).to.be.false();
           const tx = await federation.addMember(newMember);
           expect(await federation.getMembers.call()).to.be.containing(newMember);
           expect(tx.logs).to.have.length(1);
           const event = tx.logs[0];
           expect(event.event).to.eql('MemberAdded');
           expect(event.args.member).to.eql(newMember);
+          expect(await federation.isMember.call(newMember)).to.be.true();
 
           const newMember2 = accounts[2];
+          expect(await federation.isMember.call(newMember2)).to.be.false();
           const tx2 = await federation.addMember(newMember2);
           expect(await federation.getMembers.call()).to.be.containing(newMember2);
           expect(tx2.logs).to.have.length(1);
           const event2 = tx2.logs[0];
           expect(event2.event).to.eql('MemberAdded');
           expect(event2.args.member).to.eql(newMember2);
+          expect(await federation.isMember.call(newMember2)).to.be.true();
         });
 
         it('should not allow to add a more than the maximum possible members', async () => {
@@ -138,8 +142,11 @@ contract('Federation', (accounts) => {
           const members = accounts.slice(4, 9);
           const federation = await Federation.new(members, { from: owner });
 
-          [0, 2, members.length - 3].forEach(async (index) => {
+          const membersIndexesToRemove = [0, 2, members.length - 3];
+          for (let i = 0; i < membersIndexesToRemove.length; ++i) {
+            const index = membersIndexesToRemove[i];
             const existingMember = members[index];
+            expect(await federation.isMember.call(existingMember)).to.be.true();
             const expectedMembers = members.splice(index, 1);
             const tx = await federation.removeMember(existingMember);
             const newMembers = await federation.getMembers.call();
@@ -148,7 +155,8 @@ contract('Federation', (accounts) => {
             const event = tx.logs[0];
             expect(event.event).to.eql('MemberRemoved');
             expect(event.args.member).to.eql(existingMember);
-          });
+            expect(await federation.isMember.call(existingMember)).to.be.false();
+          }
         });
 
         it('should not allow to remove all the members', async () => {
@@ -174,6 +182,7 @@ contract('Federation', (accounts) => {
           const federation = await Federation.new(members, { from: owner });
 
           const nonMember = accounts[5];
+          expect(await federation.isMember.call(nonMember)).to.be.false();
           expect(await federation.getMembers.call()).not.to.be.containing(nonMember);
           await expectRevert(federation.removeMember(nonMember));
         });

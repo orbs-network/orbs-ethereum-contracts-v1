@@ -34,6 +34,13 @@ contract Federation is IFederation, Ownable {
         members = _members;
     }
 
+    /// @dev Returns whether a specific member exists in the federation.
+    /// @param _member address The public address of the member to check.
+    function isMember(address _member) public view returns (bool) {
+        (, bool exists) = findMemberIndex(_member);
+        return exists;
+    }
+
     /// @dev Returns the federation members. Please note that this method is only required due to the current Solidity's
     /// version inability to support accessing another contract's array using its built-in getter.
     function getMembers() public view returns (address[]) {
