@@ -79,10 +79,12 @@ contract AutonomousSwapBridge {
     /// @dev Transfer tokens from Orbs.
     /// @param _proof bytes TransferIn proof.
     function transferIn(bytes _proof) public {
-        (bytes20 from, address to, uint256 value, uint256 tuid) = verifier.processProof(_proof);
+        (bytes20 from, address to, uint256 value, uint32 vid, uint256 tuid) = verifier.processProof(_proof);
 
         require(to != address(0), "Destination address can't be 0!");
         require(value > 0, "Value must be greater than 0!");
+
+        require(virtualChainId == vid, "Virtual Chain IDs must be the same!");
 
         // Make sure that the transaction wasn't already spent and mark it as such;
         require(!spentOrbsTuids[tuid], "TUID was already spent!");

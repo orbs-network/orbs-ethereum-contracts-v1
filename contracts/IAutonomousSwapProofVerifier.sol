@@ -9,8 +9,10 @@ interface IAutonomousSwapProofVerifier {
     /// @return from bytes20 from The Orbs address to transfer from.
     /// @return to address The address to transfer to.
     /// @return value uint256 The amount to be transferred.
+    /// @return virtualChainId uint32 The virtual chain ID of the underlying token on the Orbs network.
     /// @return tuid uint256 The TUID of the corresponding transaction.
-    function processProof(bytes _proof) public pure returns(bytes20 from, address to, uint256 value, uint256 tuid);
+    function processProof(bytes _proof) public pure returns(bytes20 from, address to, uint256 value,
+        uint32 virtualChainId, uint256 tuid);
 
     /// @dev Checks Orbs address for correctness. Please note that this method can't be external (yet), since
     /// our current Solidity version doesn't support unbound parameters (e.g., bytes) in external interface methods.
