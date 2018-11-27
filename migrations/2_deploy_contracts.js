@@ -1,10 +1,12 @@
 const DateTime = artifacts.require('./DateTime.sol');
+const CryptoUtils = artifacts.require('./CryptoUtils.sol');
 const AutonomousSwapBridge = artifacts.require('./AutonomousSwapBridge.sol');
 const AutonomousSwapProofVerifier = artifacts.require('./AutonomousSwapProofVerifier.sol');
 
 const DateTimeWrapper = artifacts.require('../test/helpers/DateTimeWrapper.sol');
 const SubscriptionManager = artifacts.require('../test/SubscriptionManager.sol');
 const SubscriptionManagerMock = artifacts.require('../test/SubscriptionManagerMock.sol');
+const CryptoUtilsWrapper = artifacts.require('../test/helpers/CryptoUtilsWrapper.sol');
 
 const deploy = async (deployer, network) => {
   // We're only using these migrations during development and testing.
@@ -16,6 +18,10 @@ const deploy = async (deployer, network) => {
   await deployer.link(DateTime, DateTimeWrapper);
   await deployer.link(DateTime, SubscriptionManager);
   await deployer.link(DateTime, SubscriptionManagerMock);
+
+  await deployer.deploy(CryptoUtils);
+  await deployer.link(CryptoUtils, CryptoUtilsWrapper);
+  await deployer.link(CryptoUtils, AutonomousSwapProofVerifier);
 
   await deployer.deploy(AutonomousSwapProofVerifier);
   await deployer.link(AutonomousSwapProofVerifier, AutonomousSwapBridge);
