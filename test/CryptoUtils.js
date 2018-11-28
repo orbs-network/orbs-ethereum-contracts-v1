@@ -79,14 +79,17 @@ contract('CryptoUtils', (accounts) => {
     it('should convert public keys to addresses', async () => {
       const tests = [
         {
+          // eslint-disable-next-line max-len
           publicKey: '0x249edfc95ce1538740d65019864c930a895318efd741cd0299f813f133a2e2e2e8eaf1a65aa3ab8ed698dbd478c02f99c8516595f067be79ed1f6e7823da01f5',
           address: '0x7e196e0c3760e61e9133b7dd524499a91b3e4c3a',
         },
         {
+          // eslint-disable-next-line max-len
           publicKey: '0x39176dd1b52cb6c296be894d38d2ed1a305bed5aa071a000db9b51b34ed7b209d1736e93ba106d493a74d65bff40db7b5353210c8ab9c64819ced7757d8ce60b',
           address: '0x215e28e91a9fe0c0239783ad311ced99a143d09c',
         },
         {
+          // eslint-disable-next-line max-len
           publicKey: '0x92ed3e7a46722869a6309383a90cb6b20e6ef0835a1d7560a79629f79eab7173bf1d4f4c5e905bcf480bb8e7bc483857b039cfbf25e0ae2530183f61abfb5f7f',
           address: '0xd303aa9f3622b483208c19a2c0617ad17417b4c0',
         },
@@ -99,11 +102,13 @@ contract('CryptoUtils', (accounts) => {
   });
 
   it('should return 0x0 for public key which is too short', async () => {
+    // eslint-disable-next-line max-len
     const shortPublicKey = '0x249edfc95ce1538740d65019864c930a895318efd741cd0299f813f133a2e2e2e8eaf1a65aa3ab8ed698dbd478c02f99c8516595f067be79ed1f6e7823da01';
     expect(await cryptoUtils.toAddress(shortPublicKey)).to.eql(ZERO_ADDRESS);
   });
 
   it('should return 0x0 for public key which is too long', async () => {
+    // eslint-disable-next-line max-len
     const longPublicKey = '0x92ed3e7a46722869a6309383a90cb6b20e6ef0835a1d7560a79629f79eab7173bf1d4f4c5e905bcf480bb8e7bc483857b039cfbf25e0ae2530183f61abfb5f7faa';
     expect(await cryptoUtils.toAddress(longPublicKey)).to.eql(ZERO_ADDRESS);
   });
