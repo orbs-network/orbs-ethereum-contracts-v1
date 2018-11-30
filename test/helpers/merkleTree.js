@@ -1,4 +1,5 @@
 import utils from 'ethereumjs-util';
+import treeify from 'treeify';
 
 class MerkleTree {
   constructor(elements) {
@@ -43,8 +44,13 @@ class MerkleTree {
   }
 
   static combinedHash(first, second) {
-    if (!first) { return second; }
-    if (!second) { return first; }
+    if (!first) {
+      return second;
+    }
+
+    if (!second) {
+      return first;
+    }
 
     return utils.keccak256(Buffer.concat([first, second].sort(Buffer.compare)));
   }
@@ -91,6 +97,38 @@ class MerkleTree {
     }
 
     return null;
+  }
+
+  toHash(format) {
+    return MerkleTree.toHashRecurisve(0, 0, this.layers.reverse(), format);
+  }
+
+  print() {
+    // eslint-disable-next-line no-console
+    console.log(treeify.asTree(this.toHash('hex'), true));
+  }
+
+  static toHashRecurisve(layerIndex, elementIndex, layers, format) {
+    const layer = layers[layerIndex];
+    const element = layer[elementIndex];
+
+    // Incomplete tree?
+    if (!element) {
+      return {};
+    }
+
+    const key = format ? element.toString(format) : element;
+
+    const tree = {};
+    tree.key = key;
+
+    // Leafs?
+    if (layerIndex !== layers.length - 1) {
+      tree.left = MerkleTree.toHashRecurisve(layerIndex + 1, 2 * elementIndex, layers, format);
+      tree.right = MerkleTree.toHashRecurisve(layerIndex + 1, 2 * elementIndex + 1, layers, format);
+    }
+
+    return tree;
   }
 
   static bufIndexOf(el, arr) {
