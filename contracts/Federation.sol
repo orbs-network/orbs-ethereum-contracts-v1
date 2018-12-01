@@ -23,6 +23,12 @@ contract Federation is IFederation, Ownable {
     // Array of the federation members' public addresses.
     address[] public members;
 
+    // The revision of the current federation (for historic queries).
+    uint public federationRevision = 0;
+
+    // A mapping of historic federation members by their revision.
+    mapping(uint => address[]) public membersByRevision;
+
     event MemberAdded(address indexed member);
     event MemberRemoved(address indexed member);
 
@@ -49,8 +55,24 @@ contract Federation is IFederation, Ownable {
 
     /// @dev Returns the required threshold for consensus.
     function getConsensusThreshold() public view returns (uint) {
-        // Return 2/3 of the current federation size using the ceil(x / y) = (x + y - 1) / y round up trick.
-        return (members.length.mul(2).add(3).sub(1)).div(3);
+        return getConsensusThresholdForMembers(members);
+    }
+
+    /// @dev Returns the revision of the current federation.
+    function getFederationRevision() public view returns (uint) {
+        return federationRevision;
+    }
+
+    /// @dev Returns the federation members by revision.
+    /// @param _federationRevision uint The revision to query.
+    function getMembersByRevision(uint _federationRevision) public view returns (address[]) {
+        return federationRevision == _federationRevision ? members : membersByRevision[_federationRevision];
+    }
+
+    /// @dev Returns the required threshold for consensus by revision.
+    /// @param _federationRevision uint The revision to query.
+    function getConsensusThresholdByRevision(uint _federationRevision) public view returns (uint) {
+        return getConsensusThresholdForMembers(getMembersByRevision(_federationRevision));
     }
 
     /// @dev Adds new member to the federation.
@@ -64,6 +86,7 @@ contract Federation is IFederation, Ownable {
             require(members[i] != _member, "Can't add a duplicate member!");
         }
 
+        membersByRevision[federationRevision++] = members;
         members.push(_member);
         emit MemberAdded(_member);
     }
@@ -78,6 +101,7 @@ contract Federation is IFederation, Ownable {
         (uint i, bool exists) = findMemberIndex(_member);
         require(exists, "Member doesn't exist!");
 
+        membersByRevision[federationRevision++] = members;
         removeMemberByIndex(i);
         emit MemberRemoved(_member);
     }
@@ -141,5 +165,12 @@ contract Federation is IFederation, Ownable {
         }
 
         return true;
+    }
+
+    /// @dev Returns the required threshold for consensus given a list of federation members.
+    /// @param _members address[] The federation members list to check.
+    function getConsensusThresholdForMembers(address[] _members) private pure returns (uint) {
+        // Return 2/3 of the current federation size using the ceil(x / y) = (x + y - 1) / y round up trick.
+        return (_members.length.mul(2).add(3).sub(1)).div(3);
     }
 }

@@ -12,4 +12,15 @@ interface IFederation {
 
     /// @dev Returns the required threshold for consensus.
     function getConsensusThreshold() external view returns (uint);
+
+    /// @dev Returns the revision of the current federation.
+    function getFederationRevision() external view returns (uint);
+
+    /// @dev Returns the federation members by revision.
+    /// @param _federationRevision uint The revision to query.
+    function getMembersByRevision(uint _federationRevision) external view returns (address[]);
+
+    /// @dev Returns the required threshold for consensus by revision.
+    /// @param _federationRevision uint The revision to query.
+    function getConsensusThresholdByRevision(uint _federationRevision) external view returns (uint);
 }
