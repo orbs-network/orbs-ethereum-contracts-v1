@@ -230,7 +230,7 @@ contract('Federation', (accounts) => {
         expect(await federation.getConsensusThresholdByRevision.call(0)).to.be.bignumber.equal(threshold);
 
         let prevMembers = members;
-        const membersToAdd = [accounts[1], accounts[2], accounts[3]];
+        const membersToAdd = TEST_ACCOUNTS_ADDRESSES.slice(30, 4);
         for (let i = 0; i < membersToAdd.length; ++i) {
           const newMember = membersToAdd[i];
           const newMembers = [...prevMembers, newMember];
