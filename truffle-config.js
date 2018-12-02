@@ -1,15 +1,14 @@
 require('babel-register');
 require('babel-polyfill');
 
-const BigNumber = require('bignumber.js');
-
-// Add the "equals" method to BigNumber, in order to support chai-bignumber:
-BigNumber.prototype.equals = BigNumber.prototype.isEqualTo;
-
+/* eslint-disable import/no-extraneous-dependencies */
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-bignumber')())
+  .use(require('chai-arrays'))
+  .use(require('dirty-chai'))
   .expect();
+/* eslint-enable import/no-extraneous-dependencies */
 
 module.exports = {
   networks: {

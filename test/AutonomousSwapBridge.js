@@ -1,10 +1,8 @@
 import chai from 'chai';
-import dirtyChai from 'dirty-chai';
 
 import expectRevert from './helpers/expectRevert';
 
 const { expect } = chai;
-chai.use(dirtyChai);
 
 const AutonomousSwapBridge = artifacts.require('./AutonomousSwapBridge.sol');
 const AutonomousSwapProofVerifier = artifacts.require('./AutonomousSwapProofVerifier.sol');

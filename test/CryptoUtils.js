@@ -1,9 +1,7 @@
 import chai from 'chai';
-import dirtyChai from 'dirty-chai';
 import utils from 'ethereumjs-util';
 
 const { expect } = chai;
-chai.use(dirtyChai);
 
 const CryptoUtilsWrapper = artifacts.require('./CryptoUtilsWrapper.sol');
 

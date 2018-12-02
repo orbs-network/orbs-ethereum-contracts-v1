@@ -1,5 +1,4 @@
 import chai from 'chai';
-import dirtyChai from 'dirty-chai';
 import BigNumber from 'bignumber.js';
 import moment from 'moment';
 
@@ -7,7 +6,6 @@ import expectRevert from './helpers/expectRevert';
 import time from './helpers/time';
 
 const { expect } = chai;
-chai.use(dirtyChai);
 
 const TEST_ACCOUNTS = require('./accounts.json');
 

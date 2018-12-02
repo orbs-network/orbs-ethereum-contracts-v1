@@ -1,8 +1,6 @@
 import chai from 'chai';
-import dirtyChai from 'dirty-chai';
 
 const { expect } = chai;
-chai.use(dirtyChai);
 
 const AutonomousSwapProofVerifier = artifacts.require('../contracts/AutonomousSwapProofVerifier.sol');
 

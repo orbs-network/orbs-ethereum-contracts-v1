@@ -1,13 +1,8 @@
 import chai from 'chai';
-import dirtyChai from 'dirty-chai';
-import assertArrays from 'chai-arrays';
 
 import expectRevert from './helpers/expectRevert';
 
 const { expect } = chai;
-
-chai.use(assertArrays);
-chai.use(dirtyChai);
 
 const TEST_ACCOUNTS = require('./accounts.json');
 
