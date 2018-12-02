@@ -9,7 +9,9 @@ const { expect } = chai;
 chai.use(assertArrays);
 chai.use(dirtyChai);
 
-const TEST_ACCOUNTS = require('./accounts.json').accounts;
+const TEST_ACCOUNTS = require('./accounts.json');
+
+const TEST_ACCOUNTS_ADDRESSES = TEST_ACCOUNTS.map(account => account.address);
 
 const Federation = artifacts.require('./Federation.sol');
 const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
@@ -28,14 +30,14 @@ contract('Federation', (accounts) => {
     });
 
     it('should not allow to initialize with too many federation members', async () => {
-      const tooManyCooks = TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS + 1);
+      const tooManyCooks = TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS + 1);
       expect(tooManyCooks).to.have.length.above(MAX_FEDERATION_MEMBERS);
 
       await expectRevert(Federation.new(tooManyCooks));
     });
 
     it('should allow to initialize with maximum federation members', async () => {
-      await Federation.new(TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS));
+      await Federation.new(TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS));
     });
 
     it('should not allow to initialize with 0x0 address federation members', async () => {
@@ -100,14 +102,14 @@ contract('Federation', (accounts) => {
         });
 
         it('should not allow to add a more than the maximum possible members', async () => {
-          const members = TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS - 1);
+          const members = TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS - 1);
           const federation = await Federation.new(members, { from: owner });
 
-          const newMember = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS - 1];
+          const newMember = TEST_ACCOUNTS_ADDRESSES[MAX_FEDERATION_MEMBERS - 1];
           await federation.addMember(newMember);
           expect(await federation.getMembers.call()).to.be.containing(newMember);
 
-          const newMember2 = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS];
+          const newMember2 = TEST_ACCOUNTS_ADDRESSES[MAX_FEDERATION_MEMBERS];
           await expectRevert(federation.addMember(newMember2));
         });
 
@@ -213,7 +215,7 @@ contract('Federation', (accounts) => {
         let federation;
 
         beforeEach(async () => {
-          federation = await Federation.new(TEST_ACCOUNTS.slice(0, spec.members), { from: owner });
+          federation = await Federation.new(TEST_ACCOUNTS_ADDRESSES.slice(0, spec.members), { from: owner });
         });
 
         it(`should return ${spec.threshold} for a federation of size ${spec.members}`, async () => {
@@ -224,7 +226,7 @@ contract('Federation', (accounts) => {
 
     describe('federation revisions', async () => {
       it('should update revision and history after addition', async () => {
-        const members = TEST_ACCOUNTS.slice(7, 20);
+        const members = TEST_ACCOUNTS_ADDRESSES.slice(7, 20);
         const federation = await Federation.new(members, { from: owner });
         expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(0);
         expect(await federation.getMembersByRevision.call(0)).to.be.equalTo(members);
@@ -253,7 +255,7 @@ contract('Federation', (accounts) => {
       });
 
       it('should update revision and history after removal', async () => {
-        const members = TEST_ACCOUNTS.slice(4, 25);
+        const members = TEST_ACCOUNTS_ADDRESSES.slice(4, 25);
         const federation = await Federation.new(members, { from: owner });
         expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(0);
         expect(await federation.getMembersByRevision.call(0)).to.be.equalTo(members);

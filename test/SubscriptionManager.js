@@ -9,7 +9,9 @@ import time from './helpers/time';
 const { expect } = chai;
 chai.use(dirtyChai);
 
-const TEST_ACCOUNTS = require('./accounts.json').accounts;
+const TEST_ACCOUNTS = require('./accounts.json');
+
+const TEST_ACCOUNTS_ADDRESSES = TEST_ACCOUNTS.map(account => account.address);
 
 const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
 const SubscriptionManagerMock = artifacts.require('./SubscriptionManagerMock.sol');
@@ -155,8 +157,8 @@ contract('SubscriptionManager', (accounts) => {
       { federationMembers: accounts.slice(3, 7) },
       { federationMembers: accounts.slice(3, 8) },
       { federationMembers: accounts.slice(3, 10) },
-      { federationMembers: TEST_ACCOUNTS.slice(30, 50) },
-      { federationMembers: TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS) },
+      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(30, 50) },
+      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS) },
     ].forEach((spec) => {
       let federation;
 
