@@ -1,4 +1,5 @@
 import chai from 'chai';
+import BigNumber from 'bignumber.js';
 
 import expectRevert from './helpers/expectRevert';
 
@@ -28,5 +29,60 @@ contract('BytesLibEx', () => {
     expect(await bytesLib.toBytes20.call(longEnough, 0)).to.eql('0xb36b0c0fb6f807400cae4c1dd538a8dbcc72d7d6');
     expect(await bytesLib.toBytes20.call(longEnough, 5)).to.eql('0xf807400cae4c1dd538a8dbcc72d7d605ba20aa80');
     expect(await bytesLib.toBytes20.call(longEnough, 20)).to.eql('0x05ba20aa80b4e8e207a77c851c4f7d647989211c');
+  });
+
+  [
+    '0x00000005',
+    '0x0000051a',
+    '0x0bcd1234',
+  ].forEach((spec) => {
+    it(`should convert ${spec} to uint32`, async () => {
+      expect(await bytesLib.toUint32.call(spec, 0)).to.be.bignumber.equal(new BigNumber(spec));
+    });
+  });
+
+  [
+    '0x0000000000000005',
+    '0x000000000000051a',
+    '0xbcd1234000000000',
+  ].forEach((spec) => {
+    it(`should convert ${spec} to uint64`, async () => {
+      expect(await bytesLib.toUint64.call(spec, 0)).to.be.bignumber.equal(new BigNumber(spec));
+    });
+  });
+
+  const toBigEndian = (str) => {
+    if (str.length % 2 !== 0) {
+      throw new Error(`Invalid length ${str.length}!`);
+    }
+
+    const hex = str.startsWith('0x') ? str.substr(2) : str;
+    let res;
+    for (let i = 0; i < hex.length - 1; i += 2) {
+      res = [hex[i], hex[i + 1], res].join('');
+    }
+
+    console.log("res", res);
+    return `0x${res}`;
+  };
+
+  [
+    '0x00000005',
+    '0x0000051a',
+    '0x0bcd1234',
+  ].forEach((spec) => {
+    it(`should convert a big-endian ${spec} to uint32`, async () => {
+      expect(await bytesLib.toUint32BE.call(spec, 0)).to.be.bignumber.equal(new BigNumber(toBigEndian(spec)));
+    });
+  });
+
+  [
+    '0x0000000000000005',
+    '0x000000000000051a',
+    '0xbcd1234000000000',
+  ].forEach((spec) => {
+    it(`should convert a big-endian ${spec} to uint64`, async () => {
+      expect(await bytesLib.toUint64BE.call(spec, 0)).to.be.bignumber.equal(new BigNumber(toBigEndian(spec)));
+    });
   });
 });
