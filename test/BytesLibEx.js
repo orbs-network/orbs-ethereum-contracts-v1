@@ -57,7 +57,7 @@ contract('BytesLibEx', () => {
     '0x0000051a',
     '0x0bcd1234',
   ].forEach((spec) => {
-    it.(`should convert a big-endian ${spec} to uint32`, async () => {
+    it(`should convert a big-endian ${spec} to uint32`, async () => {
       expect(await bytesLib.toUint32BE.call(spec, 0)).to.be.bignumber
         .equal(new BigNumber(Bytes.switchEndianness(spec)));
     });
@@ -68,7 +68,7 @@ contract('BytesLibEx', () => {
     '0x000000000000051a',
     '0xbcd1234000000000',
   ].forEach((spec) => {
-    it.(`should convert a big-endian ${spec} to uint64`, async () => {
+    it(`should convert a big-endian ${spec} to uint64`, async () => {
       expect(await bytesLib.toUint64BE.call(spec, 0)).to.be.bignumber
         .equal(new BigNumber(Bytes.switchEndianness(spec)));
     });
@@ -79,7 +79,7 @@ contract('BytesLibEx', () => {
     '0x00000000000000000000000000000000000000000000000000000000000aa51a',
     '0xbcd1234000000000000000000000000000000000000000000000000000000000',
   ].forEach((spec) => {
-    it.(`should convert a big-endian ${spec} to uint`, async () => {
+    it(`should convert a big-endian ${spec} to uint`, async () => {
       expect(await bytesLib.toUintBE.call(spec, 0)).to.be.bignumber
         .equal(new BigNumber(Bytes.switchEndianness(spec)));
     });
