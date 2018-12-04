@@ -67,7 +67,7 @@ class MerkleTree {
     let idx = MerkleTree.bufIndexOf(el, this.elements);
 
     if (idx === -1) {
-      throw new Error('Element does not exist in Merkle tree');
+      throw new Error('Element does not exist in the Merkle tree!');
     }
 
     return this.layers.reduce((proof, layer) => {
