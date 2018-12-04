@@ -1,8 +1,12 @@
 pragma solidity 0.4.24;
 
+import "solidity-bytes-utils/contracts/BytesLib.sol";
+
 
 // @title Extension to the BytesLib library.
 library BytesLibEx {
+    using BytesLib for bytes;
+
     /// @dev Converts a bytes array to byte20.
     /// @param _bytes bytes The raw buffer.
     /// @param _start uint The offset to start from.
@@ -79,6 +83,7 @@ library BytesLibEx {
     /// @param _bytes bytes The raw buffer.
     /// @param _start uint The offset to start from.
     function toUintBE(bytes memory _bytes, uint _start, uint _size) private pure returns (uint) {
-        return toUint(switchEndianness(_bytes), _start, _size);
+        bytes memory newBytes = switchEndianness(_bytes.slice(_start, _size));
+        return toUint(newBytes, 0, _size);
     }
 }
