@@ -20,8 +20,6 @@ class ASBProof {
     const ethereumAddressBuffer = Bytes.addressToBuffer(ethereumAddress);
     const tokensBuffer = Bytes.numberToBuffer(tokens, 32);
 
-    // const event = ASBProof.buildEventData('Hello', 12, 567, '0x2c80c37bdf6d68390ccaa03a125f65dcc43b7a5f', 1500);
-
     return Buffer.concat([
       contractNameLengthBuffer,
       contractNameBuffer,
