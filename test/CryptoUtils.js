@@ -73,7 +73,7 @@ contract('CryptoUtils', (accounts) => {
     });
   });
 
-  describe('Public key to address conversion', async () => {
+  describe('public key to address conversion', async () => {
     it('should convert public keys to addresses', async () => {
       const tests = [
         {
@@ -97,17 +97,17 @@ contract('CryptoUtils', (accounts) => {
         expect(await cryptoUtils.toAddress.call(tests[i].publicKey)).to.eql(tests[i].address);
       }
     });
-  });
 
-  it('should return 0x0 for public key which is too short', async () => {
-    // eslint-disable-next-line max-len
-    const shortPublicKey = '0x249edfc95ce1538740d65019864c930a895318efd741cd0299f813f133a2e2e2e8eaf1a65aa3ab8ed698dbd478c02f99c8516595f067be79ed1f6e7823da01';
-    expect(await cryptoUtils.toAddress.call(shortPublicKey)).to.eql(ZERO_ADDRESS);
-  });
+    it('should return 0x0 for public key which is too short', async () => {
+      // eslint-disable-next-line max-len
+      const shortPublicKey = '0x249edfc95ce1538740d65019864c930a895318efd741cd0299f813f133a2e2e2e8eaf1a65aa3ab8ed698dbd478c02f99c8516595f067be79ed1f6e7823da01';
+      expect(await cryptoUtils.toAddress.call(shortPublicKey)).to.eql(ZERO_ADDRESS);
+    });
 
-  it('should return 0x0 for public key which is too long', async () => {
-    // eslint-disable-next-line max-len
-    const longPublicKey = '0x92ed3e7a46722869a6309383a90cb6b20e6ef0835a1d7560a79629f79eab7173bf1d4f4c5e905bcf480bb8e7bc483857b039cfbf25e0ae2530183f61abfb5f7faa';
-    expect(await cryptoUtils.toAddress.call(longPublicKey)).to.eql(ZERO_ADDRESS);
+    it('should return 0x0 for public key which is too long', async () => {
+      // eslint-disable-next-line max-len
+      const longPublicKey = '0x92ed3e7a46722869a6309383a90cb6b20e6ef0835a1d7560a79629f79eab7173bf1d4f4c5e905bcf480bb8e7bc483857b039cfbf25e0ae2530183f61abfb5f7faa';
+      expect(await cryptoUtils.toAddress.call(longPublicKey)).to.eql(ZERO_ADDRESS);
+    });
   });
 });
