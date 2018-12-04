@@ -1,6 +1,8 @@
 import chai from 'chai';
 import utils from 'ethereumjs-util';
 
+import MerkleTree from './helpers/merkleTree';
+
 const { expect } = chai;
 
 const CryptoUtilsWrapper = artifacts.require('./CryptoUtilsWrapper.sol');
@@ -108,6 +110,58 @@ contract('CryptoUtils', (accounts) => {
       // eslint-disable-next-line max-len
       const longPublicKey = '0x92ed3e7a46722869a6309383a90cb6b20e6ef0835a1d7560a79629f79eab7173bf1d4f4c5e905bcf480bb8e7bc483857b039cfbf25e0ae2530183f61abfb5f7faa';
       expect(await cryptoUtils.toAddress.call(longPublicKey)).to.eql(ZERO_ADDRESS);
+    });
+  });
+
+  describe('Merkle proof validation', async () => {
+    [
+      {
+        elements: ['a', 'b', 'c', 'd', 'e', 'f'],
+        existingElements: ['b', 'd'],
+      },
+      {
+        elements: [1, 100, 2, 8, 4, 1000, 2, 5],
+        existingElements: [1, 2, 5],
+      },
+      {
+        elements: [1],
+        existingElements: [1],
+      },
+      {
+        elements: ['3e7a4', 5, 'aaa', 'Hello', 5, 4, 33, 22, 1, 100],
+        existingElements: ['3e7a4', 'Hello'],
+      },
+    ].forEach((spec) => {
+      context(`elements ${JSON.stringify(spec)}`, async () => {
+        let merkleTree;
+        let root;
+
+        beforeEach(async () => {
+          merkleTree = new MerkleTree(spec.elements);
+          root = merkleTree.getHexRoot();
+        });
+
+        (spec.existingElements).forEach((existing) => {
+          let proof;
+          beforeEach(async () => {
+            proof = merkleTree.getHexProof(existing);
+          });
+
+          it(`should verify existence of ${existing}`, async () => {
+            expect(await cryptoUtils.isMerkleProofValid(proof, root, utils.bufferToHex(existing))).to.be.true();
+          });
+
+          it('should fail using different leaf for the same proof', async () => {
+            const nonExisting = "I don't exist!";
+            expect(await cryptoUtils.isMerkleProofValid(proof, root, utils.bufferToHex(nonExisting))).to.be.false();
+          });
+
+          it('should fail when using the wrong root', async () => {
+            const wrongRoot = utils.bufferToHex(utils.keccak256('I am a wrong root!'));
+            expect(await cryptoUtils.isMerkleProofValid(proof, wrongRoot, utils.bufferToHex(existing))).to.be.false();
+          });
+        });
+      });
     });
   });
 });

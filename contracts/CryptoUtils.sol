@@ -1,6 +1,7 @@
 pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
+import "openzeppelin-solidity/contracts/cryptography/MerkleProof.sol";
 
 
 // @title Cryptographic utilities.
@@ -28,5 +29,15 @@ library CryptoUtils {
         }
 
         return address(keccak256(_publicKey));
+    }
+
+    /// @dev Verifies the Merkle proof for the existence of a specific data. Please not that that this implementation
+    /// assumes that each pair of leaves and each pair of pre-images are sorted (see tests for examples of
+    /// construction).
+    /// @param _proof bytes32[] The Merkle proof containing sibling hashes on the branch from the leaf to the root.
+    /// @param _root bytes32 The Merkle root.
+    /// @param _leaf bytes.
+    function isMerkleProofValid(bytes32[] _proof, bytes32 _root, bytes _leaf) public pure returns (bool) {
+        return MerkleProof.verify(_proof, _root, keccak256(_leaf));
     }
 }

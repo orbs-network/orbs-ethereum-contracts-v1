@@ -13,4 +13,8 @@ contract CryptoUtilsWrapper {
     function toAddress(bytes _publicKey) public pure returns (address) {
         return CryptoUtils.toAddress(_publicKey);
     }
+
+    function isMerkleProofValid(bytes32[] _proof, bytes32 _root, bytes _leaf) public pure returns (bool) {
+        return CryptoUtils.isMerkleProofValid(_proof, _root, _leaf);
+    }
 }
