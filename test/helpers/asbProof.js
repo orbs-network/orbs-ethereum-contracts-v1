@@ -1,10 +1,4 @@
-import BN from 'bn.js';
-
-const numberToBuffer = (num, size) => (new BN(num)).toBuffer('le', size);
-const addressToBuffer = (address) => {
-  const hex = address.startsWith('0x') ? address.substr(2) : address;
-  return Buffer.from(hex, 'hex');
-}
+import Bytes from './bytes';
 
 class ASBProof {
   // Builds and serializes Autonomous Swap Event Data according to:
@@ -19,12 +13,14 @@ class ASBProof {
   // | tokens               | TBD    | 32   | bytes(32B) |
   // +----------------------+--------+------+------------+
   static buildEventData(orbsContractName, eventId, tuid, ethereumAddress, tokens) {
-    const contractNameLengthBuffer = numberToBuffer(orbsContractName.length, 4);
+    const contractNameLengthBuffer = Bytes.numberToBuffer(orbsContractName.length, 4);
     const contractNameBuffer = Buffer.from(orbsContractName);
-    const eventIdBuffer = numberToBuffer(eventId, 4);
-    const tuidBuffer = numberToBuffer(tuid, 8);
-    const ethereumAddressBuffer = addressToBuffer(ethereumAddress);
-    const tokensBuffer = numberToBuffer(tokens, 32);
+    const eventIdBuffer = Bytes.numberToBuffer(eventId, 4);
+    const tuidBuffer = Bytes.numberToBuffer(tuid, 8);
+    const ethereumAddressBuffer = Bytes.addressToBuffer(ethereumAddress);
+    const tokensBuffer = Bytes.numberToBuffer(tokens, 32);
+
+    // const event = ASBProof.buildEventData('Hello', 12, 567, '0x2c80c37bdf6d68390ccaa03a125f65dcc43b7a5f', 1500);
 
     return Buffer.concat([
       contractNameLengthBuffer,
@@ -35,7 +31,6 @@ class ASBProof {
       tokensBuffer,
     ]);
   }
-
 }
 
 class ASBProofBuilder {

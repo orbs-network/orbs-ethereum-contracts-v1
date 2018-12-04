@@ -1,6 +1,7 @@
 import chai from 'chai';
 import BigNumber from 'bignumber.js';
 
+import Bytes from './helpers/bytes';
 import expectRevert from './helpers/expectRevert';
 
 const { expect } = chai;
@@ -51,28 +52,13 @@ contract('BytesLibEx', () => {
     });
   });
 
-  const toBigEndian = (str) => {
-    if (str.length % 2 !== 0) {
-      throw new Error(`Invalid length ${str.length}!`);
-    }
-
-    const hex = str.startsWith('0x') ? str.substr(2) : str;
-    let res;
-    for (let i = 0; i < hex.length - 1; i += 2) {
-      res = [hex[i], hex[i + 1], res].join('');
-    }
-
-    console.log("res", res);
-    return `0x${res}`;
-  };
-
   [
     '0x00000005',
     '0x0000051a',
     '0x0bcd1234',
   ].forEach((spec) => {
     it(`should convert a big-endian ${spec} to uint32`, async () => {
-      expect(await bytesLib.toUint32BE.call(spec, 0)).to.be.bignumber.equal(new BigNumber(toBigEndian(spec)));
+      expect(await bytesLib.toUint32BE.call(spec, 0)).to.be.bignumber.equal(new BigNumber(Bytes.switchEndianness(spec)));
     });
   });
 
@@ -82,7 +68,7 @@ contract('BytesLibEx', () => {
     '0xbcd1234000000000',
   ].forEach((spec) => {
     it(`should convert a big-endian ${spec} to uint64`, async () => {
-      expect(await bytesLib.toUint64BE.call(spec, 0)).to.be.bignumber.equal(new BigNumber(toBigEndian(spec)));
+      expect(await bytesLib.toUint64BE.call(spec, 0)).to.be.bignumber.equal(new BigNumber(Bytes.switchEndianness(spec)));
     });
   });
 });
