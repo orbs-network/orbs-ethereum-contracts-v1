@@ -27,4 +27,8 @@ contract BytesLibExWrapper {
     function toUint64BE(bytes _bytes, uint _start) public pure returns (uint64) {
         return _bytes.toUint64BE(_start);
     }
+
+    function toUintBE(bytes _bytes, uint _start) public pure returns (uint) {
+        return _bytes.toUintBE(_start);
+    }
 }
