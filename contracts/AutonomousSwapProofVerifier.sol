@@ -77,16 +77,18 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     }
 
     /// @dev Parses Autonomous Swap Event Data according to:
-    /// +----------------------+--------+------+------------+
-    /// |        Field         | Offset | Size |  Encoding  |
-    /// +----------------------+--------+------+------------+
-    /// | contract name length | 0      | 4    | uint32     |
-    /// | contract name        | 4      | N    | string     |
-    /// | event_id             | TBD    | 4    | uint32     |
-    /// | tuid                 | TBD    | 8    | uint64     |
-    /// | ethereum_address     | TBD    | 20   | bytes(20B) |
-    /// | tokens               | TBD    | 32   | bytes(32B) |
-    /// +----------------------+--------+------+------------+
+    /// +--------------------------+--------+------+-------------+-------------------------------+
+    /// |          Field           | Offset | Size |  Encoding   |             Notes             |
+    /// +--------------------------+--------+------+-------------+-------------------------------+
+    /// | contract name length (N) | 0      | 4    | uint32      |                               |
+    /// | contract name            | 4      | N    | string      |                               |
+    /// | event_id                 | 4+N    | 4    | enum        | 0x1 indicates TRANSFERRED_OUT |
+    /// | tuid                     | 8+N    | 8    | uint64      |                               |
+    /// | ethereum_address length  | N+16   | 4    | always 20   | reserved                      |
+    /// | ethereum_address         | N+20   | 20   | bytes (20B) |                               |
+    /// | tokens length            | N+40   | 4    | always 32   | reserved                      |
+    /// | tokens                   | N+44   | 32   | uint256     |                               |
+    /// +--------------------------+--------+------+-------------+-------------------------------+
     /// @param _eventData bytes The serialized event data.
     /// @return contractName string The name of Orbs contract name which has emitted the event.
     /// @return eventId uint32 The ID of the event (enum).
@@ -102,15 +104,21 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         orbsContractName = string(_eventData.slice(offset, orbsContractNameLength));
         offset = offset.add(orbsContractNameLength);
 
-        eventId = uint32(_eventData.toUint32BE(offset));
+        eventId = _eventData.toUint32BE(offset);
         offset = offset.add(UINT32_SIZE);
 
-        tuid = uint64(_eventData.toUint64BE(offset));
+        tuid = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
+        uint32 toAddressSize =_eventData.toUint32BE(offset);
+        require(toAddressSize == ADDRESS_SIZE, "Invalid address size!");
+        offset = offset.add(UINT32_SIZE);
         to = _eventData.toAddress(offset);
         offset = offset.add(ADDRESS_SIZE);
 
+        uint32 valueSize =_eventData.toUint32BE(offset);
+        require(valueSize == UINT256_SIZE, "Invalid value size!");
+        offset = offset.add(UINT32_SIZE);
         value = _eventData.toUintBE(offset);
         offset = offset.add(UINT256_SIZE);
     }
