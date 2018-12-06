@@ -108,13 +108,13 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// @param _resultsBlockProof bytes The serialized data.
     /// @return blockProofVersion uint32 The version of the block proof (== the federation revision).
     /// @return transactionsBlockHash bytes32 The hash of the transactions block.
-    /// @return blockrefMessage bytes The block reference message.
+    /// @return blockrefHash bytes32 The hash of the block reference.
     /// @return blockHash bytes32 The hash of the block.
     /// @return numOfSignatures uint The number of signatures in the Results Block Proof.
     /// @return publicAddresses address[] The public addresses of the signing federation members.
     /// @return signatures bytes[] The respective signatures by the signing federation members.
     function parseResultsBlockProof(bytes _resultsBlockProof) public pure returns (uint32 blockProofVersion,
-        bytes32 transactionsBlockHash, bytes blockrefMessage, bytes32 blockHash, uint numOfSignatures,
+        bytes32 transactionsBlockHash, bytes32 blockrefHash, bytes32 blockHash, uint numOfSignatures,
         address[MAX_SIGNATURES] publicAddresses, bytes[MAX_SIGNATURES] signatures) {
         uint offset = 0;
 
@@ -128,7 +128,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(SHA256_SIZE);
 
         offset = offset.add(ONEOF_NESTING_SIZE); // oneof + nesting
-        blockrefMessage = _resultsBlockProof.slice(offset, BLOCKREFMESSAGE_SIZE);
+        blockrefHash = keccak256(_resultsBlockProof.slice(offset, BLOCKREFMESSAGE_SIZE));
         offset = offset.add(BLOCKHASH_OFFSET);
 
         blockHash = _resultsBlockProof.toBytes32(offset);
