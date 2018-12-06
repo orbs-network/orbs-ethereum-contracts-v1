@@ -14,8 +14,8 @@ contract AutonomousSwapBridge {
     // The version of the current ASB smart contract.
     string public constant VERSION = "0.1";
 
-    // The network ID of the Orbs network this contract is compatible for.
-    uint32 public networkId;
+    // The network type of the Orbs network this contract is compatible for.
+    uint32 public networkType;
 
     // The virtual chain ID of the underlying token on the Orbs network.
     uint64 public virtualChainId;
@@ -42,20 +42,20 @@ contract AutonomousSwapBridge {
     event TransferredIn(uint256 indexed tuid, bytes20 indexed from, address indexed to, uint256 value);
 
     /// @dev Constructor that initializes the ASB contract.
-    /// @param _networkId uint32 The network ID of the Orbs network this contract is compatible for.
+    /// @param _networkType uint32 The network ID of the Orbs network this contract is compatible for.
     /// @param _virtualChainId uint64 The virtual chain ID of the underlying token on the Orbs network.
     /// @param _orbsASBContractName string The address of the Federation contract.
     /// @param _token IERC20 The swappable ERC20 token.
     /// @param _federation IFederation The federation smart contract.
     /// @param _verifier IAutonomousSwapProofVerifier The ASB proof verifier.
-    constructor(uint32 _networkId, uint64 _virtualChainId, string _orbsASBContractName, IERC20 _token,
+    constructor(uint32 _networkType, uint64 _virtualChainId, string _orbsASBContractName, IERC20 _token,
         IFederation _federation, IAutonomousSwapProofVerifier _verifier) public {
         require(bytes(_orbsASBContractName).length > 0, "Orbs ASB contract name must not be empty!");
         require(address(_token) != address(0), "Token must not be 0!");
         require(address(_federation) != address(0), "Federation must not be 0!");
         require(address(_verifier) != address(0), "Verifier must not be 0!");
 
-        networkId = _networkId;
+        networkType = _networkType;
         virtualChainId = _virtualChainId;
         orbsASBContractName = _orbsASBContractName;
         token = _token;
@@ -84,13 +84,13 @@ contract AutonomousSwapBridge {
     /// @dev Transfer tokens from Orbs.
     /// @param _proof bytes TransferIn proof.
     function transferIn(bytes _proof) public {
-        (bytes20 from, address to, uint256 value, uint32 nid, uint32 vid, uint256 tuid) = verifier.processProof(_proof);
+        (bytes20 from, address to, uint256 value, uint32 nType, uint64 vid, uint256 tuid) = verifier.processProof(_proof);
 
         require(to != address(0), "Destination address can't be 0!");
         require(value > 0, "Value must be greater than 0!");
 
         // Verify network and protocol parameters.
-        require(networkId == nid, "Network ID must be the same!");
+        require(networkType == nType, "Network type must be the same!");
         require(virtualChainId == vid, "Virtual Chain ID must be the same!");
 
         // Make sure that the transaction wasn't already spent and mark it as such;

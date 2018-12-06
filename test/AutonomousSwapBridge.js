@@ -10,7 +10,7 @@ const Federation = artifacts.require('./Federation.sol');
 const TokenMock = artifacts.require('./OrbsTokenMock.sol');
 
 contract('AutonomousSwapBridge', (accounts) => {
-  const NETWORK_ID = 0;
+  const NETWORK_TYPE = 0;
   const VIRTUAL_CHAIN_ID = 0x6b696e;
   const ORBS_ASB_CONTRACT_NAME = 'asb';
   const VERSION = '0.1';
@@ -34,30 +34,30 @@ contract('AutonomousSwapBridge', (accounts) => {
 
   describe('construction', async () => {
     it('should not allow to create with an empty Orbs ASB contract name', async () => {
-      await expectRevert(AutonomousSwapBridge.new(NETWORK_ID, VIRTUAL_CHAIN_ID, EMPTY, token.address,
+      await expectRevert(AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, EMPTY, token.address,
         federation.address, verifier.address, { from: owner }));
     });
 
     it('should not allow to create with a 0x0 token', async () => {
-      await expectRevert(AutonomousSwapBridge.new(NETWORK_ID, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME,
+      await expectRevert(AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME,
         ZERO_ADDRESS, verifier.address, federation.address, { from: owner }));
     });
 
     it('should not allow to create with a 0x0 federation', async () => {
-      await expectRevert(AutonomousSwapBridge.new(NETWORK_ID, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME,
+      await expectRevert(AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME,
         token.address, ZERO_ADDRESS, verifier.address, { from: owner }));
     });
 
     it('should not allow to create with a 0x0 verifier', async () => {
-      await expectRevert(AutonomousSwapBridge.new(NETWORK_ID, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+      await expectRevert(AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         federation.address, ZERO_ADDRESS, { from: owner }));
     });
 
     it('should correctly initialize fields', async () => {
-      const asb = await AutonomousSwapBridge.new(NETWORK_ID, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+      const asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         federation.address, verifier.address, { from: owner });
 
-      expect(await asb.networkId.call()).to.be.bignumber.equal(NETWORK_ID);
+      expect(await asb.networkType.call()).to.be.bignumber.equal(NETWORK_TYPE);
       expect(await asb.virtualChainId.call()).to.be.bignumber.equal(VIRTUAL_CHAIN_ID);
       expect(await asb.orbsASBContractName.call()).to.be.equal(ORBS_ASB_CONTRACT_NAME);
       expect(await asb.token.call()).to.eql(token.address);
@@ -66,7 +66,7 @@ contract('AutonomousSwapBridge', (accounts) => {
     });
 
     it('should report version', async () => {
-      const asb = await AutonomousSwapBridge.new(NETWORK_ID, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+      const asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         federation.address, verifier.address, { from: owner });
 
       expect(await asb.VERSION.call()).to.be.bignumber.equal(VERSION);
@@ -84,7 +84,7 @@ contract('AutonomousSwapBridge', (accounts) => {
     const orbsUser3Address = '0x99a8487019099bee8af8473134fa247c2f018790';
 
     beforeEach(async () => {
-      asb = await AutonomousSwapBridge.new(NETWORK_ID, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+      asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         federation.address, verifier.address, { from: owner });
 
       await token.assign(user1, initialBalance);
