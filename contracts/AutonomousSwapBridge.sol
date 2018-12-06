@@ -42,7 +42,7 @@ contract AutonomousSwapBridge {
     event TransferredIn(uint256 indexed tuid, bytes20 indexed from, address indexed to, uint256 value);
 
     /// @dev Constructor that initializes the ASB contract.
-    /// @param _networkType uint32 The network ID of the Orbs network this contract is compatible for.
+    /// @param _networkType uint32 The network type of the Orbs network this contract is compatible for.
     /// @param _virtualChainId uint64 The virtual chain ID of the underlying token on the Orbs network.
     /// @param _orbsASBContractName string The address of the Federation contract.
     /// @param _token IERC20 The swappable ERC20 token.
