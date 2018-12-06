@@ -23,6 +23,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant UINT64_SIZE = 8;
     uint public constant UINT256_SIZE = 32;
     uint public constant ADDRESS_SIZE = 20;
+    uint public constant BYTES32_SIZE = UINT256_SIZE;
 
     /// @dev Parses and validates the raw transfer proof.
     /// @param _proof bytes The raw transfer proof.
@@ -35,6 +36,44 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     function processProof(bytes _proof) public pure returns(bytes20 from, address to, uint256 value,
         uint32 networkType, uint64 virtualChainId, uint256 tuid) {
         // TODO: implement the finalized proof spec.
+    }
+
+    /// Parses Results Block Header according to:
+    /// +---------------------+--------+------+----------------------+
+    /// |        Field        | Offset | Size |       Encoding       |
+    /// +---------------------+--------+------+----------------------+
+    /// | protocol_version    |      0 |    4 | uint32               |
+    /// | virtual_chain_id    |      4 |    8 | uint64               |
+    /// | network_type        |     12 |    4 | enum (4 bytes)       |
+    /// | timestamp           |     16 |    8 | uint64 unix 64b time |
+    /// | receipt_merkle_root |     64 |   32 | bytes (32B)          |
+    /// +---------------------+--------+------+----------------------+
+    /// @param _resultsBlockHeader bytes The serialized data.
+    /// @return protocolVersion uint32 The version of the proof protocol.
+    /// @return virtualChainId uint64 The virtual chain ID of the underlying token on the Orbs network.
+    /// @return networkType uint32 The network type of the Orbs network this contract is compatible for.
+    /// @return timestamp uint64 The unix timestamp corresponding to the proof.
+    /// @return receiptMerkleRoot bytes32 The SHA256 receipt Merkle root.
+    function parseResultsBlockHeader(bytes _resultsBlockHeader) public pure returns (uint32 protocolVersion,
+        uint64 virtualChainId, uint32 networkType, uint64 timestamp, bytes32 receiptMerkleRoot) {
+        uint offset = 0;
+
+        protocolVersion = uint32(_resultsBlockHeader.toUint32BE(offset));
+        offset = offset.add(UINT32_SIZE);
+
+        virtualChainId = uint64(_resultsBlockHeader.toUint64BE(offset));
+        offset = offset.add(UINT64_SIZE);
+
+        networkType = uint32(_resultsBlockHeader.toUint32BE(offset));
+        offset = offset.add(UINT32_SIZE);
+
+        timestamp = uint64(_resultsBlockHeader.toUint64BE(offset));
+        offset = offset.add(UINT64_SIZE);
+
+        offset = offset.add(40); // Jump to receipt_merkle_root.
+
+        receiptMerkleRoot = _resultsBlockHeader.toBytes32(offset);
+        offset = offset.add(BYTES32_SIZE);
     }
 
     /// @dev Parses Autonomous Swap Event Data according to:
@@ -54,7 +93,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// @return tuid uint64 The Orbs TUID corresponding to the event.
     /// @return to address The address to transfer to.
     /// @return uint256 The amount to be transferred.
-    function parseEventData(bytes _eventData) public view returns (string orbsContractName, uint32 eventId, uint64 tuid,
+    function parseEventData(bytes _eventData) public pure returns (string orbsContractName, uint32 eventId, uint64 tuid,
         address to, uint256 value) {
         uint offset = 0;
 

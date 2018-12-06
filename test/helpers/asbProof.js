@@ -1,7 +1,27 @@
 import Bytes from './bytes';
 
 class ASBProof {
-  // Builds and serializes Autonomous Swap Event Data according to:
+  // Builds the Results Block Header according to:
+  // +---------------------+--------+------+----------------------+
+  // |        Field        | Offset | Size |       Encoding       |
+  // +---------------------+--------+------+----------------------+
+  // | protocol_version    |      0 |    4 | uint32               |
+  // | virtual_chain_id    |      4 |    8 | uint64               |
+  // | network_type        |     12 |    4 | enum (4 bytes)       |
+  // | timestamp           |     16 |    8 | uint64 unix 64b time |
+  // | receipt_merkle_root |     64 |   32 | bytes (32B)          |
+  // +---------------------+--------+------+----------------------+
+  static buildResultsBlockHeader(resultsBlockHeader) {
+    return Buffer.concat([
+      Bytes.numberToBuffer(resultsBlockHeader.protocolVersion, 4),
+      Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, 8),
+      Bytes.numberToBuffer(resultsBlockHeader.networkType, 4),
+      Bytes.numberToBuffer(resultsBlockHeader.timestamp, 8),
+      Buffer.alloc(40),
+      resultsBlockHeader.receiptMerkleRoot,
+    ]);
+  }
+  // Builds the Autonomous Swap Event Data according to:
   // +----------------------+--------+------+------------+
   // |        Field         | Offset | Size |  Encoding  |
   // +----------------------+--------+------+------------+
@@ -12,21 +32,14 @@ class ASBProof {
   // | ethereum_address     | TBD    | 20   | bytes(20B) |
   // | tokens               | TBD    | 32   | bytes(32B) |
   // +----------------------+--------+------+------------+
-  static buildEventData(orbsContractName, eventId, tuid, ethereumAddress, tokens) {
-    const contractNameLengthBuffer = Bytes.numberToBuffer(orbsContractName.length, 4);
-    const contractNameBuffer = Buffer.from(orbsContractName);
-    const eventIdBuffer = Bytes.numberToBuffer(eventId, 4);
-    const tuidBuffer = Bytes.numberToBuffer(tuid, 8);
-    const ethereumAddressBuffer = Bytes.addressToBuffer(ethereumAddress);
-    const tokensBuffer = Bytes.numberToBuffer(tokens, 32);
-
+  static buildEventData(event) {
     return Buffer.concat([
-      contractNameLengthBuffer,
-      contractNameBuffer,
-      eventIdBuffer,
-      tuidBuffer,
-      ethereumAddressBuffer,
-      tokensBuffer,
+      Bytes.numberToBuffer(event.orbsContractName.length, 4),
+      Buffer.from(event.orbsContractName),
+      Bytes.numberToBuffer(event.eventId, 4),
+      Bytes.numberToBuffer(event.tuid, 8),
+      Bytes.addressToBuffer(event.ethereumAddress),
+      Bytes.numberToBuffer(event.value, 32),
     ]);
   }
 }
