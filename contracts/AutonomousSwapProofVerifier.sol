@@ -58,22 +58,22 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         uint64 virtualChainId, uint32 networkType, uint64 timestamp, bytes32 receiptMerkleRoot) {
         uint offset = 0;
 
-        protocolVersion = uint32(_resultsBlockHeader.toUint32BE(offset));
+        protocolVersion = _resultsBlockHeader.toUint32BE(offset);
         offset = offset.add(UINT32_SIZE);
 
-        virtualChainId = uint64(_resultsBlockHeader.toUint64BE(offset));
+        virtualChainId = _resultsBlockHeader.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
-        networkType = uint32(_resultsBlockHeader.toUint32BE(offset));
+        networkType = _resultsBlockHeader.toUint32BE(offset);
         offset = offset.add(UINT32_SIZE);
 
-        timestamp = uint64(_resultsBlockHeader.toUint64BE(offset));
+        timestamp = _resultsBlockHeader.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
         offset = offset.add(40); // Jump to receipt_merkle_root.
 
         receiptMerkleRoot = _resultsBlockHeader.toBytes32(offset);
-        offset = offset.add(BYTES32_SIZE);
+        offset = offset.add(SHA256_SIZE);
     }
 
     /// @dev Parses Autonomous Swap Event Data according to:
