@@ -1,5 +1,10 @@
 import Bytes from './bytes';
 
+const UINT32_SIZE = 4;
+const UINT64_SIZE = 8;
+const UINT256_SIZE = 32;
+const ADDRESS_SIZE = 20;
+
 class ASBProof {
   // Builds the Results Block Header according to:
   // +---------------------+--------+------+----------------------+
@@ -13,10 +18,10 @@ class ASBProof {
   // +---------------------+--------+------+----------------------+
   static buildResultsBlockHeader(resultsBlockHeader) {
     return Buffer.concat([
-      Bytes.numberToBuffer(resultsBlockHeader.protocolVersion, 4),
-      Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, 8),
-      Bytes.numberToBuffer(resultsBlockHeader.networkType, 4),
-      Bytes.numberToBuffer(resultsBlockHeader.timestamp, 8),
+      Bytes.numberToBuffer(resultsBlockHeader.protocolVersion, UINT32_SIZE),
+      Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, UINT64_SIZE),
+      Bytes.numberToBuffer(resultsBlockHeader.networkType, UINT32_SIZE),
+      Bytes.numberToBuffer(resultsBlockHeader.timestamp, UINT64_SIZE),
       Buffer.alloc(40),
       resultsBlockHeader.receiptMerkleRoot,
     ]);
