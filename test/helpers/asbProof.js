@@ -27,24 +27,28 @@ class ASBProof {
     ]);
   }
   // Builds the Autonomous Swap Event Data according to:
-  // +----------------------+--------+------+------------+
-  // |        Field         | Offset | Size |  Encoding  |
-  // +----------------------+--------+------+------------+
-  // | contract name length | 0      | 4    | uint32     |
-  // | contract name        | 4      | N    | string     |
-  // | event_id             | TBD    | 4    | uint32     |
-  // | tuid                 | TBD    | 8    | uint64     |
-  // | ethereum_address     | TBD    | 20   | bytes(20B) |
-  // | tokens               | TBD    | 32   | bytes(32B) |
-  // +----------------------+--------+------+------------+
+  // +--------------------------+--------+------+-------------+-------------------------------+
+  // |          Field           | Offset | Size |  Encoding   |             Notes             |
+  // +--------------------------+--------+------+-------------+-------------------------------+
+  // | contract name length (N) | 0      | 4    | uint32      |                               |
+  // | contract name            | 4      | N    | string      |                               |
+  // | event_id                 | 4+N    | 4    | enum        | 0x1 indicates TRANSFERRED_OUT |
+  // | tuid                     | 8+N    | 8    | uint64      |                               |
+  // | ethereum_address length  | N+16   | 4    | always 20   | reserved                      |
+  // | ethereum_address         | N+20   | 20   | bytes (20B) |                               |
+  // | tokens length            | N+40   | 4    | always 32   | reserved                      |
+  // | tokens                   | N+44   | 32   | uint256     |                               |
+  // +--------------------------+--------+------+-------------+-------------------------------+
   static buildEventData(event) {
     return Buffer.concat([
-      Bytes.numberToBuffer(event.orbsContractName.length, 4),
+      Bytes.numberToBuffer(event.orbsContractName.length, UINT32_SIZE),
       Buffer.from(event.orbsContractName),
-      Bytes.numberToBuffer(event.eventId, 4),
-      Bytes.numberToBuffer(event.tuid, 8),
+      Bytes.numberToBuffer(event.eventId, UINT32_SIZE),
+      Bytes.numberToBuffer(event.tuid, UINT64_SIZE),
+      Bytes.numberToBuffer(ADDRESS_SIZE, UINT32_SIZE),
       Bytes.addressToBuffer(event.ethereumAddress),
-      Bytes.numberToBuffer(event.value, 32),
+      Bytes.numberToBuffer(UINT256_SIZE, UINT32_SIZE),
+      Bytes.numberToBuffer(event.value, UINT256_SIZE),
     ]);
   }
 }
