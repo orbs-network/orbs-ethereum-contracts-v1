@@ -18,7 +18,7 @@ contract AutonomousSwapBridge {
     uint32 public networkId;
 
     // The virtual chain ID of the underlying token on the Orbs network.
-    uint32 public virtualChainId;
+    uint64 public virtualChainId;
 
     // The name of the Orbs Autonomous Swap Bridge (ASB) smart contract (used during proof verification).
     string public orbsASBContractName;
@@ -43,12 +43,12 @@ contract AutonomousSwapBridge {
 
     /// @dev Constructor that initializes the ASB contract.
     /// @param _networkId uint32 The network ID of the Orbs network this contract is compatible for.
-    /// @param _virtualChainId uint32 The virtual chain ID of the underlying token on the Orbs network.
+    /// @param _virtualChainId uint64 The virtual chain ID of the underlying token on the Orbs network.
     /// @param _orbsASBContractName string The address of the Federation contract.
     /// @param _token IERC20 The swappable ERC20 token.
     /// @param _federation IFederation The federation smart contract.
     /// @param _verifier IAutonomousSwapProofVerifier The ASB proof verifier.
-    constructor(uint32 _networkId, uint32 _virtualChainId, string _orbsASBContractName, IERC20 _token,
+    constructor(uint32 _networkId, uint64 _virtualChainId, string _orbsASBContractName, IERC20 _token,
         IFederation _federation, IAutonomousSwapProofVerifier _verifier) public {
         require(bytes(_orbsASBContractName).length > 0, "Orbs ASB contract name must not be empty!");
         require(address(_token) != address(0), "Token must not be 0!");
