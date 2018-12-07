@@ -46,7 +46,7 @@ class ASBProof {
   // | node_sig                       | 136 + 100n | 65        | bytes (65B) |                          |
   // +--------------------------------+------------+-----------+-------------+--------------------------+
   static buildResultsProof(resultsBlockProof) {
-    let resultsBlockProofBuffer = Buffer.concat([
+    const resultsBlockProofBuffer = Buffer.concat([
       Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4),
       Bytes.numberToBuffer(SHA256_SIZE, 4),
       resultsBlockProof.transactionsBlockHash,
@@ -54,17 +54,15 @@ class ASBProof {
       resultsBlockProof.blockrefMessage,
     ]);
 
-    resultsBlockProof.signatures.forEach((sig) => {
-      resultsBlockProofBuffer = Buffer.concat([resultsBlockProofBuffer,
+    return resultsBlockProof.signatures.reduce((res, sig) => {
+      return Buffer.concat([res,
         Buffer.alloc(4), // node_pk_sig nesting
         Bytes.numberToBuffer(ADDRESS_SIZE, 4),
         Bytes.addressToBuffer(sig.publicAddress),
         Bytes.numberToBuffer(SIGNATURE_SIZE, 4),
         Bytes.addressToBuffer(sig.signature),
       ]);
-    });
-
-    return resultsBlockProofBuffer;
+    }, resultsBlockProofBuffer);
   }
 
   // Builds the Autonomous Swap Event Data according to:
