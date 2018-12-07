@@ -67,9 +67,9 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// @return virtualChainId uint64 The virtual chain ID of the underlying token on the Orbs network.
     /// @return networkType uint32 The network type of the Orbs network this contract is compatible for.
     /// @return timestamp uint64 The unix timestamp corresponding to the proof.
-    /// @return receiptMerkleRoot bytes32 The SHA256 receipt Merkle root.
+    /// @return transactionReceiptMerkleRoot bytes32 The SHA256 receipt Merkle root.
     function parseResultsBlockHeader(bytes _resultsBlockHeader) public pure returns (uint32 protocolVersion,
-        uint64 virtualChainId, uint32 networkType, uint64 timestamp, bytes32 receiptMerkleRoot) {
+        uint64 virtualChainId, uint32 networkType, uint64 timestamp, bytes32 transactionReceiptMerkleRoot) {
         uint offset = 0;
 
         protocolVersion = _resultsBlockHeader.toUint32BE(offset);
@@ -86,7 +86,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         offset = offset.add(40); // Jump to receipt_merkle_root.
 
-        receiptMerkleRoot = _resultsBlockHeader.toBytes32(offset);
+        transactionReceiptMerkleRoot = _resultsBlockHeader.toBytes32(offset);
         offset = offset.add(SHA256_SIZE);
     }
 
