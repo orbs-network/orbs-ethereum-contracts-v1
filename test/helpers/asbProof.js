@@ -66,6 +66,24 @@ class ASBProof {
     }, resultsBlockProofBuffer);
   }
 
+  // Builds the TransactionReceipt according to:
+  // +------------------+--------+----------+----------+-----------------------+
+  // |      Field       | Offset |   Size   | Encoding |         Notes         |
+  // +------------------+--------+----------+----------+-----------------------+
+  // | execution_result |     36 | 4        | enum     | 0x1 indicates success |
+  // | event length     |     40 | 4        | uint32   |                       |
+  // | event data       |     44 | variable | bytes    |                       |
+  // +------------------+--------+----------+----------+-----------------------+
+  static buildTransactionReceipt(transaction, event) {
+    const eventBuffer = ASBProof.buildEventData(event);
+    return Buffer.concat([
+      Buffer.alloc(36),
+      Bytes.numberToBuffer(transaction.executionResult, UINT32_SIZE),
+      Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE),
+      eventBuffer,
+    ]);
+  }
+
   // Builds the Autonomous Swap Event Data according to:
   // +--------------------------+--------+------+-------------+-------------------------------+
   // |          Field           | Offset | Size |  Encoding   |             Notes             |
