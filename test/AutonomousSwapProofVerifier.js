@@ -94,6 +94,7 @@ contract('AutonomousSwapProofVerifier', () => {
           orbsContractName: 'Hello World!',
           eventId: 12,
           tuid: 56789,
+          orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
           ethereumAddress: '0x2c80c37bdf6d68390ccaa03a125f65dcc43b7a5f',
           value: 1500,
         };
@@ -105,8 +106,9 @@ contract('AutonomousSwapProofVerifier', () => {
         expect(eventData[0]).to.eql(data.orbsContractName);
         expect(eventData[1]).to.be.bignumber.equal(data.eventId);
         expect(eventData[2]).to.be.bignumber.equal(data.tuid);
-        expect(eventData[3]).to.eql(data.ethereumAddress);
-        expect(eventData[4]).to.be.bignumber.equal(data.value);
+        expect(eventData[3]).to.eql(utils.bufferToHex(data.orbsAddress));
+        expect(eventData[4]).to.eql(data.ethereumAddress);
+        expect(eventData[5]).to.be.bignumber.equal(data.value);
       });
     });
   });

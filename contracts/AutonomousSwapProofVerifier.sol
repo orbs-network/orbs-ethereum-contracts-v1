@@ -28,6 +28,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant SIGNATURE_SIZE = 65;
 
     // Orbs specific data sizes (in bytes).
+    uint public constant ORBS_ADDRESS_SIZE = 20;
     uint public constant ONEOF_NESTING_SIZE = 12;
     uint public constant BLOCKREFMESSAGE_SIZE = 52;
     uint public constant BLOCKHASH_OFFSET = 20;
@@ -165,17 +166,20 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// | tuid                     | 8+N    | 8    | uint64      |                               |
     /// | ethereum_address length  | N+16   | 4    | always 20   | reserved                      |
     /// | ethereum_address         | N+20   | 20   | bytes (20B) |                               |
-    /// | tokens length            | N+40   | 4    | always 32   | reserved                      |
-    /// | tokens                   | N+44   | 32   | uint256     |                               |
+    /// | orbs_address length      | N+40   | 4    | always 20   | reserved                      |
+    /// | orbs_address             | N+44   | 20   | bytes (20B) |                               |
+    /// | tokens length            | N+64   | 4    | always 32   | reserved                      |
+    /// | tokens                   | N+68   | 32   | uint256     |                               |
     /// +--------------------------+--------+------+-------------+-------------------------------+
     /// @param _eventData bytes The serialized event data.
     /// @return contractName string The name of Orbs contract name which has emitted the event.
     /// @return eventId uint32 The ID of the event (enum).
     /// @return tuid uint64 The Orbs TUID corresponding to the event.
+    /// @return from bytes20 from The Orbs address to transfer from.
     /// @return to address The address to transfer to.
     /// @return uint256 The amount to be transferred.
     function parseEventData(bytes _eventData) public pure returns (string orbsContractName, uint32 eventId, uint64 tuid,
-        address to, uint256 value) {
+        bytes20 from, address to, uint256 value) {
         uint offset = 0;
 
         uint32 orbsContractNameLength = _eventData.toUint32BE(0);
@@ -189,8 +193,14 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         tuid = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
+        uint32 fromAddressSize =_eventData.toUint32BE(offset);
+        require(fromAddressSize == ORBS_ADDRESS_SIZE, "Invalid Orbs address size!");
+        offset = offset.add(UINT32_SIZE);
+        from = _eventData.toBytes20(offset);
+        offset = offset.add(ORBS_ADDRESS_SIZE);
+
         uint32 toAddressSize =_eventData.toUint32BE(offset);
-        require(toAddressSize == ADDRESS_SIZE, "Invalid address size!");
+        require(toAddressSize == ADDRESS_SIZE, "Invalid Ethereum address size!");
         offset = offset.add(UINT32_SIZE);
         to = _eventData.toAddress(offset);
         offset = offset.add(ADDRESS_SIZE);
