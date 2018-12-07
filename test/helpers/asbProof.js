@@ -4,6 +4,7 @@ const UINT32_SIZE = 4;
 const UINT64_SIZE = 8;
 const UINT256_SIZE = 32;
 const ADDRESS_SIZE = 20;
+const ORBS_ADDRESS_SIZE = 20;
 const SHA256_SIZE = UINT256_SIZE;
 const SIGNATURE_SIZE = 65;
 
@@ -75,8 +76,10 @@ class ASBProof {
   // | tuid                     | 8+N    | 8    | uint64      |                               |
   // | ethereum_address length  | N+16   | 4    | always 20   | reserved                      |
   // | ethereum_address         | N+20   | 20   | bytes (20B) |                               |
-  // | tokens length            | N+40   | 4    | always 32   | reserved                      |
-  // | tokens                   | N+44   | 32   | uint256     |                               |
+  // | orbs_address length      | N+40   | 4    | always 20   | reserved                      |
+  // | orbs_address             | N+44   | 20   | bytes (20B) |                               |
+  // | tokens length            | N+64   | 4    | always 32   | reserved                      |
+  // | tokens                   | N+68   | 32   | uint256     |                               |
   // +--------------------------+--------+------+-------------+-------------------------------+
   static buildEventData(event) {
     return Buffer.concat([
@@ -84,6 +87,8 @@ class ASBProof {
       Buffer.from(event.orbsContractName),
       Bytes.numberToBuffer(event.eventId, UINT32_SIZE),
       Bytes.numberToBuffer(event.tuid, UINT64_SIZE),
+      Bytes.numberToBuffer(ORBS_ADDRESS_SIZE, UINT32_SIZE),
+      event.orbsAddress,
       Bytes.numberToBuffer(ADDRESS_SIZE, UINT32_SIZE),
       Bytes.addressToBuffer(event.ethereumAddress),
       Bytes.numberToBuffer(UINT256_SIZE, UINT32_SIZE),
