@@ -43,8 +43,7 @@ contract Federation is IFederation, Ownable {
     /// @dev Returns whether a specific member exists in the federation.
     /// @param _member address The public address of the member to check.
     function isMember(address _member) public view returns (bool) {
-        (, bool exists) = findMemberIndex(members, _member);
-        return exists;
+        return isMember(members, _member);
     }
 
     /// @dev Returns the federation members. Please note that this method is only required due to the current Solidity's
@@ -67,8 +66,7 @@ contract Federation is IFederation, Ownable {
     /// @param _federationRevision uint The revision to query.
     /// @param _member address The public address of the member to check.
     function isMemberByRevision(uint _federationRevision, address _member) public view returns (bool) {
-         (, bool exists) = findMemberIndex(getMembersByRevision(_federationRevision), _member);
-        return exists;
+        return isMember(getMembersByRevision(_federationRevision), _member);
     }
 
     /// @dev Returns the federation members by revision.
