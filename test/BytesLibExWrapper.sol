@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 import "../contracts/BytesLibEx.sol";
 
 
-/// @dev Contract wrapper around BytesLibEx. Please note that this is only required in order to support
+/// @title Contract wrapper around BytesLibEx. Please note that this is only required in order to support
 /// solidity-coverage.
 contract BytesLibExWrapper {
     using BytesLibEx for bytes;

@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 import "../contracts/CryptoUtils.sol";
 
 
-/// @dev Contract wrapper around CryptoUtils. Please note that this is only required in order to support
+/// @title Contract wrapper around CryptoUtils. Please note that this is only required in order to support
 /// solidity-coverage.
 contract CryptoUtilsWrapper {
     function isSignatureValid(bytes32 _hash, bytes _signature, address _address) public pure returns (bool) {
