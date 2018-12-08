@@ -225,6 +225,11 @@ contract('Federation', (accounts) => {
         const federation = await Federation.new(members, { from: owner });
         expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(0);
         expect(await federation.getMembersByRevision.call(0)).to.be.equalTo(members);
+
+        for (let i = 0; i < members.length; ++i) {
+          expect(await federation.isMemberByRevision.call(0, members[i])).to.be.true();
+        }
+
         const threshold = Math.ceil(members.length * 2 / 3);
         expect(await federation.getConsensusThreshold.call()).to.be.bignumber.equal(threshold);
         expect(await federation.getConsensusThresholdByRevision.call(0)).to.be.bignumber.equal(threshold);
@@ -242,6 +247,15 @@ contract('Federation', (accounts) => {
           expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
           expect(await federation.getMembersByRevision.call(i)).to.be.equalTo(prevMembers);
           expect(await federation.getMembersByRevision.call(i + 1)).to.be.equalTo(newMembers);
+
+          for (let j = 0; i < prevMembers.length; ++i) {
+            expect(await federation.isMemberByRevision.call(i, prevMembers[j])).to.be.true();
+          }
+
+          for (let j = 0; i < newMembers.length; ++i) {
+            expect(await federation.isMemberByRevision.call(i + 1, newMembers[j])).to.be.true();
+          }
+
           expect(await federation.getConsensusThresholdByRevision.call(i)).to.be.bignumber.equal(prevThreshold);
           expect(await federation.getConsensusThresholdByRevision.call(i + 1)).to.be.bignumber.equal(newThreshold);
 
@@ -254,6 +268,10 @@ contract('Federation', (accounts) => {
         const federation = await Federation.new(members, { from: owner });
         expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(0);
         expect(await federation.getMembersByRevision.call(0)).to.be.equalTo(members);
+        for (let i = 0; i < members.length; ++i) {
+          expect(await federation.isMemberByRevision.call(0, members[i])).to.be.true();
+        }
+
         const threshold = Math.ceil(members.length * 2 / 3);
         expect(await federation.getConsensusThreshold.call()).to.be.bignumber.equal(threshold);
         expect(await federation.getConsensusThresholdByRevision.call(0)).to.be.bignumber.equal(threshold);
@@ -268,10 +286,20 @@ contract('Federation', (accounts) => {
           const newThreshold = Math.ceil(members.length * 2 / 3);
 
           await federation.removeMember(existingMember);
+
           expect(await federation.getMembers.call()).to.be.equalTo(members);
           expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
           expect(await federation.getMembersByRevision.call(i)).to.be.equalTo(prevMembers);
           expect(await federation.getMembersByRevision.call(i + 1)).to.be.equalTo(members);
+
+          for (let j = 0; i < prevMembers.length; ++i) {
+            expect(await federation.isMemberByRevision.call(i, prevMembers[j])).to.be.true();
+          }
+
+          for (let j = 0; i < members.length; ++i) {
+            expect(await federation.isMemberByRevision.call(i + 1, members[j])).to.be.true();
+          }
+
           expect(await federation.getConsensusThresholdByRevision.call(i)).to.be.bignumber.equal(prevThreshold);
           expect(await federation.getConsensusThresholdByRevision.call(i + 1)).to.be.bignumber.equal(newThreshold);
         }

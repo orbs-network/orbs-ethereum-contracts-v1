@@ -43,7 +43,7 @@ contract Federation is IFederation, Ownable {
     /// @dev Returns whether a specific member exists in the federation.
     /// @param _member address The public address of the member to check.
     function isMember(address _member) public view returns (bool) {
-        (, bool exists) = findMemberIndex(_member);
+        (, bool exists) = findMemberIndex(members, _member);
         return exists;
     }
 
@@ -61,6 +61,14 @@ contract Federation is IFederation, Ownable {
     /// @dev Returns the revision of the current federation.
     function getFederationRevision() public view returns (uint) {
         return federationRevision;
+    }
+
+    /// @dev Returns whether a specific member exists in the federation by revision.
+    /// @param _federationRevision uint The revision to query.
+    /// @param _member address The public address of the member to check.
+    function isMemberByRevision(uint _federationRevision, address _member) public view returns (bool) {
+         (, bool exists) = findMemberIndex(getMembersByRevision(_federationRevision), _member);
+        return exists;
     }
 
     /// @dev Returns the federation members by revision.
@@ -98,7 +106,7 @@ contract Federation is IFederation, Ownable {
         require(members.length - 1 > 0, "Can't remove all members!");
 
         // Check for existence.
-        (uint i, bool exists) = findMemberIndex(_member);
+        (uint i, bool exists) = findMemberIndex(members, _member);
         require(exists, "Member doesn't exist!");
 
         membersByRevision[federationRevision++] = members;
@@ -116,11 +124,12 @@ contract Federation is IFederation, Ownable {
     }
 
     /// @dev Returns an index of an existing member. Returns whether the member exist.
+    /// @param _members address[] The federation members list to check.
     /// @param _member address The public address of the member to look for.
-    function findMemberIndex(address _member) private view returns(uint, bool) {
+    function findMemberIndex(address[] _members, address _member) private pure returns(uint, bool) {
         uint i;
-        for (i = 0; i < members.length; ++i) {
-            if (members[i] == _member) {
+        for (i = 0; i < _members.length; ++i) {
+            if (_members[i] == _member) {
                 return (i, true);
             }
         }
@@ -165,6 +174,14 @@ contract Federation is IFederation, Ownable {
         }
 
         return true;
+    }
+
+    /// @dev Returns whether a specific member exists in the federation.
+    /// @param _members address[] The federation members list to check.
+    /// @param _member address The public address of the member to check.
+    function isMember(address[] _members, address _member) private pure returns (bool) {
+        (, bool exists) = findMemberIndex(_members, _member);
+        return exists;
     }
 
     /// @dev Returns the required threshold for consensus given a list of federation members.

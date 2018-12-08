@@ -16,6 +16,11 @@ interface IFederation {
     /// @dev Returns the revision of the current federation.
     function getFederationRevision() external view returns (uint);
 
+    /// @dev Returns whether a specific member exists in the federation by revision.
+    /// @param _federationRevision uint The revision to query.
+    /// @param _member address The public address of the member to check.
+    function isMemberByRevision(uint _federationRevision, address _member) external view returns (bool);
+
     /// @dev Returns the federation members by revision.
     /// @param _federationRevision uint The revision to query.
     function getMembersByRevision(uint _federationRevision) external view returns (address[]);
