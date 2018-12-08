@@ -148,17 +148,17 @@ contract('CryptoUtils', (accounts) => {
           });
 
           it(`should verify existence of ${existing}`, async () => {
-            expect(await cryptoUtils.isMerkleProofValid(proof, root, utils.bufferToHex(existing))).to.be.true();
+            expect(await cryptoUtils.isMerkleProofValid.call(proof, root, utils.bufferToHex(existing))).to.be.true();
           });
 
           it('should fail using different leaf for the same proof', async () => {
             const nonExisting = "I don't exist!";
-            expect(await cryptoUtils.isMerkleProofValid(proof, root, utils.bufferToHex(nonExisting))).to.be.false();
+            expect(await cryptoUtils.isMerkleProofValid.call(proof, root, utils.bufferToHex(nonExisting))).to.be.false();
           });
 
           it('should fail when using the wrong root', async () => {
             const wrongRoot = utils.bufferToHex(utils.keccak256('I am a wrong root!'));
-            expect(await cryptoUtils.isMerkleProofValid(proof, wrongRoot, utils.bufferToHex(existing))).to.be.false();
+            expect(await cryptoUtils.isMerkleProofValid.call(proof, wrongRoot, utils.bufferToHex(existing))).to.be.false();
           });
         });
       });
