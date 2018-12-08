@@ -29,7 +29,7 @@ contract('AutonomousSwapBridge', (accounts) => {
     const federationMembers = accounts.slice(7, 10);
     federation = await Federation.new(federationMembers, { from: owner });
 
-    verifier = await AutonomousSwapProofVerifier.new();
+    verifier = await AutonomousSwapProofVerifier.new(federation.address);
   });
 
   describe('construction', async () => {
