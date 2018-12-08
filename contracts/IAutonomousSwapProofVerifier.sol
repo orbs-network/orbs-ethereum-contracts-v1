@@ -5,14 +5,17 @@ pragma solidity 0.4.24;
 interface IAutonomousSwapProofVerifier {
     /// @dev Parses and validates the raw transfer proof. Please note that this method can't be external (yet), since
     /// our current Solidity version doesn't support unbound parameters (e.g., bytes) in external interface methods.
-    /// @param _proof bytes The raw transfer proof.
+    /// @param _resultsBlockHeader bytes The raw Results Block Header.
+    /// @param _resultsBlockProof bytes The raw Results Block Proof.
+    /// @param _transactionReceipt bytes The raw Transaction Receipt.
     /// @return from bytes20 from The Orbs address to transfer from.
     /// @return to address The address to transfer to.
     /// @return value uint256 The amount to be transferred.
     /// @return networkType uint32 The network type of the Orbs network this contract is compatible for.
     /// @return virtualChainId uint64 The virtual chain ID of the underlying token on the Orbs network.
     /// @return tuid uint256 The TUID of the corresponding transaction.
-    function processProof(bytes _proof) public pure returns(bytes20 from, address to, uint256 value,
+    function processProof(bytes _resultsBlockHeader, bytes _resultsBlockProof, bytes _transactionReceipt,
+        bytes32[] _transactionReceiptProof) public view returns(bytes20 from, address to, uint256 value,
         uint32 networkType, uint64 virtualChainId, uint256 tuid);
 
     /// @dev Checks Orbs address for correctness. Please note that this method can't be external (yet), since
