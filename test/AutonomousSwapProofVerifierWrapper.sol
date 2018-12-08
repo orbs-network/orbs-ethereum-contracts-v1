@@ -10,6 +10,19 @@ contract AutonomousSwapProofVerifierWrapper is AutonomousSwapProofVerifier {
     constructor(IFederation _federation) public AutonomousSwapProofVerifier(_federation) {
     }
 
+    function processProofRaw(bytes _resultsBlockHeader, bytes _resultsBlockProof, bytes _transactionReceipt,
+        bytes32[] _transactionReceiptProof) public view returns(bytes20 from, address to, uint256 value,
+        uint32 networkType, uint64 virtualChainId, uint256 tuid) {
+        TransferInEvent memory eventData = processProof(_resultsBlockHeader, _resultsBlockProof, _transactionReceipt,
+            _transactionReceiptProof);
+        from = eventData.from;
+        to = eventData.to;
+        value = eventData.value;
+        networkType = eventData.networkType;
+        virtualChainId = eventData.virtualChainId;
+        tuid = eventData.tuid;
+    }
+
     function parseResultsBlockHeaderRaw(bytes _resultsBlockHeader) public pure returns (uint32 protocolVersion,
         uint64 virtualChainId, uint32 networkType, uint64 timestamp, bytes32 transactionReceiptMerkleRoot) {
         ResultsBlockHeader memory header = parseResultsBlockHeader(_resultsBlockHeader);

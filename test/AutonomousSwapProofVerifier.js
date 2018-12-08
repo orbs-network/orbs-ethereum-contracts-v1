@@ -219,7 +219,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
         const resultsBlockProof = ASBProof.buildResultsProof(resultsBlockProofData);
 
-        const proofData = await verifier.processProof(utils.bufferToHex(resultsBlockHeader),
+        const proofData = await verifier.processProofRaw.call(utils.bufferToHex(resultsBlockHeader),
           utils.bufferToHex(resultsBlockProof), utils.bufferToHex(transactionReceipt),
           transactionsMerkleTree.getHexProof(transactionReceipt));
 

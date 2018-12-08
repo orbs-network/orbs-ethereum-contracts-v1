@@ -1,4 +1,5 @@
 pragma solidity 0.4.24;
+pragma experimental ABIEncoderV2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
@@ -82,24 +83,28 @@ contract AutonomousSwapBridge {
     }
 
     /// @dev Transfer tokens from Orbs.
-    /// @param _proof bytes TransferIn proof.
-    function transferIn(bytes _proof) public {
-        (bytes20 from, address to, uint256 value, uint32 nType, uint64 vid, uint256 tuid) = verifier.processProof(_proof);
+    /// @param _resultsBlockHeader bytes The raw Results Block Header.
+    /// @param _resultsBlockProof bytes The raw Results Block Proof.
+    /// @param _transactionReceipt bytes The raw Transaction Receipt.
+    function transferIn(bytes _resultsBlockHeader, bytes _resultsBlockProof, bytes _transactionReceipt,
+        bytes32[] _transactionReceiptProof) public {
+        IAutonomousSwapProofVerifier.TransferInEvent memory eventData = verifier.processProof(_resultsBlockHeader,
+            _resultsBlockProof, _transactionReceipt, _transactionReceiptProof);
 
-        require(to != address(0), "Destination address can't be 0!");
-        require(value > 0, "Value must be greater than 0!");
+        require(eventData.to != address(0), "Destination address can't be 0!");
+        require(eventData.value > 0, "Value must be greater than 0!");
 
         // Verify network and protocol parameters.
-        require(networkType == nType, "Network type must be the same!");
-        require(virtualChainId == vid, "Virtual Chain ID must be the same!");
+        require(networkType == eventData.networkType, "Network type must be the same!");
+        require(virtualChainId == eventData.virtualChainId, "Virtual Chain ID must be the same!");
 
         // Make sure that the transaction wasn't already spent and mark it as such;
-        require(!spentOrbsTuids[tuid], "TUID was already spent!");
-        spentOrbsTuids[tuid] = true;
+        require(!spentOrbsTuids[eventData.tuid], "TUID was already spent!");
+        spentOrbsTuids[eventData.tuid] = true;
 
         // Transfer the token.
-        require(token.transfer(to, value), "Insufficient funds!");
+        require(token.transfer(eventData.to, eventData.value), "Insufficient funds!");
 
-        emit TransferredIn(tuid, from, to, value);
+        emit TransferredIn(eventData.tuid, eventData.from, eventData.to, eventData.value);
     }
 }
