@@ -248,11 +248,11 @@ contract('Federation', (accounts) => {
           expect(await federation.getMembersByRevision.call(i)).to.be.equalTo(prevMembers);
           expect(await federation.getMembersByRevision.call(i + 1)).to.be.equalTo(newMembers);
 
-          for (let j = 0; i < prevMembers.length; ++i) {
+          for (let j = 0; j < prevMembers.length; ++j) {
             expect(await federation.isMemberByRevision.call(i, prevMembers[j])).to.be.true();
           }
 
-          for (let j = 0; i < newMembers.length; ++i) {
+          for (let j = 0; j < newMembers.length; ++j) {
             expect(await federation.isMemberByRevision.call(i + 1, newMembers[j])).to.be.true();
           }
 
@@ -292,11 +292,11 @@ contract('Federation', (accounts) => {
           expect(await federation.getMembersByRevision.call(i)).to.be.equalTo(prevMembers);
           expect(await federation.getMembersByRevision.call(i + 1)).to.be.equalTo(members);
 
-          for (let j = 0; i < prevMembers.length; ++i) {
+          for (let j = 0; j < prevMembers.length; ++j) {
             expect(await federation.isMemberByRevision.call(i, prevMembers[j])).to.be.true();
           }
 
-          for (let j = 0; i < members.length; ++i) {
+          for (let j = 0; j < members.length; ++j) {
             expect(await federation.isMemberByRevision.call(i + 1, members[j])).to.be.true();
           }
 
