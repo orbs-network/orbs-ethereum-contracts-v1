@@ -7,6 +7,7 @@ declare -a CONTRACTS=(
     "Federation"
     "SubscriptionManager"
     "AutonomousSwapBridge"
+    "AutonomousSwapProofVerifier"
 )
 
 mkdir -p ${OUTPUT}
