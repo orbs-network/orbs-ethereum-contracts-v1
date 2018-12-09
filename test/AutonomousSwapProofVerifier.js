@@ -154,6 +154,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const ORBS_ASB_CONTRACT_NAME = 'asb';
     const PROTOCOL_VERSION = 2;
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
+    const TRANSFERED_OUT_EVENT_ID = 1;
 
     const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
     const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
@@ -186,7 +187,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const proof = (new ASBProof())
           .setFederationMemberAccounts(federationMemberAccounts)
           .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-          .setEventId(7755)
+          .setEventId(TRANSFERED_OUT_EVENT_ID)
           .setTuid(12)
           .setOrbsAddress(ORBS_ADDRESS)
           .setEthereumAddress(accounts[5])
@@ -222,7 +223,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         proofs.push((new ASBProof())
           .setFederationMemberAccounts(initialFederationMemberAccounts.slice(0))
           .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-          .setEventId(7755)
+          .setEventId(TRANSFERED_OUT_EVENT_ID)
           .setTuid(12)
           .setOrbsAddress(ORBS_ADDRESS)
           .setEthereumAddress(accounts[5])
@@ -261,7 +262,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         proof = (new ASBProof())
           .setFederationMemberAccounts(federationMemberAccounts)
           .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-          .setEventId(7755)
+          .setEventId(TRANSFERED_OUT_EVENT_ID)
           .setTuid(12)
           .setOrbsAddress(ORBS_ADDRESS)
           .setEthereumAddress(accounts[5])
@@ -303,6 +304,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         context('is too short', async () => {
           it('should revert', async () => {
             proof.setEthereumAddress(accounts[1].slice(0, -4));
+          });
+        });
+      });
+
+      context('event ID is not TRANSFERRED_OUT', async () => {
+        context('is incorrect', async () => {
+          it('should revert', async () => {
+            proof.setEventId(100);
           });
         });
       });

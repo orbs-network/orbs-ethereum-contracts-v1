@@ -129,7 +129,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Extract the Autonomous Swap Event Data from the transaction receipt:
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
-        // TODO: Verify that the event belongs to the Orbs ASB smart contract:
+        // Verify that the event is a TRANSFERRED_OUT event:
+        require(eventData.eventId == TRANSFERRED_OUT, "Invalid event ID!");
 
         // Assign the rest of the fields.
         transferInEvent.orbsContractName = eventData.orbsContractName;
