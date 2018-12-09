@@ -221,39 +221,47 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         await expectRevert(getProofData(proof));
       });
 
-      context('Orbs address is too long', async () => {
-        it('should revert', async () => {
-          proof.setOrbsAddress(`${ORBS_ADDRESS}aa`);
+      context('Orbs address', async () => {
+        context('is too long', async () => {
+          it('should revert', async () => {
+            proof.setOrbsAddress(`${ORBS_ADDRESS}aa`);
+          });
+        });
+
+        context('is too short', async () => {
+          it('should revert', async () => {
+            proof.setOrbsAddress(ORBS_ADDRESS.slice(0, -2));
+          });
         });
       });
 
-      context('Orbs address is too short', async () => {
-        it('should revert', async () => {
-          proof.setOrbsAddress(ORBS_ADDRESS.slice(0, -2));
+      context('Orbs address', async () => {
+        context('is too long', async () => {
+          it('should revert', async () => {
+            proof.setOrbsAddress(`${accounts[1]}1234`);
+          });
+        });
+
+        context('is too short', async () => {
+          it('should revert', async () => {
+            proof.setOrbsAddress(accounts[1].slice(0, -4));
+          });
         });
       });
 
-      context('Ethereum address is too long', async () => {
-        it('should revert', async () => {
-          proof.setOrbsAddress(`${accounts[1]}1234`);
+      context('execution result', async () => {
+        context('is 0', async () => {
+          it('should revert', async () => {
+            proof.setTransactionExecutionResult(0);
+          });
         });
       });
 
-      context('Ethereum address (too short)', async () => {
-        it('should revert', async () => {
-          proof.setOrbsAddress(accounts[1].slice(0, -4));
-        });
-      });
-
-      context('execution result is 0', async () => {
-        it('should revert', async () => {
-          proof.setTransactionExecutionResult(0);
-        });
-      });
-
-      context('protocol version is incorrect', async () => {
-        it('should revert', async () => {
-          proof.setProtocolVersion(PROTOCOL_VERSION + 10);
+      context('protocol version', async () => {
+        context('is incorrect', async () => {
+          it('should revert', async () => {
+            proof.setProtocolVersion(PROTOCOL_VERSION + 10);
+          });
         });
       });
     });
