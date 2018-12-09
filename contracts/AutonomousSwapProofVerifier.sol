@@ -319,6 +319,11 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     function isSignatureValid(ResultsBlockProof memory proof) internal view returns (bool) {
         uint requiredThreshold = federation.getConsensusThresholdByRevision(proof.blockProofVersion);
         uint currentThreshold = 0;
+
+        // Since Solidity doesn't support dynamic arrays in memory, we will use a fixed sizes addresses array for
+        // looking for duplicates: a[i] == address(0) would mean that signature[i] is duplicated.
+        address[] memory duplicatesLookup = new address[](proof.numOfSignatures);
+
         for (uint i = 0; i < proof.numOfSignatures; ++i) {
             address signer = proof.publicAddresses[i];
             bytes memory signature = proof.signatures[i];
@@ -332,6 +337,21 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
             if (!CryptoUtils.isSignatureValid(proof.blockrefHash, signature, signer)) {
                 continue;
             }
+
+            // Verify that the signature isn't duplicated.
+            bool unique = true;
+            for (uint j = 0; j < duplicatesLookup.length; ++j) {
+                if (signer == duplicatesLookup[j]) {
+                    unique = false;
+                    break;
+                }
+            }
+
+            if (!unique) {
+                continue;
+            }
+
+            duplicatesLookup[i] = signer;
 
             // If we've reached so far, then this is a valid signature indeed and should be take into the account. If
             // we have collected enough signatures - we can stop and return true.
