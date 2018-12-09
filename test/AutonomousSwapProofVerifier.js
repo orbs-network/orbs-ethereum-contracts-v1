@@ -14,6 +14,7 @@ const AutonomousSwapProofVerifierWrapper = artifacts.require('./AutonomousSwapPr
 contract('AutonomousSwapProofVerifier', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
   const VERSION = 1;
+  const MAX_SIGNATURES = 32;
 
   const owner = accounts[0];
 
@@ -59,7 +60,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
     describe('results block proof', async () => {
       it('should properly parse', async () => {
-        const testSignatures = TEST_ACCOUNTS.slice(0, 32).map((account) => {
+        const testSignatures = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES).map((account) => {
           const messageHashBuffer = utils.keccak256('Hello world3!');
           const rawSignature = utils.ecsign(messageHashBuffer, utils.toBuffer(account.privateKey));
           const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
@@ -162,7 +163,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     let verifier;
 
     beforeEach(async () => {
-      federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
+      federationMemberAccounts = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES);
       federationMembersAddresses = federationMemberAccounts.map(account => account.address);
       federation = await Federation.new(federationMembersAddresses, { from: owner });
       verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
@@ -302,12 +303,6 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
             });
           });
 
-          context('few incorrect message signatures', async () => {
-            it.skip('should process correctly', async () => {
-
-            });
-          });
-
           context('few duplicate signatures', async () => {
             it('should process correctly', async () => {
               proof.setFederationMemberAccounts(getWithDuplicates(2));
@@ -397,12 +392,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           });
 
           context('too many incorrect message signatures', async () => {
-            it.skip('should revert', async () => {
+            it('should revert', async () => {
+              proof.setBlockRefHash(utils.keccak256('Wrong block!!!'));
             });
           });
 
           context('too many signatures', async () => {
-            it.skip('should revert', async () => {
+            it('should revert', async () => {
+              proof.setFederationMemberAccounts(TEST_ACCOUNTS.slice(0, MAX_SIGNATURES + 10));
             });
           });
 

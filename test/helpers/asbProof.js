@@ -43,7 +43,7 @@ class ASBProof {
     const transactionsBlockHash = DUMMY_BLOCK_HASH; // Just a dummy value.
     const blockHash = this.blockHash || utils.keccak256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
     const blockrefMessage = Buffer.concat([Buffer.alloc(20), blockHash]);
-    const blockrefHash = utils.keccak256(blockrefMessage);
+    const blockrefHash = this.blockrefHash || utils.keccak256(blockrefMessage);
 
     const signatures = this.federationMemberAccounts.map((account) => {
       const rawSignature = utils.ecsign(blockrefHash, utils.toBuffer(account.privateKey));
@@ -152,6 +152,11 @@ class ASBProof {
 
   setBlockHash(blockHash) {
     this.blockHash = blockHash;
+    return this;
+  }
+
+  setBlockRefHash(blockrefHash) {
+    this.blockrefHash = blockrefHash;
     return this;
   }
 
