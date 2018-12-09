@@ -19,7 +19,7 @@ contract('StringUtils', () => {
       '1212121432353253450004923042304-23-=-=3-12=31-=23-=12=-0sdkjsdjksdjksjkskjsd',
     ].forEach((str) => {
       it(`should equal "${str}" to itself`, async () => {
-        expect(await stringUtils.equal(str, str)).to.be.true();
+        expect(await stringUtils.equal.call(str, str)).to.be.true();
       });
     });
 
@@ -30,7 +30,7 @@ contract('StringUtils', () => {
       { str1: 'Hello World!', str2: 'Hellow World!   ' },
     ].forEach((spec) => {
       it(`should not equal "${spec.str1}" to "${spec.str1}"`, async () => {
-        expect(await stringUtils.equal(spec.str1, spec.str2)).to.be.false();
+        expect(await stringUtils.equal.call(spec.str1, spec.str2)).to.be.false();
       });
     });
   });
