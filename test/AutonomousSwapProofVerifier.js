@@ -356,6 +356,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         });
       });
 
+      context('value', async () => {
+        context('is of wrong size', async () => {
+          it('should revert', async () => {
+            proof.setEventOptions({ wrongValueSize: true });
+          });
+        });
+      });
+
       context('execution result', async () => {
         context('is 0', async () => {
           it('should revert', async () => {

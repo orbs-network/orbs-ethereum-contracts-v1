@@ -23,7 +23,7 @@ class ASBProof {
       orbsAddress: this.orbsAddress,
       ethereumAddress: this.ethereumAddress,
       value: this.value,
-    });
+    }, this.eventOptions);
     const transactionReceipts = this.transactionReceipts ? [...this.transactionReceipts, transactionReceipt]
       : [transactionReceipt];
     const transactionsMerkleTree = new MerkleTree(transactionReceipts);
@@ -177,6 +177,11 @@ class ASBProof {
     return this;
   }
 
+  setEventOptions(eventOptions) {
+    this.eventOptions = eventOptions;
+    return this;
+  }
+
   verifyData() {
     if (!Array.isArray(this.federationMemberAccounts) || this.federationMemberAccounts.length === 0) {
       throw new Error('Missing federation member accounts!');
@@ -298,8 +303,8 @@ class ASBProof {
   // | event length     |     40 | 4        | uint32   |                       |
   // | event data       |     44 | variable | bytes    |                       |
   // +------------------+--------+----------+----------+-----------------------+
-  static buildTransactionReceipt(transaction, event) {
-    const eventBuffer = ASBProof.buildEventData(event);
+  static buildTransactionReceipt(transaction, event, eventOptions) {
+    const eventBuffer = ASBProof.buildEventData(event, eventOptions);
     return Buffer.concat([
       Buffer.alloc(36),
       Bytes.numberToBuffer(transaction.executionResult, UINT32_SIZE),
@@ -323,7 +328,7 @@ class ASBProof {
   // | tokens length            | N+64   | 4    | always 32   | reserved                      |
   // | tokens                   | N+68   | 32   | uint256     |                               |
   // +--------------------------+--------+------+-------------+-------------------------------+
-  static buildEventData(event) {
+  static buildEventData(event, options = {}) {
     const ethereumAddressBuffer = Bytes.prefixedHexToBuffer(event.ethereumAddress);
     return Buffer.concat([
       Bytes.numberToBuffer(event.orbsContractName.length, UINT32_SIZE),
@@ -334,7 +339,7 @@ class ASBProof {
       event.orbsAddress,
       Bytes.numberToBuffer(ethereumAddressBuffer.length, UINT32_SIZE),
       ethereumAddressBuffer,
-      Bytes.numberToBuffer(UINT256_SIZE, UINT32_SIZE),
+      Bytes.numberToBuffer(!options.wrongValueSize ? UINT256_SIZE : UINT32_SIZE, UINT32_SIZE),
       Bytes.numberToBuffer(event.value, UINT256_SIZE),
     ]);
   }
