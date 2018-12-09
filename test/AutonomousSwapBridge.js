@@ -298,7 +298,7 @@ contract('AutonomousSwapBridge', (accounts) => {
 
       context('incorrect virtual chain ID', async () => {
         it('should revert', async () => {
-          proof.setNetworkType(VIRTUAL_CHAIN_ID + 100);
+          proof.setVirtualChainId(VIRTUAL_CHAIN_ID + 100);
         });
       });
 
