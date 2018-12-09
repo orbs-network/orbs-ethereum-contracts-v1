@@ -3,6 +3,7 @@ import utils from 'ethereumjs-util';
 
 import expectRevert from './helpers/expectRevert';
 import ASBProof from './helpers/asbProof';
+import MerkleTree from './helpers/merkleTree';
 
 const TEST_ACCOUNTS = require('./accounts.json');
 
@@ -372,7 +373,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       context('block hash', async () => {
         context('is incorrect', async () => {
           it('should revert', async () => {
-            proof.setBlockHash(utils.keccak256('Wrong block!!!'));
+            proof.setWrongBlockHash(utils.keccak256('Wrong block!!!'));
           });
         });
       });
@@ -393,7 +394,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
           context('too many incorrect message signatures', async () => {
             it('should revert', async () => {
-              proof.setBlockRefHash(utils.keccak256('Wrong block!!!'));
+              proof.setWrongBlockRefHash(utils.keccak256('Wrong block!!!'));
             });
           });
 
@@ -413,17 +414,23 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
       context('receipt merkle proof', async () => {
         context('incorrect root', async () => {
-          it.skip('should revert', async () => {
+          it('should revert', async () => {
+            proof.setWrongTransactionReceiptProofRoot(utils.keccak256('Wrong root!!!'));
           });
         });
 
         context('incorrect proof', async () => {
-          it.skip('should revert', async () => {
+          it('should revert', async () => {
+            const merkle = new MerkleTree([1, 2, 3]);
+            proof.setWrongTransactionReceiptProof(merkle.getProof(2));
           });
         });
 
         context('incorrect receipt', async () => {
-          it.skip('should revert', async () => {
+          it('should revert', async () => {
+            const wrongTransactionReceipt = proof.getProof().transactionReceipt;
+            wrongTransactionReceipt[0] = !wrongTransactionReceipt[0]; // Make sure at least one bit is different.
+            proof.setWrongTransactionReceipt(wrongTransactionReceipt);
           });
         });
       });

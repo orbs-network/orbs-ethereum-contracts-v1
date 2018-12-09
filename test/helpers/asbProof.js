@@ -27,7 +27,7 @@ class ASBProof {
     const transactionReceipts = this.transactionReceipts ? [...this.transactionReceipts, transactionReceipt]
       : [transactionReceipt];
     const transactionsMerkleTree = new MerkleTree(transactionReceipts);
-    const transactionReceiptProofRoot = transactionsMerkleTree.getRoot();
+    const transactionReceiptProofRoot = this.transactionReceiptProofRoot || transactionsMerkleTree.getRoot();
 
     // Create the results block header data.
     const resultsBlockHeader = ASBProof.buildResultsBlockHeader({
@@ -65,8 +65,8 @@ class ASBProof {
     return {
       resultsBlockHeader,
       resultsBlockProof,
-      transactionReceipt,
-      transactionReceiptProof: transactionsMerkleTree.getProof(transactionReceipt),
+      transactionReceipt: this.transactionReceipt || transactionReceipt,
+      transactionReceiptProof: this.transactionReceiptProof || transactionsMerkleTree.getProof(transactionReceipt),
     };
   }
 
@@ -150,13 +150,30 @@ class ASBProof {
     return this;
   }
 
-  setBlockHash(blockHash) {
+  // The following are used for testing failures:
+
+  setWrongBlockHash(blockHash) {
     this.blockHash = blockHash;
     return this;
   }
 
-  setBlockRefHash(blockrefHash) {
+  setWrongBlockRefHash(blockrefHash) {
     this.blockrefHash = blockrefHash;
+    return this;
+  }
+
+  setWrongTransactionReceiptProofRoot(transactionReceiptProofRoot) {
+    this.transactionReceiptProofRoot = transactionReceiptProofRoot;
+    return this;
+  }
+
+  setWrongTransactionReceiptProof(transactionReceiptProof) {
+    this.transactionReceiptProof = transactionReceiptProof;
+    return this;
+  }
+
+  setWrongTransactionReceipt(transactionReceipt) {
+    this.transactionReceipt = transactionReceipt;
     return this;
   }
 
