@@ -124,7 +124,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         TransactionReceipt memory transactionReceipt = parseTransactionReceipt(_transactionReceipt);
 
         // Verify transaction's execution result.
-        require(transactionReceipt.executionResult == EXECUTION_RESULT_SUCCESS, "Incorrect execution result!");
+        require(transactionReceipt.executionResult == EXECUTION_RESULT_SUCCESS, "Invalid execution result!");
 
         // Extract the Autonomous Swap Event Data from the transaction receipt:
         EventData memory eventData = parseEventData(transactionReceipt.eventData);

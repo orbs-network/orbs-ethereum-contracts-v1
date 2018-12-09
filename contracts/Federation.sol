@@ -14,11 +14,11 @@ contract Federation is IFederation, Ownable {
     // The version of the current federation smart contract.
     uint public constant VERSION = 1;
 
-    // The address of the current subscription manager.
-    Upgradable public subscriptionManager;
-
     // Maximum number of the federation members.
     uint public constant MAX_FEDERATION_MEMBERS = 100;
+
+    // The address of the current subscription manager.
+    Upgradable public subscriptionManager;
 
     // Array of the federation members' public addresses.
     address[] public members;

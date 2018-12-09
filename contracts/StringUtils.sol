@@ -11,7 +11,6 @@ library StringUtils {
             return false;
         }
 
-
         return keccak256(bytes(str1)) == keccak256(bytes(str2));
     }
 }
