@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 
 
-// @title Extension to the BytesLib library.
+/// @title Extension to the BytesLib library.
 library BytesLibEx {
     using BytesLib for bytes;
 

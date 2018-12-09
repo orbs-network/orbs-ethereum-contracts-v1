@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 import "openzeppelin-solidity/contracts/cryptography/MerkleProof.sol";
 
 
-// @title Cryptographic utilities.
+/// @title Cryptographic utilities.
 library CryptoUtils {
     uint8 public constant UNCOMPRESSED_PUBLIC_KEY_SIZE = 64;
 
