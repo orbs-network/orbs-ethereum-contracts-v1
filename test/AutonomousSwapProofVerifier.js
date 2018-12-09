@@ -15,13 +15,15 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
   const VERSION = 1;
 
+  const owner = accounts[0];
+
   it('should not allow to create with a 0x0 federation', async () => {
-    await expectRevert(AutonomousSwapProofVerifierWrapper.new(ZERO_ADDRESS));
+    await expectRevert(AutonomousSwapProofVerifierWrapper.new(ZERO_ADDRESS, { from: owner }));
   });
 
   it('should report version', async () => {
-    const federation = await Federation.new(accounts.slice(0, 2));
-    const verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address);
+    const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
+    const verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
     expect(await verifier.VERSION.call()).to.be.bignumber.equal(VERSION);
   });
 
@@ -29,8 +31,8 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     let verifier;
 
     beforeEach(async () => {
-      const federation = await Federation.new(accounts.slice(0, 2));
-      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address);
+      const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
+      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
     });
 
     describe('results block header', async () => {
