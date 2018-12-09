@@ -104,7 +104,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           eventId: 12,
           tuid: 56789,
           orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
-          ethereumAddress: '0x2c80c37bdf6d68390ccaa03a125f65dcc43b7a5f',
+          ethereumAddress: accounts[8],
           value: 1500,
         };
 
@@ -128,7 +128,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           eventId: 12,
           tuid: 56789,
           orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
-          ethereumAddress: '0x2c80c37bdf6d68390ccaa03a125f65dcc43b7a5f',
+          ethereumAddress: accounts[3],
           value: 1500,
         };
 
@@ -151,6 +151,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const VIRTUAL_CHAIN_ID = 0x6b696e;
     const ORBS_ASB_CONTRACT_NAME = 'asb';
     const PROTOCOL_VERSION = 51;
+    const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
 
     const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
     const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
@@ -161,14 +162,20 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address);
     });
 
+    const getProofData = async (proof) => {
+      const rawProof = proof.getHexProof();
+      return verifier.processProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
+        rawProof.transactionReceipt, rawProof.transactionReceiptProof);
+    };
+
     context('valid', async () => {
-      it('should process correctly', async () => {
+      it.only('should process correctly', async () => {
         const proof = (new ASBProof())
           .setFederationMemberAccounts(federationMemberAccounts)
           .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
           .setEventId(7755)
           .setTuid(12)
-          .setOrbsAddress('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a')
+          .setOrbsAddress(ORBS_ADDRESS)
           .setEthereumAddress(accounts[5])
           .setValue(100000)
           .setTransactionExecutionResult(1)
