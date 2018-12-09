@@ -235,16 +235,16 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         });
       });
 
-      context('Orbs address', async () => {
+      context('Ethereum address', async () => {
         context('is too long', async () => {
           it('should revert', async () => {
-            proof.setOrbsAddress(`${accounts[1]}1234`);
+            proof.setEthereumAddress(`${accounts[1]}1234`);
           });
         });
 
         context('is too short', async () => {
           it('should revert', async () => {
-            proof.setOrbsAddress(accounts[1].slice(0, -4));
+            proof.setEthereumAddress(accounts[1].slice(0, -4));
           });
         });
       });
