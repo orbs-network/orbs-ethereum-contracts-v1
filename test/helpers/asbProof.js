@@ -41,7 +41,7 @@ class ASBProof {
     // Create the results block proof.
     const resultsBlockHeaderHash = utils.keccak256(resultsBlockHeader);
     const transactionsBlockHash = DUMMY_BLOCK_HASH; // Just a dummy value.
-    const blockHash = utils.keccak256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
+    const blockHash = this.blockHash || utils.keccak256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
     const blockrefMessage = Buffer.concat([Buffer.alloc(20), blockHash]);
     const blockrefHash = utils.keccak256(blockrefMessage);
 
@@ -147,6 +147,11 @@ class ASBProof {
 
   setBlockProofVersion(blockProofVersion) {
     this.blockProofVersion = blockProofVersion;
+    return this;
+  }
+
+  setBlockHash(blockHash) {
+    this.blockHash = blockHash;
     return this;
   }
 

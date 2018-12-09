@@ -264,6 +264,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           });
         });
       });
+
+      context('block hash', async () => {
+        context('is incorrect', async () => {
+          it('should revert', async () => {
+            proof.setBlockHash(utils.keccak256('Wrong block!!!'));
+          });
+        });
+      });
     });
   });
 });
