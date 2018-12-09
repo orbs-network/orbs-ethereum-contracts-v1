@@ -132,6 +132,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // TODO: Verify that the event belongs to the Orbs ASB smart contract:
 
         // Assign the rest of the fields.
+        transferInEvent.orbsContractName = eventData.orbsContractName;
         transferInEvent.from = eventData.from;
         transferInEvent.to = eventData.to;
         transferInEvent.value = eventData.value;

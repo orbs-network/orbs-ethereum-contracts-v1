@@ -6,11 +6,13 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 import "./IFederation.sol";
 import "./IAutonomousSwapProofVerifier.sol";
+import "./StringUtils.sol";
 
 
 /// @title Autonomous Swap Bridge (ASB) smart contract.
 contract AutonomousSwapBridge {
     using SafeMath for uint256;
+    using StringUtils for string;
 
     // The version of the current ASB smart contract.
     uint public constant VERSION = 1;
@@ -95,8 +97,9 @@ contract AutonomousSwapBridge {
         require(eventData.value > 0, "Value must be greater than 0!");
 
         // Verify network and protocol parameters.
-        require(networkType == eventData.networkType, "Network type must be the same!");
-        require(virtualChainId == eventData.virtualChainId, "Virtual Chain ID must be the same!");
+        require(networkType == eventData.networkType, "Incorrect network type!");
+        require(virtualChainId == eventData.virtualChainId, "Incorrect virtual chain ID!");
+        require(orbsASBContractName.equal(eventData.orbsContractName), "Incorrect Orbs ASB contract name!");
 
         // Make sure that the transaction wasn't already spent and mark it as such;
         require(!spentOrbsTuids[eventData.tuid], "TUID was already spent!");
