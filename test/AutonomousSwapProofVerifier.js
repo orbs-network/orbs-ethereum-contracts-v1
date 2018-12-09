@@ -155,19 +155,29 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const PROTOCOL_VERSION = 2;
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
 
-    const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
-    const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
+    let federation;
     let verifier;
 
     beforeEach(async () => {
-      const federation = await Federation.new(federationMembersAddresses);
-      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address);
+      const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
+      const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
+      federation = await Federation.new(federationMembersAddresses, { from: owner });
+      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
     });
 
     const getProofData = async (proof) => {
       const rawProof = proof.getHexProof();
-      return verifier.processProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
+      const proofData = await verifier.processProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
         rawProof.transactionReceipt, rawProof.transactionReceiptProof);
+
+      return {
+        networkType: proofData[0],
+        virtualChainId: proofData[1],
+        orbsAddress: proofData[2],
+        ethereumAddress: proofData[3],
+        value: proofData[4],
+        tuid: proofData[5],
+      };
     };
 
     context('valid', async () => {
@@ -189,13 +199,12 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           .setBlockProofVersion(0);
 
         const proofData = await getProofData(proof);
-
-        expect(proofData[0]).to.be.bignumber.equal(proof.networkType);
-        expect(proofData[1]).to.be.bignumber.equal(proof.virtualChainId);
-        expect(proofData[2]).to.eql(utils.bufferToHex(proof.orbsAddress));
-        expect(proofData[3]).to.eql(proof.ethereumAddress);
-        expect(proofData[4]).to.be.bignumber.equal(proof.value);
-        expect(proofData[5]).to.be.bignumber.equal(proof.tuid);
+        expect(proofData.networkType).to.be.bignumber.equal(proof.networkType);
+        expect(proofData.virtualChainId).to.be.bignumber.equal(proof.virtualChainId);
+        expect(proofData.orbsAddress).to.eql(utils.bufferToHex(proof.orbsAddress));
+        expect(proofData.ethereumAddress).to.eql(proof.ethereumAddress);
+        expect(proofData.value).to.be.bignumber.equal(proof.value);
+        expect(proofData.tuid).to.be.bignumber.equal(proof.tuid);
       });
     });
 
