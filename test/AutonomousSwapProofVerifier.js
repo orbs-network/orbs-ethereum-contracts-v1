@@ -208,6 +208,50 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       });
     });
 
+    it('should process correctly historic events', async () => {
+      const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 20);
+      const newFederationMemberAccounts = TEST_ACCOUNTS.slice(40, 45);
+      const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
+      federation = await Federation.new(federationMembersAddresses, { from: owner });
+      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
+
+      const proofs = [];
+      for (let i = 0; i < 5; ++i) {
+        proofs.push((new ASBProof())
+          .setFederationMemberAccounts(federationMemberAccounts.slice(0))
+          .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
+          .setEventId(7755)
+          .setTuid(12)
+          .setOrbsAddress(ORBS_ADDRESS)
+          .setEthereumAddress(accounts[5])
+          .setValue(100000)
+          .setTransactionExecutionResult(1)
+          .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
+          .setProtocolVersion(PROTOCOL_VERSION)
+          .setVirtualChainId(VIRTUAL_CHAIN_ID)
+          .setNetworkType(NETWORK_TYPE)
+          .setTimestamp(Math.floor((new Date()).getTime() / 1000))
+          .setBlockProofVersion(i));
+
+        const newMemberAccount = newFederationMemberAccounts[i];
+        await federation.addMember(newMemberAccount.address, { from: owner });
+        expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
+
+        federationMemberAccounts.push(newMemberAccount);
+      }
+
+      for (let i = 0; i < proofs.length; ++i) {
+        const proof = proofs[i];
+        const proofData = await getProofData(proof);
+        expect(proofData.networkType).to.be.bignumber.equal(proof.networkType);
+        expect(proofData.virtualChainId).to.be.bignumber.equal(proof.virtualChainId);
+        expect(proofData.orbsAddress).to.eql(utils.bufferToHex(proof.orbsAddress));
+        expect(proofData.ethereumAddress).to.eql(proof.ethereumAddress);
+        expect(proofData.value).to.be.bignumber.equal(proof.value);
+        expect(proofData.tuid).to.be.bignumber.equal(proof.tuid);
+      }
+    });
+
     context('invalid', async () => {
       let proof;
       beforeEach(async () => {
