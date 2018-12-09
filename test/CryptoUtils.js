@@ -25,7 +25,7 @@ contract('CryptoUtils', (accounts) => {
       'Hello World 2!',
       'Hello World 3!',
     ].map((message) => {
-      const messageHashBuffer = utils.keccak256(message);
+      const messageHashBuffer = utils.sha256(message);
       const rawSignature = utils.ecsign(messageHashBuffer, secretKey);
       const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
 
@@ -48,7 +48,7 @@ contract('CryptoUtils', (accounts) => {
       const correctHash = signatures[0].messageHash;
 
       const wrongSigner = accounts[5];
-      const wrongHash = `0x${utils.keccak256('Goodbye World!').toString('hex')}`;
+      const wrongHash = `0x${utils.sha256('Goodbye World!').toString('hex')}`;
       const wrongSignature = signatures[1].signature;
 
       expect(await cryptoUtils.isSignatureValid.call(correctHash, correctSignature, wrongSigner)).to.be.false();
@@ -157,7 +157,7 @@ contract('CryptoUtils', (accounts) => {
           });
 
           it('should fail when using the wrong root', async () => {
-            const wrongRoot = utils.bufferToHex(utils.keccak256('I am a wrong root!'));
+            const wrongRoot = utils.bufferToHex(utils.sha256('I am a wrong root!'));
             expect(await cryptoUtils.isMerkleProofValid.call(proof, wrongRoot, utils.bufferToHex(existing))).to.be.false();
           });
         });

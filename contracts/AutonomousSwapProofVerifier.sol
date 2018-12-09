@@ -212,7 +212,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(SHA256_SIZE);
 
         offset = offset.add(ONEOF_NESTING_SIZE); // oneof + nesting
-        res.blockrefHash = keccak256(_resultsBlockProof.slice(offset, BLOCKREFMESSAGE_SIZE));
+        res.blockrefHash = sha256(_resultsBlockProof.slice(offset, BLOCKREFMESSAGE_SIZE));
         offset = offset.add(BLOCKHASH_OFFSET);
 
         res.blockHash = _resultsBlockProof.toBytes32(offset);
@@ -368,8 +368,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         ResultsBlockProof memory proof = parseResultsBlockProof(_resultsBlockProof);
 
         // Verify the block hash.
-        bytes32 resultsBlockHeaderHash = keccak256(_resultsBlockHeader);
-        bytes32 calculatedBlockHash = keccak256(abi.encodePacked(proof.transactionsBlockHash, resultsBlockHeaderHash));
+        bytes32 resultsBlockHeaderHash = sha256(_resultsBlockHeader);
+        bytes32 calculatedBlockHash = sha256(abi.encodePacked(proof.transactionsBlockHash, resultsBlockHeaderHash));
         require(calculatedBlockHash == proof.blockHash, "Block hash doesn't match!");
 
         // Verify federation members signatures on the blockref message.

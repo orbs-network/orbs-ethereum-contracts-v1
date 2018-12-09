@@ -4,7 +4,7 @@ import treeify from 'treeify';
 class MerkleTree {
   constructor(elements) {
     // Filter empty strings and hash elements.
-    this.elements = elements.filter(el => el).map(el => utils.keccak256(el));
+    this.elements = elements.filter(el => el).map(el => utils.sha256(el));
 
     // Deduplicate elements.
     this.elements = this.elements.filter((el, idx) => MerkleTree.bufIndexOf(el, this.elements) === idx);
@@ -52,7 +52,7 @@ class MerkleTree {
       return first;
     }
 
-    return utils.keccak256(Buffer.concat([first, second].sort(Buffer.compare)));
+    return utils.sha256(Buffer.concat([first, second].sort(Buffer.compare)));
   }
 
   getRoot() {
@@ -136,7 +136,7 @@ class MerkleTree {
 
     // Convert element to 32 byte hash if it is not one already
     if (el.length !== 32 || !Buffer.isBuffer(el)) {
-      hash = utils.keccak256(el);
+      hash = utils.sha256(el);
     } else {
       hash = el;
     }

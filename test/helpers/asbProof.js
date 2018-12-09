@@ -7,7 +7,7 @@ const UINT32_SIZE = 4;
 const UINT64_SIZE = 8;
 const UINT256_SIZE = 32;
 
-const DUMMY_BLOCK_HASH = utils.keccak256('Dummy Block Hash');
+const DUMMY_BLOCK_HASH = utils.sha256('Dummy Block Hash');
 
 class ASBProof {
   getProof() {
@@ -39,11 +39,11 @@ class ASBProof {
     });
 
     // Create the results block proof.
-    const resultsBlockHeaderHash = utils.keccak256(resultsBlockHeader);
+    const resultsBlockHeaderHash = utils.sha256(resultsBlockHeader);
     const transactionsBlockHash = DUMMY_BLOCK_HASH; // Just a dummy value.
-    const blockHash = this.blockHash || utils.keccak256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
+    const blockHash = this.blockHash || utils.sha256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
     const blockrefMessage = Buffer.concat([Buffer.alloc(20), blockHash]);
-    const blockrefHash = this.blockrefHash || utils.keccak256(blockrefMessage);
+    const blockrefHash = this.blockrefHash || utils.sha256(blockrefMessage);
 
     const signatures = this.federationMemberAccounts.map((account) => {
       const rawSignature = utils.ecsign(blockrefHash, utils.toBuffer(account.privateKey));

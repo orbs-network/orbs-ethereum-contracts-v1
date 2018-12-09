@@ -44,7 +44,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           virtualChainId: 1111,
           networkType: 1,
           timestamp: 1544081404,
-          receiptMerkleRoot: utils.keccak256('Hello World!!!'),
+          receiptMerkleRoot: utils.sha256('Hello World!!!'),
         };
 
         const resultsBlockHeader = ASBProof.buildResultsBlockHeader(data);
@@ -62,7 +62,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     describe('results block proof', async () => {
       it('should properly parse', async () => {
         const testSignatures = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES).map((account) => {
-          const messageHashBuffer = utils.keccak256('Hello world3!');
+          const messageHashBuffer = utils.sha256('Hello world3!');
           const rawSignature = utils.ecsign(messageHashBuffer, utils.toBuffer(account.privateKey));
           const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
 
@@ -72,10 +72,10 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           };
         });
 
-        const blockHash = utils.keccak256('Hello World2!');
+        const blockHash = utils.sha256('Hello World2!');
         const data = {
           blockProofVersion: 5,
-          transactionsBlockHash: utils.keccak256('Hello World!'),
+          transactionsBlockHash: utils.sha256('Hello World!'),
           blockrefMessage: Buffer.concat([Buffer.alloc(20), blockHash]),
           signatures: testSignatures,
         };
@@ -86,7 +86,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
         expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion);
         expect(utils.toBuffer(resultsBlockProofData[1])).to.eql(data.transactionsBlockHash);
-        expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.keccak256(data.blockrefMessage));
+        expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(data.blockrefMessage));
         expect(utils.toBuffer(resultsBlockProofData[3])).to.eql(blockHash);
         const numOfSignatures = resultsBlockProofData[4].toNumber();
         expect(numOfSignatures).to.be.bignumber.equal(data.signatures.length);
@@ -373,7 +373,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       context('block hash', async () => {
         context('is incorrect', async () => {
           it('should revert', async () => {
-            proof.setWrongBlockHash(utils.keccak256('Wrong block!!!'));
+            proof.setWrongBlockHash(utils.sha256('Wrong block!!!'));
           });
         });
       });
@@ -394,7 +394,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
           context('too many incorrect message signatures', async () => {
             it('should revert', async () => {
-              proof.setWrongBlockRefHash(utils.keccak256('Wrong block!!!'));
+              proof.setWrongBlockRefHash(utils.sha256('Wrong block!!!'));
             });
           });
 
@@ -415,7 +415,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       context('receipt merkle proof', async () => {
         context('incorrect root', async () => {
           it('should revert', async () => {
-            proof.setWrongTransactionReceiptProofRoot(utils.keccak256('Wrong root!!!'));
+            proof.setWrongTransactionReceiptProofRoot(utils.sha256('Wrong root!!!'));
           });
         });
 
