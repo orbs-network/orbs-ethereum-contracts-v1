@@ -1,5 +1,6 @@
 import chai from 'chai';
 
+import ASBProof from './helpers/asbProof';
 import expectRevert from './helpers/expectRevert';
 
 const { expect } = chai;
@@ -9,10 +10,15 @@ const AutonomousSwapProofVerifier = artifacts.require('./AutonomousSwapProofVeri
 const Federation = artifacts.require('./Federation.sol');
 const TokenMock = artifacts.require('./OrbsTokenMock.sol');
 
+const TEST_ACCOUNTS = require('./accounts.json');
+
 contract('AutonomousSwapBridge', (accounts) => {
   const NETWORK_TYPE = 0;
   const VIRTUAL_CHAIN_ID = 0x6b696e;
   const ORBS_ASB_CONTRACT_NAME = 'asb';
+  const PROTOCOL_VERSION = 2;
+  const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
+  const TRANSFERED_OUT_EVENT_ID = 1;
   const VERSION = 1;
   const EMPTY = '';
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -20,19 +26,21 @@ contract('AutonomousSwapBridge', (accounts) => {
   const owner = accounts[0];
 
   let token;
-  let federation;
-  let verifier;
 
   beforeEach(async () => {
     token = await TokenMock.new();
-
-    const federationMembers = accounts.slice(7, 10);
-    federation = await Federation.new(federationMembers, { from: owner });
-
-    verifier = await AutonomousSwapProofVerifier.new(federation.address);
   });
 
   describe('construction', async () => {
+    let federation;
+    let verifier;
+
+    beforeEach(async () => {
+      const federationMembers = accounts.slice(7, 10);
+      federation = await Federation.new(federationMembers, { from: owner });
+      verifier = await AutonomousSwapProofVerifier.new(federation.address);
+    });
+
     it('should not allow to create with an empty Orbs ASB contract name', async () => {
       await expectRevert(AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, EMPTY, token.address,
         federation.address, verifier.address, { from: owner }));
@@ -74,7 +82,6 @@ contract('AutonomousSwapBridge', (accounts) => {
   });
 
   describe('transfer tokens to Orbs', async () => {
-    let asb;
     const initialBalance = 100000;
     const user1 = accounts[3];
     const user2 = accounts[4];
@@ -83,7 +90,14 @@ contract('AutonomousSwapBridge', (accounts) => {
     const orbsUser2Address = '0x02786db0e65e76bd8043031f6a6292cbc763d010';
     const orbsUser3Address = '0x99a8487019099bee8af8473134fa247c2f018790';
 
+    let asb;
+    let federation;
+    let verifier;
+
     beforeEach(async () => {
+      const federationMembers = accounts.slice(7, 10);
+      federation = await Federation.new(federationMembers, { from: owner });
+      verifier = await AutonomousSwapProofVerifier.new(federation.address);
       asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         federation.address, verifier.address, { from: owner });
 
@@ -195,10 +209,122 @@ contract('AutonomousSwapBridge', (accounts) => {
   });
 
   describe('transfer tokens from Orbs', async () => {
-    it.skip('should error if double spend', async () => {
+    const initialASBBalance = 1000000;
+    const value = 1000;
+    const receiver = accounts[5];
+    const tuid = 12;
+
+    let asb;
+    let federation;
+    let verifier;
+    let federationMemberAccounts;
+    let proof;
+
+    beforeEach(async () => {
+      federationMemberAccounts = TEST_ACCOUNTS.slice(0, 10);
+      const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
+      federation = await Federation.new(federationMembersAddresses, { from: owner });
+      verifier = await AutonomousSwapProofVerifier.new(federation.address);
+      asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+        federation.address, verifier.address, { from: owner });
+      await token.assign(asb.address, initialASBBalance);
+
+      expect(await token.balanceOf.call(receiver)).to.be.bignumber.equal(0);
+      expect(await token.balanceOf.call(asb.address)).to.be.bignumber.equal(initialASBBalance);
+
+      proof = (new ASBProof())
+        .setFederationMemberAccounts(federationMemberAccounts)
+        .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
+        .setEventId(TRANSFERED_OUT_EVENT_ID)
+        .setTuid(tuid)
+        .setOrbsAddress(ORBS_ADDRESS)
+        .setEthereumAddress(receiver)
+        .setValue(value)
+        .setTransactionExecutionResult(1)
+        .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
+        .setProtocolVersion(PROTOCOL_VERSION)
+        .setVirtualChainId(VIRTUAL_CHAIN_ID)
+        .setNetworkType(NETWORK_TYPE)
+        .setTimestamp(Math.floor((new Date()).getTime() / 1000))
+        .setBlockProofVersion(0);
     });
 
-    it.skip('should error if there is an attempt to transfer too many tokens', async () => {
+    const transferIn = async (asbProof) => {
+      const rawProof = asbProof.getHexProof();
+      return asb.transferIn(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
+        rawProof.transactionReceipt, rawProof.transactionReceiptProof);
+    };
+
+    context('valid', async () => {
+      it('should transfer tokens', async () => {
+        const tx = await transferIn(proof);
+        const event = tx.logs[0];
+        expect(event.event).to.eql('TransferredIn');
+        expect(event.args.from).to.eql(`0x${ORBS_ADDRESS}`);
+        expect(event.args.to).to.eql(receiver);
+        expect(event.args.value).to.be.bignumber.equal(value);
+        expect(event.args.tuid).to.be.bignumber.equal(tuid);
+      });
+
+      context('double spend', async () => {
+        beforeEach(async () => {
+          await transferIn(proof);
+        });
+
+        it('should revert', async () => {
+          await expectRevert(transferIn(proof));
+        });
+      });
+
+      afterEach(async () => {
+        expect(await token.balanceOf.call(receiver)).to.be.bignumber.equal(value);
+        expect(await token.balanceOf.call(asb.address)).to.be.bignumber.equal(initialASBBalance - value);
+      });
+    });
+
+    context('invalid', async () => {
+      afterEach(async () => {
+        await expectRevert(transferIn(proof));
+
+        expect(await token.balanceOf.call(receiver)).to.be.bignumber.equal(0);
+        expect(await token.balanceOf.call(asb.address)).to.be.bignumber.equal(initialASBBalance);
+      });
+
+      context('incorrect network type', async () => {
+        it('should revert', async () => {
+          proof.setNetworkType(NETWORK_TYPE + 10);
+        });
+      });
+
+      context('incorrect virtual chain ID', async () => {
+        it('should revert', async () => {
+          proof.setNetworkType(VIRTUAL_CHAIN_ID + 100);
+        });
+      });
+
+      context('incorrect Orbs smart contract', async () => {
+        it('should revert', async () => {
+          proof.setOrbsContractName(`not${ORBS_ASB_CONTRACT_NAME}`);
+        });
+      });
+
+      context('incorrect destination', async () => {
+        it('should revert', async () => {
+          proof.setEthereumAddress(ZERO_ADDRESS);
+        });
+      });
+
+      context('incorrect value', async () => {
+        it('should revert', async () => {
+          proof.setValue(0);
+        });
+      });
+
+      context('requesting too many tokens', async () => {
+        it('should revert', async () => {
+          proof.setValue(initialASBBalance + 1);
+        });
+      });
     });
   });
 });

@@ -158,6 +158,8 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
     const TRANSFERED_OUT_EVENT_ID = 1;
 
+    const tuid = 12;
+
     let federationMemberAccounts;
     let federationMembersAddresses;
     let federation;
@@ -220,7 +222,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         .setFederationMemberAccounts(federationMemberAccounts)
         .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
         .setEventId(TRANSFERED_OUT_EVENT_ID)
-        .setTuid(12)
+        .setTuid(tuid)
         .setOrbsAddress(ORBS_ADDRESS)
         .setEthereumAddress(accounts[5])
         .setValue(100000)
@@ -258,7 +260,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
             .setFederationMemberAccounts(federationMemberAccounts.slice(0))
             .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
             .setEventId(TRANSFERED_OUT_EVENT_ID)
-            .setTuid(12)
+            .setTuid(tuid)
             .setOrbsAddress(ORBS_ADDRESS)
             .setEthereumAddress(accounts[5])
             .setValue(100000)
