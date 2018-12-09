@@ -397,6 +397,22 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       });
 
       context('federation members signatures', async () => {
+        context('public address', async () => {
+          context('is of incorrect size', async () => {
+            it('should revert', async () => {
+              proof.setResultsProofOptions({ wrongPublicAddressSize: true });
+            });
+          });
+        });
+
+        context('signature', async () => {
+          context('is of incorrect size', async () => {
+            it('should revert', async () => {
+              proof.setResultsProofOptions({ wrongSignatureSize: true });
+            });
+          });
+        });
+
         context('not reaching threshold due to', async () => {
           context('too many non-member public addresses', async () => {
             it('should revert', async () => {

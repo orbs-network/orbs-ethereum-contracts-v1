@@ -60,7 +60,7 @@ class ASBProof {
       transactionsBlockHash,
       blockrefMessage,
       signatures,
-    });
+    }, this.resultsProofOptions);
 
     return {
       resultsBlockHeader,
@@ -179,11 +179,16 @@ class ASBProof {
 
   setWrongtTansactionsBlockHash(transactionsBlockHash) {
     this.transactionsBlockHash = transactionsBlockHash;
-    return this;;
+    return this;
   }
 
   setEventOptions(eventOptions) {
     this.eventOptions = eventOptions;
+    return this;
+  }
+
+  setResultsProofOptions(resultsProofOptions) {
+    this.resultsProofOptions = resultsProofOptions;
     return this;
   }
 
@@ -278,7 +283,7 @@ class ASBProof {
   // | node_sig_length                | 132 + 100n | 4         | always 65   | reserved                 |
   // | node_sig                       | 136 + 100n | 65        | bytes (65B) |                          |
   // +--------------------------------+------------+-----------+-------------+--------------------------+
-  static buildResultsProof(resultsBlockProof) {
+  static buildResultsProof(resultsBlockProof, options = {}) {
     const resultsBlockProofBuffer = Buffer.concat([
       Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4),
       Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, 4),
@@ -292,9 +297,9 @@ class ASBProof {
       const signatureBuffer = Bytes.prefixedHexToBuffer(sig.signature);
       return Buffer.concat([res,
         Buffer.alloc(4), // node_pk_sig nesting
-        Bytes.numberToBuffer(publicAddressBuffer.length, 4),
+        Bytes.numberToBuffer(!options.wrongPublicAddressSize ? publicAddressBuffer.length : UINT256_SIZE, 4),
         publicAddressBuffer,
-        Bytes.numberToBuffer(signatureBuffer.length, 4),
+        Bytes.numberToBuffer(!options.wrongSignatureSize ? signatureBuffer.length : UINT256_SIZE, 4),
         signatureBuffer,
       ]);
     }, resultsBlockProofBuffer);
@@ -308,7 +313,7 @@ class ASBProof {
   // | event length     |     40 | 4        | uint32   |                       |
   // | event data       |     44 | variable | bytes    |                       |
   // +------------------+--------+----------+----------+-----------------------+
-  static buildTransactionReceipt(transaction, event, options) {
+  static buildTransactionReceipt(transaction, event, options = {}) {
     const eventBuffer = ASBProof.buildEventData(event, options);
     return Buffer.concat([
       Buffer.alloc(36),
