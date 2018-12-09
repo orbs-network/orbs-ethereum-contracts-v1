@@ -183,6 +183,13 @@ contract('Federation', (accounts) => {
           expect(await federation.getMembers.call()).not.to.be.containing(nonMember);
           await expectRevert(federation.removeMember(nonMember));
         });
+
+        it('should not allow to remove by out of range index', async () => {
+          const members = accounts.slice(7, 10);
+          const federation = await Federation.new(members, { from: owner });
+
+          await expectRevert(federation.removeMemberByIndex(100));
+        });
       });
 
       context('not an owner', async () => {

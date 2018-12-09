@@ -112,6 +112,20 @@ contract Federation is IFederation, Ownable {
         emit MemberRemoved(_member);
     }
 
+    /// @dev Removes a member by an index.
+    /// @param _i uint The index of the member to be removed.
+    function removeMemberByIndex(uint _i) public {
+        require(_i < members.length, "Index out of range!");
+
+        while (_i < members.length - 1) {
+            members[_i] = members[_i + 1];
+            _i++;
+        }
+
+        delete members[_i];
+        members.length--;
+    }
+
     /// @dev Upgrades the Subscription Manager.
     function upgradeSubscriptionManager(Upgradable _newSubscriptionManager) public onlyOwner {
         if (address(subscriptionManager) != address(0)) {
@@ -133,22 +147,6 @@ contract Federation is IFederation, Ownable {
         }
 
         return (i, false);
-    }
-
-    /// @dev Removes a member by an index.
-    /// @param _i uint The index of the member to be removed.
-    function removeMemberByIndex(uint _i) private {
-        if (_i > members.length - 1 || members.length == 0) {
-            return;
-        }
-
-        while (_i < members.length - 1) {
-            members[_i] = members[_i + 1];
-            _i++;
-        }
-
-        delete members[_i];
-        members.length--;
     }
 
     /// @dev Checks federation members list for correctness.
