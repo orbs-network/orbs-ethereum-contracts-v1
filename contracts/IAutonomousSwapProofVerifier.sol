@@ -10,6 +10,7 @@ contract IAutonomousSwapProofVerifier {
     struct TransferInEvent {
         uint32 networkType;
         uint64 virtualChainId;
+        string orbsContractName;
         bytes20 from;
         address to;
         uint256 value;

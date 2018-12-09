@@ -173,10 +173,11 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       return {
         networkType: proofData[0],
         virtualChainId: proofData[1],
-        orbsAddress: proofData[2],
-        ethereumAddress: proofData[3],
-        value: proofData[4],
-        tuid: proofData[5],
+        orbsContractName: proofData[2],
+        orbsAddress: proofData[3],
+        ethereumAddress: proofData[4],
+        value: proofData[5],
+        tuid: proofData[6],
       };
     };
 
@@ -201,6 +202,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const proofData = await getProofData(proof);
         expect(proofData.networkType).to.be.bignumber.equal(proof.networkType);
         expect(proofData.virtualChainId).to.be.bignumber.equal(proof.virtualChainId);
+        expect(proofData.orbsContractName).to.be.bignumber.equal(proof.orbsContractName);
         expect(proofData.orbsAddress).to.eql(utils.bufferToHex(proof.orbsAddress));
         expect(proofData.ethereumAddress).to.eql(proof.ethereumAddress);
         expect(proofData.value).to.be.bignumber.equal(proof.value);
@@ -245,6 +247,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const proofData = await getProofData(proof);
         expect(proofData.networkType).to.be.bignumber.equal(proof.networkType);
         expect(proofData.virtualChainId).to.be.bignumber.equal(proof.virtualChainId);
+        expect(proofData.orbsContractName).to.be.bignumber.equal(proof.orbsContractName);
         expect(proofData.orbsAddress).to.eql(utils.bufferToHex(proof.orbsAddress));
         expect(proofData.ethereumAddress).to.eql(proof.ethereumAddress);
         expect(proofData.value).to.be.bignumber.equal(proof.value);
