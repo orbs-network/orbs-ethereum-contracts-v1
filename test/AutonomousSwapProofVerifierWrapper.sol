@@ -11,15 +11,16 @@ contract AutonomousSwapProofVerifierWrapper is AutonomousSwapProofVerifier {
     }
 
     function processProofRaw(bytes _resultsBlockHeader, bytes _resultsBlockProof, bytes _transactionReceipt,
-        bytes32[] _transactionReceiptProof) public view returns(uint32 networkType, uint64 virtualChainId, bytes20 from,
-        address to, uint256 value, uint256 tuid) {
+        bytes32[] _transactionReceiptProof) public view returns(uint32 networkType, uint64 virtualChainId,
+        string orbsContractName, bytes20 from, address to, uint256 value, uint256 tuid) {
         TransferInEvent memory eventData = processProof(_resultsBlockHeader, _resultsBlockProof, _transactionReceipt,
             _transactionReceiptProof);
+        networkType = eventData.networkType;
+        virtualChainId = eventData.virtualChainId;
+        orbsContractName = eventData.orbsContractName;
         from = eventData.from;
         to = eventData.to;
         value = eventData.value;
-        networkType = eventData.networkType;
-        virtualChainId = eventData.virtualChainId;
         tuid = eventData.tuid;
     }
 
