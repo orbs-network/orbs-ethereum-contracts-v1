@@ -107,11 +107,6 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Verify that the Orbs protocol is supported.
         require(header.protocolVersion == ORBS_PROTOCOL_VERSION, "Unsupported protocol version!");
 
-        // Assign the Network Type, and the Virtual Chain ID. The verifier is agnostic about their
-        // values.
-        transferInEvent.networkType = header.networkType;
-        transferInEvent.virtualChainId = header.virtualChainId;
-
         // Verify that Result Block Proof by matching hashes and making sure that enough federation members have signed
         // it.
         verifyResultBlockProof(_resultsBlockHeader, _resultsBlockProof);
@@ -133,6 +128,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         require(eventData.eventId == TRANSFERRED_OUT, "Invalid event ID!");
 
         // Assign the rest of the fields.
+        transferInEvent.networkType = header.networkType;
+        transferInEvent.virtualChainId = header.virtualChainId;
         transferInEvent.orbsContractName = eventData.orbsContractName;
         transferInEvent.from = eventData.from;
         transferInEvent.to = eventData.to;
