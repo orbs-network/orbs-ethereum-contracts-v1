@@ -19,7 +19,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     using BytesLibEx for bytes;
 
     // The version of the current proof verifier library.
-    string public constant VERSION = "0.1";
+    uint public constant VERSION = 1;
 
     // Data sizes (in bytes).
     uint public constant UINT32_SIZE = 4;

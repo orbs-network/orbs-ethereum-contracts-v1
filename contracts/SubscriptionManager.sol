@@ -13,7 +13,7 @@ contract SubscriptionManager is Upgradable {
     using SafeMath for uint256;
 
     // The version of the current subscription manager smart contract.
-    string public constant VERSION = "0.2";
+    uint public constant VERSION = 2;
 
     // The Orbs token smart contract.
     IERC20 public orbs;

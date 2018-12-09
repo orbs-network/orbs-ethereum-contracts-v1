@@ -13,7 +13,7 @@ const AutonomousSwapProofVerifierWrapper = artifacts.require('./AutonomousSwapPr
 
 contract('AutonomousSwapProofVerifier', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const VERSION = '0.1';
+  const VERSION = 1;
 
   it('should not allow to create with a 0x0 federation', async () => {
     await expectRevert(AutonomousSwapProofVerifierWrapper.new(ZERO_ADDRESS));

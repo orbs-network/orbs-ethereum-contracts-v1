@@ -13,7 +13,7 @@ contract('AutonomousSwapBridge', (accounts) => {
   const NETWORK_TYPE = 0;
   const VIRTUAL_CHAIN_ID = 0x6b696e;
   const ORBS_ASB_CONTRACT_NAME = 'asb';
-  const VERSION = '0.1';
+  const VERSION = 1;
   const EMPTY = '';
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 

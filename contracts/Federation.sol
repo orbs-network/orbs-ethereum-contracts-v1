@@ -12,7 +12,7 @@ contract Federation is IFederation, Ownable {
     using SafeMath for uint256;
 
     // The version of the current federation smart contract.
-    string public constant VERSION = "0.1";
+    uint public constant VERSION = 1;
 
     // The address of the current subscription manager.
     Upgradable public subscriptionManager;

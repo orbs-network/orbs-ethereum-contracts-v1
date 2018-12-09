@@ -14,7 +14,7 @@ const SubscriptionManagerMock = artifacts.require('./SubscriptionManagerMock.sol
 
 contract('Federation', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const VERSION = '0.1';
+  const VERSION = 1;
   const MAX_FEDERATION_MEMBERS = 100;
 
   describe('construction', async () => {

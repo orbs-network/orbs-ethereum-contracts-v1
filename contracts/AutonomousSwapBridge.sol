@@ -13,7 +13,7 @@ contract AutonomousSwapBridge {
     using SafeMath for uint256;
 
     // The version of the current ASB smart contract.
-    string public constant VERSION = "0.1";
+    uint public constant VERSION = 1;
 
     // The network type of the Orbs network this contract is compatible for.
     uint32 public networkType;

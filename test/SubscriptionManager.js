@@ -20,7 +20,7 @@ contract('SubscriptionManager', (accounts) => {
   const owner = accounts[0];
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const VERSION = '0.2';
+  const VERSION = 2;
   const MAX_FEDERATION_MEMBERS = 100;
   const TIME_ERROR_MARGIN = 60; // 60 seconds
 
