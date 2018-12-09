@@ -8,11 +8,11 @@ pragma experimental ABIEncoderV2;
 /// interface methods
 contract IAutonomousSwapProofVerifier {
     struct TransferInEvent {
+        uint32 networkType;
+        uint64 virtualChainId;
         bytes20 from;
         address to;
         uint256 value;
-        uint32 networkType;
-        uint64 virtualChainId;
         uint256 tuid;
     }
 

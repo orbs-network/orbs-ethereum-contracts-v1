@@ -188,11 +188,11 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
         const proofData = await getProofData(proof);
 
-        expect(proofData[0]).to.eql(utils.bufferToHex(proof.orbsAddress));
-        expect(proofData[1]).to.eql(proof.ethereumAddress);
-        expect(proofData[2]).to.be.bignumber.equal(proof.value);
-        expect(proofData[3]).to.be.bignumber.equal(proof.networkType);
-        expect(proofData[4]).to.be.bignumber.equal(proof.virtualChainId);
+        expect(proofData[0]).to.be.bignumber.equal(proof.networkType);
+        expect(proofData[1]).to.be.bignumber.equal(proof.virtualChainId);
+        expect(proofData[2]).to.eql(utils.bufferToHex(proof.orbsAddress));
+        expect(proofData[3]).to.eql(proof.ethereumAddress);
+        expect(proofData[4]).to.be.bignumber.equal(proof.value);
         expect(proofData[5]).to.be.bignumber.equal(proof.tuid);
       });
     });
