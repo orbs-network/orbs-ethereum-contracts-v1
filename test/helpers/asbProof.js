@@ -1,14 +1,209 @@
+import utils from 'ethereumjs-util';
+
 import Bytes from './bytes';
+import MerkleTree from './merkleTree';
 
 const UINT32_SIZE = 4;
 const UINT64_SIZE = 8;
 const UINT256_SIZE = 32;
-const ADDRESS_SIZE = 20;
-const ORBS_ADDRESS_SIZE = 20;
-const SHA256_SIZE = UINT256_SIZE;
-const SIGNATURE_SIZE = 65;
+
+const DUMMY_BLOCK_HASH = utils.keccak256('Dummy Block Hash');
 
 class ASBProof {
+  getProof() {
+    this.verifyData();
+
+    // Create the transaction receipts merkle tree.
+    const transactionReceipt = ASBProof.buildTransactionReceipt({
+      executionResult: this.executionResult,
+    }, {
+      orbsContractName: this.orbsContractName,
+      eventId: this.eventId,
+      tuid: this.tuid,
+      orbsAddress: this.orbsAddress,
+      ethereumAddress: this.ethereumAddress,
+      value: this.value,
+    });
+    const transactionReceipts = this.transactionReceipts ? [...this.transactionReceipts, transactionReceipt]
+      : [transactionReceipt];
+    const transactionsMerkleTree = new MerkleTree(transactionReceipts);
+    const transactionReceiptProofRoot = transactionsMerkleTree.getRoot();
+
+    // Create the results block header data.
+    const resultsBlockHeader = ASBProof.buildResultsBlockHeader({
+      protocolVersion: this.protocolVersion,
+      virtualChainId: this.virtualChainId,
+      networkType: this.networkType,
+      timestamp: this.timestamp,
+      receiptMerkleRoot: transactionReceiptProofRoot,
+    });
+
+    // Create the results block proof.
+    const resultsBlockHeaderHash = utils.keccak256(resultsBlockHeader);
+    const transactionsBlockHash = DUMMY_BLOCK_HASH; // Just a dummy value.
+    const blockHash = utils.keccak256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
+    const blockrefMessage = Buffer.concat([Buffer.alloc(20), blockHash]);
+    const blockrefHash = utils.keccak256(blockrefMessage);
+
+    const signatures = this.federationMemberAccounts.map((account) => {
+      const rawSignature = utils.ecsign(blockrefHash, utils.toBuffer(account.privateKey));
+      const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
+
+      return {
+        publicAddress: account.address,
+        signature,
+      };
+    });
+
+    const resultsBlockProof = ASBProof.buildResultsProof({
+      blockProofVersion: this.blockProofVersion,
+      transactionsBlockHash,
+      blockrefMessage,
+      signatures,
+    });
+
+    return {
+      resultsBlockHeader,
+      resultsBlockProof,
+      transactionReceipt,
+      transactionReceiptProof: transactionsMerkleTree.getProof(transactionReceipt),
+    };
+  }
+
+  getHexProof() {
+    const proof = this.getProof();
+    return {
+      resultsBlockHeader: utils.bufferToHex(proof.resultsBlockHeader),
+      resultsBlockProof: utils.bufferToHex(proof.resultsBlockProof),
+      transactionReceipt: utils.bufferToHex(proof.transactionReceipt),
+      transactionReceiptProof: MerkleTree.bufArrToHexArr(proof.transactionReceiptProof),
+    };
+  }
+
+  setFederationMemberAccounts(federationMemberAccounts) {
+    this.federationMemberAccounts = federationMemberAccounts;
+    return this;
+  }
+
+  setOrbsContractName(orbsContractName) {
+    this.orbsContractName = orbsContractName;
+    return this;
+  }
+
+  setEventId(eventId) {
+    this.eventId = eventId;
+    return this;
+  }
+
+  setTuid(tuid) {
+    this.tuid = tuid;
+    return this;
+  }
+
+  setOrbsAddress(orbsAddress) {
+    this.orbsAddress = Buffer.from(orbsAddress, 'hex');
+    return this;
+  }
+
+  setEthereumAddress(ethereumAddress) {
+    this.ethereumAddress = ethereumAddress;
+    return this;
+  }
+
+  setValue(value) {
+    this.value = value;
+    return this;
+  }
+
+  setTransactionExecutionResult(executionResult) {
+    this.executionResult = executionResult;
+    return this;
+  }
+
+  setTransactionReceipts(transactionReceipts) {
+    this.transactionReceipts = transactionReceipts;
+    return this;
+  }
+
+  setProtocolVersion(protocolVersion) {
+    this.protocolVersion = protocolVersion;
+    return this;
+  }
+
+  setVirtualChainId(virtualChainId) {
+    this.virtualChainId = virtualChainId;
+    return this;
+  }
+
+  setNetworkType(networkType) {
+    this.networkType = networkType;
+    return this;
+  }
+
+  setTimestamp(timestamp) {
+    this.timestamp = timestamp;
+    return this;
+  }
+
+  setBlockProofVersion(blockProofVersion) {
+    this.blockProofVersion = blockProofVersion;
+    return this;
+  }
+
+  verifyData() {
+    if (!Array.isArray(this.federationMemberAccounts) || this.federationMemberAccounts.length === 0) {
+      throw new Error('Missing federation member accounts!');
+    }
+
+    if (!this.orbsContractName) {
+      throw new Error('Missing Orbs contract name!');
+    }
+
+    if (!Number.isInteger(this.eventId)) {
+      throw new Error('Missing event ID!');
+    }
+
+    if (!Number.isInteger(this.tuid)) {
+      throw new Error('Missing tuid!');
+    }
+
+    if (!this.orbsAddress) {
+      throw new Error('Missing Orbs address!');
+    }
+
+    if (!this.ethereumAddress) {
+      throw new Error('Missing Ethereum address!');
+    }
+
+    if (!Number.isInteger(this.value)) {
+      throw new Error('Missing value!');
+    }
+
+    if (!Number.isInteger(this.executionResult)) {
+      throw new Error('Missing transaction execution result!');
+    }
+
+    if (!Number.isInteger(this.protocolVersion)) {
+      throw new Error('Missing protocol version!');
+    }
+
+    if (!Number.isInteger(this.virtualChainId)) {
+      throw new Error('Missing virtual chain ID!');
+    }
+
+    if (!Number.isInteger(this.networkType)) {
+      throw new Error('Missing network type!');
+    }
+
+    if (!Number.isInteger(this.timestamp)) {
+      throw new Error('Missing timestamp');
+    }
+
+    if (!Number.isInteger(this.blockProofVersion)) {
+      throw new Error('Missing block proof version!');
+    }
+  }
+
   // Builds the Results Block Header according to:
   // +---------------------+--------+------+----------------------+
   // |        Field        | Offset | Size |       Encoding       |
@@ -49,19 +244,21 @@ class ASBProof {
   static buildResultsProof(resultsBlockProof) {
     const resultsBlockProofBuffer = Buffer.concat([
       Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4),
-      Bytes.numberToBuffer(SHA256_SIZE, 4),
+      Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, 4),
       resultsBlockProof.transactionsBlockHash,
       Buffer.alloc(12), // one-of + nesting
       resultsBlockProof.blockrefMessage,
     ]);
 
     return resultsBlockProof.signatures.reduce((res, sig) => {
+      const publicAddressBuffer = Bytes.prefixedHexToBuffer(sig.publicAddress);
+      const signatureBuffer = Bytes.prefixedHexToBuffer(sig.signature);
       return Buffer.concat([res,
         Buffer.alloc(4), // node_pk_sig nesting
-        Bytes.numberToBuffer(ADDRESS_SIZE, 4),
-        Bytes.addressToBuffer(sig.publicAddress),
-        Bytes.numberToBuffer(SIGNATURE_SIZE, 4),
-        Bytes.addressToBuffer(sig.signature),
+        Bytes.numberToBuffer(publicAddressBuffer.length, 4),
+        publicAddressBuffer,
+        Bytes.numberToBuffer(signatureBuffer.length, 4),
+        signatureBuffer,
       ]);
     }, resultsBlockProofBuffer);
   }
@@ -100,27 +297,20 @@ class ASBProof {
   // | tokens                   | N+68   | 32   | uint256     |                               |
   // +--------------------------+--------+------+-------------+-------------------------------+
   static buildEventData(event) {
+    const ethereumAddressBuffer = Bytes.prefixedHexToBuffer(event.ethereumAddress);
     return Buffer.concat([
       Bytes.numberToBuffer(event.orbsContractName.length, UINT32_SIZE),
       Buffer.from(event.orbsContractName),
       Bytes.numberToBuffer(event.eventId, UINT32_SIZE),
       Bytes.numberToBuffer(event.tuid, UINT64_SIZE),
-      Bytes.numberToBuffer(ORBS_ADDRESS_SIZE, UINT32_SIZE),
+      Bytes.numberToBuffer(event.orbsAddress.length, UINT32_SIZE),
       event.orbsAddress,
-      Bytes.numberToBuffer(ADDRESS_SIZE, UINT32_SIZE),
-      Bytes.addressToBuffer(event.ethereumAddress),
+      Bytes.numberToBuffer(ethereumAddressBuffer.length, UINT32_SIZE),
+      ethereumAddressBuffer,
       Bytes.numberToBuffer(UINT256_SIZE, UINT32_SIZE),
       Bytes.numberToBuffer(event.value, UINT256_SIZE),
     ]);
   }
 }
 
-class ASBProofBuilder {
-  constructor(token, federation, verifier) {
-    this.token = token;
-    this.federation = federation;
-    this.verifier = verifier;
-  }
-}
-
-module.exports = { ASBProof, ASBProofBuilder };
+module.exports = ASBProof;

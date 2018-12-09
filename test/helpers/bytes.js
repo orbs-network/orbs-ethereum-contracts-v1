@@ -5,7 +5,7 @@ class Bytes {
     return (new BN(num)).toBuffer('le', size);
   }
 
-  static addressToBuffer(address) {
+  static prefixedHexToBuffer(address) {
     const hex = address.startsWith('0x') ? address.substr(2) : address;
     return Buffer.from(hex, 'hex');
   }
