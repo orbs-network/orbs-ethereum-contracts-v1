@@ -156,12 +156,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
     const TRANSFERED_OUT_EVENT_ID = 1;
 
-    const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
-    const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
+    let federationMemberAccounts;
+    let federationMembersAddresses;
     let federation;
     let verifier;
 
     beforeEach(async () => {
+      federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
+      federationMembersAddresses = federationMemberAccounts.map(account => account.address);
       federation = await Federation.new(federationMembersAddresses, { from: owner });
       verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
     });
@@ -182,100 +184,140 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       };
     };
 
-    context('valid', async () => {
-      it('should process correctly', async () => {
-        const proof = (new ASBProof())
-          .setFederationMemberAccounts(federationMemberAccounts)
-          .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-          .setEventId(TRANSFERED_OUT_EVENT_ID)
-          .setTuid(12)
-          .setOrbsAddress(ORBS_ADDRESS)
-          .setEthereumAddress(accounts[5])
-          .setValue(100000)
-          .setTransactionExecutionResult(1)
-          .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
-          .setProtocolVersion(PROTOCOL_VERSION)
-          .setVirtualChainId(VIRTUAL_CHAIN_ID)
-          .setNetworkType(NETWORK_TYPE)
-          .setTimestamp(Math.floor((new Date()).getTime() / 1000))
-          .setBlockProofVersion(0);
+    const getWithNonMembers = (count) => {
+      const nonMemberAccounts = TEST_ACCOUNTS.slice(-count);
+      expect(federationMemberAccounts).not.to.be.containingAnyOf(nonMemberAccounts);
+      federationMemberAccounts.splice(0, nonMemberAccounts.length, ...nonMemberAccounts);
+      return federationMemberAccounts;
+    };
 
+    const getWithWrongPrivateKeys = (count) => {
+      const nonMemberAccounts = TEST_ACCOUNTS.slice(-count);
+      expect(federationMemberAccounts).not.to.be.containingAnyOf(nonMemberAccounts);
+
+      for (let i = 0; i < count; ++i) {
+        federationMemberAccounts[i].privateKey = nonMemberAccounts[i].privateKey;
+      }
+
+      return federationMemberAccounts;
+    };
+
+    const getWithDuplicates = (count) => {
+      const duplicate = federationMemberAccounts[0];
+
+      for (let i = 0; i < count; ++i) {
+        federationMemberAccounts[i] = duplicate;
+      }
+
+      return federationMemberAccounts;
+    };
+
+    let proof;
+    beforeEach(async () => {
+      proof = (new ASBProof())
+        .setFederationMemberAccounts(federationMemberAccounts)
+        .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
+        .setEventId(TRANSFERED_OUT_EVENT_ID)
+        .setTuid(12)
+        .setOrbsAddress(ORBS_ADDRESS)
+        .setEthereumAddress(accounts[5])
+        .setValue(100000)
+        .setTransactionExecutionResult(1)
+        .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
+        .setProtocolVersion(PROTOCOL_VERSION)
+        .setVirtualChainId(VIRTUAL_CHAIN_ID)
+        .setNetworkType(NETWORK_TYPE)
+        .setTimestamp(Math.floor((new Date()).getTime() / 1000))
+        .setBlockProofVersion(0);
+    });
+
+    context('valid', async () => {
+      afterEach(async () => {
         const proofData = await getProofData(proof);
         expect(proofData.networkType).to.be.bignumber.equal(proof.networkType);
         expect(proofData.virtualChainId).to.be.bignumber.equal(proof.virtualChainId);
-        expect(proofData.orbsContractName).to.be.bignumber.equal(proof.orbsContractName);
+        expect(proofData.orbsContractName).to.be.eql(proof.orbsContractName);
         expect(proofData.orbsAddress).to.eql(utils.bufferToHex(proof.orbsAddress));
         expect(proofData.ethereumAddress).to.eql(proof.ethereumAddress);
         expect(proofData.value).to.be.bignumber.equal(proof.value);
         expect(proofData.tuid).to.be.bignumber.equal(proof.tuid);
       });
-    });
 
-    it('should process correctly historic events', async () => {
-      const initialFederationMemberAccounts = TEST_ACCOUNTS.slice(0, 20);
-      const newFederationMemberAccounts = TEST_ACCOUNTS.slice(40, 45);
-      const initialFederationMembersAddresses = initialFederationMemberAccounts.map(account => account.address);
-      federation = await Federation.new(initialFederationMembersAddresses, { from: owner });
-      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
+      it('should process correctly historic events', async () => {
+        federationMemberAccounts = TEST_ACCOUNTS.slice(0, 20);
+        const newFederationMemberAccounts = TEST_ACCOUNTS.slice(40, 45);
+        federationMembersAddresses = federationMemberAccounts.map(account => account.address);
+        federation = await Federation.new(federationMembersAddresses, { from: owner });
+        verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
 
-      const proofs = [];
-      for (let i = 0; i < 5; ++i) {
-        proofs.push((new ASBProof())
-          .setFederationMemberAccounts(initialFederationMemberAccounts.slice(0))
-          .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-          .setEventId(TRANSFERED_OUT_EVENT_ID)
-          .setTuid(12)
-          .setOrbsAddress(ORBS_ADDRESS)
-          .setEthereumAddress(accounts[5])
-          .setValue(100000)
-          .setTransactionExecutionResult(1)
-          .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
-          .setProtocolVersion(PROTOCOL_VERSION)
-          .setVirtualChainId(VIRTUAL_CHAIN_ID)
-          .setNetworkType(NETWORK_TYPE)
-          .setTimestamp(Math.floor((new Date()).getTime() / 1000))
-          .setBlockProofVersion(i));
+        const proofs = [];
+        for (let i = 0; i < 5; ++i) {
+          proofs.push((new ASBProof())
+            .setFederationMemberAccounts(federationMemberAccounts.slice(0))
+            .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
+            .setEventId(TRANSFERED_OUT_EVENT_ID)
+            .setTuid(12)
+            .setOrbsAddress(ORBS_ADDRESS)
+            .setEthereumAddress(accounts[5])
+            .setValue(100000)
+            .setTransactionExecutionResult(1)
+            .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
+            .setProtocolVersion(PROTOCOL_VERSION)
+            .setVirtualChainId(VIRTUAL_CHAIN_ID)
+            .setNetworkType(NETWORK_TYPE)
+            .setTimestamp(Math.floor((new Date()).getTime() / 1000))
+            .setBlockProofVersion(i));
 
-        const newMemberAccount = newFederationMemberAccounts[i];
-        await federation.addMember(newMemberAccount.address, { from: owner });
-        expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
+          const newMemberAccount = newFederationMemberAccounts[i];
+          await federation.addMember(newMemberAccount.address, { from: owner });
+          expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
 
-        initialFederationMemberAccounts.push(newMemberAccount);
-      }
+          federationMemberAccounts.push(newMemberAccount);
+        }
 
-      for (let i = 0; i < proofs.length; ++i) {
-        const proof = proofs[i];
-        const proofData = await getProofData(proof);
-        expect(proofData.networkType).to.be.bignumber.equal(proof.networkType);
-        expect(proofData.virtualChainId).to.be.bignumber.equal(proof.virtualChainId);
-        expect(proofData.orbsContractName).to.be.bignumber.equal(proof.orbsContractName);
-        expect(proofData.orbsAddress).to.eql(utils.bufferToHex(proof.orbsAddress));
-        expect(proofData.ethereumAddress).to.eql(proof.ethereumAddress);
-        expect(proofData.value).to.be.bignumber.equal(proof.value);
-        expect(proofData.tuid).to.be.bignumber.equal(proof.tuid);
-      }
+        for (let i = 0; i < proofs.length; ++i) {
+          const currentProof = proofs[i];
+          const proofData = await getProofData(proof);
+          expect(proofData.networkType).to.be.bignumber.equal(currentProof.networkType);
+          expect(proofData.virtualChainId).to.be.bignumber.equal(currentProof.virtualChainId);
+          expect(proofData.orbsContractName).to.be.eql(currentProof.orbsContractName);
+          expect(proofData.orbsAddress).to.eql(utils.bufferToHex(currentProof.orbsAddress));
+          expect(proofData.ethereumAddress).to.eql(currentProof.ethereumAddress);
+          expect(proofData.value).to.be.bignumber.equal(currentProof.value);
+          expect(proofData.tuid).to.be.bignumber.equal(currentProof.tuid);
+        }
+      });
+
+      context('federation members signatures', async () => {
+        context('reaching threshold regardless of', async () => {
+          context('few non-member public addresses signatures', async () => {
+            it('should process correctly', async () => {
+              proof.setFederationMemberAccounts(getWithNonMembers(3));
+            });
+          });
+
+          context('few wrong private keys', async () => {
+            it('should process correctly', async () => {
+              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(5));
+            });
+          });
+
+          context('few incorrect message signatures', async () => {
+            it.skip('should process correctly', async () => {
+
+            });
+          });
+
+          context('few duplicate signatures', async () => {
+            it('should process correctly', async () => {
+              proof.setFederationMemberAccounts(getWithDuplicates(2));
+            });
+          });
+        });
+      });
     });
 
     context('invalid', async () => {
-      let proof;
-      beforeEach(async () => {
-        proof = (new ASBProof())
-          .setFederationMemberAccounts(federationMemberAccounts)
-          .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-          .setEventId(TRANSFERED_OUT_EVENT_ID)
-          .setTuid(12)
-          .setOrbsAddress(ORBS_ADDRESS)
-          .setEthereumAddress(accounts[5])
-          .setValue(100000)
-          .setTransactionExecutionResult(1)
-          .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
-          .setProtocolVersion(PROTOCOL_VERSION)
-          .setVirtualChainId(VIRTUAL_CHAIN_ID)
-          .setNetworkType(NETWORK_TYPE)
-          .setTimestamp(Math.floor((new Date()).getTime() / 1000))
-          .setBlockProofVersion(0);
-      });
-
       afterEach(async () => {
         await expectRevert(getProofData(proof));
       });
@@ -336,6 +378,55 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         context('is incorrect', async () => {
           it('should revert', async () => {
             proof.setBlockHash(utils.keccak256('Wrong block!!!'));
+          });
+        });
+      });
+
+      context('federation members signatures', async () => {
+        context('not reaching threshold due to', async () => {
+          context('too many non-member public addresses', async () => {
+            it('should revert', async () => {
+              proof.setFederationMemberAccounts(getWithNonMembers(federationMemberAccounts.length / 2));
+            });
+          });
+
+          context('too many wrong private keys', async () => {
+            it('should revert', async () => {
+              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(federationMemberAccounts.length / 2));
+            });
+          });
+
+          context('too many incorrect message signatures', async () => {
+            it.skip('should revert', async () => {
+            });
+          });
+
+          context('too many signatures', async () => {
+            it.skip('should revert', async () => {
+            });
+          });
+
+          context('too many duplicate signatures', async () => {
+            it('should revert', async () => {
+              proof.setFederationMemberAccounts(getWithDuplicates(federationMemberAccounts.length / 2));
+            });
+          });
+        });
+      });
+
+      context('receipt merkle proof', async () => {
+        context('incorrect root', async () => {
+          it.skip('should revert', async () => {
+          });
+        });
+
+        context('incorrect proof', async () => {
+          it.skip('should revert', async () => {
+          });
+        });
+
+        context('incorrect receipt', async () => {
+          it.skip('should revert', async () => {
           });
         });
       });
