@@ -40,7 +40,7 @@ class ASBProof {
 
     // Create the results block proof.
     const resultsBlockHeaderHash = utils.sha256(resultsBlockHeader);
-    const transactionsBlockHash = DUMMY_BLOCK_HASH; // Just a dummy value.
+    const transactionsBlockHash = this.transactionsBlockHash || DUMMY_BLOCK_HASH; // Just a dummy value.
     const blockHash = this.blockHash || utils.sha256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
     const blockrefMessage = Buffer.concat([Buffer.alloc(20), blockHash]);
     const blockrefHash = this.blockrefHash || utils.sha256(blockrefMessage);
@@ -177,6 +177,11 @@ class ASBProof {
     return this;
   }
 
+  setWrongtTansactionsBlockHash(transactionsBlockHash) {
+    this.transactionsBlockHash = transactionsBlockHash;
+    return this;;
+  }
+
   setEventOptions(eventOptions) {
     this.eventOptions = eventOptions;
     return this;
@@ -303,8 +308,8 @@ class ASBProof {
   // | event length     |     40 | 4        | uint32   |                       |
   // | event data       |     44 | variable | bytes    |                       |
   // +------------------+--------+----------+----------+-----------------------+
-  static buildTransactionReceipt(transaction, event, eventOptions) {
-    const eventBuffer = ASBProof.buildEventData(event, eventOptions);
+  static buildTransactionReceipt(transaction, event, options) {
+    const eventBuffer = ASBProof.buildEventData(event, options);
     return Buffer.concat([
       Buffer.alloc(36),
       Bytes.numberToBuffer(transaction.executionResult, UINT32_SIZE),

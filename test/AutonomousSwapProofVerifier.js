@@ -372,6 +372,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         });
       });
 
+      context('transactions block hash', async () => {
+        context('is of wrong size', async () => {
+          it('should revert', async () => {
+            proof.setWrongtTansactionsBlockHash(Buffer.alloc(10));
+          });
+        });
+      });
+
       context('protocol version', async () => {
         context('is incorrect', async () => {
           it('should revert', async () => {
