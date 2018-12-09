@@ -150,7 +150,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const NETWORK_TYPE = 0;
     const VIRTUAL_CHAIN_ID = 0x6b696e;
     const ORBS_ASB_CONTRACT_NAME = 'asb';
-    const PROTOCOL_VERSION = 51;
+    const PROTOCOL_VERSION = 2;
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
 
     const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
@@ -248,6 +248,12 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       context('execution result is 0', async () => {
         it('should revert', async () => {
           proof.setTransactionExecutionResult(0);
+        });
+      });
+
+      context('protocol version is incorrect', async () => {
+        it('should revert', async () => {
+          proof.setProtocolVersion(PROTOCOL_VERSION + 10);
         });
       });
     });

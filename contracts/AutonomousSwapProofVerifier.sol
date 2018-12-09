@@ -21,6 +21,9 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     // The version of the current proof verifier library.
     uint public constant VERSION = 1;
 
+    // The supported Orbs protocol version.
+    uint public constant ORBS_PROTOCOL_VERSION = 2;
+
     // Data sizes (in bytes).
     uint public constant UINT32_SIZE = 4;
     uint public constant UINT64_SIZE = 8;
@@ -101,7 +104,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Parse Results Block Header:
         ResultsBlockHeader memory header = parseResultsBlockHeader(_resultsBlockHeader);
 
-        // TODO: Check the protocol version:
+        // Verify that the Orbs protocol is supported.
+        require(header.protocolVersion == ORBS_PROTOCOL_VERSION, "Unsupported protocol version!");
 
         // Assign the Network Type and the Virtual Chain ID. The verifier is agnostic about their values.
         transferInEvent.networkType = header.networkType;
