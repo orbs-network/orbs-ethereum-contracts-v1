@@ -155,12 +155,12 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const PROTOCOL_VERSION = 2;
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
 
+    const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
+    const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
     let federation;
     let verifier;
 
     beforeEach(async () => {
-      const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 32);
-      const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
       federation = await Federation.new(federationMembersAddresses, { from: owner });
       verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
     });
@@ -209,16 +209,16 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     });
 
     it('should process correctly historic events', async () => {
-      const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 20);
+      const initialFederationMemberAccounts = TEST_ACCOUNTS.slice(0, 20);
       const newFederationMemberAccounts = TEST_ACCOUNTS.slice(40, 45);
-      const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
-      federation = await Federation.new(federationMembersAddresses, { from: owner });
+      const initialFederationMembersAddresses = initialFederationMemberAccounts.map(account => account.address);
+      federation = await Federation.new(initialFederationMembersAddresses, { from: owner });
       verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
 
       const proofs = [];
       for (let i = 0; i < 5; ++i) {
         proofs.push((new ASBProof())
-          .setFederationMemberAccounts(federationMemberAccounts.slice(0))
+          .setFederationMemberAccounts(initialFederationMemberAccounts.slice(0))
           .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
           .setEventId(7755)
           .setTuid(12)
@@ -237,7 +237,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         await federation.addMember(newMemberAccount.address, { from: owner });
         expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
 
-        federationMemberAccounts.push(newMemberAccount);
+        initialFederationMemberAccounts.push(newMemberAccount);
       }
 
       for (let i = 0; i < proofs.length; ++i) {
