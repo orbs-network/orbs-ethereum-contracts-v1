@@ -186,9 +186,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           .setTimestamp(Math.floor((new Date()).getTime() / 1000))
           .setBlockProofVersion(0);
 
-        const rawProof = proof.getHexProof();
-        const proofData = await verifier.processProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
-          rawProof.transactionReceipt, rawProof.transactionReceiptProof);
+        const proofData = await getProofData(proof);
 
         expect(proofData[0]).to.eql(utils.bufferToHex(proof.orbsAddress));
         expect(proofData[1]).to.eql(proof.ethereumAddress);
