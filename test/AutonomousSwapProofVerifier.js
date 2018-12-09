@@ -169,7 +169,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     };
 
     context('valid', async () => {
-      it.only('should process correctly', async () => {
+      it('should process correctly', async () => {
         const proof = (new ASBProof())
           .setFederationMemberAccounts(federationMemberAccounts)
           .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
@@ -194,6 +194,61 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         expect(proofData[3]).to.be.bignumber.equal(proof.networkType);
         expect(proofData[4]).to.be.bignumber.equal(proof.virtualChainId);
         expect(proofData[5]).to.be.bignumber.equal(proof.tuid);
+      });
+    });
+
+    context('invalid', async () => {
+      let proof;
+      beforeEach(async () => {
+        proof = (new ASBProof())
+          .setFederationMemberAccounts(federationMemberAccounts)
+          .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
+          .setEventId(7755)
+          .setTuid(12)
+          .setOrbsAddress(ORBS_ADDRESS)
+          .setEthereumAddress(accounts[5])
+          .setValue(100000)
+          .setTransactionExecutionResult(1)
+          .setTransactionReceipts(['transaction1', 'transaction2', 5, 4, 3])
+          .setProtocolVersion(PROTOCOL_VERSION)
+          .setVirtualChainId(VIRTUAL_CHAIN_ID)
+          .setNetworkType(NETWORK_TYPE)
+          .setTimestamp(Math.floor((new Date()).getTime() / 1000))
+          .setBlockProofVersion(0);
+      });
+
+      afterEach(async () => {
+        await expectRevert(getProofData(proof));
+      });
+
+      context('Orbs address is too long', async () => {
+        it('should revert', async () => {
+          proof.setOrbsAddress(`${ORBS_ADDRESS}aa`);
+        });
+      });
+
+      context('Orbs address is too short', async () => {
+        it('should revert', async () => {
+          proof.setOrbsAddress(ORBS_ADDRESS.slice(0, -2));
+        });
+      });
+
+      context('Ethereum address is too long', async () => {
+        it('should revert', async () => {
+          proof.setOrbsAddress(`${accounts[1]}1234`);
+        });
+      });
+
+      context('Ethereum address (too short)', async () => {
+        it('should revert', async () => {
+          proof.setOrbsAddress(accounts[1].slice(0, -4));
+        });
+      });
+
+      context('execution result is 0', async () => {
+        it('should revert', async () => {
+          proof.setTransactionExecutionResult(0);
+        });
       });
     });
   });

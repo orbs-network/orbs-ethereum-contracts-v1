@@ -37,6 +37,10 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant NODE_PK_SIG_NESTING_SIZE = 4;
     uint public constant EXECUTION_RESULT_OFFSET = 36;
 
+    // Orbs protocol values:
+    uint public constant TRANSFERRED_OUT = 1;
+    uint public constant EXECUTION_RESULT_SUCCESS = 1;
+
     // The maximum supported number of signatures in Results Block Proof. We have to limit this number and fallback to
     // statically sized lists, due to Solidity's inability of functions returning dynamic arrays (and limiting gas
     // consumption, of course).
@@ -114,7 +118,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Parse the Transaction Receipt.
         TransactionReceipt memory transactionReceipt = parseTransactionReceipt(_transactionReceipt);
 
-        // TODO: Verify execution result.
+        // Verify transaction's execution result.
+        require(transactionReceipt.executionResult == EXECUTION_RESULT_SUCCESS, "Incorrect execution result!");
 
         // Extract the Autonomous Swap Event Data from the transaction receipt:
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
