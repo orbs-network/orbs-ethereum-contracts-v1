@@ -47,7 +47,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     // The maximum supported number of signatures in Results Block Proof. We have to limit this number and fallback to
     // statically sized lists, due to Solidity's inability of functions returning dynamic arrays (and limiting gas
     // consumption, of course).
-    uint public constant MAX_SIGNATURES = 32;
+    uint public constant MAX_SIGNATURES = 100;
 
     struct ResultsBlockHeader {
         uint32 protocolVersion;

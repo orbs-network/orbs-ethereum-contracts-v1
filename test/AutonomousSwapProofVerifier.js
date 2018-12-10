@@ -15,7 +15,7 @@ const AutonomousSwapProofVerifierWrapper = artifacts.require('./AutonomousSwapPr
 contract('AutonomousSwapProofVerifier', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
   const VERSION = 1;
-  const MAX_SIGNATURES = 32;
+  const MAX_SIGNATURES = 100;
 
   const owner = accounts[0];
 
