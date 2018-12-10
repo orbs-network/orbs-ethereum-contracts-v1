@@ -19,14 +19,16 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
   const owner = accounts[0];
 
-  it('should not allow to create with a 0x0 federation', async () => {
-    await expectRevert(AutonomousSwapProofVerifierWrapper.new(ZERO_ADDRESS, { from: owner }));
-  });
+  describe('construction', async () => {
+    it('should not allow to create with a 0x0 federation', async () => {
+      await expectRevert(AutonomousSwapProofVerifierWrapper.new(ZERO_ADDRESS, { from: owner }));
+    });
 
-  it('should report version', async () => {
-    const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
-    const verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
-    expect(await verifier.VERSION.call()).to.be.bignumber.equal(VERSION);
+    it('should report version', async () => {
+      const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
+      const verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
+      expect(await verifier.VERSION.call()).to.be.bignumber.equal(VERSION);
+    });
   });
 
   describe('parsing', async () => {
