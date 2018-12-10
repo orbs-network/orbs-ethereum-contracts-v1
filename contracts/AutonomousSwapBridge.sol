@@ -1,6 +1,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
@@ -10,7 +11,7 @@ import "./StringUtils.sol";
 
 
 /// @title Autonomous Swap Bridge (ASB) smart contract.
-contract AutonomousSwapBridge {
+contract AutonomousSwapBridge is Ownable {
     using SafeMath for uint256;
     using StringUtils for string;
 
@@ -56,14 +57,14 @@ contract AutonomousSwapBridge {
         require(bytes(_orbsASBContractName).length > 0, "Orbs ASB contract name must not be empty!");
         require(address(_token) != address(0), "Token must not be 0!");
         require(address(_federation) != address(0), "Federation must not be 0!");
-        require(address(_verifier) != address(0), "Verifier must not be 0!");
+
+        setAutonomousSwapProofVerifier(_verifier);
 
         networkType = _networkType;
         virtualChainId = _virtualChainId;
         orbsASBContractName = _orbsASBContractName;
         token = _token;
         federation = _federation;
-        verifier = _verifier;
     }
 
     /// @dev Transfer tokens to Orbs. The method retrieves and locks the tokens and emits the TransferredOut event.
@@ -109,5 +110,13 @@ contract AutonomousSwapBridge {
         require(token.transfer(eventData.to, eventData.value), "Insufficient funds!");
 
         emit TransferredIn(eventData.tuid, eventData.from, eventData.to, eventData.value);
+    }
+
+    /// @dev Allows the owner to upgrade its ASB proof verifier.
+    /// @param _verifier IAutonomousSwapProofVerifier new verifier.
+    function setAutonomousSwapProofVerifier(IAutonomousSwapProofVerifier _verifier) public onlyOwner {
+        require(address(_verifier) != address(0), "Verifier must not be 0!");
+
+        verifier = _verifier;
     }
 }

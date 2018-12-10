@@ -24,6 +24,7 @@ contract('AutonomousSwapBridge', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
   const owner = accounts[0];
+  const notOwner = accounts[1];
 
   let token;
 
@@ -78,6 +79,43 @@ contract('AutonomousSwapBridge', (accounts) => {
         federation.address, verifier.address, { from: owner });
 
       expect(await asb.VERSION.call()).to.be.bignumber.equal(VERSION);
+    });
+  });
+
+  describe('upgrade', async () => {
+    let federation;
+    let asb;
+
+    beforeEach(async () => {
+      const federationMemberAccounts = TEST_ACCOUNTS.slice(0, 10);
+      const federationMembersAddresses = federationMemberAccounts.map(account => account.address);
+      federation = await Federation.new(federationMembersAddresses, { from: owner });
+      const verifier = await AutonomousSwapProofVerifier.new(federation.address);
+      asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+        federation.address, verifier.address, { from: owner });
+    });
+
+    describe('ASB proof verifier', async () => {
+      context('owner', async () => {
+        it('should allow to upgrade', async () => {
+          const newVerifier = await AutonomousSwapProofVerifier.new(federation.address);
+          expect(await asb.verifier()).to.not.eql(newVerifier.address);
+
+          await asb.setAutonomousSwapProofVerifier(newVerifier.address, { from: owner });
+          expect(await asb.verifier()).to.eql(newVerifier.address);
+        });
+
+        it('should not allow to upgrade to a 0x0 verifier', async () => {
+          expectRevert(asb.setAutonomousSwapProofVerifier(ZERO_ADDRESS, { from: owner }));
+        });
+      });
+
+      context('not an owner', async () => {
+        it('should not allow to upgrade', async () => {
+          const newVerifier = await AutonomousSwapProofVerifier.new(federation.address);
+          await expectRevert(asb.setAutonomousSwapProofVerifier(newVerifier.address, { from: notOwner }));
+        });
+      });
     });
   });
 
