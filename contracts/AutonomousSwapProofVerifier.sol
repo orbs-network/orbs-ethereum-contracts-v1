@@ -340,7 +340,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
             // Verify that the signature isn't duplicated.
             bool unique = true;
-            for (uint j = 0; j < duplicatesLookup.length; ++j) {
+            for (uint j = 0; j < i; ++j) {
                 if (signer == duplicatesLookup[j]) {
                     unique = false;
                     break;
