@@ -1,10 +1,10 @@
 pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 import "./DateTime.sol";
-import "./Federation.sol";
+import "./IFederation.sol";
 import "./Upgradable.sol";
 
 
@@ -13,13 +13,13 @@ contract SubscriptionManager is Upgradable {
     using SafeMath for uint256;
 
     // The version of the current subscription manager smart contract.
-    string public constant VERSION = "0.2";
+    uint public constant VERSION = 2;
 
     // The Orbs token smart contract.
-    ERC20 public orbs;
+    IERC20 public orbs;
 
     // The federation smart contract.
-    Federation public federation;
+    IFederation public federation;
 
     // The minimal monthly subscription allocation.
     uint public minimalMonthlySubscription;
@@ -46,11 +46,11 @@ contract SubscriptionManager is Upgradable {
     event Subscribed(address indexed subscriber, bytes32 indexed id, uint256 value, uint256 startFrom);
     event DistributedFees(address indexed federationMember, uint256 value);
 
-    /// @dev Constructor that initializes the address of the Orbs billing contract.
-    /// @param _orbs ERC20 The address of the OrbsToken contract.
-    /// @param _federation Federation The address of the Federation contract.
+    /// @dev Constructor that initializes the Subscription Manager.
+    /// @param _orbs IERC20 The address of the OrbsToken contract.
+    /// @param _federation IFederation The address of the Federation contract.
     /// @param _minimalMonthlySubscription uint256 The minimal monthly subscription allocation.
-    constructor(ERC20 _orbs, Federation _federation, uint256 _minimalMonthlySubscription) public {
+    constructor(IERC20 _orbs, IFederation _federation, uint256 _minimalMonthlySubscription) public {
         require(address(_orbs) != address(0), "Address must not be 0!");
         require(address(_federation) != address(0), "Federation must not be 0!");
         require(_minimalMonthlySubscription != 0, "Minimal subscription value must be greater than 0!");

@@ -13,7 +13,7 @@ contract SubscriptionManagerMock is SubscriptionManager {
 
     UpgradeContext public upgradeContext;
 
-    constructor(ERC20 _orbs, Federation _federation, uint256 _minimalMonthlySubscription) public
+    constructor(IERC20 _orbs, IFederation _federation, uint256 _minimalMonthlySubscription) public
         SubscriptionManager(_orbs, _federation, _minimalMonthlySubscription) {
     }
 

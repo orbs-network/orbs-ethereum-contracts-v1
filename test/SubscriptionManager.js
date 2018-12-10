@@ -1,5 +1,4 @@
 import chai from 'chai';
-import dirtyChai from 'dirty-chai';
 import BigNumber from 'bignumber.js';
 import moment from 'moment';
 
@@ -7,9 +6,10 @@ import expectRevert from './helpers/expectRevert';
 import time from './helpers/time';
 
 const { expect } = chai;
-chai.use(dirtyChai);
 
-const TEST_ACCOUNTS = require('./accounts.json').accounts;
+const TEST_ACCOUNTS = require('./accounts.json');
+
+const TEST_ACCOUNTS_ADDRESSES = TEST_ACCOUNTS.map(account => account.address);
 
 const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
 const SubscriptionManagerMock = artifacts.require('./SubscriptionManagerMock.sol');
@@ -20,7 +20,7 @@ contract('SubscriptionManager', (accounts) => {
   const owner = accounts[0];
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const VERSION = '0.2';
+  const VERSION = 2;
   const MAX_FEDERATION_MEMBERS = 100;
   const TIME_ERROR_MARGIN = 60; // 60 seconds
 
@@ -130,10 +130,12 @@ contract('SubscriptionManager', (accounts) => {
       await expectRevert(SubscriptionManagerMock.new(token.address, federation.address, 0, { from: owner }));
     });
 
-    it('should correctly initialize the minimal monthly subscription', async () => {
+    it('should correctly initialize fields', async () => {
       const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
         { from: owner });
 
+      expect(await manager.orbs.call()).to.eql(token.address);
+      expect(await manager.federation.call()).to.eql(federation.address);
       expect(await manager.minimalMonthlySubscription.call()).to.be.bignumber.equal(minimalMonthlySubscription);
     });
 
@@ -153,8 +155,8 @@ contract('SubscriptionManager', (accounts) => {
       { federationMembers: accounts.slice(3, 7) },
       { federationMembers: accounts.slice(3, 8) },
       { federationMembers: accounts.slice(3, 10) },
-      { federationMembers: TEST_ACCOUNTS.slice(30, 50) },
-      { federationMembers: TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS) },
+      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(30, 50) },
+      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS) },
     ].forEach((spec) => {
       let federation;
 

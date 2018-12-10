@@ -3,6 +3,7 @@ pragma solidity 0.4.24;
 import "../contracts/DateTime.sol";
 
 
+/// @title Contract wrapper around DateTime. Please note that this is only required in order to support solidity-coverage.
 contract DateTimeWrapper {
     function isLeapYear(uint16 _year) public pure returns (bool) {
         return DateTime.isLeapYear(_year);
