@@ -6,6 +6,7 @@ import MerkleTree from './merkleTree';
 const UINT32_SIZE = 4;
 const UINT64_SIZE = 8;
 const UINT256_SIZE = 32;
+const SHA256_SIZE = 32;
 
 const DUMMY_BLOCK_HASH = utils.sha256('Dummy Block Hash');
 
@@ -24,6 +25,8 @@ class ASBProof {
       ethereumAddress: this.ethereumAddress,
       value: this.value,
     }, this.eventOptions);
+
+    // Create the transaction receipt merkle proof.
     const transactionReceipts = this.transactionReceipts ? [...this.transactionReceipts, transactionReceipt]
       : [transactionReceipt];
     const transactionsMerkleTree = new MerkleTree(transactionReceipts);
@@ -65,7 +68,7 @@ class ASBProof {
     return {
       resultsBlockHeader,
       resultsBlockProof,
-      transactionReceipt: this.transactionReceipt || transactionReceipt,
+      transactionReceipt,
       transactionReceiptProof: this.transactionReceiptProof || transactionsMerkleTree.getProof(transactionReceipt),
     };
   }
@@ -169,11 +172,6 @@ class ASBProof {
 
   setWrongTransactionReceiptProof(transactionReceiptProof) {
     this.transactionReceiptProof = transactionReceiptProof;
-    return this;
-  }
-
-  setWrongTransactionReceipt(transactionReceipt) {
-    this.transactionReceipt = transactionReceipt;
     return this;
   }
 
@@ -297,9 +295,9 @@ class ASBProof {
       const signatureBuffer = Bytes.prefixedHexToBuffer(sig.signature);
       return Buffer.concat([res,
         Buffer.alloc(4), // node_pk_sig nesting
-        Bytes.numberToBuffer(!options.wrongPublicAddressSize ? publicAddressBuffer.length : UINT256_SIZE, 4),
+        Bytes.numberToBuffer(options.wrongPublicAddressSize || publicAddressBuffer.length, 4),
         publicAddressBuffer,
-        Bytes.numberToBuffer(!options.wrongSignatureSize ? signatureBuffer.length : UINT256_SIZE, 4),
+        Bytes.numberToBuffer(options.wrongSignatureSize || signatureBuffer.length, 4),
         signatureBuffer,
       ]);
     }, resultsBlockProofBuffer);
@@ -320,6 +318,20 @@ class ASBProof {
       Bytes.numberToBuffer(transaction.executionResult, UINT32_SIZE),
       Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE),
       eventBuffer,
+    ]);
+  }
+
+  // Builds the Transaction Receipt Merkle Proof according to:
+  // +--------------+---------+------+-------------+
+  // |    Field     | Offset  | Size |  Encoding   |
+  // +--------------+---------+------+-------------+
+  // | total_length | 4       |    8 | uint32      |
+  // | merkle_node  | 8 + 32n |   32 | bytes (32B) |
+  // +--------------+---------+------+-------------+
+  static buildTransactionReceiptProof(proof) {
+    return Buffer.concat([
+      Bytes.numberToBuffer(proof.length * SHA256_SIZE, UINT32_SIZE),
+      ...proof,
     ]);
   }
 
@@ -349,7 +361,7 @@ class ASBProof {
       event.orbsAddress,
       Bytes.numberToBuffer(ethereumAddressBuffer.length, UINT32_SIZE),
       ethereumAddressBuffer,
-      Bytes.numberToBuffer(!options.wrongValueSize ? UINT256_SIZE : UINT32_SIZE, UINT32_SIZE),
+      Bytes.numberToBuffer(options.wrongValueSize || UINT256_SIZE, UINT32_SIZE),
       Bytes.numberToBuffer(event.value, UINT256_SIZE),
     ]);
   }

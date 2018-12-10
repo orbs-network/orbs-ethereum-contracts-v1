@@ -359,7 +359,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       context('value', async () => {
         context('is of wrong size', async () => {
           it('should revert', async () => {
-            proof.setEventOptions({ wrongValueSize: true });
+            proof.setEventOptions({ wrongValueSize: 12345 });
           });
         });
       });
@@ -400,7 +400,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         context('public address', async () => {
           context('is of incorrect size', async () => {
             it('should revert', async () => {
-              proof.setResultsProofOptions({ wrongPublicAddressSize: true });
+              proof.setResultsProofOptions({ wrongPublicAddressSize: 10 });
             });
           });
         });
@@ -408,7 +408,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         context('signature', async () => {
           context('is of incorrect size', async () => {
             it('should revert', async () => {
-              proof.setResultsProofOptions({ wrongSignatureSize: true });
+              proof.setResultsProofOptions({ wrongSignatureSize: 100 });
             });
           });
         });
@@ -457,14 +457,6 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           it('should revert', async () => {
             const merkle = new MerkleTree([1, 2, 3]);
             proof.setWrongTransactionReceiptProof(merkle.getProof(2));
-          });
-        });
-
-        context('incorrect receipt', async () => {
-          it('should revert', async () => {
-            const wrongTransactionReceipt = proof.getProof().transactionReceipt;
-            wrongTransactionReceipt[0] = !wrongTransactionReceipt[0]; // Make sure at least one bit is different.
-            proof.setWrongTransactionReceipt(wrongTransactionReceipt);
           });
         });
       });
