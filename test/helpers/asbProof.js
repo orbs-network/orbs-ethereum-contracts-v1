@@ -19,7 +19,7 @@ class ASBProof {
       executionResult: this.executionResult,
     }, {
       orbsContractName: this.orbsContractName,
-      eventId: this.eventId,
+      eventName: this.eventName,
       tuid: this.tuid,
       orbsAddress: this.orbsAddress,
       ethereumAddress: this.ethereumAddress,
@@ -93,8 +93,8 @@ class ASBProof {
     return this;
   }
 
-  setEventId(eventId) {
-    this.eventId = eventId;
+  setEventName(eventName) {
+    this.eventName = eventName;
     return this;
   }
 
@@ -199,8 +199,8 @@ class ASBProof {
       throw new Error('Missing Orbs contract name!');
     }
 
-    if (!Number.isInteger(this.eventId)) {
-      throw new Error('Missing event ID!');
+    if (!this.eventName) {
+      throw new Error('Missing event name!');
     }
 
     if (!Number.isInteger(this.tuid)) {
@@ -355,12 +355,18 @@ class ASBProof {
     return Buffer.concat([
       Bytes.numberToBuffer(event.orbsContractName.length, UINT32_SIZE),
       Buffer.from(event.orbsContractName),
-      Bytes.numberToBuffer(event.eventId, UINT32_SIZE),
+      Bytes.numberToBuffer(event.eventName.length, UINT32_SIZE),
+      Buffer.from(event.eventName),
+      Bytes.numberToBuffer(100, UINT32_SIZE), //array size
+      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
       Bytes.numberToBuffer(event.tuid, UINT64_SIZE),
+      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
       Bytes.numberToBuffer(event.orbsAddress.length, UINT32_SIZE),
       event.orbsAddress,
+      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
       Bytes.numberToBuffer(ethereumAddressBuffer.length, UINT32_SIZE),
       ethereumAddressBuffer,
+      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
       Bytes.numberToBuffer(options.wrongValueSize || UINT256_SIZE, UINT32_SIZE),
       Bytes.numberToBuffer(event.value, UINT256_SIZE),
     ]);

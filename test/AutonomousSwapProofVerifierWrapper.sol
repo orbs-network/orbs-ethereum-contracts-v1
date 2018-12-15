@@ -54,11 +54,11 @@ contract AutonomousSwapProofVerifierWrapper is AutonomousSwapProofVerifier {
         eventData = transactionReceipt.eventData;
     }
 
-    function parseEventDataRaw(bytes _eventData) public pure returns (string orbsContractName, uint32 eventId,
+    function parseEventDataRaw(bytes _eventData) public pure returns (string orbsContractName, string eventName,
         uint64 tuid, bytes20 from, address to, uint256 value) {
         EventData memory eventData = parseEventData(_eventData);
         orbsContractName = eventData.orbsContractName;
-        eventId = eventData.eventId;
+        eventName = eventData.eventName;
         tuid = eventData.tuid;
         from = eventData.from;
         to = eventData.to;

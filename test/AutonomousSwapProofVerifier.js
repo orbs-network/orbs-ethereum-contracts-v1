@@ -107,7 +107,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       it('should properly parse', async () => {
         const eventData = {
           orbsContractName: 'Hello World!',
-          eventId: 12,
+          eventName: "TransferedOut",
           tuid: 56789,
           orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
           ethereumAddress: accounts[8],
@@ -131,7 +131,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       it('should properly parse', async () => {
         const data = {
           orbsContractName: 'Hello World!',
-          eventId: 12,
+          eventName: "TransferedOut",
           tuid: 56789,
           orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
           ethereumAddress: accounts[3],
@@ -143,7 +143,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const eventData = await verifier.parseEventDataRaw.call(rawEventData);
 
         expect(eventData[0]).to.eql(data.orbsContractName);
-        expect(eventData[1]).to.be.bignumber.equal(data.eventId);
+        expect(eventData[1]).to.eql(data.eventName);
         expect(eventData[2]).to.be.bignumber.equal(data.tuid);
         expect(eventData[3]).to.eql(utils.bufferToHex(data.orbsAddress));
         expect(eventData[4]).to.eql(data.ethereumAddress);
@@ -156,6 +156,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const NETWORK_TYPE = 0;
     const VIRTUAL_CHAIN_ID = 0x6b696e;
     const ORBS_ASB_CONTRACT_NAME = 'asb';
+    const TRANSFERED_OUT_EVENT_NAME = 'TransferedOut';
     const PROTOCOL_VERSION = 2;
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
     const TRANSFERED_OUT_EVENT_ID = 1;
@@ -223,7 +224,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       proof = (new ASBProof())
         .setFederationMemberAccounts(federationMemberAccounts)
         .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-        .setEventId(TRANSFERED_OUT_EVENT_ID)
+        .setEventName(TRANSFERED_OUT_EVENT_NAME)
         .setTuid(tuid)
         .setOrbsAddress(ORBS_ADDRESS)
         .setEthereumAddress(accounts[5])
@@ -261,7 +262,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           proofs.push((new ASBProof())
             .setFederationMemberAccounts(federationMemberAccounts.slice(0))
             .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-            .setEventId(TRANSFERED_OUT_EVENT_ID)
+            .setEventName(TRANSFERED_OUT_EVENT_NAME)
             .setTuid(tuid)
             .setOrbsAddress(ORBS_ADDRESS)
             .setEthereumAddress(accounts[5])
@@ -350,10 +351,10 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         });
       });
 
-      context('event ID is not TRANSFERRED_OUT', async () => {
+      context('event name is not TransferedOut', async () => {
         context('is incorrect', async () => {
           it('should revert', async () => {
-            proof.setEventId(100);
+            proof.setEventName("other_name");
           });
         });
       });

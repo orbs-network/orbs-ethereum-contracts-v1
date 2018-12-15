@@ -9,6 +9,7 @@ import "./IAutonomousSwapProofVerifier.sol";
 import "./IFederation.sol";
 import "./BytesLibEx.sol";
 import "./CryptoUtils.sol";
+import "./StringUtils.sol";
 
 
 /// @title ASB proof verification library
@@ -17,6 +18,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     using SafeMath for uint256;
     using BytesLib for bytes;
     using BytesLibEx for bytes;
+    using StringUtils for string;
 
     // The version of the current proof verifier library.
     uint public constant VERSION = 1;
@@ -25,12 +27,17 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant ORBS_PROTOCOL_VERSION = 2;
 
     // Data sizes (in bytes).
+    uint public constant UINT16_SIZE = 2;
     uint public constant UINT32_SIZE = 4;
     uint public constant UINT64_SIZE = 8;
     uint public constant UINT256_SIZE = 32;
     uint public constant ADDRESS_SIZE = 20;
     uint public constant SHA256_SIZE = UINT256_SIZE;
     uint public constant SIGNATURE_SIZE = 65;
+    uint public constant ONEOF_TYPE_SIZE = 4;
+    uint public constant ARRAY_LENGTH_SIZE = 4;
+    uint public constant MESSAGE_LENGTH_SIZE = 4;
+    uint public constant ENUM_PADDED_LENGTH = 4;
 
     // Orbs specific data sizes (in bytes).
     uint public constant ORBS_ADDRESS_SIZE = 20;
@@ -38,10 +45,10 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant BLOCKREFMESSAGE_SIZE = 52;
     uint public constant BLOCKHASH_OFFSET = 20;
     uint public constant NODE_PK_SIG_NESTING_SIZE = 4;
-    uint public constant EXECUTION_RESULT_OFFSET = 36;
+    uint public constant TXHASH_SIZE = 32;    
 
     // Orbs protocol values:
-    uint public constant TRANSFERRED_OUT = 1;
+    string public constant TRANSFERED_OUT_EVENT_NAME = 'TransferedOut';
     uint public constant EXECUTION_RESULT_SUCCESS = 1;
 
     // The maximum supported number of signatures in Results Block Proof. We have to limit this number and fallback to
@@ -74,7 +81,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
     struct EventData {
         string orbsContractName;
-        uint32 eventId;
+        string eventName;
         uint64 tuid;
         bytes20 from;
         address to;
@@ -124,8 +131,9 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Extract the Autonomous Swap Event Data from the transaction receipt:
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
-        // Verify that the event is a TRANSFERRED_OUT event:
-        require(eventData.eventId == TRANSFERRED_OUT, "Invalid event ID!");
+        // Verify that the event is a TransferedOut event: TODO
+        // require(eventData.eventName == TRANSFERRED_OUT, "Invalid event ID!");
+        require(eventData.eventName.equal(TRANSFERED_OUT_EVENT_NAME), "Incorrect event name!");
 
         // Assign the rest of the fields.
         transferInEvent.networkType = header.networkType;
@@ -248,68 +256,135 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// | event length     |     40 | 4        | uint32   |                       |
     /// | event data       |     44 | variable | bytes    |                       |
     /// +------------------+--------+----------+----------+-----------------------+
+    /// 
+    /// message TransactionReceipt {
+    ///     primitives.sha256 txhash = 1;
+    ///     protocol.ExecutionResult execution_result = 2;
+    ///     bytes output_argument_array = 3;
+    ///     bytes output_events_array = 4; // opaque field of repeated protocol.Event
+    /// }
+    ///
     /// @param _transactionReceipt bytes The raw Transaction Receipt data.
     /// @return res TransactionReceipt The parsed Transaction Receipt.
+
+
     function parseTransactionReceipt(bytes _transactionReceipt) internal pure returns(TransactionReceipt memory res) {
         uint offset = 0;
 
-        offset = offset.add(EXECUTION_RESULT_OFFSET);
+        /// primitives.sha256 txhash (bytes, reserved)
+        offset = offset.add(ARRAY_LENGTH_SIZE);
+        offset = offset.add(TXHASH_SIZE);        
 
-        res.executionResult = _transactionReceipt.toUint32BE(offset);
-        offset = offset.add(UINT32_SIZE);
+        /// protocol.ExecutionResult execution_result (enum)
+        res.executionResult = _transactionReceipt.toUint16BE(offset);
+        offset = offset.add(ENUM_PADDED_LENGTH);
 
-        uint32 eventDataLength =_transactionReceipt.toUint32BE(offset);
-        offset = offset.add(UINT32_SIZE);
-        res.eventData = _transactionReceipt.slice(offset, eventDataLength);
-        offset = offset.add(eventDataLength);
+        /// bytes output_argument_array (reserved)
+        uint32 OutputArgumentLength =_transactionReceipt.toUint32BE(offset);
+        offset = offset.add(ARRAY_LENGTH_SIZE);
+        offset = offset.add(OutputArgumentLength);
+
+        /// bytes output_argument_array 
+        uint32 eventArrayLength =_transactionReceipt.toUint32BE(offset);
+        offset = offset.add(ARRAY_LENGTH_SIZE);
+        res.eventData = _transactionReceipt.slice(offset, eventArrayLength);
+        offset = offset.add(eventArrayLength);
     }
 
     /// @dev Parses Autonomous Swap Event Data according to:
+    /// +--------------------------+--------+------+--------------+-------------------------------+
+    /// |          Field           | Offset | Size |  Encoding    |             Notes             |
+    /// +--------------------------+--------+------+--------------+-------------------------------+
+    /// | contract name length (N) | 0      | 4    | uint32       |                               |
+    /// | contract name            | 4      | N    | string       |                               |
+    /// | event name length (K)    | N+4    | 4    | uint32       |                               |
+    /// | event name               | N+8    | K    | string       |                               |
+    /// | arguments_length         | N+K+8  | 4    | uint32       |                               |
+    /// | tuid_type                | N+K+12 | 2(4) | enum (oneof) | reserved                      |
+    /// | tuid                     | N+K+16 | 8    | uint64       |                               |
+    /// | ethereum_address_type    | N+K+24 | 2(4) | enum (oneof) | reserved                      |
+    /// | ethereum_address_length  | N+K+28 | 4    | always 20    | reserved                      |
+    /// | ethereum_address         | N+K+32 | 20   | bytes (20B)  |                               |
+    /// | orbs_address_type        | N+K+52 | 2(4) | enum (oneof) | reserved                      |
+    /// | orbs_address_length      | N+K+56 | 4    | always 20    | reserved                      |
+    /// | orbs_address             | N+K+60 | 20   | bytes (20B)  | reserved                      |
+    /// | tokens_type              | N+K+80 | 2(4) | enum (oneof) | reserved                      |
+    /// | tokens_length            | N+K+84 | 4    | always 32    | reserved                      |
+    /// | tokens                   | N+K+88 | 32   | uint256      |                               |
     /// +--------------------------+--------+------+-------------+-------------------------------+
-    /// |          Field           | Offset | Size |  Encoding   |             Notes             |
-    /// +--------------------------+--------+------+-------------+-------------------------------+
-    /// | contract name length (N) | 0      | 4    | uint32      |                               |
-    /// | contract name            | 4      | N    | string      |                               |
-    /// | event_id                 | 4+N    | 4    | enum        | 0x1 indicates TRANSFERRED_OUT |
-    /// | tuid                     | 8+N    | 8    | uint64      |                               |
-    /// | ethereum_address length  | N+16   | 4    | always 20   | reserved                      |
-    /// | ethereum_address         | N+20   | 20   | bytes (20B) |                               |
-    /// | orbs_address length      | N+40   | 4    | always 20   | reserved                      |
-    /// | orbs_address             | N+44   | 20   | bytes (20B) |                               |
-    /// | tokens length            | N+64   | 4    | always 32   | reserved                      |
-    /// | tokens                   | N+68   | 32   | uint256     |                               |
-    /// +--------------------------+--------+------+-------------+-------------------------------+
+
     /// @param _eventData bytes The raw event data.
     /// @return res EventData The parsed Autonomous Swap Event Data.
+    ///
+    /// message Event {
+    ///     primitives.contract_name contract_name = 1;
+    ///     primitives.event_name event_name = 2;
+    ///     bytes output_argument_array = 3; // opaque field of repeated protocol.MethodArgument
+    /// }
+    /// message MethodArgumentArray {
+    ///     repeated MethodArgument arguments = 1;
+    /// }
+    /// message MethodArgument { // TODO: rename to Argument
+    ///     oneof type {
+    ///         uint32 uint32_value = 1;
+    ///         uint64 uint64_value = 2;
+    ///         string string_value = 3;
+    ///         bytes bytes_value = 4;
+    ///     }
+    /// }
+    ///
+    /// TransferredOut Event:
+    ///   uint64 tuid, 
+    ///   bytes[20] from_orbs_address,
+    ///   byets[20] to_eth_address,
+    ///   uint256 amount,
+    ///
+
     function parseEventData(bytes _eventData) internal pure returns (EventData memory res) {
         uint offset = 0;
-
+        
+        /// primitives.contract_name contract_name (string)
         uint32 orbsContractNameLength = _eventData.toUint32BE(0);
-        offset = offset.add(UINT32_SIZE);
+        offset = offset.add(ARRAY_LENGTH_SIZE);
         res.orbsContractName = string(_eventData.slice(offset, orbsContractNameLength));
         offset = offset.add(orbsContractNameLength);
+        
+        /// primitives.event_name event_name (string)
+        uint32 eventNameLength = _eventData.toUint32BE(offset);
+        offset = offset.add(ARRAY_LENGTH_SIZE);
+        res.eventName = string(_eventData.slice(offset, eventNameLength));
+        offset = offset.add(eventNameLength);
 
-        res.eventId = _eventData.toUint32BE(offset);
-        offset = offset.add(UINT32_SIZE);
 
+        /// output_argument_array / repeated MethodArgument arguments
+        offset = offset.add(ARRAY_LENGTH_SIZE);
+
+        /// argument[0] uint64 tuid
+        offset = offset.add(ONEOF_TYPE_SIZE);
         res.tuid = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
+        /// argument[1] bytes[20] from_orbs_address (bytes)
+        offset = offset.add(ONEOF_TYPE_SIZE);
         uint32 fromAddressSize =_eventData.toUint32BE(offset);
         require(fromAddressSize == ORBS_ADDRESS_SIZE, "Invalid Orbs address size!");
-        offset = offset.add(UINT32_SIZE);
+        offset = offset.add(ARRAY_LENGTH_SIZE);
         res.from = _eventData.toBytes20(offset);
         offset = offset.add(ORBS_ADDRESS_SIZE);
 
+        /// argument[2] bytes[20] to_eth_address (bytes)
+        offset = offset.add(ONEOF_TYPE_SIZE);
         uint32 toAddressSize =_eventData.toUint32BE(offset);
         require(toAddressSize == ADDRESS_SIZE, "Invalid Ethereum address size!");
-        offset = offset.add(UINT32_SIZE);
+        offset = offset.add(ARRAY_LENGTH_SIZE);
         res.to = _eventData.toAddress(offset);
         offset = offset.add(ADDRESS_SIZE);
 
+        /// argument[3] UINT256 ammount (bytes)
+        offset = offset.add(ONEOF_TYPE_SIZE);
         uint32 valueSize =_eventData.toUint32BE(offset);
         require(valueSize == UINT256_SIZE, "Invalid value size!");
-        offset = offset.add(UINT32_SIZE);
+        offset = offset.add(ARRAY_LENGTH_SIZE);
         res.value = _eventData.toUintBE(offset);
         offset = offset.add(UINT256_SIZE);
     }
