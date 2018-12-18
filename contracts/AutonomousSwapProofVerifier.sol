@@ -68,6 +68,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         uint32 blockProofVersion;
         bytes32 transactionsBlockHash;
         bytes32 blockrefHash;
+        uint16 helixMessageType;
         bytes32 blockHash;
         uint8 numOfSignatures;
         address[MAX_SIGNATURES] publicAddresses;
@@ -97,6 +98,43 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         require(address(_federation) != address(0), "Federation must not be 0!");
 
         federation = _federation;
+    }
+
+    /// @dev Parses the receipt proof and calls processProof to process the proof data.
+    /// our current Solidity version doesn't support unbound parameters (e.g., bytes) in external interface methods.
+    /// @param _packedProof bytes The raw proof (including the resultsBlockHeader, resultsBlockProof and 
+    /// transactionReceiptProof.
+    function parsePackedProof(bytes _packedProof) internal pure returns(bytes resultsBlockHeader, 
+    bytes resultsBlockProof, bytes32[] transactionReceiptProof) {
+        uint offset = 0;
+
+        // Parse the packedProof
+        // message ReceiptProof {
+        //     protocol.ResultsBlockHeader header = 1;
+        //     protocol.ResultsBlockProof block_proof = 2;
+        //     primitives.merkle_tree_proof receipt_proof = 3;
+        // }
+
+        /// protocol.ResultsBlockHeader header (bytes)
+        uint32 resultsBlockHeaderSize =_packedProof.toUint32BE(offset);
+        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        resultsBlockHeader = _packedProof.slice(offset, resultsBlockHeaderSize);
+        offset = offset.add(resultsBlockHeaderSize);
+
+        /// protocol.ResultsBlockProof block_proof (bytes)
+        uint32 resultsBlockProofSize =_packedProof.toUint32BE(offset);
+        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        resultsBlockProof = _packedProof.slice(offset, resultsBlockProofSize);
+        offset = offset.add(resultsBlockProofSize);
+
+        /// primitives.merkle_tree_proof receipt_proof (bytes)
+        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        uint nodeIndex = 0;
+        while (offset < _packedProof.length) {
+            transactionReceiptProof[nodeIndex] = _packedProof.toBytes32(offset);
+            nodeIndex++;
+            offset = offset.add(UINT256_SIZE);
+        }
     }
 
     /// @dev Parses and validates the raw transfer proof. Please note that this method can't be external (yet), since
@@ -131,7 +169,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Extract the Autonomous Swap Event Data from the transaction receipt:
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
-        // Verify that the event is a TransferedOut event: TODO
+        // Verify that the event is a TransferedOut event: TODO - modify to filter of multipel events
         // require(eventData.eventName == TRANSFERRED_OUT, "Invalid event ID!");
         require(eventData.eventName.equal(TRANSFERED_OUT_EVENT_NAME), "Incorrect event name!");
 
@@ -221,8 +259,10 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         offset = offset.add(ONEOF_NESTING_SIZE); // oneof + nesting
         res.blockrefHash = sha256(_resultsBlockProof.slice(offset, BLOCKREFMESSAGE_SIZE));
-        offset = offset.add(BLOCKHASH_OFFSET);
 
+        res.helixMessageType = _resultsBlockProof.toUint3216(offset);
+
+        offset = offset.add(BLOCKHASH_OFFSET);
         res.blockHash = _resultsBlockProof.toBytes32(offset);
         offset = offset.add(SHA256_SIZE);
 
@@ -276,7 +316,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(TXHASH_SIZE);        
 
         /// protocol.ExecutionResult execution_result (enum)
-        res.executionResult = _transactionReceipt.toUint16BE(offset);
+        res.executionResult = _transactionReceipt.toUint32BE(offset);
         offset = offset.add(ENUM_PADDED_LENGTH);
 
         /// bytes output_argument_array (reserved)
@@ -284,11 +324,18 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(ARRAY_LENGTH_SIZE);
         offset = offset.add(OutputArgumentLength);
 
-        /// bytes output_argument_array 
+        /// bytes output_events_array 
         uint32 eventArrayLength =_transactionReceipt.toUint32BE(offset);
         offset = offset.add(ARRAY_LENGTH_SIZE);
-        res.eventData = _transactionReceipt.slice(offset, eventArrayLength);
-        offset = offset.add(eventArrayLength);
+
+        // first event - TODO multiple events 
+        uint32 eventLength =_transactionReceipt.toUint32BE(offset);
+        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        res.eventData = _transactionReceipt.slice(offset, eventLength);
+        offset = offset.add(eventLength);
+        
+        require(eventArrayLength == eventLength + 4, "Multiple Events - only a single event is supported!");
+
     }
 
     /// @dev Parses Autonomous Swap Event Data according to:
@@ -324,7 +371,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// message MethodArgumentArray {
     ///     repeated MethodArgument arguments = 1;
     /// }
-    /// message MethodArgument { // TODO: rename to Argument
+    /// message MethodArgument {
     ///     oneof type {
     ///         uint32 uint32_value = 1;
     ///         uint64 uint64_value = 2;

@@ -316,7 +316,10 @@ class ASBProof {
     return Buffer.concat([
       Buffer.alloc(36),
       Bytes.numberToBuffer(transaction.executionResult, UINT32_SIZE),
-      Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE),
+      Bytes.numberToBuffer(10, UINT32_SIZE), // argument array length = 10 - TODO random
+      Buffer.alloc(10), // argument array
+      Bytes.numberToBuffer(eventBuffer.length + 4, UINT32_SIZE), // events array length
+      Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE), // event length
       eventBuffer,
     ]);
   }

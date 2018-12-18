@@ -150,6 +150,47 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         expect(eventData[5]).to.be.bignumber.equal(data.value);
       });
     });
+
+    describe('packed proof', async () => {
+      it('should properly parse', async () => {
+        // resultsBlockHeader
+        const results_block_header_data = {
+          protocolVersion: 2,
+          virtualChainId: 1111,
+          networkType: 1,
+          timestamp: 1544081404,
+          receiptMerkleRoot: utils.sha256('Hello World!!!'),
+        };
+
+        const resultsBlockHeader = ASBProof.buildResultsBlockHeader(results_block_header_data);
+        const rawResultsBlockHeader = utils.bufferToHex(resultsBlockHeader);
+
+        // resultsBlockProof
+        const testSignatures = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES).map((account) => {
+          const messageHashBuffer = utils.sha256('Hello world3!');
+          const rawSignature = utils.ecsign(messageHashBuffer, utils.toBuffer(account.privateKey));
+          const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
+
+          return {
+            publicAddress: account.address,
+            signature,
+          };
+        });
+
+        const blockHash = utils.sha256('Hello World2!');
+        const results_block_proof_data = {
+          blockProofVersion: 5,
+          transactionsBlockHash: utils.sha256('Hello World!'),
+          blockrefMessage: Buffer.concat([Buffer.alloc(20), blockHash]),
+          signatures: testSignatures,
+        };
+
+        const resultsBlockProof = ASBProof.buildResultsProof(results_block_proof_data);
+        const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
+    
+        // receiptMerkleProof
+      });
+    });
   });
 
   describe('proof processing', async () => {
