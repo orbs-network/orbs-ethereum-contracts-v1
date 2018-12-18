@@ -3,6 +3,7 @@ import utils from 'ethereumjs-util';
 import Bytes from './bytes';
 import MerkleTree from './merkleTree';
 
+const UINT16_SIZE = 2;
 const UINT32_SIZE = 4;
 const UINT64_SIZE = 8;
 const UINT256_SIZE = 32;
@@ -45,7 +46,12 @@ class ASBProof {
     const resultsBlockHeaderHash = utils.sha256(resultsBlockHeader);
     const transactionsBlockHash = this.transactionsBlockHash || DUMMY_BLOCK_HASH; // Just a dummy value.
     const blockHash = this.blockHash || utils.sha256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
-    const blockrefMessage = Buffer.concat([Buffer.alloc(20), blockHash]);
+    const block_ref_data = {
+      helixMessageType: 3,
+      blockHash: blockHash,
+    }
+    
+    const blockrefMessage = ASBProof.buildblockRef(block_ref_data);
     const blockrefHash = this.blockrefHash || utils.sha256(blockrefMessage);
 
     const signatures = this.federationMemberAccounts.map((account) => {
@@ -57,14 +63,14 @@ class ASBProof {
         signature,
       };
     });
-
+    
     const resultsBlockProof = ASBProof.buildResultsProof({
       blockProofVersion: this.blockProofVersion,
-      transactionsBlockHash,
-      blockrefMessage,
-      signatures,
+      transactionsBlockHash: transactionsBlockHash,
+      blockrefMessage: blockrefMessage,
+      signatures: signatures,
     }, this.resultsProofOptions);
-
+    
     return {
       resultsBlockHeader,
       resultsBlockProof,
@@ -281,12 +287,22 @@ class ASBProof {
   // | node_sig_length                | 132 + 100n | 4         | always 65   | reserved                 |
   // | node_sig                       | 136 + 100n | 65        | bytes (65B) |                          |
   // +--------------------------------+------------+-----------+-------------+--------------------------+
+  static buildblockRef(blockRef) {
+    return Buffer.concat([
+      Bytes.padToDword(Bytes.numberToBuffer(blockRef.helixMessageType, UINT16_SIZE)),
+      Buffer.alloc(12),
+      Bytes.numberToBuffer(32, UINT32_SIZE),
+      blockRef.blockHash,
+    ]); 
+  }
+  
   static buildResultsProof(resultsBlockProof, options = {}) {
+    
     const resultsBlockProofBuffer = Buffer.concat([
-      Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4),
+//      Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4), TODO fix after adding in spec.
       Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, 4),
       resultsBlockProof.transactionsBlockHash,
-      Buffer.alloc(12), // one-of + nesting
+      Buffer.alloc(12), 
       resultsBlockProof.blockrefMessage,
     ]);
 
@@ -296,9 +312,9 @@ class ASBProof {
       return Buffer.concat([res,
         Buffer.alloc(4), // node_pk_sig nesting
         Bytes.numberToBuffer(options.wrongPublicAddressSize || publicAddressBuffer.length, 4),
-        publicAddressBuffer,
+        Bytes.padToDword(publicAddressBuffer),
         Bytes.numberToBuffer(options.wrongSignatureSize || signatureBuffer.length, 4),
-        signatureBuffer,
+        Bytes.padToDword(signatureBuffer),
       ]);
     }, resultsBlockProofBuffer);
   }
@@ -315,9 +331,9 @@ class ASBProof {
     const eventBuffer = ASBProof.buildEventData(event, options);
     return Buffer.concat([
       Buffer.alloc(36),
-      Bytes.numberToBuffer(transaction.executionResult, UINT32_SIZE),
-      Bytes.numberToBuffer(10, UINT32_SIZE), // argument array length = 10 - TODO random
-      Buffer.alloc(10), // argument array
+      Bytes.padToDword(Bytes.numberToBuffer(transaction.executionResult, UINT16_SIZE)),
+      Bytes.numberToBuffer(12, UINT32_SIZE), // argument array length = 12 - TODO random, padde to 4.
+      Buffer.alloc(12), // argument array
       Bytes.numberToBuffer(eventBuffer.length + 4, UINT32_SIZE), // events array length
       Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE), // event length
       eventBuffer,
@@ -357,9 +373,9 @@ class ASBProof {
     const ethereumAddressBuffer = Bytes.prefixedHexToBuffer(event.ethereumAddress);
     return Buffer.concat([
       Bytes.numberToBuffer(event.orbsContractName.length, UINT32_SIZE),
-      Buffer.from(event.orbsContractName),
+      Bytes.padToDword(Buffer.from(event.orbsContractName)),
       Bytes.numberToBuffer(event.eventName.length, UINT32_SIZE),
-      Buffer.from(event.eventName),
+      Bytes.padToDword(Buffer.from(event.eventName)),
       Bytes.numberToBuffer(100, UINT32_SIZE), //array size
       Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
       Bytes.numberToBuffer(event.tuid, UINT64_SIZE),

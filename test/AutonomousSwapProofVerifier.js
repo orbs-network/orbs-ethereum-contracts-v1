@@ -74,11 +74,15 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           };
         });
 
-        const blockHash = utils.sha256('Hello World2!');
+        const block_ref_data = {
+          helixMessageType:3,
+          blockHash: utils.sha256('Hello World2!'),     
+        }
+          
         const data = {
           blockProofVersion: 5,
           transactionsBlockHash: utils.sha256('Hello World!'),
-          blockrefMessage: Buffer.concat([Buffer.alloc(20), blockHash]),
+          blockrefMessage: ASBProof.buildblockRef(block_ref_data),
           signatures: testSignatures,
         };
 
@@ -86,15 +90,16 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
         const resultsBlockProofData = await verifier.parseResultsBlockProofRaw.call(rawResultsBlockProof);
 
-        expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion);
+        //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO
         expect(utils.toBuffer(resultsBlockProofData[1])).to.eql(data.transactionsBlockHash);
         expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(data.blockrefMessage));
-        expect(utils.toBuffer(resultsBlockProofData[3])).to.eql(blockHash);
-        const numOfSignatures = resultsBlockProofData[4].toNumber();
+        expect(resultsBlockProofData[3]).to.be.bignumber.equal(block_ref_data.helixMessageType);
+        expect(utils.toBuffer(resultsBlockProofData[4])).to.eql(block_ref_data.blockHash);
+        const numOfSignatures = resultsBlockProofData[5].toNumber();
         expect(numOfSignatures).to.be.bignumber.equal(data.signatures.length);
 
         for (let i = 0; i < numOfSignatures; ++i) {
-          expect(resultsBlockProofData[5][i]).to.be.eql(testSignatures[i].publicAddress);
+          expect(resultsBlockProofData[6][i]).to.be.eql(testSignatures[i].publicAddress);
 
           // TODO: at the moment, truffle can't properly parse the returned bytes[MAX_SIGNATURE] addresses. This should
           // be fixed in truffle 0.5 and later.
@@ -151,46 +156,50 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       });
     });
 
-    describe('packed proof', async () => {
-      it('should properly parse', async () => {
-        // resultsBlockHeader
-        const results_block_header_data = {
-          protocolVersion: 2,
-          virtualChainId: 1111,
-          networkType: 1,
-          timestamp: 1544081404,
-          receiptMerkleRoot: utils.sha256('Hello World!!!'),
-        };
+    // describe('packed proof', async () => {
+    //   it('should properly parse', async () => {
+    //     // resultsBlockHeader
+    //     const results_block_header_data = {
+    //       protocolVersion: 2,
+    //       virtualChainId: 1111,
+    //       networkType: 1,
+    //       timestamp: 1544081404,
+    //       receiptMerkleRoot: utils.sha256('Hello World!!!'),
+    //     };
 
-        const resultsBlockHeader = ASBProof.buildResultsBlockHeader(results_block_header_data);
-        const rawResultsBlockHeader = utils.bufferToHex(resultsBlockHeader);
+    //     const resultsBlockHeader = ASBProof.buildResultsBlockHeader(results_block_header_data);
+    //     const rawResultsBlockHeader = utils.bufferToHex(resultsBlockHeader);
 
-        // resultsBlockProof
-        const testSignatures = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES).map((account) => {
-          const messageHashBuffer = utils.sha256('Hello world3!');
-          const rawSignature = utils.ecsign(messageHashBuffer, utils.toBuffer(account.privateKey));
-          const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
+    //     // resultsBlockProof
+    //     const testSignatures = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES).map((account) => {
+    //       const messageHashBuffer = utils.sha256('Hello world3!');
+    //       const rawSignature = utils.ecsign(messageHashBuffer, utils.toBuffer(account.privateKey));
+    //       const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
 
-          return {
-            publicAddress: account.address,
-            signature,
-          };
-        });
+    //       return {
+    //         publicAddress: account.address,
+    //         signature,
+    //       };
+    //     });
 
-        const blockHash = utils.sha256('Hello World2!');
-        const results_block_proof_data = {
-          blockProofVersion: 5,
-          transactionsBlockHash: utils.sha256('Hello World!'),
-          blockrefMessage: Buffer.concat([Buffer.alloc(20), blockHash]),
-          signatures: testSignatures,
-        };
+    //     const block_ref_data = {
+    //       helixMessageType: 3,
+    //       blockHash: utils.sha256('Hello World2!'),     
+    //     }
+        
+    //     const data = {
+    //       blockProofVersion: 5,
+    //       transactionsBlockHash: utils.sha256('Hello World!'),
+    //       blockrefMessage: ASBProof.buildblockRef(block_ref_data),
+    //       signatures: testSignatures,
+    //     };
 
-        const resultsBlockProof = ASBProof.buildResultsProof(results_block_proof_data);
-        const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
+    //     const resultsBlockProof = ASBProof.buildResultsProof(data);
+    //     const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
     
-        // receiptMerkleProof
-      });
-    });
+    //     // receiptMerkleProof
+    //   });
+    // });
   });
 
   describe('proof processing', async () => {

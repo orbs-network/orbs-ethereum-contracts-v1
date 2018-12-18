@@ -35,12 +35,13 @@ contract AutonomousSwapProofVerifierWrapper is AutonomousSwapProofVerifier {
     }
 
     function parseResultsBlockProofRaw(bytes _resultsBlockProof) public pure returns (uint32 blockProofVersion,
-        bytes32 transactionsBlockHash, bytes32 blockrefHash, bytes32 blockHash, uint8 numOfSignatures,
+        bytes32 transactionsBlockHash, bytes32 blockrefHash, uint16 helixMessageType, bytes32 blockHash, uint8 numOfSignatures,
         address[MAX_SIGNATURES] memory publicAddresses, bytes[MAX_SIGNATURES] memory signatures) {
         ResultsBlockProof memory proof = parseResultsBlockProof(_resultsBlockProof);
         blockProofVersion = proof.blockProofVersion;
         transactionsBlockHash = proof.transactionsBlockHash;
         blockrefHash = proof.blockrefHash;
+        helixMessageType = proof.helixMessageType;
         blockHash = proof.blockHash;
         numOfSignatures = proof.numOfSignatures;
         publicAddresses = proof.publicAddresses;

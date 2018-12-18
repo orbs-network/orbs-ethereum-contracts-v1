@@ -27,6 +27,16 @@ class Bytes {
 
     return string ? `0x${newBuffer.toString('hex')}` : newBuffer;
   }
+
+  static padToDword(obj) {
+    const mod4 = (obj.length % 4);  
+    if (mod4 > 0) {
+      return Buffer.concat([obj, Buffer.alloc(4-mod4)]);
+    } else {
+      return obj; 
+    }
+  }
 }
 
 module.exports = Bytes;
+// Math.ceil(obj.length) - obj.length
