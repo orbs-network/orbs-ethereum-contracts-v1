@@ -1,15 +1,12 @@
 import chai from 'chai';
-import dirtyChai from 'dirty-chai';
-import assertArrays from 'chai-arrays';
 
 import expectRevert from './helpers/expectRevert';
 
 const { expect } = chai;
 
-chai.use(assertArrays);
-chai.use(dirtyChai);
+const TEST_ACCOUNTS = require('./accounts.json');
 
-const TEST_ACCOUNTS = require('./accounts.json').accounts;
+const TEST_ACCOUNTS_ADDRESSES = TEST_ACCOUNTS.map(account => account.address);
 
 const Federation = artifacts.require('./Federation.sol');
 const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
@@ -17,7 +14,7 @@ const SubscriptionManagerMock = artifacts.require('./SubscriptionManagerMock.sol
 
 contract('Federation', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  const VERSION = '0.1';
+  const VERSION = 1;
   const MAX_FEDERATION_MEMBERS = 100;
 
   describe('construction', async () => {
@@ -28,14 +25,14 @@ contract('Federation', (accounts) => {
     });
 
     it('should not allow to initialize with too many federation members', async () => {
-      const tooManyCooks = TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS + 1);
+      const tooManyCooks = TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS + 1);
       expect(tooManyCooks).to.have.length.above(MAX_FEDERATION_MEMBERS);
 
       await expectRevert(Federation.new(tooManyCooks));
     });
 
     it('should allow to initialize with maximum federation members', async () => {
-      await Federation.new(TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS));
+      await Federation.new(TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS));
     });
 
     it('should not allow to initialize with 0x0 address federation members', async () => {
@@ -64,6 +61,7 @@ contract('Federation', (accounts) => {
       const federation = await Federation.new(members);
       expect(await federation.getMembers.call()).to.be.equalTo(members);
       expect(await federation.subscriptionManager.call()).to.eql(ZERO_ADDRESS);
+      expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(0);
     });
   });
 
@@ -78,31 +76,35 @@ contract('Federation', (accounts) => {
           const federation = await Federation.new(members, { from: owner });
 
           const newMember = accounts[1];
+          expect(await federation.isMember.call(newMember)).to.be.false();
           const tx = await federation.addMember(newMember);
           expect(await federation.getMembers.call()).to.be.containing(newMember);
           expect(tx.logs).to.have.length(1);
           const event = tx.logs[0];
           expect(event.event).to.eql('MemberAdded');
           expect(event.args.member).to.eql(newMember);
+          expect(await federation.isMember.call(newMember)).to.be.true();
 
           const newMember2 = accounts[2];
+          expect(await federation.isMember.call(newMember2)).to.be.false();
           const tx2 = await federation.addMember(newMember2);
           expect(await federation.getMembers.call()).to.be.containing(newMember2);
           expect(tx2.logs).to.have.length(1);
           const event2 = tx2.logs[0];
           expect(event2.event).to.eql('MemberAdded');
           expect(event2.args.member).to.eql(newMember2);
+          expect(await federation.isMember.call(newMember2)).to.be.true();
         });
 
         it('should not allow to add a more than the maximum possible members', async () => {
-          const members = TEST_ACCOUNTS.slice(0, MAX_FEDERATION_MEMBERS - 1);
+          const members = TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS - 1);
           const federation = await Federation.new(members, { from: owner });
 
-          const newMember = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS - 1];
+          const newMember = TEST_ACCOUNTS_ADDRESSES[MAX_FEDERATION_MEMBERS - 1];
           await federation.addMember(newMember);
           expect(await federation.getMembers.call()).to.be.containing(newMember);
 
-          const newMember2 = TEST_ACCOUNTS[MAX_FEDERATION_MEMBERS];
+          const newMember2 = TEST_ACCOUNTS_ADDRESSES[MAX_FEDERATION_MEMBERS];
           await expectRevert(federation.addMember(newMember2));
         });
 
@@ -138,17 +140,20 @@ contract('Federation', (accounts) => {
           const members = accounts.slice(4, 9);
           const federation = await Federation.new(members, { from: owner });
 
-          [0, 2, members.length - 3].forEach(async (index) => {
+          const membersIndicesToRemove = [0, 2, members.length - 3];
+          for (let i = 0; i < membersIndicesToRemove.length; ++i) {
+            const index = membersIndicesToRemove[i];
             const existingMember = members[index];
-            const expectedMembers = members.splice(index, 1);
+            expect(await federation.isMember.call(existingMember)).to.be.true();
+            members.splice(index, 1);
             const tx = await federation.removeMember(existingMember);
-            const newMembers = await federation.getMembers.call();
-            expect(newMembers).not.to.be.equal(expectedMembers);
+            expect(await federation.getMembers.call()).to.be.equalTo(members);
             expect(tx.logs).to.have.length(1);
             const event = tx.logs[0];
             expect(event.event).to.eql('MemberRemoved');
             expect(event.args.member).to.eql(existingMember);
-          });
+            expect(await federation.isMember.call(existingMember)).to.be.false();
+          }
         });
 
         it('should not allow to remove all the members', async () => {
@@ -174,8 +179,16 @@ contract('Federation', (accounts) => {
           const federation = await Federation.new(members, { from: owner });
 
           const nonMember = accounts[5];
+          expect(await federation.isMember.call(nonMember)).to.be.false();
           expect(await federation.getMembers.call()).not.to.be.containing(nonMember);
           await expectRevert(federation.removeMember(nonMember));
+        });
+
+        it('should not allow to remove by out of range index', async () => {
+          const members = accounts.slice(7, 10);
+          const federation = await Federation.new(members, { from: owner });
+
+          await expectRevert(federation.removeMemberByIndex(100));
         });
       });
 
@@ -187,6 +200,116 @@ contract('Federation', (accounts) => {
           const existingMember = members[2];
           await expectRevert(federation.removeMember(existingMember, { from: notOwner }));
         });
+      });
+    });
+
+    describe('consensus threshold', async () => {
+      [
+        { members: 1, threshold: 1 },
+        { members: 2, threshold: 2 },
+        { members: 3, threshold: 2 },
+        { members: 5, threshold: 4 },
+        { members: 6, threshold: 4 },
+        { members: 21, threshold: 14 },
+        { members: 22, threshold: 15 },
+        { members: 100, threshold: 67 },
+      ].forEach((spec) => {
+        let federation;
+
+        beforeEach(async () => {
+          federation = await Federation.new(TEST_ACCOUNTS_ADDRESSES.slice(0, spec.members), { from: owner });
+        });
+
+        it(`should return ${spec.threshold} for a federation of size ${spec.members}`, async () => {
+          expect(await federation.getConsensusThreshold.call()).to.be.bignumber.equal(spec.threshold);
+        });
+      });
+    });
+
+    describe('federation revisions', async () => {
+      it('should update revision and history after addition', async () => {
+        const members = TEST_ACCOUNTS_ADDRESSES.slice(7, 20);
+        const federation = await Federation.new(members, { from: owner });
+        expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(0);
+        expect(await federation.getMembersByRevision.call(0)).to.be.equalTo(members);
+
+        for (let i = 0; i < members.length; ++i) {
+          expect(await federation.isMemberByRevision.call(0, members[i])).to.be.true();
+        }
+
+        const threshold = Math.ceil(members.length * 2 / 3);
+        expect(await federation.getConsensusThreshold.call()).to.be.bignumber.equal(threshold);
+        expect(await federation.getConsensusThresholdByRevision.call(0)).to.be.bignumber.equal(threshold);
+
+        let prevMembers = members;
+        const membersToAdd = TEST_ACCOUNTS_ADDRESSES.slice(30, 4);
+        for (let i = 0; i < membersToAdd.length; ++i) {
+          const newMember = membersToAdd[i];
+          const newMembers = [...prevMembers, newMember];
+          const prevThreshold = Math.ceil(prevMembers.length * 2 / 3);
+          const newThreshold = Math.ceil(newMembers.length * 2 / 3);
+
+          await federation.addMember(newMember);
+          expect(await federation.getMembers.call()).to.be.equalTo(newMembers);
+          expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
+          expect(await federation.getMembersByRevision.call(i)).to.be.equalTo(prevMembers);
+          expect(await federation.getMembersByRevision.call(i + 1)).to.be.equalTo(newMembers);
+
+          for (let j = 0; j < prevMembers.length; ++j) {
+            expect(await federation.isMemberByRevision.call(i, prevMembers[j])).to.be.true();
+          }
+
+          for (let j = 0; j < newMembers.length; ++j) {
+            expect(await federation.isMemberByRevision.call(i + 1, newMembers[j])).to.be.true();
+          }
+
+          expect(await federation.getConsensusThresholdByRevision.call(i)).to.be.bignumber.equal(prevThreshold);
+          expect(await federation.getConsensusThresholdByRevision.call(i + 1)).to.be.bignumber.equal(newThreshold);
+
+          prevMembers = newMembers;
+        }
+      });
+
+      it('should update revision and history after removal', async () => {
+        const members = TEST_ACCOUNTS_ADDRESSES.slice(4, 25);
+        const federation = await Federation.new(members, { from: owner });
+        expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(0);
+        expect(await federation.getMembersByRevision.call(0)).to.be.equalTo(members);
+        for (let i = 0; i < members.length; ++i) {
+          expect(await federation.isMemberByRevision.call(0, members[i])).to.be.true();
+        }
+
+        const threshold = Math.ceil(members.length * 2 / 3);
+        expect(await federation.getConsensusThreshold.call()).to.be.bignumber.equal(threshold);
+        expect(await federation.getConsensusThresholdByRevision.call(0)).to.be.bignumber.equal(threshold);
+
+        const membersIndicesToRemove = [0, 3, 4, 8];
+        for (let i = 0; i < membersIndicesToRemove.length; ++i) {
+          const index = membersIndicesToRemove[i];
+          const existingMember = members[index];
+          const prevMembers = members.slice(0);
+          members.splice(index, 1);
+          const prevThreshold = Math.ceil(prevMembers.length * 2 / 3);
+          const newThreshold = Math.ceil(members.length * 2 / 3);
+
+          await federation.removeMember(existingMember);
+
+          expect(await federation.getMembers.call()).to.be.equalTo(members);
+          expect(await federation.getFederationRevision.call()).to.be.bignumber.equal(i + 1);
+          expect(await federation.getMembersByRevision.call(i)).to.be.equalTo(prevMembers);
+          expect(await federation.getMembersByRevision.call(i + 1)).to.be.equalTo(members);
+
+          for (let j = 0; j < prevMembers.length; ++j) {
+            expect(await federation.isMemberByRevision.call(i, prevMembers[j])).to.be.true();
+          }
+
+          for (let j = 0; j < members.length; ++j) {
+            expect(await federation.isMemberByRevision.call(i + 1, members[j])).to.be.true();
+          }
+
+          expect(await federation.getConsensusThresholdByRevision.call(i)).to.be.bignumber.equal(prevThreshold);
+          expect(await federation.getConsensusThresholdByRevision.call(i + 1)).to.be.bignumber.equal(newThreshold);
+        }
       });
     });
 
