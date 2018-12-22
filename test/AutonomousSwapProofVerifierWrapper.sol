@@ -65,4 +65,21 @@ contract AutonomousSwapProofVerifierWrapper is AutonomousSwapProofVerifier {
         to = eventData.to;
         value = eventData.value;
     }
+
+    function parsePackedProofRaw(bytes _packedProof) public pure returns(bytes resultsBlockHeader, 
+    bytes resultsBlockProof, bytes transactionReceiptProof) {
+        (resultsBlockHeader, resultsBlockProof, transactionReceiptProof) = parsePackedProof(_packedProof);
+    }
+
+    function processPackedProofRaw(bytes _packedProof, bytes _transactionReceipt) public view returns(uint32 networkType, uint64 virtualChainId,
+        string orbsContractName, bytes20 from, address to, uint256 value, uint256 tuid) {
+        TransferInEvent memory eventData = processPackedProof(_packedProof, _transactionReceipt);
+        networkType = eventData.networkType;
+        virtualChainId = eventData.virtualChainId;
+        orbsContractName = eventData.orbsContractName;
+        from = eventData.from;
+        to = eventData.to;
+        value = eventData.value;
+        tuid = eventData.tuid;
+    }
 }

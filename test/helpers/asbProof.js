@@ -261,7 +261,7 @@ class ASBProof {
   // | receipt_merkle_root |     64 |   32 | bytes (32B)          |
   // +---------------------+--------+------+----------------------+
   static buildResultsBlockHeader(resultsBlockHeader) {
-    return Buffer.concat([
+      return Buffer.concat([
       Bytes.numberToBuffer(resultsBlockHeader.protocolVersion, UINT32_SIZE),
       Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, UINT64_SIZE),
       Bytes.numberToBuffer(resultsBlockHeader.networkType, UINT32_SIZE),
