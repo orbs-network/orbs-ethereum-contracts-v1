@@ -2,9 +2,15 @@
 const doSomthing = async () => {
   const Tet = artifacts.require('Tet.sol');
   let tet = await Tet.deployed();
-  let userAddr = "0x44AA79091FAD956d12086C5Ee782DDf3A8124549";
+  if (process.argv.length != 6) {
+    console.error("Wrong number of arguments expect (truffle exec assign.js orbsAddr tokens\n");
+    exit(-1);
+  }
+  console.log("x" + process.argv.join(" ") + "x\n")
+  let userAddr = process.argv[4];
+  let amount = process.argv[5];
 
-  await tet.assign(userAddr, 200, {from: userAddr});
+  await tet.assign(userAddr, amount, {from: userAddr});
 }
 
 module.exports = function(callback) {

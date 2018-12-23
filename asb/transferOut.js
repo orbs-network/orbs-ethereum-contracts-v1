@@ -4,10 +4,15 @@ const doSomthing = async () => {
   let asbInstance = await AutonomousSwapBridge.deployed();
   const Tet = artifacts.require('Tet.sol');
   let tet = await Tet.deployed();
-  let userAddr = "0x44AA79091FAD956d12086C5Ee782DDf3A8124549";
+  if (process.argv.length != 7) {
+    console.error("Wrong number of arguments expect (truffle exec transferOut.js userAddr orbsAddr amount\n");
+    exit(-1);
+  }
+  let userAddr = process.argv[4];
+  let orbsAddr = process.argv[5];
+  let amount = process.argv[6];
 
-  let orbsAddr = "0x3fced656aCBd6700cE7d546f6EFDCDd482D8142a"; // temp
-  let response = await asbInstance.transferOut(orbsAddr, 55, {from: userAddr});
+  let response = await asbInstance.transferOut(orbsAddr, amount, {from: userAddr});
   console.log(`${response.tx}\n`)
 }
 
