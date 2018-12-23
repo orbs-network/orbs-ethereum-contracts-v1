@@ -34,10 +34,30 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
   const owner = accounts[0];
 
   describe('e2e test - with gamma', async () => {
+    const fs = require('fs');
+    let receipt_proof_data;
+
+    fs.readFile('./test/contract-test/VerifierEndToEndData.json', 'utf8', (err, fileContents) => {
+      if (err) {
+        console.error(err)
+        return;
+      }
+      try {
+        receipt_proof_data = JSON.parse(fileContents)
+      } catch(err) {
+        console.error(err);
+      }
+    })
+
+    let federationMemberAccounts;
+    let federationMembersAddresses;
+    let federation;
     let verifier;
 
     beforeEach(async () => {
-      const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
+      federationMemberAccounts = receipt_proof_data.ResultsBlockProof.Signatures;
+      federationMembersAddresses = federationMemberAccounts.map(account => `0x` + account.MemberId);
+      federation = await Federation.new(federationMembersAddresses, { from: owner });
       verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
     });
 
@@ -61,7 +81,19 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       console.log(`TODO: We should parse PackedReceipt: ${packedReceiptHex} and PackedProof: ${packedProofHex}`);
       console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
 
-      // continue test here
+      console.log(txProofOutput);
+
+      const output = await verifier.processPackedProofRaw.call('0x' + packedProofHex, '0x' + packedReceiptHex);
+
+      console.log(output);
+
+      expect(output[1]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.VirtualChainId));
+      expect(output[2]).to.eql(receipt_proof_data.Event.ContractName);
+      expect(output[3]).to.eql("0x" + receipt_proof_data.Event.OrbsAddress);
+      expect(output[4]).to.eql("0x" + receipt_proof_data.Event.EthAddress);
+      expect(output[5]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Amount));
+      expect(output[6]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Tuid));
+
     });
   });
 });
