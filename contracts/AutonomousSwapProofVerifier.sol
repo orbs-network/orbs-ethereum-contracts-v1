@@ -158,8 +158,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         uint offset = 0;
         bytes32[] memory transactionReceiptProof = new bytes32[](numOfNodes);
         for (uint i = 0; i < numOfNodes; ++i) {
-            bytes32 oded = packedTransactionReceiptProof.toBytes32(offset);
-            transactionReceiptProof[i] = oded;
+            bytes32 node = packedTransactionReceiptProof.toBytes32(offset);
+            transactionReceiptProof[i] = node;
             offset = offset.add(UINT256_SIZE);
         }
 
