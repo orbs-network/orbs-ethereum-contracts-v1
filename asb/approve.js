@@ -4,9 +4,14 @@ const doSomthing = async () => {
   let asbInstance = await AutonomousSwapBridge.deployed();
   const Tet = artifacts.require('Tet.sol');
   let tet = await Tet.deployed();
-  let userAddr = "0x44AA79091FAD956d12086C5Ee782DDf3A8124549";
-  
-  await tet.approve(asbInstance.address, 55, {from: userAddr});
+  if (process.argv.length != 6) {
+    console.error("Wrong number of arguments expect (truffle exec approve.js orbsAddr tokens\n");
+    exit(-1);
+  }
+  let userAddr = process.argv[4];
+  let amount = process.argv[5];
+
+  await tet.approve(asbInstance.address, amount, {from: userAddr});
 }
 
 module.exports = function(callback) {

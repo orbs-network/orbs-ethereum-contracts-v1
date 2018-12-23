@@ -1,9 +1,9 @@
 const BytesLibEx = artifacts.require('BytesLibEx');
 const CryptoUtils = artifacts.require('CryptoUtils');
-const AutonomousSwapBridge = artifacts.require('AutonomousSwapBridge.sol');
-const AutonomousSwapProofVerifier = artifacts.require('AutonomousSwapProofVerifier.sol');
-const Tet = artifacts.require('Tet.sol');
-const Federation= artifacts.require('Federation.sol');
+const AutonomousSwapBridge = artifacts.require('AutonomousSwapBridge');
+const AutonomousSwapProofVerifier = artifacts.require('AutonomousSwapProofVerifier');
+const Tet = artifacts.require('Tet');
+const Federation= artifacts.require('Federation');
 
 
 const deploy = async (deployer, network, accounts) => {
