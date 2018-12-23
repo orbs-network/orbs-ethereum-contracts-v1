@@ -53,6 +53,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     string public constant TRANSFERRED_OUT_EVENT_NAME = 'TransferredOut';
     uint public constant EXECUTION_RESULT_SUCCESS = 1;
     uint public constant COMMIT_MESSAGE_TYPE = 3;
+    uint public constant DWORD_ALIGNED = 4;
+    uint public constant WORD_ALIGNED = 2;
 
     // The maximum supported number of signatures in Results Block Proof. We have to limit this number and fallback to
     // statically sized lists, due to Solidity's inability of functions returning dynamic arrays (and limiting gas
@@ -341,13 +343,20 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         }
     }
 
-    function ParseVariableSizeField(uint _offset, bytes _data) internal pure returns (uint next_offset, uint field_offset, uint field_length) {
-        field_length =_data.toUint32BE(_offset);
-        uint padded_length = field_length.add(3);
-        uint padded_length_mod = padded_length.mod(4);
-        padded_length = padded_length.sub(padded_length_mod);
+    function ParseVariableSizeField(uint _offset, bytes _data, uint _next_alignment) internal pure returns (uint next_offset, uint field_offset, uint field_length) {
+        field_length =_data.toUint32BE(_offset);  
         field_offset = _offset.add(LENGTH_SIZE);
-        next_offset = field_offset.add(padded_length);
+        next_offset = field_offset.add(field_length);
+        next_offset = next_offset.add(_next_alignment - 1);
+        uint next_offset_mod = next_offset.mod(_next_alignment);
+        next_offset = next_offset.sub(next_offset_mod);
+    }
+
+    function PraseUint16(uint _offset, uint _next_alignment) internal pure returns (uint next_offset) {
+        next_offset = _offset.add(UINT16_SIZE);
+        next_offset = next_offset.add(_next_alignment - 1);
+        uint next_offset_mod = next_offset.mod(_next_alignment);
+        next_offset = next_offset.sub(next_offset_mod);
     }
 
     /// @dev Parses the Transaction Receipt according to:
@@ -381,7 +390,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(ENUM_PADDED_SIZE);
 
         /// bytes output_argument_array (reserved)
-        (offset, , ) = ParseVariableSizeField(offset, _transactionReceipt);
+        (offset, , ) = ParseVariableSizeField(offset, _transactionReceipt, DWORD_ALIGNED);
 
         /// bytes output_events_array 
         uint32 eventArrayLength =_transactionReceipt.toUint32BE(offset);
@@ -446,26 +455,17 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     ///   uint256 amount,
     ///
 
-    // function ParseVariableSizeField(uint _offset, bytes _data) internal pure returns (uint next_offset, uint field_offset, uint field_length) {
-    //     field_length =_data.toUint32BE(_offset);
-    //     uint padded_length = field_length.add(3);
-    //     uint padded_length_mod = padded_length.mod(4);
-    //     padded_length = padded_length.sub(padded_length_mod);
-    //     field_offset = _offset.add(LENGTH_SIZE);
-    //     next_offset = field_offset.add(padded_length);
-    // }
-
     function parseEventData(bytes _eventData) internal pure returns (EventData memory res) {
         uint offset = 0;
         uint field_offset = 0;
         uint field_length = 0;
         
         /// primitives.contract_name contract_name (string)
-        (offset, field_offset, field_length) = ParseVariableSizeField(offset, _eventData);
+        (offset, field_offset, field_length) = ParseVariableSizeField(offset, _eventData, DWORD_ALIGNED);
         res.orbsContractName = string(_eventData.slice(field_offset, field_length));
  
         /// primitives.event_name event_name (string)
-        (offset, field_offset, field_length) = ParseVariableSizeField(offset, _eventData);
+        (offset, field_offset, field_length) = ParseVariableSizeField(offset, _eventData, DWORD_ALIGNED);
         res.eventName = string(_eventData.slice(field_offset, field_length));
 
         // uint32 eventNameLength = _eventData.toUint32BE(offset);
@@ -477,14 +477,16 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(ARRAY_LENGTH_SIZE);
 
         /// argument[0] uint64 tuid
-        offset = offset.add(ONEOF_TYPE_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData); //TODO remove arg name
+        offset = offset.add(LENGTH_SIZE);
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
         res.tuid = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
         /// argument[1] bytes[20] from_orbs_address (bytes)
-        offset = offset.add(ONEOF_TYPE_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData); //TODO remove arg name
+        offset = offset.add(LENGTH_SIZE);
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 fromAddressSize =_eventData.toUint32BE(offset);
         require(fromAddressSize == ORBS_ADDRESS_SIZE, "Invalid Orbs address size!");
         offset = offset.add(ARRAY_LENGTH_SIZE);
@@ -492,8 +494,9 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(ORBS_ADDRESS_SIZE);
 
         /// argument[2] bytes[20] to_eth_address (bytes)
-        offset = offset.add(ONEOF_TYPE_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData); //TODO remove arg name
+        offset = offset.add(LENGTH_SIZE);
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 toAddressSize =_eventData.toUint32BE(offset);
         require(toAddressSize == ADDRESS_SIZE, "Invalid Ethereum address size!");
         offset = offset.add(ARRAY_LENGTH_SIZE);
@@ -501,8 +504,9 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(ADDRESS_SIZE);
 
         /// argument[3] UINT256 ammount (bytes)
-        offset = offset.add(ONEOF_TYPE_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData); //TODO remove arg name
+        offset = offset.add(LENGTH_SIZE);
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
         res.value = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE); // TODO change to UINT256
     }

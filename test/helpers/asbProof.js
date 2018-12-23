@@ -263,11 +263,14 @@ class ASBProof {
   static buildResultsBlockHeader(resultsBlockHeader) {
       return Buffer.concat([
       Bytes.numberToBuffer(resultsBlockHeader.protocolVersion, UINT32_SIZE),
-      Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, UINT64_SIZE),
-      Bytes.numberToBuffer(resultsBlockHeader.networkType, UINT32_SIZE),
+      Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, UINT32_SIZE),
+      Buffer.alloc(8), //block_height
+      Buffer.alloc(36), // prev_block_hash_ptr
+      //Bytes.numberToBuffer(resultsBlockHeader.networkType, UINT32_SIZE),
       Bytes.numberToBuffer(resultsBlockHeader.timestamp, UINT64_SIZE),
-      Buffer.alloc(40),
+      Bytes.numberToBuffer(SHA256_SIZE, UINT32_SIZE),
       resultsBlockHeader.receiptMerkleRoot,
+      Buffer.alloc(40),
     ]);
   }
 
@@ -290,8 +293,8 @@ class ASBProof {
   static buildblockRef(blockRef) {
     return Buffer.concat([
       Bytes.padToDword(Bytes.numberToBuffer(blockRef.helixMessageType, UINT16_SIZE)),
-      Buffer.alloc(12),
-      Bytes.numberToBuffer(32, UINT32_SIZE),
+      Buffer.alloc(16),
+      Bytes.numberToBuffer(SHA256_SIZE, UINT32_SIZE),
       blockRef.blockHash,
     ]); 
   }
@@ -300,17 +303,18 @@ class ASBProof {
     
     const resultsBlockProofBuffer = Buffer.concat([
 //      Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4), TODO fix after adding in spec.
-      Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, 4),
+      Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, UINT32_SIZE),
       resultsBlockProof.transactionsBlockHash,
       Buffer.alloc(12), 
       resultsBlockProof.blockrefMessage,
+      Bytes.numberToBuffer(resultsBlockProof.signatures.length*100-3, UINT32_SIZE),
     ]);
-
     return resultsBlockProof.signatures.reduce((res, sig) => {
       const publicAddressBuffer = Bytes.prefixedHexToBuffer(sig.publicAddress);
       const signatureBuffer = Bytes.prefixedHexToBuffer(sig.signature);
+      const signature_entry_size = 93;
       return Buffer.concat([res,
-        Buffer.alloc(4), // node_pk_sig nesting
+        Bytes.numberToBuffer(signature_entry_size, 4),
         Bytes.numberToBuffer(options.wrongPublicAddressSize || publicAddressBuffer.length, 4),
         Bytes.padToDword(publicAddressBuffer),
         Bytes.numberToBuffer(options.wrongSignatureSize || signatureBuffer.length, 4),
@@ -371,23 +375,40 @@ class ASBProof {
   // +--------------------------+--------+------+-------------+-------------------------------+
   static buildEventData(event, options = {}) {
     const ethereumAddressBuffer = Bytes.prefixedHexToBuffer(event.ethereumAddress);
+    const arguments_name = "testing";
     return Buffer.concat([
       Bytes.numberToBuffer(event.orbsContractName.length, UINT32_SIZE),
       Bytes.padToDword(Buffer.from(event.orbsContractName)),
       Bytes.numberToBuffer(event.eventName.length, UINT32_SIZE),
       Bytes.padToDword(Buffer.from(event.eventName)),
-      Bytes.numberToBuffer(100, UINT32_SIZE), //array size
-      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
+      Bytes.numberToBuffer(100, UINT32_SIZE), //array size, TODO
+
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type 
       Bytes.numberToBuffer(event.tuid, UINT64_SIZE),
-      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
+
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
       Bytes.numberToBuffer(event.orbsAddress.length, UINT32_SIZE),
       event.orbsAddress,
-      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
+      
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
       Bytes.numberToBuffer(ethereumAddressBuffer.length, UINT32_SIZE),
       ethereumAddressBuffer,
-      Bytes.numberToBuffer(1, UINT32_SIZE), //arg type
-      Bytes.numberToBuffer(options.wrongValueSize || UINT256_SIZE, UINT32_SIZE),
-      Bytes.numberToBuffer(event.value, UINT256_SIZE),
+      
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
+      //Bytes.numberToBuffer(options.wrongValueSize || UINT256_SIZE, UINT32_SIZE),
+      Bytes.numberToBuffer(event.value, UINT64_SIZE),
     ]);
   }
 }

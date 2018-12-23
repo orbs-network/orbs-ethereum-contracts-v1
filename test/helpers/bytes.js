@@ -36,6 +36,15 @@ class Bytes {
       return obj; 
     }
   }
+
+  static padToWord(obj) {
+    const mod2 = (obj.length % 2);  
+    if (mod2 > 0) {
+      return Buffer.concat([obj, Buffer.alloc(1)]);
+    } else {
+      return obj; 
+    }
+  }
 }
 
 module.exports = Bytes;

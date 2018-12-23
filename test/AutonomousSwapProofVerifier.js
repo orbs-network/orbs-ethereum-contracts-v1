@@ -15,7 +15,7 @@ const AutonomousSwapProofVerifierWrapper = artifacts.require('./AutonomousSwapPr
 contract('AutonomousSwapProofVerifier', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
   const VERSION = 1;
-  const MAX_SIGNATURES = 100;
+  const MAX_SIGNATURES = 2;
 
   const owner = accounts[0];
 
@@ -142,131 +142,131 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     });
   });
 
-  // describe('parsing', async () => {
-  //   let verifier;
+  describe('parsing', async () => {
+    let verifier;
 
-  //   beforeEach(async () => {
-  //     const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
-  //     verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
-  //   });
+    beforeEach(async () => {
+      const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
+      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
+    });
 
-  //   describe('results block header', async () => {
-  //     it('should properly parse', async () => {
-  //       const data = {
-  //         protocolVersion: 2,
-  //         virtualChainId: 1111,
-  //         networkType: 1,
-  //         timestamp: 1544081404,
-  //         receiptMerkleRoot: utils.sha256('Hello World!!!'),
-  //       };
+    describe('results block header', async () => {
+      it('should properly parse', async () => {
+        const data = {
+          protocolVersion: 2,
+          virtualChainId: 1111,
+          networkType: 1,
+          timestamp: 1544081404,
+          receiptMerkleRoot: utils.sha256('Hello World!!!'),
+        };
 
-  //       const resultsBlockHeader = ASBProof.buildResultsBlockHeader(data);
-  //       const rawResultsBlockHeader = utils.bufferToHex(resultsBlockHeader);
-  //       const resultsBlockHeaderData = await verifier.parseResultsBlockHeaderRaw.call(rawResultsBlockHeader);
+        const resultsBlockHeader = ASBProof.buildResultsBlockHeader(data);
+        const rawResultsBlockHeader = utils.bufferToHex(resultsBlockHeader);
+        const resultsBlockHeaderData = await verifier.parseResultsBlockHeaderRaw.call(rawResultsBlockHeader);
 
-  //       expect(resultsBlockHeaderData[0]).to.be.bignumber.equal(data.protocolVersion);
-  //       expect(resultsBlockHeaderData[1]).to.be.bignumber.equal(data.virtualChainId);
-  //       expect(resultsBlockHeaderData[2]).to.be.bignumber.equal(data.networkType);
-  //       expect(resultsBlockHeaderData[3]).to.be.bignumber.equal(data.timestamp);
-  //       expect(utils.toBuffer(resultsBlockHeaderData[4])).to.eql(data.receiptMerkleRoot);
-  //     });
-  //   });
+        expect(resultsBlockHeaderData[0]).to.be.bignumber.equal(data.protocolVersion);
+        expect(resultsBlockHeaderData[1]).to.be.bignumber.equal(data.virtualChainId);
+        //expect(resultsBlockHeaderData[2]).to.be.bignumber.equal(data.networkType);
+        expect(resultsBlockHeaderData[3]).to.be.bignumber.equal(data.timestamp);
+        expect(utils.toBuffer(resultsBlockHeaderData[4])).to.eql(data.receiptMerkleRoot);
+      });
+    });
 
-  //   describe('results block proof', async () => {
-  //     it('should properly parse', async () => {
-  //       const testSignatures = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES).map((account) => {
-  //         const messageHashBuffer = utils.sha256('Hello world3!');
-  //         const rawSignature = utils.ecsign(messageHashBuffer, utils.toBuffer(account.privateKey));
-  //         const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
+    describe('results block proof', async () => {
+      it('should properly parse', async () => {
+        const testSignatures = TEST_ACCOUNTS.slice(0, MAX_SIGNATURES).map((account) => {
+          const messageHashBuffer = utils.sha256('Hello world3!');
+          const rawSignature = utils.ecsign(messageHashBuffer, utils.toBuffer(account.privateKey));
+          const signature = utils.toRpcSig(rawSignature.v, rawSignature.r, rawSignature.s);
 
-  //         return {
-  //           publicAddress: account.address,
-  //           signature,
-  //         };
-  //       });
+          return {
+            publicAddress: account.address,
+            signature,
+          };
+        });
 
-  //       const block_ref_data = {
-  //         helixMessageType:3,
-  //         blockHash: utils.sha256('Hello World2!'),     
-  //       }
+        const block_ref_data = {
+          helixMessageType:3,
+          blockHash: utils.sha256('Hello World2!'),     
+        }
           
-  //       const data = {
-  //         blockProofVersion: 5,
-  //         transactionsBlockHash: utils.sha256('Hello World!'),
-  //         blockrefMessage: ASBProof.buildblockRef(block_ref_data),
-  //         signatures: testSignatures,
-  //       };
+        const data = {
+          blockProofVersion: 5,
+          transactionsBlockHash: utils.sha256('Hello World!'),
+          blockrefMessage: ASBProof.buildblockRef(block_ref_data),
+          signatures: testSignatures,
+        };
 
-  //       const resultsBlockProof = ASBProof.buildResultsProof(data);
-  //       const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
-  //       const resultsBlockProofData = await verifier.parseResultsBlockProofRaw.call(rawResultsBlockProof);
+        const resultsBlockProof = ASBProof.buildResultsProof(data);
+        const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
+        const resultsBlockProofData = await verifier.parseResultsBlockProofRaw.call(rawResultsBlockProof);
 
-  //       //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO
-  //       expect(utils.toBuffer(resultsBlockProofData[1])).to.eql(data.transactionsBlockHash);
-  //       expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(data.blockrefMessage));
-  //       expect(resultsBlockProofData[3]).to.be.bignumber.equal(block_ref_data.helixMessageType);
-  //       expect(utils.toBuffer(resultsBlockProofData[4])).to.eql(block_ref_data.blockHash);
-  //       const numOfSignatures = resultsBlockProofData[5].toNumber();
-  //       expect(numOfSignatures).to.be.bignumber.equal(data.signatures.length);
+        //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO
+        expect(utils.toBuffer(resultsBlockProofData[1])).to.eql(data.transactionsBlockHash);
+        expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(data.blockrefMessage));
+        expect(resultsBlockProofData[3]).to.be.bignumber.equal(block_ref_data.helixMessageType);
+        expect(utils.toBuffer(resultsBlockProofData[4])).to.eql(block_ref_data.blockHash);
+        const numOfSignatures = resultsBlockProofData[5].toNumber();
+        expect(numOfSignatures).to.be.bignumber.equal(data.signatures.length);
 
-  //       for (let i = 0; i < numOfSignatures; ++i) {
-  //         expect(resultsBlockProofData[6][i]).to.be.eql(testSignatures[i].publicAddress);
+        for (let i = 0; i < numOfSignatures; ++i) {
+          expect(resultsBlockProofData[6][i]).to.be.eql(testSignatures[i].publicAddress);
 
-  //         // TODO: at the moment, truffle can't properly parse the returned bytes[MAX_SIGNATURE] addresses. This should
-  //         // be fixed in truffle 0.5 and later.
-  //         // expect(resultsBlockProofData[6][i]).to.be.eql(testSignatures[i].signature);
-  //       }
-  //     });
-  //   });
+          // TODO: at the moment, truffle can't properly parse the returned bytes[MAX_SIGNATURE] addresses. This should
+          // be fixed in truffle 0.5 and later.
+          // expect(resultsBlockProofData[6][i]).to.be.eql(testSignatures[i].signature);
+        }
+      });
+    });
 
-  //   describe('transaction receipt', async () => {
-  //     it('should properly parse', async () => {
-  //       const eventData = {
-  //         orbsContractName: 'Hello World!',
-  //         eventName: "TransferedOut",
-  //         tuid: 56789,
-  //         orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
-  //         ethereumAddress: accounts[8],
-  //         value: 1500,
-  //       };
+    describe('transaction receipt', async () => {
+      it('should properly parse', async () => {
+        const eventData = {
+          orbsContractName: 'Hello World!',
+          eventName: "TransferedOut",
+          tuid: 56789,
+          orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
+          ethereumAddress: accounts[8],
+          value: 1500,
+        };
 
-  //       const data = {
-  //         executionResult: 5,
-  //       };
+        const data = {
+          executionResult: 5,
+        };
 
-  //       const transactionReceipt = ASBProof.buildTransactionReceipt(data, eventData);
-  //       const rawTransactionReceipt = utils.bufferToHex(transactionReceipt);
-  //       const transactionReceiptfData = await verifier.parseTransactionReceiptRaw.call(rawTransactionReceipt);
+        const transactionReceipt = ASBProof.buildTransactionReceipt(data, eventData);
+        const rawTransactionReceipt = utils.bufferToHex(transactionReceipt);
+        const transactionReceiptfData = await verifier.parseTransactionReceiptRaw.call(rawTransactionReceipt);
 
-  //       expect(transactionReceiptfData[0]).to.be.bignumber.equal(data.executionResult);
-  //       expect(utils.toBuffer(transactionReceiptfData[1])).to.eql(ASBProof.buildEventData(eventData));
-  //     });
-  //   });
+        expect(transactionReceiptfData[0]).to.be.bignumber.equal(data.executionResult);
+        expect(utils.toBuffer(transactionReceiptfData[1])).to.eql(ASBProof.buildEventData(eventData));
+      });
+    });
 
-  //   describe('event data', async () => {
-  //     it('should properly parse', async () => {
-  //       const data = {
-  //         orbsContractName: 'Hello World!',
-  //         eventName: "TransferedOut",
-  //         tuid: 56789,
-  //         orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
-  //         ethereumAddress: accounts[3],
-  //         value: 1500,
-  //       };
+    describe('event data', async () => {
+      it('should properly parse', async () => {
+        const data = {
+          orbsContractName: 'Hello World!',
+          eventName: "TransferedOut",
+          tuid: 56789,
+          orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
+          ethereumAddress: accounts[3],
+          value: 1500,
+        };
 
-  //       const event = ASBProof.buildEventData(data);
-  //       const rawEventData = utils.bufferToHex(event);
-  //       const eventData = await verifier.parseEventDataRaw.call(rawEventData);
+        const event = ASBProof.buildEventData(data);
+        const rawEventData = utils.bufferToHex(event);
+        const eventData = await verifier.parseEventDataRaw.call(rawEventData);
 
-  //       expect(eventData[0]).to.eql(data.orbsContractName);
-  //       expect(eventData[1]).to.eql(data.eventName);
-  //       expect(eventData[2]).to.be.bignumber.equal(data.tuid);
-  //       expect(eventData[3]).to.eql(utils.bufferToHex(data.orbsAddress));
-  //       expect(eventData[4]).to.eql(data.ethereumAddress);
-  //       expect(eventData[5]).to.be.bignumber.equal(data.value);
-  //     });
-  //   });
-  // });
+        expect(eventData[0]).to.eql(data.orbsContractName);
+        expect(eventData[1]).to.eql(data.eventName);
+        expect(eventData[2]).to.be.bignumber.equal(data.tuid);
+        expect(eventData[3]).to.eql(utils.bufferToHex(data.orbsAddress));
+        expect(eventData[4]).to.eql(data.ethereumAddress);
+        expect(eventData[5]).to.be.bignumber.equal(data.value);
+      });
+    });
+  });
 
   // describe('proof processing', async () => {
   //   const NETWORK_TYPE = 0;
