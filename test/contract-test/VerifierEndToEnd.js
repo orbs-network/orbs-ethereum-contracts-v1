@@ -25,6 +25,11 @@ function extractPackedProof(output) {
   return re.exec(output)[1];
 }
 
+function extractPackedReceipt(output) {
+  const re = /"PackedReceipt": "(\w+)"/;
+  return re.exec(output)[1];
+}
+
 contract('AutonomousSwapProofVerifier', (accounts) => {
   const owner = accounts[0];
 
@@ -46,11 +51,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     });
 
     it('E2E test', async () => {
-      const txId = extractTxId(await gammaCli('send-tx -i ./test/contract-test/test-event.json'));
-      const packedProofHex = extractPackedProof(await gammaCli(`tx-proof -txid ${txId}`));
+      const sendTxOutput = await gammaCli('send-tx -i ./test/contract-test/test-event.json');
+      const txId = extractTxId(sendTxOutput);
+      const txProofOutput = await gammaCli(`tx-proof -txid ${txId}`);
+      const packedProofHex = extractPackedProof(txProofOutput);
+      const packedReceiptHex = extractPackedReceipt(txProofOutput);
 
       console.log('\n+++++++++++++++++++++++++++++++++++++++++++++++++++++');
-      console.log(`TODO: We should parse PackedProof: ${packedProofHex}`);
+      console.log(`TODO: We should parse PackedReceipt: ${packedReceiptHex} and PackedProof: ${packedProofHex}`);
       console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
 
       // continue test here
