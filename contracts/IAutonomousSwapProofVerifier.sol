@@ -23,9 +23,17 @@ contract IAutonomousSwapProofVerifier {
     /// @param _resultsBlockProof bytes The raw Results Block Proof.
     /// @param _transactionReceipt bytes The raw Transaction Receipt.
     /// @return transferInEvent TransferInEvent The TransferIn event data.
+
     function processProof(bytes _resultsBlockHeader, bytes _resultsBlockProof, bytes _transactionReceipt,
         bytes32[] _transactionReceiptProof) public view returns(TransferInEvent memory transferInEvent);
-
+    /// @dev Parses and validates the raw transfer proof. Please note that this method can't be external (yet), since
+    /// our current Solidity version doesn't support unbound parameters (e.g., bytes) in external interface methods.
+    /// @param _packedProof bytes The raw proof (including the resultsBlockHeader, resultsBlockProof and 
+    /// @param _transactionReceipt bytes The raw Transaction Receipt.
+    /// @return transferInEvent TransferInEvent The TransferIn event data.
+    
+    function processPackedProof(bytes _packedProof, bytes _transactionReceipt) public view 
+        returns(TransferInEvent memory transferInEvent);
     /// @dev Checks Orbs address for correctness. Please note that this method can't be external (yet), since
     /// our current Solidity version doesn't support unbound parameters (e.g., bytes) in external interface methods.
     /// @param _address bytes20 The Orbs address to check.

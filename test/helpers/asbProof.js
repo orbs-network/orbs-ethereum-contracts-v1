@@ -89,6 +89,25 @@ class ASBProof {
     };
   }
 
+  getPackedProof() {
+    const proof = this.getProof();
+    let packedMerkle = proof.transactionReceiptProof[0];
+    for (let i = 1; i < 3; i++) { 
+      packedMerkle = Buffer.concat([packedMerkle, proof.transactionReceiptProof[i]]);
+    }
+    return {
+      packedProof: utils.bufferToHex(Buffer.concat([
+        Bytes.numberToBuffer(proof.resultsBlockHeader.length, UINT32_SIZE),
+        Bytes.padToDword(proof.resultsBlockHeader),
+        Bytes.numberToBuffer(proof.resultsBlockProof.length, UINT32_SIZE),
+        Bytes.padToDword(proof.resultsBlockProof),
+        Bytes.numberToBuffer(packedMerkle.length, UINT32_SIZE),
+        packedMerkle,
+        ])),
+      transactionReceipt: utils.bufferToHex(proof.transactionReceipt),
+    }
+  }
+
   setFederationMemberAccounts(federationMemberAccounts) {
     this.federationMemberAccounts = federationMemberAccounts;
     return this;

@@ -288,9 +288,8 @@ contract('AutonomousSwapBridge', (accounts) => {
     });
 
     const transferIn = async (asbProof) => {
-      const rawProof = asbProof.getHexProof();
-      return asb.transferIn(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
-        rawProof.transactionReceipt, rawProof.transactionReceiptProof);
+      const rawProof = asbProof.getPackedProof();
+      return asb.transferIn(rawProof.packedProof, rawProof.transactionReceipt);
     };
 
     context('valid', async () => {

@@ -141,7 +141,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// @param _packedProof bytes The raw proof (including the resultsBlockHeader, resultsBlockProof and 
     /// @param _transactionReceipt bytes The raw Transaction Receipt.
     /// @return transferInEvent TransferInEvent The TransferIn event data.
-    function processPackedProof(bytes _packedProof, bytes _transactionReceipt) internal view returns(TransferInEvent memory transferInEvent) {
+    function processPackedProof(bytes _packedProof, bytes _transactionReceipt) public view returns(TransferInEvent memory transferInEvent) {
         bytes memory resultsBlockHeader;
         bytes memory resultsBlockProof;
         bytes memory packedTransactionReceiptProof;

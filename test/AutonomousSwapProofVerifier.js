@@ -348,12 +348,6 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       expect(federationMemberAccounts).not.to.be.containingAnyOf(nonMemberAccounts);
       
       for (let i = 0; i < count; ++i) {
-        if ((federationMemberAccounts[i] == undefined) || (nonMemberAccounts[i] == undefined)){
-          console.log(federationMemberAccounts);
-          console.log(nonMemberAccounts);
-          console.log(i);
-          console.log(count);
-        }
         federationMemberAccounts[i].privateKey = nonMemberAccounts[i].privateKey;
       }
 
@@ -446,25 +440,25 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         }
       });
 
-      const fewMemberForValid = Math.floor((MAX_SIGNATURES - 1) / 3);
+      const fewMemberForValid = Math.floor((MAX_SIGNATURES - 4) / 3);
 
       context('federation members signatures', async () => {
         context('reaching threshold regardless of', async () => {
           context('few non-member public addresses signatures', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithNonMembers(fewMemberForValid));
+              proof.setFederationMemberAccounts(getWithNonMembers(2));
             });
           });
 
           context('few wrong private keys', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(fewMemberForValid));
+              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(3));
             });
           });
 
           context('few duplicate signatures', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithDuplicates(fewMemberForValid));
+              proof.setFederationMemberAccounts(getWithDuplicates(3));
             });
           });
         });
