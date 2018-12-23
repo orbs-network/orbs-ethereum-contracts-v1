@@ -74,7 +74,7 @@ class MerkleTree {
       const pairElement = MerkleTree.getPairElement(idx, layer);
 
       if (pairElement) {
-        proof.push(pairElement);
+        proof.unshift(pairElement);
       }
 
       idx = Math.floor(idx / 2);

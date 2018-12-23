@@ -145,23 +145,46 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         bytes memory resultsBlockHeader;
         bytes memory resultsBlockProof;
         bytes memory packedTransactionReceiptProof;
-
+        // Parse the packed proof:
         (resultsBlockHeader, resultsBlockProof, packedTransactionReceiptProof) = parsePackedProof(_packedProof);
 
-
-        uint numOfNodes = packedTransactionReceiptProof.length.div(32);
-
         uint offset = 0;
-        bytes32[] memory transactionReceiptProof = new bytes32[](numOfNodes);
-        for (uint i = 0; i < numOfNodes; ++i) {
+        bytes32[] memory transactionReceiptProof = new bytes32[](packedTransactionReceiptProof.length.div(32));
+        for (uint i = 0; i < packedTransactionReceiptProof.length.div(32); ++i) {
             bytes32 node = packedTransactionReceiptProof.toBytes32(offset);
             transactionReceiptProof[i] = node;
             offset = offset.add(UINT256_SIZE);
         }
 
-        TransferInEvent memory eventData = processProof(resultsBlockHeader, resultsBlockProof, _transactionReceipt, transactionReceiptProof);
-        transferInEvent.networkType = eventData.networkType;
-        transferInEvent.virtualChainId = eventData.virtualChainId;
+        // Parse Results Block Header:
+        ResultsBlockHeader memory header = parseResultsBlockHeader(resultsBlockHeader);
+
+        // Verify that the Orbs protocol is supported.
+        require(header.protocolVersion == ORBS_PROTOCOL_VERSION, "Unsupported protocol version!");
+
+        // Verify that Result Block Proof by matching hashes and making sure that enough federation members have signed
+        // it.
+        verifyResultBlockProof(resultsBlockHeader, resultsBlockProof);
+
+        // Verify the existence of the Transaction Receipt.
+        require(CryptoUtils.isMerkleProofValid(transactionReceiptProof, header.transactionReceiptMerkleRoot,
+            _transactionReceipt), "Invalid transaction receipt proof!");
+
+        // Parse the Transaction Receipt.
+        TransactionReceipt memory transactionReceipt = parseTransactionReceipt(_transactionReceipt);
+
+        // Verify transaction's execution result.
+        require(transactionReceipt.executionResult == EXECUTION_RESULT_SUCCESS, "Invalid execution result!");
+
+        // Extract the Autonomous Swap Event Data from the transaction receipt:
+        EventData memory eventData = parseEventData(transactionReceipt.eventData);
+
+        // Verify that the event is a TransfferedOut event: TODO - modify to filter of multipel events
+        require(eventData.eventName.equal(TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
+
+        // Assign the rest of the fields.
+        transferInEvent.networkType = header.networkType;
+        transferInEvent.virtualChainId = header.virtualChainId;
         transferInEvent.orbsContractName = eventData.orbsContractName;
         transferInEvent.from = eventData.from;
         transferInEvent.to = eventData.to;

@@ -51,8 +51,8 @@ library CryptoUtils {
     function isMerkleProofValid(bytes32[] _proof, bytes32 _root, bytes32 _leafHash) public pure returns (bool) {
         bytes32 computedHash = _leafHash;
 
-        for (uint256 i = 0; i < _proof.length; i++) {
-            bytes32 proofElement = _proof[i];
+        for (uint256 i = _proof.length; i > 0; i--) {
+            bytes32 proofElement = _proof[i-1];
 
             if (computedHash < proofElement) {
                 // Hash the current computed hash with the current element of the proof.
