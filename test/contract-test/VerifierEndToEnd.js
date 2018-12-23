@@ -86,13 +86,17 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       const output = await verifier.processPackedProofRaw.call('0x' + packedProofHex, '0x' + packedReceiptHex);
 
       console.log(output);
+      const contract_name = "MyContract";
+      const eth_address = "0x0102030405060708090a0102030405060708090a";
+      const orbs_address = "0x1112131415161718191a1112131415161718191a";
+      const tuid = 1;
+      const amount = 1001;
 
-      expect(output[1]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.VirtualChainId));
-      expect(output[2]).to.eql(receipt_proof_data.Event.ContractName);
-      expect(output[3]).to.eql("0x" + receipt_proof_data.Event.OrbsAddress);
-      expect(output[4]).to.eql("0x" + receipt_proof_data.Event.EthAddress);
-      expect(output[5]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Amount));
-      expect(output[6]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Tuid));
+      expect(output[2]).to.eql(contract_name);
+      expect(output[3]).to.eql(eth_address);
+      expect(output[4]).to.eql(orbs_address);
+      expect(output[5]).to.be.bignumber.equal(Number(amount));
+      expect(output[6]).to.be.bignumber.equal(Number(tuid));
 
     });
   });
