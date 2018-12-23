@@ -111,6 +111,35 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       expect(Proof[1]).to.eql("0x" + receipt_proof_data.RawResultsBlockProof);
       expect(Proof[2]).to.eql("0x" + receipt_proof_data.ReceiptMerkleProof.join(""));
     });
+  });
+
+  describe('E2E', async () => {
+    const fs = require('fs');
+    let receipt_proof_data;
+
+    fs.readFile('./test/contract-test/TransactionReceiptProof.json', 'utf8', (err, fileContents) => {
+      if (err) {
+        console.error(err)
+        return;
+      }
+      try {
+        receipt_proof_data = JSON.parse(fileContents)
+      } catch(err) {
+        console.error(err);
+      }
+    })
+
+    let federationMemberAccounts;
+    let federationMembersAddresses;
+    let federation;
+    let verifier;
+
+    beforeEach(async () => {
+      federationMemberAccounts = receipt_proof_data.ResultsBlockProof.Signatures;
+      federationMembersAddresses = federationMemberAccounts.map(account => `0x` + account.MemberId);
+      federation = await Federation.new(federationMembersAddresses, { from: owner });
+      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
+    });
 
     it('Parsed E2E test', async () => {
       let merkle_proof = [];
@@ -317,8 +346,14 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const getWithWrongPrivateKeys = (count) => {
       const nonMemberAccounts = TEST_ACCOUNTS.slice(-count);
       expect(federationMemberAccounts).not.to.be.containingAnyOf(nonMemberAccounts);
-
+      
       for (let i = 0; i < count; ++i) {
+        if ((federationMemberAccounts[i] == undefined) || (nonMemberAccounts[i] == undefined)){
+          console.log(federationMemberAccounts);
+          console.log(nonMemberAccounts);
+          console.log(i);
+          console.log(count);
+        }
         federationMemberAccounts[i].privateKey = nonMemberAccounts[i].privateKey;
       }
 
@@ -411,23 +446,25 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         }
       });
 
+      const fewMemberForValid = Math.floor((MAX_SIGNATURES - 1) / 3);
+
       context('federation members signatures', async () => {
         context('reaching threshold regardless of', async () => {
           context('few non-member public addresses signatures', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithNonMembers(3));
+              proof.setFederationMemberAccounts(getWithNonMembers(fewMemberForValid));
             });
           });
 
           context('few wrong private keys', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(5));
+              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(fewMemberForValid));
             });
           });
 
           context('few duplicate signatures', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithDuplicates(2));
+              proof.setFederationMemberAccounts(getWithDuplicates(fewMemberForValid));
             });
           });
         });
@@ -475,13 +512,13 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         });
       });
 
-      context('value', async () => {
-        context('is of wrong size', async () => {
-          it('should revert', async () => {
-            proof.setEventOptions({ wrongValueSize: 12345 });
-          });
-        });
-      });
+      // context('value', async () => { - modified value to 64b
+      //   context('is of wrong size', async () => {
+      //     it('should revert', async () => {
+      //       proof.setEventOptions({ wrongValueSize: 12345 });
+      //     });
+      //   });
+      // });
 
       context('execution result', async () => {
         context('is 0', async () => {
@@ -535,13 +572,13 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         context('not reaching threshold due to', async () => {
           context('too many non-member public addresses', async () => {
             it('should revert', async () => {
-              proof.setFederationMemberAccounts(getWithNonMembers(federationMemberAccounts.length / 2));
+              proof.setFederationMemberAccounts(getWithNonMembers(Math.floor(federationMemberAccounts.length / 2)));
             });
           });
 
           context('too many wrong private keys', async () => {
             it('should revert', async () => {
-              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(federationMemberAccounts.length / 2));
+              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(Math.floor(federationMemberAccounts.length / 2)));
             });
           });
 
@@ -559,7 +596,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
           context('too many duplicate signatures', async () => {
             it('should revert', async () => {
-              proof.setFederationMemberAccounts(getWithDuplicates(federationMemberAccounts.length / 2));
+              proof.setFederationMemberAccounts(getWithDuplicates(Math.floor(federationMemberAccounts.length / 2)));
             });
           });
         });

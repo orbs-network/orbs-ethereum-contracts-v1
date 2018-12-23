@@ -35,9 +35,6 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant SHA256_SIZE = UINT256_SIZE;
     uint public constant SIGNATURE_SIZE = 65;
     uint public constant SIGNATURE_PADDED_SIZE = 68;
-    uint public constant ONEOF_TYPE_SIZE = 4;
-    uint public constant ARRAY_LENGTH_SIZE = 4;
-    uint public constant MESSAGE_LENGTH_SIZE = 4;
     uint public constant ENUM_PADDED_SIZE = 4;
     uint public constant LENGTH_SIZE = 4;
 
@@ -60,7 +57,6 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     // statically sized lists, due to Solidity's inability of functions returning dynamic arrays (and limiting gas
     // consumption, of course).
     uint public constant MAX_SIGNATURES = 100;
-    uint public constant MAX_MERKLE_NODES = 32;
 
     struct ResultsBlockHeader {
         uint32 protocolVersion;
@@ -123,19 +119,19 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         /// protocol.ResultsBlockHeader header (bytes)
         uint32 resultsBlockHeaderSize =_packedProof.toUint32BE(offset);
-        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
         resultsBlockHeader = _packedProof.slice(offset, resultsBlockHeaderSize);
         offset = offset.add(resultsBlockHeaderSize);
 
         /// protocol.ResultsBlockProof block_proof (bytes)
         uint32 resultsBlockProofSize =_packedProof.toUint32BE(offset);
-        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
         resultsBlockProof = _packedProof.slice(offset, resultsBlockProofSize);
         offset = offset.add(resultsBlockProofSize);
 
         /// primitives.merkle_tree_proof receipt_proof (bytes)
         uint32 transactionReceiptProofSize =_packedProof.toUint32BE(offset);
-        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
         packedTransactionReceiptProof = _packedProof.slice(offset, transactionReceiptProofSize);
         offset = offset.add(transactionReceiptProofSize);    
     }
@@ -206,7 +202,6 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
         // Verify that the event is a TransfferedOut event: TODO - modify to filter of multipel events
-        // require(eventData.eventName == TRANSFERRED_OUT, "Invalid event ID!");
         require(eventData.eventName.equal(TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
 
         // Assign the rest of the fields.
@@ -324,7 +319,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         uint signersArrayLength = _resultsBlockProof.toUint32BE(offset);
         offset = offset.add(LENGTH_SIZE);
         while (signers_offset < signersArrayLength) {
-            offset = offset.add(MESSAGE_LENGTH_SIZE);
+            offset = offset.add(LENGTH_SIZE);
 
             uint32 publicAddressSize =_resultsBlockProof.toUint32BE(offset);
             require(publicAddressSize == ORBS_ADDRESS_SIZE, "Invalid address size!");
@@ -382,7 +377,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     function parseTransactionReceipt(bytes _transactionReceipt) internal pure returns(TransactionReceipt memory res) {
         uint offset = 0;
         /// primitives.sha256 txhash (bytes, reserved)
-        offset = offset.add(ARRAY_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
         offset = offset.add(SHA256_SIZE);        
 
         /// protocol.ExecutionResult execution_result (enum)
@@ -394,11 +389,11 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         /// bytes output_events_array 
         uint32 eventArrayLength =_transactionReceipt.toUint32BE(offset);
-        offset = offset.add(ARRAY_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
 
         // first event - TODO multiple events
         uint32 eventLength =_transactionReceipt.toUint32BE(offset);
-        offset = offset.add(MESSAGE_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
         res.eventData = _transactionReceipt.slice(offset, eventLength);
         offset = offset.add(eventLength);
         
@@ -468,13 +463,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         (offset, field_offset, field_length) = ParseVariableSizeField(offset, _eventData, DWORD_ALIGNED);
         res.eventName = string(_eventData.slice(field_offset, field_length));
 
-        // uint32 eventNameLength = _eventData.toUint32BE(offset);
-        // offset = offset.add(ARRAY_LENGTH_SIZE);
-        // res.eventName = string(_eventData.slice(offset, eventNameLength));
-        // offset = offset.add(eventNameLength);
-
         /// output_argument_array / repeated MethodArgument arguments
-        offset = offset.add(ARRAY_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
 
         /// argument[0] uint64 tuid
         offset = offset.add(LENGTH_SIZE);
@@ -489,7 +479,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 fromAddressSize =_eventData.toUint32BE(offset);
         require(fromAddressSize == ORBS_ADDRESS_SIZE, "Invalid Orbs address size!");
-        offset = offset.add(ARRAY_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
         res.from = _eventData.toBytes20(offset);
         offset = offset.add(ORBS_ADDRESS_SIZE);
 
@@ -499,7 +489,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 toAddressSize =_eventData.toUint32BE(offset);
         require(toAddressSize == ADDRESS_SIZE, "Invalid Ethereum address size!");
-        offset = offset.add(ARRAY_LENGTH_SIZE);
+        offset = offset.add(LENGTH_SIZE);
         res.to = _eventData.toAddress(offset);
         offset = offset.add(ADDRESS_SIZE);
 
@@ -524,12 +514,10 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         for (uint i = 0; i < proof.numOfSignatures; ++i) {
             address signer = proof.publicAddresses[i];
             bytes memory signature = proof.signatures[i];
-
-            // TODO - no membership check on E2E
             // Check if the signer is a member of the federation, at the time of the creation of the proof.
-            // if (!federation.isMemberByRevision(proof.blockProofVersion, signer)) {
-            //     continue;
-            // }
+            if (!federation.isMemberByRevision(proof.blockProofVersion, signer)) {
+                continue;
+            }
 
             // Verify that the signature is correct.
             if (!CryptoUtils.isSignatureValid(proof.blockrefHash, signature, signer)) {
