@@ -12,12 +12,20 @@ contract BytesLibExWrapper {
         return _bytes.toBytes20(_start);
     }
 
+    function toUint16(bytes _bytes, uint _start) public pure returns (uint16) {
+        return _bytes.toUint16(_start);
+    }
+
     function toUint32(bytes _bytes, uint _start) public pure returns (uint32) {
         return _bytes.toUint32(_start);
     }
 
     function toUint64(bytes _bytes, uint _start) public pure returns (uint64) {
         return _bytes.toUint64(_start);
+    }
+
+    function toUint16BE(bytes _bytes, uint _start) public pure returns (uint16) {
+        return _bytes.toUint16BE(_start);
     }
 
     function toUint32BE(bytes _bytes, uint _start) public pure returns (uint32) {

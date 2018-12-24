@@ -8,10 +8,12 @@ library BytesLibEx {
     using BytesLib for bytes;
 
     // Data sizes (in bytes).
+    uint public constant UINT16_SIZE = 2;
     uint public constant UINT32_SIZE = 4;
     uint public constant UINT64_SIZE = 8;
     uint public constant UINT256_SIZE = 32;
     uint public constant BYTES20_SIZE = 20;
+
 
     /// @dev Converts a bytes array to byte20.
     /// @param _bytes bytes The raw buffer.
@@ -29,6 +31,13 @@ library BytesLibEx {
         return tempBytes20;
     }
 
+    /// @dev Converts a bytes array to a uint16.
+    /// @param _bytes bytes The raw buffer.
+    /// @param _start uint The offset to start from.
+    function toUint16(bytes memory _bytes, uint _start) internal pure returns (uint16) {
+        return uint16(toUint(_bytes, _start, UINT16_SIZE));
+    }
+
     /// @dev Converts a bytes array to a uint32.
     /// @param _bytes bytes The raw buffer.
     /// @param _start uint The offset to start from.
@@ -41,6 +50,13 @@ library BytesLibEx {
     /// @param _start uint The offset to start from.
     function toUint64(bytes memory _bytes, uint _start) internal pure returns (uint64) {
         return uint64(toUint(_bytes, _start, UINT64_SIZE));
+    }
+
+    /// @dev Converts a big-endian bytes array to a uint16.
+    /// @param _bytes bytes The raw buffer.
+    /// @param _start uint The offset to start from.
+    function toUint16BE(bytes memory _bytes, uint _start) internal pure returns (uint16) {
+        return uint16(toUintBE(_bytes, _start, UINT16_SIZE));
     }
 
     /// @dev Converts a big-endian bytes array to a uint32.

@@ -3,6 +3,7 @@ import utils from 'ethereumjs-util';
 import Bytes from './bytes';
 import MerkleTree from './merkleTree';
 
+const UINT16_SIZE = 2;
 const UINT32_SIZE = 4;
 const UINT64_SIZE = 8;
 const UINT256_SIZE = 32;
@@ -19,7 +20,7 @@ class ASBProof {
       executionResult: this.executionResult,
     }, {
       orbsContractName: this.orbsContractName,
-      eventId: this.eventId,
+      eventName: this.eventName,
       tuid: this.tuid,
       orbsAddress: this.orbsAddress,
       ethereumAddress: this.ethereumAddress,
@@ -45,7 +46,12 @@ class ASBProof {
     const resultsBlockHeaderHash = utils.sha256(resultsBlockHeader);
     const transactionsBlockHash = this.transactionsBlockHash || DUMMY_BLOCK_HASH; // Just a dummy value.
     const blockHash = this.blockHash || utils.sha256(Buffer.concat([transactionsBlockHash, resultsBlockHeaderHash]));
-    const blockrefMessage = Buffer.concat([Buffer.alloc(20), blockHash]);
+    const block_ref_data = {
+      helixMessageType: 3,
+      blockHash: blockHash,
+    }
+    
+    const blockrefMessage = ASBProof.buildblockRef(block_ref_data);
     const blockrefHash = this.blockrefHash || utils.sha256(blockrefMessage);
 
     const signatures = this.federationMemberAccounts.map((account) => {
@@ -57,14 +63,14 @@ class ASBProof {
         signature,
       };
     });
-
+    
     const resultsBlockProof = ASBProof.buildResultsProof({
       blockProofVersion: this.blockProofVersion,
-      transactionsBlockHash,
-      blockrefMessage,
-      signatures,
+      transactionsBlockHash: transactionsBlockHash,
+      blockrefMessage: blockrefMessage,
+      signatures: signatures,
     }, this.resultsProofOptions);
-
+    
     return {
       resultsBlockHeader,
       resultsBlockProof,
@@ -83,6 +89,25 @@ class ASBProof {
     };
   }
 
+  getPackedProof() {
+    const proof = this.getProof();
+    let packedMerkle = proof.transactionReceiptProof[0];
+    for (let i = 1; i < 3; i++) { 
+      packedMerkle = Buffer.concat([packedMerkle, proof.transactionReceiptProof[i]]);
+    }
+    return {
+      packedProof: utils.bufferToHex(Buffer.concat([
+        Bytes.numberToBuffer(proof.resultsBlockHeader.length, UINT32_SIZE),
+        Bytes.padToDword(proof.resultsBlockHeader),
+        Bytes.numberToBuffer(proof.resultsBlockProof.length, UINT32_SIZE),
+        Bytes.padToDword(proof.resultsBlockProof),
+        Bytes.numberToBuffer(packedMerkle.length, UINT32_SIZE),
+        packedMerkle,
+        ])),
+      transactionReceipt: utils.bufferToHex(proof.transactionReceipt),
+    }
+  }
+
   setFederationMemberAccounts(federationMemberAccounts) {
     this.federationMemberAccounts = federationMemberAccounts;
     return this;
@@ -93,8 +118,8 @@ class ASBProof {
     return this;
   }
 
-  setEventId(eventId) {
-    this.eventId = eventId;
+  setEventName(eventName) {
+    this.eventName = eventName;
     return this;
   }
 
@@ -199,8 +224,8 @@ class ASBProof {
       throw new Error('Missing Orbs contract name!');
     }
 
-    if (!Number.isInteger(this.eventId)) {
-      throw new Error('Missing event ID!');
+    if (!this.eventName) {
+      throw new Error('Missing event name!');
     }
 
     if (!Number.isInteger(this.tuid)) {
@@ -255,13 +280,16 @@ class ASBProof {
   // | receipt_merkle_root |     64 |   32 | bytes (32B)          |
   // +---------------------+--------+------+----------------------+
   static buildResultsBlockHeader(resultsBlockHeader) {
-    return Buffer.concat([
+      return Buffer.concat([
       Bytes.numberToBuffer(resultsBlockHeader.protocolVersion, UINT32_SIZE),
-      Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, UINT64_SIZE),
-      Bytes.numberToBuffer(resultsBlockHeader.networkType, UINT32_SIZE),
+      Bytes.numberToBuffer(resultsBlockHeader.virtualChainId, UINT32_SIZE),
+      Buffer.alloc(8), //block_height
+      Buffer.alloc(36), // prev_block_hash_ptr
+      //Bytes.numberToBuffer(resultsBlockHeader.networkType, UINT32_SIZE),
       Bytes.numberToBuffer(resultsBlockHeader.timestamp, UINT64_SIZE),
-      Buffer.alloc(40),
+      Bytes.numberToBuffer(SHA256_SIZE, UINT32_SIZE),
       resultsBlockHeader.receiptMerkleRoot,
+      Buffer.alloc(40),
     ]);
   }
 
@@ -281,24 +309,35 @@ class ASBProof {
   // | node_sig_length                | 132 + 100n | 4         | always 65   | reserved                 |
   // | node_sig                       | 136 + 100n | 65        | bytes (65B) |                          |
   // +--------------------------------+------------+-----------+-------------+--------------------------+
+  static buildblockRef(blockRef) {
+    return Buffer.concat([
+      Bytes.padToDword(Bytes.numberToBuffer(blockRef.helixMessageType, UINT16_SIZE)),
+      Buffer.alloc(16),
+      Bytes.numberToBuffer(SHA256_SIZE, UINT32_SIZE),
+      blockRef.blockHash,
+    ]); 
+  }
+  
   static buildResultsProof(resultsBlockProof, options = {}) {
+    
     const resultsBlockProofBuffer = Buffer.concat([
-      Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4),
-      Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, 4),
+//      Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4), TODO issue #16
+      Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, UINT32_SIZE),
       resultsBlockProof.transactionsBlockHash,
-      Buffer.alloc(12), // one-of + nesting
+      Buffer.alloc(12), 
       resultsBlockProof.blockrefMessage,
+      Bytes.numberToBuffer(resultsBlockProof.signatures.length*100-3, UINT32_SIZE),
     ]);
-
     return resultsBlockProof.signatures.reduce((res, sig) => {
       const publicAddressBuffer = Bytes.prefixedHexToBuffer(sig.publicAddress);
       const signatureBuffer = Bytes.prefixedHexToBuffer(sig.signature);
+      const signature_entry_size = 93;
       return Buffer.concat([res,
-        Buffer.alloc(4), // node_pk_sig nesting
+        Bytes.numberToBuffer(signature_entry_size, 4),
         Bytes.numberToBuffer(options.wrongPublicAddressSize || publicAddressBuffer.length, 4),
-        publicAddressBuffer,
+        Bytes.padToDword(publicAddressBuffer),
         Bytes.numberToBuffer(options.wrongSignatureSize || signatureBuffer.length, 4),
-        signatureBuffer,
+        Bytes.padToDword(signatureBuffer),
       ]);
     }, resultsBlockProofBuffer);
   }
@@ -313,10 +352,14 @@ class ASBProof {
   // +------------------+--------+----------+----------+-----------------------+
   static buildTransactionReceipt(transaction, event, options = {}) {
     const eventBuffer = ASBProof.buildEventData(event, options);
+    const argument_array_length = 12;
     return Buffer.concat([
       Buffer.alloc(36),
-      Bytes.numberToBuffer(transaction.executionResult, UINT32_SIZE),
-      Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE),
+      Bytes.padToDword(Bytes.numberToBuffer(transaction.executionResult, UINT16_SIZE)),
+      Bytes.numberToBuffer(argument_array_length, UINT32_SIZE), // argument array length 
+      Buffer.alloc(argument_array_length), // argument array
+      Bytes.numberToBuffer(eventBuffer.length + 4, UINT32_SIZE), // events array length
+      Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE), // event length
       eventBuffer,
     ]);
   }
@@ -352,17 +395,40 @@ class ASBProof {
   // +--------------------------+--------+------+-------------+-------------------------------+
   static buildEventData(event, options = {}) {
     const ethereumAddressBuffer = Bytes.prefixedHexToBuffer(event.ethereumAddress);
+    const arguments_name = "testing";
     return Buffer.concat([
       Bytes.numberToBuffer(event.orbsContractName.length, UINT32_SIZE),
-      Buffer.from(event.orbsContractName),
-      Bytes.numberToBuffer(event.eventId, UINT32_SIZE),
+      Bytes.padToDword(Buffer.from(event.orbsContractName)),
+      Bytes.numberToBuffer(event.eventName.length, UINT32_SIZE),
+      Bytes.padToDword(Buffer.from(event.eventName)),
+      Bytes.numberToBuffer(100, UINT32_SIZE), //array size, TODO set actual size
+
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type 
       Bytes.numberToBuffer(event.tuid, UINT64_SIZE),
+
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
       Bytes.numberToBuffer(event.orbsAddress.length, UINT32_SIZE),
       event.orbsAddress,
+      
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
       Bytes.numberToBuffer(ethereumAddressBuffer.length, UINT32_SIZE),
       ethereumAddressBuffer,
-      Bytes.numberToBuffer(options.wrongValueSize || UINT256_SIZE, UINT32_SIZE),
-      Bytes.numberToBuffer(event.value, UINT256_SIZE),
+      
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
+      Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
+      Bytes.padToWord(Buffer.from(arguments_name)),
+      Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
+      //Bytes.numberToBuffer(options.wrongValueSize || UINT256_SIZE, UINT32_SIZE),
+      Bytes.numberToBuffer(event.value, UINT64_SIZE),
     ]);
   }
 }
