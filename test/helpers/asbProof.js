@@ -321,7 +321,7 @@ class ASBProof {
   static buildResultsProof(resultsBlockProof, options = {}) {
     
     const resultsBlockProofBuffer = Buffer.concat([
-//      Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4), TODO fix after adding in spec.
+//      Bytes.numberToBuffer(resultsBlockProof.blockProofVersion, 4), TODO issue #16
       Bytes.numberToBuffer(resultsBlockProof.transactionsBlockHash.length, UINT32_SIZE),
       resultsBlockProof.transactionsBlockHash,
       Buffer.alloc(12), 
@@ -352,11 +352,12 @@ class ASBProof {
   // +------------------+--------+----------+----------+-----------------------+
   static buildTransactionReceipt(transaction, event, options = {}) {
     const eventBuffer = ASBProof.buildEventData(event, options);
+    const argument_array_length = 12;
     return Buffer.concat([
       Buffer.alloc(36),
       Bytes.padToDword(Bytes.numberToBuffer(transaction.executionResult, UINT16_SIZE)),
-      Bytes.numberToBuffer(12, UINT32_SIZE), // argument array length = 12 - TODO random, padde to 4.
-      Buffer.alloc(12), // argument array
+      Bytes.numberToBuffer(argument_array_length, UINT32_SIZE), // argument array length 
+      Buffer.alloc(argument_array_length), // argument array
       Bytes.numberToBuffer(eventBuffer.length + 4, UINT32_SIZE), // events array length
       Bytes.numberToBuffer(eventBuffer.length, UINT32_SIZE), // event length
       eventBuffer,
@@ -400,29 +401,29 @@ class ASBProof {
       Bytes.padToDword(Buffer.from(event.orbsContractName)),
       Bytes.numberToBuffer(event.eventName.length, UINT32_SIZE),
       Bytes.padToDword(Buffer.from(event.eventName)),
-      Bytes.numberToBuffer(100, UINT32_SIZE), //array size, TODO
+      Bytes.numberToBuffer(100, UINT32_SIZE), //array size, TODO set actual size
 
-      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
       Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
       Bytes.padToWord(Buffer.from(arguments_name)),
       Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type 
       Bytes.numberToBuffer(event.tuid, UINT64_SIZE),
 
-      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
       Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
       Bytes.padToWord(Buffer.from(arguments_name)),
       Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
       Bytes.numberToBuffer(event.orbsAddress.length, UINT32_SIZE),
       event.orbsAddress,
       
-      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
       Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
       Bytes.padToWord(Buffer.from(arguments_name)),
       Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type
       Bytes.numberToBuffer(ethereumAddressBuffer.length, UINT32_SIZE),
       ethereumAddressBuffer,
       
-      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO argument size
+      Bytes.numberToBuffer(100, UINT32_SIZE), //TODO set actual size
       Bytes.numberToBuffer(arguments_name.length, UINT32_SIZE), // name size
       Bytes.padToWord(Buffer.from(arguments_name)),
       Bytes.padToDword(Bytes.numberToBuffer(7, UINT16_SIZE)), // type

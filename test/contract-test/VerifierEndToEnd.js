@@ -77,12 +77,6 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       const packedProofHex = extractPackedProof(txProofOutput);
       const packedReceiptHex = extractPackedReceipt(txProofOutput);
 
-      console.log('\n+++++++++++++++++++++++++++++++++++++++++++++++++++++');
-      console.log(`TODO: We should parse PackedReceipt: ${packedReceiptHex} and PackedProof: ${packedProofHex}`);
-      console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++\n');
-
-      console.log(txProofOutput);
-
       const output = await verifier.processPackedProofRaw.call('0x' + packedProofHex, '0x' + packedReceiptHex);
 
       console.log(output);

@@ -58,7 +58,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
       expect(resultsBlockHeaderData[0]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.ProtocolVersion));
       expect(resultsBlockHeaderData[1]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.VirtualChainId));
-      //expect(resultsBlockHeaderData[2]).to.be.bignumber.equal(orbs_data.networkType); TODO
+      //expect(resultsBlockHeaderData[2]).to.be.bignumber.equal(orbs_data.networkType); TODO issue #15
       expect(resultsBlockHeaderData[3]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.Timestamp));
       expect(resultsBlockHeaderData[4]).to.eql("0x" + receipt_proof_data.ResultsBlockHeader.ReceiptsRootHash);
 
@@ -87,7 +87,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     it('Correct parsing of Result Block Proof', async () => {
       const resultsBlockProofData = await verifier.parseResultsBlockProofRaw.call("0x" + receipt_proof_data.RawResultsBlockProof);
 
-      //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO
+      //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO issue #16
       expect(resultsBlockProofData[1]).to.eql("0x" + receipt_proof_data.ResultsBlockProof.TransactionsBlockHash);
       expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(utils.toBuffer("0x" + receipt_proof_data.RawBlockRef)));
       expect(resultsBlockProofData[3]).to.be.bignumber.equal(receipt_proof_data.BlockRef.MessageType);
@@ -231,7 +231,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
         const resultsBlockProofData = await verifier.parseResultsBlockProofRaw.call(rawResultsBlockProof);
 
-        //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO
+        //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO issue #16
         expect(utils.toBuffer(resultsBlockProofData[1])).to.eql(data.transactionsBlockHash);
         expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(data.blockrefMessage));
         expect(resultsBlockProofData[3]).to.be.bignumber.equal(block_ref_data.helixMessageType);

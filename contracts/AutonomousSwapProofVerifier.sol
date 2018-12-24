@@ -172,7 +172,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Extract the Autonomous Swap Event Data from the transaction receipt:
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
-        // Verify that the event is a TransfferedOut event: TODO - modify to filter of multipel events
+        // Verify that the event is a TransfferedOut event: TODO - issue #17
         require(eventData.eventName.equal(TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
 
         // Assign the rest of the fields.
@@ -217,7 +217,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         // Extract the Autonomous Swap Event Data from the transaction receipt:
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
-        // Verify that the event is a TransfferedOut event: TODO - modify to filter of multipel events
+        // Verify that the event is a TransfferedOut event: TODO - issue #17
         require(eventData.eventName.equal(TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
 
         // Assign the rest of the fields.
@@ -263,7 +263,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(UINT256_SIZE);
 
 
-        //    res.networkType = _resultsBlockHeader.toUint32BE(offset); TODO
+        //    res.networkType = _resultsBlockHeader.toUint32BE(offset); TODO - issue #15
         //    offset = offset.add(UINT32_SIZE);
 
         // primitives.timestamp_nano timestamp = 5;
@@ -282,9 +282,9 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     function parseResultsBlockProof(bytes _resultsBlockProof) internal pure returns (ResultsBlockProof memory res) {
         uint offset = 0;
 
-//        res.blockProofVersion = _resultsBlockProof.toUint32BE(offset); TODO
+//        res.blockProofVersion = _resultsBlockProof.toUint32BE(offset); TODO - issue #16
 //        offset = offset.add(UINT32_SIZE);
-        res.blockProofVersion = 0; //TODO
+        res.blockProofVersion = 0;
 
         // primitives.sha256 results_block_hash = 1;
         uint32 transactionsBlockHashSize =_resultsBlockProof.toUint32BE(offset);
@@ -367,7 +367,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         uint32 eventArrayLength =_transactionReceipt.toUint32BE(offset);
         offset = offset.add(LENGTH_SIZE);
 
-        // first event - TODO multiple events
+        // first event - TODO issue #17
         uint32 eventLength =_transactionReceipt.toUint32BE(offset);
         offset = offset.add(LENGTH_SIZE);
         res.eventData = _transactionReceipt.slice(offset, eventLength);
@@ -399,14 +399,14 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         /// argument[0] uint64 tuid
         offset = offset.add(LENGTH_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); // arg name
         offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         res.tuid = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
         /// argument[1] bytes[20] from_orbs_address (bytes)
         offset = offset.add(LENGTH_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); // arg name
         offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 fromAddressSize =_eventData.toUint32BE(offset);
         require(fromAddressSize == ORBS_ADDRESS_SIZE, "Invalid Orbs address size!");
@@ -416,7 +416,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         /// argument[2] bytes[20] to_eth_address (bytes)
         offset = offset.add(LENGTH_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); // arg name
         offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 toAddressSize =_eventData.toUint32BE(offset);
         require(toAddressSize == ADDRESS_SIZE, "Invalid Ethereum address size!");
@@ -426,10 +426,10 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         /// argument[3] UINT256 ammount (bytes)
         offset = offset.add(LENGTH_SIZE);
-        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
+        (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); // arg name
         offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         res.value = _eventData.toUint64BE(offset);
-        offset = offset.add(UINT64_SIZE); // TODO change to UINT256
+        offset = offset.add(UINT64_SIZE); // TODO issue #18
     }
 
     /// @dev Verifies federation members signatures on the blockref message.
