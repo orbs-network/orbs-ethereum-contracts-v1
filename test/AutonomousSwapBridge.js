@@ -16,9 +16,9 @@ contract('AutonomousSwapBridge', (accounts) => {
   const NETWORK_TYPE = 0;
   const VIRTUAL_CHAIN_ID = 0x6b696e;
   const ORBS_ASB_CONTRACT_NAME = 'asb';
-  const PROTOCOL_VERSION = 2;
+  const PROTOCOL_VERSION = 1;
   const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
-  const TRANSFERED_OUT_EVENT_ID = 1;
+  const TRANSFERED_OUT_EVENT_NAME = 'TransferredOut';
   const VERSION = 1;
   const EMPTY = '';
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -273,7 +273,7 @@ contract('AutonomousSwapBridge', (accounts) => {
       proof = (new ASBProof())
         .setFederationMemberAccounts(federationMemberAccounts)
         .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-        .setEventId(TRANSFERED_OUT_EVENT_ID)
+        .setEventName(TRANSFERED_OUT_EVENT_NAME)
         .setTuid(tuid)
         .setOrbsAddress(ORBS_ADDRESS)
         .setEthereumAddress(receiver)
@@ -288,9 +288,8 @@ contract('AutonomousSwapBridge', (accounts) => {
     });
 
     const transferIn = async (asbProof) => {
-      const rawProof = asbProof.getHexProof();
-      return asb.transferIn(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
-        rawProof.transactionReceipt, rawProof.transactionReceiptProof);
+      const rawProof = asbProof.getPackedProof();
+      return asb.transferIn(rawProof.packedProof, rawProof.transactionReceipt);
     };
 
     context('valid', async () => {
@@ -328,11 +327,11 @@ contract('AutonomousSwapBridge', (accounts) => {
         expect(await token.balanceOf.call(asb.address)).to.be.bignumber.equal(initialASBBalance);
       });
 
-      context('incorrect network type', async () => {
-        it('should revert', async () => {
-          proof.setNetworkType(NETWORK_TYPE + 10);
-        });
-      });
+    //   context('incorrect network type', async () => {
+    //     it('should revert', async () => {
+    //       proof.setNetworkType(NETWORK_TYPE + 10);
+    //     });
+    //   });
 
       context('incorrect virtual chain ID', async () => {
         it('should revert', async () => {

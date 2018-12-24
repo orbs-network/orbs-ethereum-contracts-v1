@@ -36,6 +36,16 @@ contract('BytesLibEx', () => {
 
   describe('toUint', async () => {
     [
+      '0x0005',
+      '0x051a',
+      '0x1234',
+    ].forEach((spec) => {
+      it(`should convert ${spec} to uint16`, async () => {
+        expect(await bytesLib.toUint16.call(spec, 0)).to.be.bignumber.equal(new BigNumber(spec));
+      });
+    });
+
+    [
       '0x00000005',
       '0x0000051a',
       '0x0bcd1234',
@@ -56,6 +66,8 @@ contract('BytesLibEx', () => {
     });
 
     it('should error when buffer is too short', async () => {
+      await expectRevert(bytesLib.toUint16.call('0x1', 0));
+      await expectRevert(bytesLib.toUint16.call('0x0000051a', 3));
       await expectRevert(bytesLib.toUint32.call('0x01', 0));
       await expectRevert(bytesLib.toUint32.call('0x0000051a', 2));
       await expectRevert(bytesLib.toUint64.call('0x01', 0));
@@ -63,18 +75,29 @@ contract('BytesLibEx', () => {
     });
   });
 
-  [
-    '0x00000005',
-    '0x0000051a',
-    '0x0bcd1234',
-  ].forEach((spec) => {
-    it(`should convert a big-endian ${spec} to uint32`, async () => {
-      expect(await bytesLib.toUint32BE.call(spec, 0)).to.be.bignumber
-        .equal(new BigNumber(Bytes.switchEndianness(spec)));
-    });
-  });
-
   describe('toUintBE', async () => {
+    [
+      '0x0005',
+      '0x051a',
+      '0x1234',
+    ].forEach((spec) => {
+      it(`should convert a big-endian ${spec} to uint16`, async () => {
+        expect(await bytesLib.toUint16BE.call(spec, 0)).to.be.bignumber
+          .equal(new BigNumber(Bytes.switchEndianness(spec)));
+      });
+    });
+  
+    [
+      '0x00000005',
+      '0x0000051a',
+      '0x0bcd1234',
+    ].forEach((spec) => {
+      it(`should convert a big-endian ${spec} to uint32`, async () => {
+        expect(await bytesLib.toUint32BE.call(spec, 0)).to.be.bignumber
+          .equal(new BigNumber(Bytes.switchEndianness(spec)));
+      });
+    });
+  
     [
       '0x0000000000000005',
       '0x000000000000051a',

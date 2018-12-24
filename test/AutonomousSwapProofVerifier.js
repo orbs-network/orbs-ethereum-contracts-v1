@@ -31,8 +31,149 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     });
   });
 
+  describe('e2e test - parsing', async () => {
+    let verifier;
+    const fs = require('fs');
+    let receipt_proof_data;
+
+    fs.readFile('./test/contract-test/TransactionReceiptProof.json', 'utf8', (err, fileContents) => {
+      if (err) {
+        console.error(err)
+        return;
+      }
+      try {
+        receipt_proof_data = JSON.parse(fileContents)
+      } catch(err) {
+        console.error(err);
+      }
+    })
+
+    beforeEach(async () => {
+      const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
+      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
+    });
+
+    it('Correct parsing of ResultBlockHeader', async () => {
+      const resultsBlockHeaderData = await verifier.parseResultsBlockHeaderRaw.call("0x" + receipt_proof_data.RawResultsBlockHeader);
+
+      expect(resultsBlockHeaderData[0]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.ProtocolVersion));
+      expect(resultsBlockHeaderData[1]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.VirtualChainId));
+      //expect(resultsBlockHeaderData[2]).to.be.bignumber.equal(orbs_data.networkType); TODO issue #15
+      expect(resultsBlockHeaderData[3]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.Timestamp));
+      expect(resultsBlockHeaderData[4]).to.eql("0x" + receipt_proof_data.ResultsBlockHeader.ReceiptsRootHash);
+
+    });
+
+    it('Correct parsing of TransactionReceipt', async () => {
+      const transactionReceiptfData = await verifier.parseTransactionReceiptRaw.call("0x" + receipt_proof_data.RawTransactionReceipt);
+
+      expect(transactionReceiptfData[0]).to.be.bignumber.equal(Number(receipt_proof_data.TransactionReceipt.ExecutionResult));
+      expect(transactionReceiptfData[1]).to.eql("0x" + receipt_proof_data.RawEvent);
+
+    });
+
+    it('Correct parsing of Event data', async () => {
+      const eventData = await verifier.parseEventDataRaw.call("0x" + receipt_proof_data.RawEvent);
+
+      expect(eventData[0]).to.eql(receipt_proof_data.Event.ContractName);
+      expect(eventData[1]).to.eql(receipt_proof_data.Event.EventName);
+      expect(eventData[2]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Tuid));
+      expect(eventData[3]).to.eql("0x" + receipt_proof_data.Event.OrbsAddress);
+      expect(eventData[4]).to.eql("0x" + receipt_proof_data.Event.EthAddress);
+      expect(eventData[5]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Amount));
+
+    });
+
+    it('Correct parsing of Result Block Proof', async () => {
+      const resultsBlockProofData = await verifier.parseResultsBlockProofRaw.call("0x" + receipt_proof_data.RawResultsBlockProof);
+
+      //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO issue #16
+      expect(resultsBlockProofData[1]).to.eql("0x" + receipt_proof_data.ResultsBlockProof.TransactionsBlockHash);
+      expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(utils.toBuffer("0x" + receipt_proof_data.RawBlockRef)));
+      expect(resultsBlockProofData[3]).to.be.bignumber.equal(receipt_proof_data.BlockRef.MessageType);
+      expect(resultsBlockProofData[4]).to.eql("0x" + receipt_proof_data.BlockRef.BlockHash);
+      const numOfSignatures = resultsBlockProofData[5].toNumber();
+      expect(numOfSignatures).to.be.bignumber.equal(receipt_proof_data.ResultsBlockProof.Signatures.length);
+
+      for (let i = 0; i < numOfSignatures; ++i) {
+        expect(resultsBlockProofData[6][i]).to.be.eql("0x" + receipt_proof_data.ResultsBlockProof.Signatures[i].MemberId);
+       //expect(resultsBlockProofData[7][i]).to.be.eql("0x" + receipt_proof_data.ResultsBlockProof.Signatures[i].Signature);
+       // TODO: at the moment, truffle can't properly parse the returned bytes[MAX_SIGNATURE] addresses. This should
+       // be fixed in truffle 0.5 and later.
+       // expect(resultsBlockProofData[6][i]).to.be.eql(testSignatures[i].signature);
+     };
+    });
+
+    it('Correct parsing of Packed Proof', async () => {
+      const Proof = await verifier.parsePackedProofRaw.call("0x" + receipt_proof_data.RawPackedReceiptProof);
+      
+      expect(Proof[0]).to.eql("0x" + receipt_proof_data.RawResultsBlockHeader);
+      expect(Proof[1]).to.eql("0x" + receipt_proof_data.RawResultsBlockProof);
+      expect(Proof[2]).to.eql("0x" + receipt_proof_data.ReceiptMerkleProof.join(""));
+    });
+  });
+
+  describe('E2E', async () => {
+    const fs = require('fs');
+    let receipt_proof_data;
+
+    fs.readFile('./test/contract-test/TransactionReceiptProof.json', 'utf8', (err, fileContents) => {
+      if (err) {
+        console.error(err)
+        return;
+      }
+      try {
+        receipt_proof_data = JSON.parse(fileContents)
+      } catch(err) {
+        console.error(err);
+      }
+    })
+
+    let federationMemberAccounts;
+    let federationMembersAddresses;
+    let federation;
+    let verifier;
+
+    beforeEach(async () => {
+      federationMemberAccounts = receipt_proof_data.ResultsBlockProof.Signatures;
+      federationMembersAddresses = federationMemberAccounts.map(account => `0x` + account.MemberId);
+      federation = await Federation.new(federationMembersAddresses, { from: owner });
+      verifier = await AutonomousSwapProofVerifierWrapper.new(federation.address, { from: owner });
+    });
+
+    it('Parsed E2E test', async () => {
+      let merkle_proof = [];
+      receipt_proof_data.ReceiptMerkleProof.forEach(node => {
+        merkle_proof.push("0x" + node);
+      });
+
+      const output = await verifier.processParsedProofRaw.call("0x" + receipt_proof_data.RawResultsBlockHeader, "0x" + receipt_proof_data.RawResultsBlockProof, "0x" + receipt_proof_data.RawTransactionReceipt, merkle_proof);
+
+      //expect(output[0]).to.eql(receipt_proof_data.NetworkType);
+      expect(output[1]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.VirtualChainId));
+      expect(output[2]).to.eql(receipt_proof_data.Event.ContractName);
+      expect(output[3]).to.eql("0x" + receipt_proof_data.Event.OrbsAddress);
+      expect(output[4]).to.eql("0x" + receipt_proof_data.Event.EthAddress);
+      expect(output[5]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Amount));
+      expect(output[6]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Tuid));
+    });
+
+    it('E2E test', async () => {
+      const output = await verifier.processPackedProofRaw.call("0x" + receipt_proof_data.RawPackedReceiptProof, "0x" + receipt_proof_data.RawTransactionReceipt);
+
+      //expect(output[0]).to.eql(receipt_proof_data.NetworkType);
+      expect(output[1]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.VirtualChainId));
+      expect(output[2]).to.eql(receipt_proof_data.Event.ContractName);
+      expect(output[3]).to.eql("0x" + receipt_proof_data.Event.OrbsAddress);
+      expect(output[4]).to.eql("0x" + receipt_proof_data.Event.EthAddress);
+      expect(output[5]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Amount));
+      expect(output[6]).to.be.bignumber.equal(Number(receipt_proof_data.Event.Tuid));
+    });
+  });
+
   describe('parsing', async () => {
     let verifier;
+    const TRANSFERED_OUT_EVENT_NAME = 'TransferredOut';
 
     beforeEach(async () => {
       const federation = await Federation.new(accounts.slice(0, 2), { from: owner });
@@ -55,7 +196,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
         expect(resultsBlockHeaderData[0]).to.be.bignumber.equal(data.protocolVersion);
         expect(resultsBlockHeaderData[1]).to.be.bignumber.equal(data.virtualChainId);
-        expect(resultsBlockHeaderData[2]).to.be.bignumber.equal(data.networkType);
+        //expect(resultsBlockHeaderData[2]).to.be.bignumber.equal(data.networkType);
         expect(resultsBlockHeaderData[3]).to.be.bignumber.equal(data.timestamp);
         expect(utils.toBuffer(resultsBlockHeaderData[4])).to.eql(data.receiptMerkleRoot);
       });
@@ -74,11 +215,15 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           };
         });
 
-        const blockHash = utils.sha256('Hello World2!');
+        const block_ref_data = {
+          helixMessageType:3,
+          blockHash: utils.sha256('Hello World2!'),     
+        }
+          
         const data = {
           blockProofVersion: 5,
           transactionsBlockHash: utils.sha256('Hello World!'),
-          blockrefMessage: Buffer.concat([Buffer.alloc(20), blockHash]),
+          blockrefMessage: ASBProof.buildblockRef(block_ref_data),
           signatures: testSignatures,
         };
 
@@ -86,15 +231,16 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const rawResultsBlockProof = utils.bufferToHex(resultsBlockProof);
         const resultsBlockProofData = await verifier.parseResultsBlockProofRaw.call(rawResultsBlockProof);
 
-        expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion);
+        //expect(resultsBlockProofData[0]).to.be.bignumber.equal(data.blockProofVersion); TODO issue #16
         expect(utils.toBuffer(resultsBlockProofData[1])).to.eql(data.transactionsBlockHash);
         expect(utils.toBuffer(resultsBlockProofData[2])).to.eql(utils.sha256(data.blockrefMessage));
-        expect(utils.toBuffer(resultsBlockProofData[3])).to.eql(blockHash);
-        const numOfSignatures = resultsBlockProofData[4].toNumber();
+        expect(resultsBlockProofData[3]).to.be.bignumber.equal(block_ref_data.helixMessageType);
+        expect(utils.toBuffer(resultsBlockProofData[4])).to.eql(block_ref_data.blockHash);
+        const numOfSignatures = resultsBlockProofData[5].toNumber();
         expect(numOfSignatures).to.be.bignumber.equal(data.signatures.length);
 
         for (let i = 0; i < numOfSignatures; ++i) {
-          expect(resultsBlockProofData[5][i]).to.be.eql(testSignatures[i].publicAddress);
+          expect(resultsBlockProofData[6][i]).to.be.eql(testSignatures[i].publicAddress);
 
           // TODO: at the moment, truffle can't properly parse the returned bytes[MAX_SIGNATURE] addresses. This should
           // be fixed in truffle 0.5 and later.
@@ -107,7 +253,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       it('should properly parse', async () => {
         const eventData = {
           orbsContractName: 'Hello World!',
-          eventId: 12,
+          eventName: TRANSFERED_OUT_EVENT_NAME,
           tuid: 56789,
           orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
           ethereumAddress: accounts[8],
@@ -131,7 +277,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       it('should properly parse', async () => {
         const data = {
           orbsContractName: 'Hello World!',
-          eventId: 12,
+          eventName: TRANSFERED_OUT_EVENT_NAME,
           tuid: 56789,
           orbsAddress: Buffer.from('ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a', 'hex'),
           ethereumAddress: accounts[3],
@@ -143,7 +289,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         const eventData = await verifier.parseEventDataRaw.call(rawEventData);
 
         expect(eventData[0]).to.eql(data.orbsContractName);
-        expect(eventData[1]).to.be.bignumber.equal(data.eventId);
+        expect(eventData[1]).to.eql(data.eventName);
         expect(eventData[2]).to.be.bignumber.equal(data.tuid);
         expect(eventData[3]).to.eql(utils.bufferToHex(data.orbsAddress));
         expect(eventData[4]).to.eql(data.ethereumAddress);
@@ -156,9 +302,9 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const NETWORK_TYPE = 0;
     const VIRTUAL_CHAIN_ID = 0x6b696e;
     const ORBS_ASB_CONTRACT_NAME = 'asb';
-    const PROTOCOL_VERSION = 2;
+    const TRANSFERED_OUT_EVENT_NAME = 'TransferredOut';
+    const PROTOCOL_VERSION = 1;
     const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
-    const TRANSFERED_OUT_EVENT_ID = 1;
 
     const tuid = 12;
 
@@ -176,7 +322,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
     const getProofData = async (proof) => {
       const rawProof = proof.getHexProof();
-      const proofData = await verifier.processProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
+      const proofData = await verifier.processParsedProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
         rawProof.transactionReceipt, rawProof.transactionReceiptProof);
 
       return {
@@ -200,7 +346,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
     const getWithWrongPrivateKeys = (count) => {
       const nonMemberAccounts = TEST_ACCOUNTS.slice(-count);
       expect(federationMemberAccounts).not.to.be.containingAnyOf(nonMemberAccounts);
-
+      
       for (let i = 0; i < count; ++i) {
         federationMemberAccounts[i].privateKey = nonMemberAccounts[i].privateKey;
       }
@@ -223,7 +369,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
       proof = (new ASBProof())
         .setFederationMemberAccounts(federationMemberAccounts)
         .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-        .setEventId(TRANSFERED_OUT_EVENT_ID)
+        .setEventName(TRANSFERED_OUT_EVENT_NAME)
         .setTuid(tuid)
         .setOrbsAddress(ORBS_ADDRESS)
         .setEthereumAddress(accounts[5])
@@ -261,7 +407,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
           proofs.push((new ASBProof())
             .setFederationMemberAccounts(federationMemberAccounts.slice(0))
             .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-            .setEventId(TRANSFERED_OUT_EVENT_ID)
+            .setEventName(TRANSFERED_OUT_EVENT_NAME)
             .setTuid(tuid)
             .setOrbsAddress(ORBS_ADDRESS)
             .setEthereumAddress(accounts[5])
@@ -294,23 +440,25 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         }
       });
 
+      const fewMemberForValid = Math.floor((MAX_SIGNATURES - 4) / 3);
+
       context('federation members signatures', async () => {
         context('reaching threshold regardless of', async () => {
           context('few non-member public addresses signatures', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithNonMembers(3));
+              proof.setFederationMemberAccounts(getWithNonMembers(2));
             });
           });
 
           context('few wrong private keys', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(5));
+              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(3));
             });
           });
 
           context('few duplicate signatures', async () => {
             it('should process correctly', async () => {
-              proof.setFederationMemberAccounts(getWithDuplicates(2));
+              proof.setFederationMemberAccounts(getWithDuplicates(3));
             });
           });
         });
@@ -350,21 +498,21 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         });
       });
 
-      context('event ID is not TRANSFERRED_OUT', async () => {
+      context('event name is not TransferedOut', async () => {
         context('is incorrect', async () => {
           it('should revert', async () => {
-            proof.setEventId(100);
+            proof.setEventName("other_name");
           });
         });
       });
 
-      context('value', async () => {
-        context('is of wrong size', async () => {
-          it('should revert', async () => {
-            proof.setEventOptions({ wrongValueSize: 12345 });
-          });
-        });
-      });
+      // context('value', async () => { - modified value to 64b
+      //   context('is of wrong size', async () => {
+      //     it('should revert', async () => {
+      //       proof.setEventOptions({ wrongValueSize: 12345 });
+      //     });
+      //   });
+      // });
 
       context('execution result', async () => {
         context('is 0', async () => {
@@ -418,13 +566,13 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         context('not reaching threshold due to', async () => {
           context('too many non-member public addresses', async () => {
             it('should revert', async () => {
-              proof.setFederationMemberAccounts(getWithNonMembers(federationMemberAccounts.length / 2));
+              proof.setFederationMemberAccounts(getWithNonMembers(Math.floor(federationMemberAccounts.length / 2)));
             });
           });
 
           context('too many wrong private keys', async () => {
             it('should revert', async () => {
-              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(federationMemberAccounts.length / 2));
+              proof.setFederationMemberAccounts(getWithWrongPrivateKeys(Math.floor(federationMemberAccounts.length / 2)));
             });
           });
 
@@ -442,7 +590,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
           context('too many duplicate signatures', async () => {
             it('should revert', async () => {
-              proof.setFederationMemberAccounts(getWithDuplicates(federationMemberAccounts.length / 2));
+              proof.setFederationMemberAccounts(getWithDuplicates(Math.floor(federationMemberAccounts.length / 2)));
             });
           });
         });

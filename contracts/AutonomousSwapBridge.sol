@@ -86,13 +86,10 @@ contract AutonomousSwapBridge is Ownable {
     }
 
     /// @dev Transfer tokens from Orbs.
-    /// @param _resultsBlockHeader bytes The raw Results Block Header.
-    /// @param _resultsBlockProof bytes The raw Results Block Proof.
+    /// @param _packedProof bytes The raw proof (including the resultsBlockHeader, resultsBlockProof and 
     /// @param _transactionReceipt bytes The raw Transaction Receipt.
-    function transferIn(bytes _resultsBlockHeader, bytes _resultsBlockProof, bytes _transactionReceipt,
-        bytes32[] _transactionReceiptProof) public {
-        IAutonomousSwapProofVerifier.TransferInEvent memory eventData = verifier.processProof(_resultsBlockHeader,
-            _resultsBlockProof, _transactionReceipt, _transactionReceiptProof);
+    function transferIn(bytes _packedProof, bytes _transactionReceipt) public {
+        IAutonomousSwapProofVerifier.TransferInEvent memory eventData = verifier.processPackedProof(_packedProof, _transactionReceipt);
 
         require(eventData.to != address(0), "Destination address can't be 0!");
         require(eventData.value > 0, "Value must be greater than 0!");
