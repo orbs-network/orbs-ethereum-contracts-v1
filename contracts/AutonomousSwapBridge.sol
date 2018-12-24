@@ -42,8 +42,8 @@ contract AutonomousSwapBridge is Ownable {
     // Mapping of spent Orbs TUIDs.
     mapping(uint256 => bool) public spentOrbsTuids;
 
-    event TransferredOut(uint256 indexed tuid, address indexed from, bytes20 indexed to, uint256 value);
-    event TransferredIn(uint256 indexed tuid, bytes20 indexed from, address indexed to, uint256 value);
+    event EthTransferredOut(uint256 indexed tuid, address indexed from, bytes20 indexed to, uint256 value);
+    event EthTransferredIn(uint256 indexed tuid, bytes20 indexed from, address indexed to, uint256 value);
 
     /// @dev Constructor that initializes the ASB contract.
     /// @param _networkType uint32 The network type of the Orbs network this contract is compatible for.
@@ -67,7 +67,7 @@ contract AutonomousSwapBridge is Ownable {
         federation = _federation;
     }
 
-    /// @dev Transfer tokens to Orbs. The method retrieves and locks the tokens and emits the TransferredOut event.
+    /// @dev Transfer tokens to Orbs. The method retrieves and locks the tokens and emits the EthTransferredOut event.
     /// @param _to bytes20 The Orbs address to transfer to.
     /// @param _value uint256 The amount to be transferred.
     function transferOut(bytes20 _to, uint256 _value) public {
@@ -82,7 +82,7 @@ contract AutonomousSwapBridge is Ownable {
         // instance of the ASB smart contract).
         tuidCounter = tuidCounter.add(1);
 
-        emit TransferredOut(tuidCounter, msg.sender, _to, _value);
+        emit EthTransferredOut(tuidCounter, msg.sender, _to, _value);
     }
 
     /// @dev Transfer tokens from Orbs.
@@ -106,7 +106,7 @@ contract AutonomousSwapBridge is Ownable {
         // Transfer the token.
         require(token.transfer(eventData.to, eventData.value), "Insufficient funds!");
 
-        emit TransferredIn(eventData.tuid, eventData.from, eventData.to, eventData.value);
+        emit EthTransferredIn(eventData.tuid, eventData.from, eventData.to, eventData.value);
     }
 
     /// @dev Allows the owner to upgrade its ASB proof verifier.
