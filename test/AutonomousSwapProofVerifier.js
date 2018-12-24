@@ -147,7 +147,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
         merkle_proof.push("0x" + node);
       });
 
-      const output = await verifier.processProofRaw.call("0x" + receipt_proof_data.RawResultsBlockHeader, "0x" + receipt_proof_data.RawResultsBlockProof, "0x" + receipt_proof_data.RawTransactionReceipt, merkle_proof);
+      const output = await verifier.processParsedProofRaw.call("0x" + receipt_proof_data.RawResultsBlockHeader, "0x" + receipt_proof_data.RawResultsBlockProof, "0x" + receipt_proof_data.RawTransactionReceipt, merkle_proof);
 
       //expect(output[0]).to.eql(receipt_proof_data.NetworkType);
       expect(output[1]).to.be.bignumber.equal(Number(receipt_proof_data.ResultsBlockHeader.VirtualChainId));
@@ -322,7 +322,7 @@ contract('AutonomousSwapProofVerifier', (accounts) => {
 
     const getProofData = async (proof) => {
       const rawProof = proof.getHexProof();
-      const proofData = await verifier.processProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
+      const proofData = await verifier.processParsedProofRaw.call(rawProof.resultsBlockHeader, rawProof.resultsBlockProof,
         rawProof.transactionReceipt, rawProof.transactionReceiptProof);
 
       return {
