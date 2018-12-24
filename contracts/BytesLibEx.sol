@@ -13,7 +13,6 @@ library BytesLibEx {
     uint public constant UINT64_SIZE = 8;
     uint public constant UINT256_SIZE = 32;
     uint public constant BYTES20_SIZE = 20;
-    uint public constant BYTES32_SIZE = 32;
 
 
     /// @dev Converts a bytes array to byte20.

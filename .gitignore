@@ -11,11 +11,5 @@
 /allFiredEvents
 /scTopics
 Unified.sol
-
-### Intellij/GoLand ###
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-# Ignore all XML files except run configurations
-.idea/**/*.xml
-!.idea/runConfigurations/*.xml
-
-orbs-test-keys.json
+asb/build
+.idea
