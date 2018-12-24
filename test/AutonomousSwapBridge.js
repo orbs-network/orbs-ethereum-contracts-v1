@@ -18,7 +18,10 @@ contract('AutonomousSwapBridge', (accounts) => {
   const ORBS_ASB_CONTRACT_NAME = 'asb';
   const PROTOCOL_VERSION = 1;
   const ORBS_ADDRESS = 'ef0ee8a2ba59624e227f6ac0a85e6aa5e75df86a';
-  const TRANSFERED_OUT_EVENT_NAME = 'TransferredOut';
+  const ORBS_TRANSFERRED_OUT_EVENT_NAME = 'OrbsTransferredOut';
+  const ORBS_TRANSFERRED_IN_EVENT_NAME = 'OrbsTransferredIn';
+  const ETH_TRANSFERRED_OUT_EVENT_NAME = 'EthTransferredOut';
+  const ETH_TRANSFERRED_IN_EVENT_NAME = 'EthTransferredIn';
   const VERSION = 1;
   const EMPTY = '';
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -153,7 +156,7 @@ contract('AutonomousSwapBridge', (accounts) => {
 
       expect(tx.logs).to.have.length(1);
       const event = tx.logs[0];
-      expect(event.event).to.eql('TransferredOut');
+      expect(event.event).to.eql(ETH_TRANSFERRED_OUT_EVENT_NAME);
       expect(event.args.from).to.eql(user1);
       expect(event.args.to).to.eql(orbsUser1Address);
       expect(event.args.value).to.be.bignumber.equal(value);
@@ -172,7 +175,7 @@ contract('AutonomousSwapBridge', (accounts) => {
         const tx = await asb.transferOut(orbsUser1Address, value / times, { from: user1 });
         expect(tx.logs).to.have.length(1);
         const event = tx.logs[0];
-        expect(event.event).to.eql('TransferredOut');
+        expect(event.event).to.eql(ETH_TRANSFERRED_OUT_EVENT_NAME);
         expect(event.args.from).to.eql(user1);
         expect(event.args.to).to.eql(orbsUser1Address);
         expect(event.args.value).to.be.bignumber.equal(value / times);
@@ -207,7 +210,7 @@ contract('AutonomousSwapBridge', (accounts) => {
         const tx = await asb.transferOut(spec.to, spec.value, { from: spec.from });
         expect(tx.logs).to.have.length(1);
         const event = tx.logs[0];
-        expect(event.event).to.eql('TransferredOut');
+        expect(event.event).to.eql(ETH_TRANSFERRED_OUT_EVENT_NAME);
         expect(event.args.from).to.eql(spec.from);
         expect(event.args.to).to.eql(spec.to);
         expect(event.args.value).to.be.bignumber.equal(spec.value);
@@ -273,7 +276,7 @@ contract('AutonomousSwapBridge', (accounts) => {
       proof = (new ASBProof())
         .setFederationMemberAccounts(federationMemberAccounts)
         .setOrbsContractName(ORBS_ASB_CONTRACT_NAME)
-        .setEventName(TRANSFERED_OUT_EVENT_NAME)
+        .setEventName(ORBS_TRANSFERRED_OUT_EVENT_NAME)
         .setTuid(tuid)
         .setOrbsAddress(ORBS_ADDRESS)
         .setEthereumAddress(receiver)
@@ -296,7 +299,7 @@ contract('AutonomousSwapBridge', (accounts) => {
       it('should transfer tokens', async () => {
         const tx = await transferIn(proof);
         const event = tx.logs[0];
-        expect(event.event).to.eql('TransferredIn');
+        expect(event.event).to.eql(ETH_TRANSFERRED_IN_EVENT_NAME);
         expect(event.args.from).to.eql(`0x${ORBS_ADDRESS}`);
         expect(event.args.to).to.eql(receiver);
         expect(event.args.value).to.be.bignumber.equal(value);

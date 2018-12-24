@@ -48,7 +48,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant SENDER_SIGNATURE_SIZE = 100;
 
     // Orbs protocol values:
-    string public constant TRANSFERRED_OUT_EVENT_NAME = 'TransferredOut';
+    string public constant ORBS_TRANSFERRED_OUT_EVENT_NAME = 'OrbsTransferredOut';
     uint public constant EXECUTION_RESULT_SUCCESS = 1;
     uint public constant COMMIT_MESSAGE_TYPE = 3;
 
@@ -173,7 +173,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
         // Verify that the event is a TransfferedOut event: TODO - issue #17
-        require(eventData.eventName.equal(TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
+        require(eventData.eventName.equal(ORBS_TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
 
         // Assign the rest of the fields.
         transferInEvent.networkType = header.networkType;
@@ -218,7 +218,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         EventData memory eventData = parseEventData(transactionReceipt.eventData);
 
         // Verify that the event is a TransfferedOut event: TODO - issue #17
-        require(eventData.eventName.equal(TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
+        require(eventData.eventName.equal(ORBS_TRANSFERRED_OUT_EVENT_NAME), "Incorrect event name!");
 
         // Assign the rest of the fields.
         transferInEvent.networkType = header.networkType;
