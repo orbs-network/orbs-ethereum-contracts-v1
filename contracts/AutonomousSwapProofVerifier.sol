@@ -35,13 +35,14 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     uint public constant SHA256_SIZE = UINT256_SIZE;
     uint public constant SIGNATURE_SIZE = 65;
     uint public constant SIGNATURE_PADDED_SIZE = 68;
-    uint public constant ENUM_PADDED_SIZE = 4;
     uint public constant LENGTH_SIZE = 4;
+    uint public constant DWORD_ALIGNED = 4;
+    uint public constant WORD_ALIGNED = 2;
 
     // Orbs specific data sizes (in bytes).
     uint public constant ORBS_ADDRESS_SIZE = 20;
     uint public constant ONEOF_NESTING_SIZE = 12;
-    uint public constant BLOCKREFMESSAGE_SIZE = 56;
+    uint public constant BLOCKREF_MESSAGE_SIZE = 56;
     uint public constant BLOCKHASH_OFFSET = 24;
     uint public constant NODE_PK_SIG_NESTING_SIZE = 4;
     uint public constant SENDER_SIGNATURE_SIZE = 100;
@@ -50,8 +51,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     string public constant TRANSFERRED_OUT_EVENT_NAME = 'TransferredOut';
     uint public constant EXECUTION_RESULT_SUCCESS = 1;
     uint public constant COMMIT_MESSAGE_TYPE = 3;
-    uint public constant DWORD_ALIGNED = 4;
-    uint public constant WORD_ALIGNED = 2;
+
 
     // The maximum supported number of signatures in Results Block Proof. We have to limit this number and fallback to
     // statically sized lists, due to Solidity's inability of functions returning dynamic arrays (and limiting gas
@@ -102,20 +102,13 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         federation = _federation;
     }
 
-    /// @dev Parses the receipt proof and calls processProof to process the proof data.
+    /// @dev Parses the receipt proof and process the proof data.
     /// our current Solidity version doesn't support unbound parameters (e.g., bytes) in external interface methods.
     /// @param _packedProof bytes The raw proof (including the resultsBlockHeader, resultsBlockProof and 
     /// transactionReceiptProof.
     function parsePackedProof(bytes _packedProof) internal pure returns(bytes resultsBlockHeader, 
     bytes resultsBlockProof, bytes packedTransactionReceiptProof) {
         uint offset = 0;
-
-        // Parse the packedProof
-        // message ReceiptProof {
-        //     protocol.ResultsBlockHeader header = 1;
-        //     protocol.ResultsBlockProof block_proof = 2;
-        //     primitives.merkle_tree_proof receipt_proof = 3;
-        // }
 
         /// protocol.ResultsBlockHeader header (bytes)
         uint32 resultsBlockHeaderSize =_packedProof.toUint32BE(offset);
@@ -140,7 +133,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     /// our current Solidity version doesn't support unbound parameters (e.g., bytes) in external interface methods.
     /// @param _packedProof bytes The raw proof (including the resultsBlockHeader, resultsBlockProof and 
     /// @param _transactionReceipt bytes The raw Transaction Receipt.
-    /// @return transferInEvent TransferInEvent The TransferIn event data.
+    /// @return transferInEvent The TransferIn event data.
     function processPackedProof(bytes _packedProof, bytes _transactionReceipt) public view returns(TransferInEvent memory transferInEvent) {
         bytes memory resultsBlockHeader;
         bytes memory resultsBlockProof;
@@ -249,15 +242,6 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     }
 
     /// Parses Results Block Header according to:
-    /// +---------------------+--------+------+----------------------+
-    /// |        Field        | Offset | Size |       Encoding       |
-    /// +---------------------+--------+------+----------------------+
-    /// | protocol_version    |      0 |    4 | uint32               |
-    /// | virtual_chain_id    |      4 |    8 | uint64               |
-    /// | network_type        |     12 |    4 | enum (4 bytes)       |
-    /// | timestamp           |     16 |    8 | uint64 unix 64b time |
-    /// | receipt_merkle_root |     64 |   32 | bytes (32B)          |
-    /// +---------------------+--------+------+----------------------+
     /// @param _resultsBlockHeader bytes The raw Results Block Header data.
     /// @return res ResultsBlockHeader The parsed Results Block Header.
 
@@ -279,7 +263,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         offset = offset.add(UINT256_SIZE);
 
 
-        //    res.networkType = _resultsBlockHeader.toUint32BE(offset);
+        //    res.networkType = _resultsBlockHeader.toUint32BE(offset); TODO
         //    offset = offset.add(UINT32_SIZE);
 
         // primitives.timestamp_nano timestamp = 5;
@@ -293,21 +277,6 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     }
 
     /// @dev Parses Results Block Proof according to:
-    /// +--------------------------------+------------+-----------+-------------+--------------------------+
-    /// |             Field              |   Offset   |   Size    |  Encoding   |          Notes           |
-    /// +--------------------------------+------------+-----------+-------------+--------------------------+
-    /// | block_proof_version            | 0          | 4         | uint32      |                          |
-    /// | transactions_block_hash length | 4          | always 4  | reserved    |                          |
-    /// | transactions_block_hash        | 8          | 32        | bytes (32B) |                          |
-    /// | oneof + nesting                | 40         | 12        | reserved    | oneof + proof + blockref |
-    /// | blockref_message               | 52         | 52        | bytes (52B) |                          |
-    /// | block_hash                     | 72         | 32        | bytes (32B) |                          |
-    /// | node_pk_sig nesting            | 104 + 100n | reserved  |             |                          |
-    /// | node_pk_length                 | 108 + 100n | 4         | always 20   | reserved                 |
-    /// | node_pk                        | 112 + 100n | 20        | bytes (20B) | Ethereum address         |
-    /// | node_sig_length                | 132 + 100n | 4         | always 65   | reserved                 |
-    /// | node_sig                       | 136 + 100n | 65        | bytes (65B) |                          |
-    /// +--------------------------------+------------+-----------+-------------+--------------------------+
     /// @param _resultsBlockProof bytes The raw Results Block Proof data.
     /// @return res ResultsBlockProof The parsed Results Block Proof.
     function parseResultsBlockProof(bytes _resultsBlockProof) internal pure returns (ResultsBlockProof memory res) {
@@ -326,7 +295,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         // oneof type , message LeanHelixBlockProof, message LeanHelixBlockRef
         offset = offset.add(ONEOF_NESTING_SIZE); // oneof + nesting
-        res.blockrefHash = sha256(_resultsBlockProof.slice(offset, BLOCKREFMESSAGE_SIZE));
+        res.blockrefHash = sha256(_resultsBlockProof.slice(offset, BLOCKREF_MESSAGE_SIZE));
 
         // LeanHelixMessageType message_type = 1;
         res.helixMessageType = _resultsBlockProof.toUint16BE(offset);
@@ -370,7 +339,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         next_offset = next_offset.sub(next_offset_mod);
     }
 
-    function PraseUint16(uint _offset, uint _next_alignment) internal pure returns (uint next_offset) {
+    function ParseUint16(uint _offset, uint _next_alignment) internal pure returns (uint next_offset) {
         next_offset = _offset.add(UINT16_SIZE);
         next_offset = next_offset.add(_next_alignment - 1);
         uint next_offset_mod = next_offset.mod(_next_alignment);
@@ -378,22 +347,6 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     }
 
     /// @dev Parses the Transaction Receipt according to:
-    /// Builds the TransactionReceipt according to:
-    /// +------------------+--------+----------+----------+-----------------------+
-    /// |      Field       | Offset |   Size   | Encoding |         Notes         |
-    /// +------------------+--------+----------+----------+-----------------------+
-    /// | execution_result |     36 | 4        | enum     | 0x1 indicates success |
-    /// | event length     |     40 | 4        | uint32   |                       |
-    /// | event data       |     44 | variable | bytes    |                       |
-    /// +------------------+--------+----------+----------+-----------------------+
-    /// 
-    /// message TransactionReceipt {
-    ///     primitives.sha256 txhash = 1;
-    ///     protocol.ExecutionResult execution_result = 2;
-    ///     bytes output_argument_array = 3;
-    ///     bytes output_events_array = 4; // opaque field of repeated protocol.Event
-    /// }
-    ///
     /// @param _transactionReceipt bytes The raw Transaction Receipt data.
     /// @return res TransactionReceipt The parsed Transaction Receipt.
 
@@ -405,8 +358,8 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
 
         /// protocol.ExecutionResult execution_result (enum)
         res.executionResult = _transactionReceipt.toUint16BE(offset);
-        offset = offset.add(ENUM_PADDED_SIZE);
-
+        offset = ParseUint16(offset, DWORD_ALIGNED);
+        
         /// bytes output_argument_array (reserved)
         (offset, , ) = ParseVariableSizeField(offset, _transactionReceipt, DWORD_ALIGNED);
 
@@ -425,54 +378,9 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
     }
 
     /// @dev Parses Autonomous Swap Event Data according to:
-    /// +--------------------------+--------+------+--------------+-------------------------------+
-    /// |          Field           | Offset | Size |  Encoding    |             Notes             |
-    /// +--------------------------+--------+------+--------------+-------------------------------+
-    /// | contract name length (N) | 0      | 4    | uint32       |                               |
-    /// | contract name            | 4      | N    | string       |                               |
-    /// | event name length (K)    | N+4    | 4    | uint32       |                               |
-    /// | event name               | N+8    | K    | string       |                               |
-    /// | arguments_length         | N+K+8  | 4    | uint32       |                               |
-    /// | tuid_type                | N+K+12 | 2(4) | enum (oneof) | reserved                      |
-    /// | tuid                     | N+K+16 | 8    | uint64       |                               |
-    /// | ethereum_address_type    | N+K+24 | 2(4) | enum (oneof) | reserved                      |
-    /// | ethereum_address_length  | N+K+28 | 4    | always 20    | reserved                      |
-    /// | ethereum_address         | N+K+32 | 20   | bytes (20B)  |                               |
-    /// | orbs_address_type        | N+K+52 | 2(4) | enum (oneof) | reserved                      |
-    /// | orbs_address_length      | N+K+56 | 4    | always 20    | reserved                      |
-    /// | orbs_address             | N+K+60 | 20   | bytes (20B)  | reserved                      |
-    /// | tokens_type              | N+K+80 | 2(4) | enum (oneof) | reserved                      |
-    /// | tokens_length            | N+K+84 | 4    | always 32    | reserved                      |
-    /// | tokens                   | N+K+88 | 32   | uint256      |                               |
-    /// +--------------------------+--------+------+-------------+-------------------------------+
-
     /// @param _eventData bytes The raw event data.
     /// @return res EventData The parsed Autonomous Swap Event Data.
-    ///
-    /// message Event {
-    ///     primitives.contract_name contract_name = 1;
-    ///     primitives.event_name event_name = 2;
-    ///     bytes output_argument_array = 3; // opaque field of repeated protocol.MethodArgument
-    /// }
-    /// message MethodArgumentArray {
-    ///     repeated MethodArgument arguments = 1;
-    /// }
-    /// message MethodArgument {
-    ///     oneof type {
-    ///         uint32 uint32_value = 1;
-    ///         uint64 uint64_value = 2;
-    ///         string string_value = 3;
-    ///         bytes bytes_value = 4;
-    ///     }
-    /// }
-    ///
-    /// TransferredOut Event:
-    ///   uint64 tuid, 
-    ///   bytes[20] from_orbs_address,
-    ///   byets[20] to_eth_address,
-    ///   uint256 amount,
-    ///
-
+    
     function parseEventData(bytes _eventData) internal pure returns (EventData memory res) {
         uint offset = 0;
         uint field_offset = 0;
@@ -492,14 +400,14 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         /// argument[0] uint64 tuid
         offset = offset.add(LENGTH_SIZE);
         (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
-        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
+        offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         res.tuid = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE);
 
         /// argument[1] bytes[20] from_orbs_address (bytes)
         offset = offset.add(LENGTH_SIZE);
         (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
-        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
+        offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 fromAddressSize =_eventData.toUint32BE(offset);
         require(fromAddressSize == ORBS_ADDRESS_SIZE, "Invalid Orbs address size!");
         offset = offset.add(LENGTH_SIZE);
@@ -509,7 +417,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         /// argument[2] bytes[20] to_eth_address (bytes)
         offset = offset.add(LENGTH_SIZE);
         (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
-        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
+        offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         uint32 toAddressSize =_eventData.toUint32BE(offset);
         require(toAddressSize == ADDRESS_SIZE, "Invalid Ethereum address size!");
         offset = offset.add(LENGTH_SIZE);
@@ -519,7 +427,7 @@ contract AutonomousSwapProofVerifier is IAutonomousSwapProofVerifier {
         /// argument[3] UINT256 ammount (bytes)
         offset = offset.add(LENGTH_SIZE);
         (offset, , ) = ParseVariableSizeField(offset, _eventData, WORD_ALIGNED); //TODO remove arg name
-        offset = PraseUint16(offset, DWORD_ALIGNED); //oneof field
+        offset = ParseUint16(offset, DWORD_ALIGNED); //oneof field
         res.value = _eventData.toUint64BE(offset);
         offset = offset.add(UINT64_SIZE); // TODO change to UINT256
     }
