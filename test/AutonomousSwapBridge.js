@@ -85,6 +85,53 @@ contract('AutonomousSwapBridge', (accounts) => {
     });
   });
 
+  describe('init bridge', async () => {
+    let federation;
+    let verifier;
+
+    beforeEach(async () => {
+      const federationMembers = accounts.slice(7, 10);
+      federation = await Federation.new(federationMembers, { from: owner });
+      verifier = await AutonomousSwapProofVerifier.new(federation.address);
+    });
+
+    it('should not allow to init with an empty Orbs ASB contract name', async () => {
+      const asb = await AutonomousSwapBridge.new(123123, 123123, "error name", 0x1,
+        federation.address, verifier.address, { from: owner });
+      await expectRevert(asb.initAutonomousSwapBridge(NETWORK_TYPE, VIRTUAL_CHAIN_ID, EMPTY, token.address,
+        { from: owner }));
+    });
+
+    it('should not allow to init with a 0x0 token', async () => {
+      const asb = await AutonomousSwapBridge.new(123123, 123123, "error name", 0x1,
+        federation.address, verifier.address, { from: owner });
+      await expectRevert(asb.initAutonomousSwapBridge(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME,
+        ZERO_ADDRESS, { from: owner }));
+    });
+
+    it('should correctly initialize fields', async () => {
+      const asb = await AutonomousSwapBridge.new(123123, 123123, "error name", 0x1,
+        federation.address, verifier.address, { from: owner });
+      await asb.initAutonomousSwapBridge(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+        { from: owner });
+
+      expect(await asb.networkType.call()).to.be.bignumber.equal(NETWORK_TYPE);
+      expect(await asb.virtualChainId.call()).to.be.bignumber.equal(VIRTUAL_CHAIN_ID);
+      expect(await asb.orbsASBContractName.call()).to.be.equal(ORBS_ASB_CONTRACT_NAME);
+      expect(await asb.token.call()).to.eql(token.address);
+      expect(await asb.federation.call()).to.eql(federation.address);
+      expect(await asb.verifier.call()).to.eql(verifier.address);
+      expect(await asb.maxOrbsTuid.call()).to.be.bignumber.equal(0);
+    });
+
+    it('should report version', async () => {
+      const asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
+        federation.address, verifier.address, { from: owner });
+
+      expect(await asb.VERSION.call()).to.be.bignumber.equal(VERSION);
+    });
+  });
+
   describe('upgrade', async () => {
     let federation;
     let asb;

@@ -39,6 +39,9 @@ contract AutonomousSwapBridge is Ownable {
     // Incremental counter for Transaction Unique Identifiers (TUID).
     uint256 public tuidCounter = 0;
 
+    // Max received Orbs TUID. 
+    uint256 public maxOrbsTuid;
+
     // Mapping of spent Orbs TUIDs.
     mapping(uint256 => bool) public spentOrbsTuids;
 
@@ -54,17 +57,11 @@ contract AutonomousSwapBridge is Ownable {
     /// @param _verifier IAutonomousSwapProofVerifier The ASB proof verifier.
     constructor(uint32 _networkType, uint64 _virtualChainId, string _orbsASBContractName, IERC20 _token,
         IFederation _federation, IAutonomousSwapProofVerifier _verifier) public {
-        require(bytes(_orbsASBContractName).length > 0, "Orbs ASB contract name must not be empty!");
-        require(address(_token) != address(0), "Token must not be 0!");
         require(address(_federation) != address(0), "Federation must not be 0!");
 
-        setAutonomousSwapProofVerifier(_verifier);
-
-        networkType = _networkType;
-        virtualChainId = _virtualChainId;
-        orbsASBContractName = _orbsASBContractName;
-        token = _token;
         federation = _federation;
+        setAutonomousSwapProofVerifier(_verifier);
+        initAutonomousSwapBridge(_networkType, _virtualChainId, _orbsASBContractName, _token);
     }
 
     /// @dev Transfer tokens to Orbs. The method retrieves and locks the tokens and emits the EthTransferredOut event.
@@ -102,6 +99,9 @@ contract AutonomousSwapBridge is Ownable {
         // Make sure that the transaction wasn't already spent and mark it as such;
         require(!spentOrbsTuids[eventData.tuid], "TUID was already spent!");
         spentOrbsTuids[eventData.tuid] = true;
+        if (eventData.tuid > maxOrbsTuid) {
+            maxOrbsTuid = eventData.tuid;
+        }
 
         // Transfer the token.
         require(token.transfer(eventData.to, eventData.value), "Insufficient funds!");
@@ -115,5 +115,31 @@ contract AutonomousSwapBridge is Ownable {
         require(address(_verifier) != address(0), "Verifier must not be 0!");
 
         verifier = _verifier;
+    }
+
+    /// @dev initAutonomousSwapBridge resets the Autonomous Swap Bridge and resets its state.
+    /// initAutonomousSwapBridge does not modify teh infrustructrue settings - the federation contract  
+    /// address and the IAutonomousSwapProofVerifier contract address.
+    /// initAutonomousSwapBridge is called by the constructor upon deploy.
+    /// @param _networkType uint32 The network type of the Orbs network this contract is compatible for.
+    /// @param _virtualChainId uint64 The virtual chain ID of the underlying token on the Orbs network.
+    /// @param _orbsASBContractName string The address of the Federation contract.
+    /// @param _token IERC20 The swappable ERC20 token.
+    function initAutonomousSwapBridge(uint32 _networkType, uint64 _virtualChainId, string _orbsASBContractName, 
+        IERC20 _token) public {
+        require(bytes(_orbsASBContractName).length > 0, "Orbs ASB contract name must not be empty!");
+        require(address(_token) != address(0), "Token must not be 0!");
+
+        networkType = _networkType;
+        virtualChainId = _virtualChainId;
+        orbsASBContractName = _orbsASBContractName;
+        token = _token;
+        tuidCounter = 0;
+        
+        // TODO address gas limit by allowing reset by multiple transactions.
+        for (uint i = 0; i <= maxOrbsTuid; ++i) { 
+            delete(spentOrbsTuids[i]);
+        }
+        maxOrbsTuid = 0;
     }
 }
