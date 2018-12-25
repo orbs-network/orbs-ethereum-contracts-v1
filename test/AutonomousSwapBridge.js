@@ -5,6 +5,7 @@ import expectRevert from './helpers/expectRevert';
 
 const { expect } = chai;
 
+const AutonomousSwapBridgeWrapper = artifacts.require('../test/AutonomousSwapBridgeWrapper.sol');
 const AutonomousSwapBridge = artifacts.require('./AutonomousSwapBridge.sol');
 const AutonomousSwapProofVerifier = artifacts.require('./AutonomousSwapProofVerifier.sol');
 const Federation = artifacts.require('./Federation.sol');
@@ -110,8 +111,19 @@ contract('AutonomousSwapBridge', (accounts) => {
     });
 
     it('should correctly initialize fields', async () => {
-      const asb = await AutonomousSwapBridge.new(123123, 123123, "error name", 0x1,
+      const asb = await AutonomousSwapBridgeWrapper.new(123123, 123123, "error name", 0x1,
         federation.address, verifier.address, { from: owner });
+
+      await asb.injectTransferIn(1, ORBS_ADDRESS, ZERO_ADDRESS, 1000);
+      await asb.injectTransferIn(2, ORBS_ADDRESS, ZERO_ADDRESS, 2000);
+      await asb.injectTransferIn(3, ORBS_ADDRESS, ZERO_ADDRESS, 3000);
+
+      expect(await asb.maxOrbsTuid.call()).to.be.bignumber.equal(3);
+      expect(await asb.spentOrbsTuids.call(1)).to.be.true;
+      expect(await asb.spentOrbsTuids.call(2)).to.be.true;
+      expect(await asb.spentOrbsTuids.call(3)).to.be.true;
+      expect(await asb.spentOrbsTuids.call(4)).to.be.false;
+
       await asb.initAutonomousSwapBridge(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
         { from: owner });
 
@@ -121,14 +133,13 @@ contract('AutonomousSwapBridge', (accounts) => {
       expect(await asb.token.call()).to.eql(token.address);
       expect(await asb.federation.call()).to.eql(federation.address);
       expect(await asb.verifier.call()).to.eql(verifier.address);
+
       expect(await asb.maxOrbsTuid.call()).to.be.bignumber.equal(0);
-    });
+      expect(await asb.spentOrbsTuids.call(1)).to.be.false;
+      expect(await asb.spentOrbsTuids.call(2)).to.be.false;
+      expect(await asb.spentOrbsTuids.call(3)).to.be.false;
 
-    it('should report version', async () => {
-      const asb = await AutonomousSwapBridge.new(NETWORK_TYPE, VIRTUAL_CHAIN_ID, ORBS_ASB_CONTRACT_NAME, token.address,
-        federation.address, verifier.address, { from: owner });
 
-      expect(await asb.VERSION.call()).to.be.bignumber.equal(VERSION);
     });
   });
 
