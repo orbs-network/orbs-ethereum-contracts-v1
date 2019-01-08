@@ -1,0 +1,12 @@
+{
+  "Environments": {
+    "local": {
+      "VirtualChain": 42,
+      "Endpoints": ["localhost"]
+    },
+    "testnet": {
+      "VirtualChain": 42,
+      "Endpoints": ["http://13.125.37.123/vchains/42"]
+    }
+  }
+}
