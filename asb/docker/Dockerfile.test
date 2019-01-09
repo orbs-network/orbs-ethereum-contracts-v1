@@ -1,0 +1,18 @@
+FROM golang:1.11.4-alpine
+
+RUN apk add --no-cache gcc musl-dev
+
+WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb
+
+ADD . /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb
+
+COPY ./../build ./build
+
+RUN env
+
+RUN yarn
+
+#RUN go env
+
+
+RUN sh -x ganache_full.sh
