@@ -12,13 +12,16 @@ module.exports = async function(done) {
       throw("missing env variable USER_ACCOUNT_ON_ETHEREUM");
     }
 
-    const Tet = artifacts.require('Tet.sol');
-    const instance = await Tet.at(erc20ContractAddress);
+    const AutonomousSwapBridge = artifacts.require('AutonomousSwapBridge.sol');
+    let asbInstance = await AutonomousSwapBridge.deployed();
 
-    let balance = await instance.balanceOf(userAccountOnEthereum, {from: userAccountOnEthereum});
+    const ercToken = artifacts.require('TestingERC20');
+    let tetInstance = await ercToken.at(erc20ContractAddress);
+
+    let allowance = await tetInstance.allowance(userAccountOnEthereum, asbInstance.address, {from: userAccountOnEthereum});
 
     console.log(JSON.stringify({
-      Balance: balance
+      Allowance: allowance
     }, null, 2));
 
     done();

@@ -1,8 +1,8 @@
 module.exports = async function(done) {
   try {
 
-    const Tet = artifacts.require('Tet');
-    let instance = await Tet.new();
+    const ercToken = artifacts.require('TestingERC20');
+    let instance = await ercToken.new();
 
     console.log(JSON.stringify({
       Address: instance.address

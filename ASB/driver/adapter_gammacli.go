@@ -100,10 +100,7 @@ func (gc *gammaCliAdapter) OrbsUserIdToHexAddress(orbsUserId string) (userAccoun
 		Address    string // base58
 	}
 	keys := make(map[string]*Key)
-	err = json.Unmarshal(file, &keys)
-	if err != nil {
-		panic("unmarshal error " + err.Error())
-	}
+	json.Unmarshal(file, &keys)
 	key, found := keys[orbsUserId]
 	if !found {
 		panic("UserId " + orbsUserId + " not found in orbs-test-keys.json")

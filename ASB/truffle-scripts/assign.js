@@ -17,13 +17,13 @@ module.exports = async function(done) {
       throw("missing env variable USER_INITIAL_BALANCE_ON_ETHEREUM");
     }
 
-    const Tet = artifacts.require('Tet.sol');
-    const instance = await Tet.at(erc20ContractAddress);
+    const ercToken = artifacts.require('TestingERC20');
+    const instance = await ercToken.at(erc20ContractAddress);
 
     await instance.assign(userAccountOnEthereum, userInitialBalanceOnEthereum, {from: userAccountOnEthereum}).on("transactionHash", hash => {
       console.error("TxHash: " + hash);
     });
-    
+
     done();
 
   } catch (e) {

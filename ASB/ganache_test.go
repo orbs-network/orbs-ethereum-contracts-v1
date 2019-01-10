@@ -1,7 +1,7 @@
 package asb2018
 
 import (
-	"github.com/orbs-network/orbs-ethereum-contracts/asb/driver"
+	"github.com/orbs-network/orbs-ethereum-contracts/ASB/driver"
 	"testing"
 )
 
@@ -10,8 +10,8 @@ import (
 var configGanache = &driver.Config{
 	DebugLogs:                        true,                  // shows detailed responses for every command
 	EthereumErc20Address:             "",                    // update after deploy with the resulting value
-	OrbsErc20ContractName:            "ERC20TokenProxyNoam", // choose different names to redeploy
-	OrbsAsbContractName:              "ASBEthereumNoam",     // choose different names to redeploy
+	OrbsErc20ContractName:            "ERC20TokenProxyTemp", // choose different names to redeploy
+	OrbsAsbContractName:              "ASBEthereumTemp",     // choose different names to redeploy
 	UserAccountOnEthereum:            "",                    // one of your ganache accounts
 	UserAccountOnOrbs:                "user1",               // one of the IDs in orbs-test-keys.json
 	UserInitialBalanceOnEthereum:     20000,
