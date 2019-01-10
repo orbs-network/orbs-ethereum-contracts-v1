@@ -8,12 +8,12 @@ import (
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
 // DON'T FORGET TO UPDATE VALUES ACCORDING TO INSTRUCTIONS AFTER DEPLOY
 var configGanache = &driver.Config{
-	DebugLogs:                        true,              // shows detailed responses for every command
-	EthereumErc20Address:             "",                // update after deploy with the resulting value
-	OrbsErc20ContractName:            "ERC20TokenProxy", // choose different names to redeploy
-	OrbsAsbContractName:              "ASBEthereum",     // choose different names to redeploy
-	UserAccountOnEthereum:            "",                // one of your ganache accounts
-	UserAccountOnOrbs:                "user1",           // one of the IDs in orbs-test-keys.json
+	DebugLogs:                        true,                  // shows detailed responses for every command
+	EthereumErc20Address:             "",                    // update after deploy with the resulting value
+	OrbsErc20ContractName:            "ERC20TokenProxyNoam", // choose different names to redeploy
+	OrbsAsbContractName:              "ASBEthereumNoam",     // choose different names to redeploy
+	UserAccountOnEthereum:            "",                    // one of your ganache accounts
+	UserAccountOnOrbs:                "user1",               // one of the IDs in orbs-test-keys.json
 	UserInitialBalanceOnEthereum:     20000,
 	UserTransferAmountToOrbs:         130,
 	UserTransferAmountBackToEthereum: 30,

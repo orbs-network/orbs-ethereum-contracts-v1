@@ -1,7 +1,6 @@
 package driver
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -13,7 +12,7 @@ import (
 func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
 	return &gammaCliAdapter{
 		debug: config.DebugLogs,
-		env:   "local",
+		env:   "experimental", // use "local" for the stable local gamma-cli ... or for client tests
 	}
 }
 
@@ -51,7 +50,7 @@ func (gc *gammaCliAdapter) TransferIn(orbsErc20ContractName string, orbsAsbContr
 
 func (gc *gammaCliAdapter) TransferOut(orbsErc20ContractName string, orbsAsbContractName string, userAccountOnOrbs string, userAccountOnEthereum string, userTransferAmount int) (orbsTxId string, userBalanceOnOrbsAfter int) {
 	amount := fmt.Sprintf("%d", userTransferAmount)
-	bytes := gc.run("send-tx ./gammacli-jsons/transfer-out.json -signer " + userAccountOnOrbs + " -name " + orbsAsbContractName + " -arg1 " + remove0xPrefix(userAccountOnEthereum) + " -arg2 " + amount)
+	bytes := gc.run("send-tx ./gammacli-jsons/transfer-out.json -signer " + userAccountOnOrbs + " -name " + orbsAsbContractName + " -arg1 " + strings.ToLower(userAccountOnEthereum) + " -arg2 " + amount)
 	out := struct {
 		TxId string
 	}{}
@@ -101,23 +100,15 @@ func (gc *gammaCliAdapter) OrbsUserIdToHexAddress(orbsUserId string) (userAccoun
 		Address    string // base58
 	}
 	keys := make(map[string]*Key)
-	json.Unmarshal(file, &keys)
+	err = json.Unmarshal(file, &keys)
+	if err != nil {
+		panic("unmarshal error " + err.Error())
+	}
 	key, found := keys[orbsUserId]
 	if !found {
 		panic("UserId " + orbsUserId + " not found in orbs-test-keys.json")
 	}
-	bytes, err := base58Decode([]byte(key.Address))
-	if err != nil {
-		panic(err.Error())
-	}
-	return "0x" + hex.EncodeToString(bytes)
-}
-
-func remove0xPrefix(hex string) string {
-	if strings.HasPrefix(hex, "0x") {
-		return hex[2:]
-	}
-	return hex
+	return key.Address
 }
 
 func (gc *gammaCliAdapter) run(args string, env ...string) []byte {
