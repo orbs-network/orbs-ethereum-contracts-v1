@@ -1,0 +1,10 @@
+{
+    "ContractName": "asb_ether",
+    "MethodName": "setTokenContract",
+    "Arguments": [
+        {
+            "Type": "string",
+            "Value": "erc20proxy"
+        }
+    ]
+}

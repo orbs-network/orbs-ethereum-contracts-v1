@@ -1,0 +1,14 @@
+{
+    "ContractName": "asb_ether",
+    "MethodName": "transferOut",
+    "Arguments": [
+        {
+            "Type": "bytes",
+            "Value": "0x44AA79091FAD956d12086C5Ee782DDf3A8124549"
+        },
+        {
+            "Type": "uint64",
+            "Value": "0"
+        }
+    ]
+}

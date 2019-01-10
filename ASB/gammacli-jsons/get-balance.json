@@ -1,0 +1,10 @@
+{
+    "ContractName": "erc20proxy",
+    "MethodName": "balanceOf",
+    "Arguments": [
+        {
+            "Type": "gamma:keys-file-address",
+            "Value": "user1"
+        }
+    ]
+}

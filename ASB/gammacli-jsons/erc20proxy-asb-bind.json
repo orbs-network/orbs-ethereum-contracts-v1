@@ -1,0 +1,10 @@
+{
+    "ContractName": "erc20proxy",
+    "MethodName": "asbBind",
+    "Arguments": [
+        {
+            "Type": "string",
+            "Value": "ASBEthereum"
+        }
+    ]
+}
