@@ -13,7 +13,8 @@
     "coverage": "scripts/coverage.sh",
     "test": "scripts/test.sh",
     "compile": "./node_modules/.bin/truffle compile",
-    "build": "yarn compile && scripts/flatten.sh",
+    "flatten": "scripts/flatten.sh",
+    "build": "yarn compile && cd .. && ./stripper.sh \"./Federation/build/contracts/*.json\"",
     "postinstall": "patch-package"
   },
   "dependencies": {
