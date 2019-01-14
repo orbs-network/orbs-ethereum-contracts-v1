@@ -1,31 +1,20 @@
-FROM golang:1.11.4-alpine
-
-RUN apk add --no-cache gcc musl-dev
-
-RUN env
-
-#RUN go env
+FROM itamararjuan/go-node
 
 #WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb
 
 #ADD . /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb
+COPY *.sh /tools/
 
-# RUN brew install node yarn
+RUN sh /tools/install-gamma.sh
 
-# install ganache
+#RUN go get -u github.com/orbs-network/orbs-ethereum-contracts/...
 
-# install docker ?
+#RUN cd ~/go/src/github.com/orbs-network/orbs-ethereum-contracts/
 
-# RUN brew install orbs-network/devtools/gamma-cli
+#COPY ./build ./asb/build
 
-RUN go get -u github.com/orbs-network/orbs-ethereum-contracts/...
+#RUN cd asb
 
-RUN cd ~/go/src/github.com/orbs-network/orbs-ethereum-contracts/
+#RUN yarn
 
-COPY ./build ./asb/build
-
-RUN cd asb
-
-RUN yarn
-
-RUN sh -x ganache_full.sh
+#RUN sh -x ganache_full.sh

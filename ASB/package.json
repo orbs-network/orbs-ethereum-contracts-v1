@@ -6,10 +6,7 @@
   "license": "UNLICENSED",
   "main": "truffle-config.js",
   "scripts": {
-    "build": "truffle build",
-    "compile": "truffle compile",
-    "migrate-ropsten": "truffle migrate --network ropsten",
-    "migrate-local": "truffle migrate --network ganache --reset"
+    "build": "cp ../build/contracts/*.json ./build/contracts"
   },
   "dependencies": {
     "truffle": "^5.0.0",
