@@ -1,14 +1,8 @@
 FROM itamararjuan/go-node
 
 #WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb
-
 #ADD . /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb
-COPY *.sh /tools/
-
-RUN sh /tools/install-gamma.sh
-
 #RUN go get -u github.com/orbs-network/orbs-ethereum-contracts/...
-
 #RUN cd ~/go/src/github.com/orbs-network/orbs-ethereum-contracts/
 
 #COPY ./build ./asb/build
