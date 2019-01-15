@@ -7,7 +7,7 @@
   "main": "truffle-config.js",
   "scripts": {
     "compile": "./node_modules/.bin/truffle compile",
-    "build": "yarn compile && cd .. && ./stripper.sh \"./TestingERC20/build/contracts/*.json\""
+    "build": "yarn compile && cd .. && ./stripper.sh \"./TestingERC20/build/contracts/TestingERC20.json\""
   },
   "dependencies": {
     "bignumber.js": "^8.0.1",
