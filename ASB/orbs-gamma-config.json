@@ -6,7 +6,7 @@
     },
     "testnet": {
       "VirtualChain": 42,
-      "Endpoints": ["http://13.125.37.123/vchains/42"]
+      "Endpoints": ["http://us-east-1.global.nodes.staging.orbs-test.com/vchains/42"]
     }
   }
 }
