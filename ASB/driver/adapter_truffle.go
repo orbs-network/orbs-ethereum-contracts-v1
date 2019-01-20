@@ -105,8 +105,8 @@ func (ta *truffleAdapter) TransferOut(ethereumErc20Address string, userAccountOn
 func (ta *truffleAdapter) TransferIn(ethereumErc20Address string, userAccountOnEthereum string, packedOrbsReceiptProof string, packedOrbsReceipt string) (ethereumTxHash string, userBalanceOnEthereumAfter int) {
 	bytes := ta.run("exec ./truffle-scripts/transferIn.js",
 		"USER_ACCOUNT_ON_ETHEREUM="+userAccountOnEthereum,
-		"PACKED_ORBS_RECEIPT_PROOF="+"0x"+packedOrbsReceiptProof,
-		"PACKED_ORBS_RECEIPT="+"0x"+packedOrbsReceipt,
+		"PACKED_ORBS_RECEIPT_PROOF="+packedOrbsReceiptProof,
+		"PACKED_ORBS_RECEIPT="+packedOrbsReceipt,
 	)
 	out := struct {
 		TxHash string
