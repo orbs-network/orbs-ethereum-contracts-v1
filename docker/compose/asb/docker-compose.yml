@@ -4,7 +4,7 @@ services:
     image: orbsnetwork/gamma:experimental
   ganache:
     image: trufflesuite/ganache-cli
-    command: -m 'vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid' -i 5777
+    command: -m 'vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid' -i 5777 -p 7545
   asb:
     depends_on:
       - gamma

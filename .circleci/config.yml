@@ -4,4 +4,4 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: ./.circleci/bring-gamma.sh
+      - run: ./.circleci/main.sh
