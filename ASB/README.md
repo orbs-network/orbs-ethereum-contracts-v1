@@ -14,7 +14,7 @@
 ## Testing on Ganache and Gamma (local)
 
 1. Before you start:
-    * Make sure ganache is running locally on port 8545
+    * Make sure ganache is running locally on port 7545
     * Go over the configuration in `./ganache_test.go`
       * Notice for example you need to change `UserAccountOnEthereum` to one of the accounts from your ganache
 

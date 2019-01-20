@@ -1,0 +1,19 @@
+version: "3"
+services:
+  gamma:
+    image: orbsnetwork/gamma:experimental
+    ports:
+      - 8080:8080
+  ganache:
+    image: trufflesuite/ganache-cli
+    ports:
+      - 7545:7545
+    command: -m 'vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid' -i 5777 -p 7545
+  asb:
+    depends_on:
+      - gamma
+      - ganache
+    image: orbs:asb
+    command: tail -f /etc/hosts
+    environment:
+      GANACHE_HOST: "ganache"
