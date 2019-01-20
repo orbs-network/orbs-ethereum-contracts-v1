@@ -7,15 +7,14 @@
 * Install ganache: https://truffleframework.com/ganache
 * Install docker: https://docs.docker.com/v17.12/docker-for-mac/install
 * Install gamma-cli: `brew install orbs-network/devtools/gamma-cli`
-* Download the project with: `go get -u github.com/orbs-network/asb2018/...`
-  * If this fails due to access permission errors, try:<br>`git clone git@github.com:orbs-network/asb2018.git ~/go/src/github.com/orbs-network/asb2018`<br>`cd ~/go/src/github.com/orbs-network/asb2018`<br>`go get ./...`
-* Open project root directory: `cd ~/go/src/github.com/orbs-network/asb2018`
-* Install project by running in terminal: `yarn`
+* Open project root directory: `cd ~/go/src/github.com/orbs-network/orbs-network-go/vendor/github.com/orbs-network/orbs-ethereum-contracts/ASB`
+* Install project by running in terminal: `yarn` 
+* Install truffle by running in termina: `npm install truffle`
 
 ## Testing on Ganache and Gamma (local)
 
 1. Before you start:
-    * Make sure ganache is running locally on port 7545
+    * Make sure ganache is running locally on port 8545
     * Go over the configuration in `./ganache_test.go`
       * Notice for example you need to change `UserAccountOnEthereum` to one of the accounts from your ganache
 
