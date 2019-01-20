@@ -1,0 +1,6 @@
+Federation/
+TestingERC20/
+.circleci/
+/.gitignore
+/*.js
+/*.sh
