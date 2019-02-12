@@ -16,4 +16,8 @@ ASB/build
 ASB/node_modules
 TestingERC20/node_modules
 TestingERC20/build
+Validators/build
+Validators/node_modules
+Voting/build
+Voting/node_modules
 .idea
