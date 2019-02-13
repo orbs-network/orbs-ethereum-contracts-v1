@@ -27,9 +27,10 @@ type gammaCliAdapter struct {
 	env   string
 }
 
-func (gc *gammaCliAdapter) DeployERC20Contract(orbsErc20ContractName string, orbsAsbContractName string) {
-	gc.run("deploy ./orbs-contracts/_OrbsERC20Proxy/contract.go -name " + orbsErc20ContractName + " -signer user1")
-	gc.run("send-tx ./gammacli-jsons/erc20proxy-asb-bind.json -signer user1 -name " + orbsErc20ContractName + " -arg1 " + orbsAsbContractName)
+func (gc *gammaCliAdapter) DeployContract(orbsVotingContractName string, orbsConfigContractName string) {
+	gc.run("deploy ./orbs-contracts/_OrbsVoting/contract.go -name " + orbsVotingContractName + " -signer user1")
+	//gc.run("deploy ./orbs-contracts/_OrbsERC20Proxy/contract.go -name " + orbsConfigContractName + " -signer user1")
+	//	gc.run("send-tx ./gammacli-jsons/erc20proxy-asb-bind.json -signer user1 -name " + orbsErc20ContractName + " -arg1 " + orbsAsbContractName)
 }
 
 func (gc *gammaCliAdapter) DeployASBContract(orbsAsbContractName string, orbsErc20ContractName string) {

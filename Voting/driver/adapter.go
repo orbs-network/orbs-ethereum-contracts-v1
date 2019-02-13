@@ -1,6 +1,8 @@
 package driver
 
 type OrbsAdapter interface {
+	DeployContract(orbsVotingContractName string, orbsConfigContractName string)
+
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
 	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
 	BindVotingContractToEthereum(orbsVotingContractName string, ethereumAsbAddress string)

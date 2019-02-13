@@ -58,9 +58,9 @@ func TestFullFlowOnGanache(t *testing.T) {
 	orbs := driver.AdapterForGammaCliLocal(configGanache)
 	ethereum := driver.AdapterForTruffleGanache(configGanache)
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
-	//	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
-	//	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
-	//	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
+	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
+	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
+	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
 
 	//TestDeployOnGanache(t, orbs, ethereum)
 	//TestRecordOnGanache(t, orbs, ethereum)

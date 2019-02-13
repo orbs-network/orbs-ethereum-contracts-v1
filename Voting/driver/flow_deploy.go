@@ -11,6 +11,8 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	deployingEthereumErc20 := (config.EthereumErc20Address == "")
 	if deployingEthereumErc20 {
+		// Temp deploy of orbs contracts
+		orbs.DeployContract("OrbsVoting", "OrbsConfig")
 
 		logStage("Deploying Ethereum ERC20 contract...")
 		config.EthereumErc20Address = ethereum.DeployERC20Contract()
@@ -33,11 +35,11 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	if deployingEthereumErc20 {
 
-		logSummary("All done. IMPORTANT! Please update the test configuration with this value:\n\n    EthereumErc20Address: %s\n\n", config.EthereumErc20Address)
+		logSummary("Deploy Phase all done. IMPORTANT! Please update the test configuration with this value:\n\n    EthereumErc20Address: %s\n\n", config.EthereumErc20Address)
 
 	} else {
 
-		logSummary("All done.\n\n")
+		logSummary("Deploy Phase all done.\n\n")
 
 	}
 
