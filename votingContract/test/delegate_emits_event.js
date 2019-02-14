@@ -9,7 +9,7 @@ describe('Voting Contract', async function() {
 
             let receipt = await instance.delegate(activist);
 
-            assert.equal(receipt.logs[0].event, "Delegated");
+            assert.equal(receipt.logs[0].event, "Delegate");
             assert.equal(receipt.logs[0].args.stakeholder, accounts[0]);
             assert.equal(receipt.logs[0].args.activist, activist);
             assert.equal(receipt.logs[0].args.delegation_counter, 1);

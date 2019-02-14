@@ -9,13 +9,14 @@ describe('Voting Contract', async function() {
 
 
             let receipt = await instance.vote(accounts);
-            assert.equal(receipt.logs.length, accounts.length);
 
-            receipt.logs.forEach( log => {
-                assert.equal(log.event, "Vote")
-                assert.equal(log.args.activist, accounts[0]);
-                assert.equal(log.args.candidate, accounts[log.logIndex]);
-                assert.equal(log.args.vote_counter, 1)
+            assert.equal(receipt.logs[0].event, "Vote")
+            assert.equal(receipt.logs[0].args.activist, accounts[0]);
+            assert.equal(receipt.logs[0].args.vote_counter, 1)
+
+            assert.equal(receipt.logs[0].args.candidates.length, accounts.length);
+            receipt.logs[0].args.candidates.forEach((candidate, i) => {
+                assert.equal(candidate, accounts[i])
             })
         });
 
@@ -29,9 +30,8 @@ describe('Voting Contract', async function() {
 
             let receipt2 = await instance.vote(accounts);
 
-            receipt2.logs.forEach( log => {
-                assert.equal(log.args.vote_counter.toNumber(), voteCounter1 + 1)
-            })
+            assert.equal(receipt2.logs[0].args.vote_counter.toNumber(), voteCounter1 + 1)
+
         });
     });
 });
