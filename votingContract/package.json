@@ -1,0 +1,20 @@
+{
+  "name": "voting_contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": " ",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "truffle-hdwallet-provider": "^1.0.3"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
