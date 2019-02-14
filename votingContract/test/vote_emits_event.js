@@ -2,7 +2,7 @@ const assert = require('assert');
 describe('Voting Contract', async function() {
 
     describe('vote', function() {
-        it('should emit events', async function() {
+        it('should emit event', async function() {
             const VotingContract = artifacts.require('Voting');
             const instance = await VotingContract.deployed();
             const accounts = await web3.eth.getAccounts();
@@ -25,12 +25,10 @@ describe('Voting Contract', async function() {
             const instance = await VotingContract.deployed();
             const accounts = await web3.eth.getAccounts();
 
-
             let voteCounter1 = await instance.vote(accounts).then(receipt => receipt.logs[0].args.vote_counter.toNumber());
+            let voteCounter2 = await instance.vote(accounts).then(receipt => receipt.logs[0].args.vote_counter.toNumber());
 
-            let receipt2 = await instance.vote(accounts);
-
-            assert.equal(receipt2.logs[0].args.vote_counter.toNumber(), voteCounter1 + 1)
+            assert.equal(voteCounter2, voteCounter1 + 1)
 
         });
     });
