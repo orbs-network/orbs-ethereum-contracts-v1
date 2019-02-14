@@ -13,8 +13,5 @@
   "license": "ISC",
   "dependencies": {
     "truffle-hdwallet-provider": "^1.0.3"
-  },
-  "devDependencies": {
-    "mocha": "^5.2.0"
   }
 }

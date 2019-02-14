@@ -1,45 +1,41 @@
-const assert = require('assert');
-describe('Voting Contract', () => {
-    let VotingContract;
-    let activist;
-    let instance;
-    let accounts;
 
-    before(async () => {
-        VotingContract = artifacts.require('Voting');
-        activist = "0x0000000000000000000000000000000000000001";
-        instance = await VotingContract.deployed();
-        accounts = await web3.eth.getAccounts();
-    });
+const VotingContract = artifacts.require('Voting');
 
+const activist = "0x0000000000000000000000000000000000000001";
+
+contract('Voting', accounts => {
     describe('when calling the vote() function', () => {
         it('should emit one Vote event', async () => {
-            const receipt = await instance.vote(accounts);
-            const e = receipt.logs[0];
+            let instance = await VotingContract.deployed();
 
+            let receipt = await instance.vote(accounts);
+
+            let e = receipt.logs[0];
             assert.equal(e.event, "Vote");
             assert.equal(e.args.activist, accounts[0]);
             assert.equal(e.args.vote_counter, 1);
-            assert.equal(JSON.stringify(e.args.candidates), JSON.stringify(accounts));
+            assert.deepEqual(e.args.candidates, accounts);
         });
 
         it('should increment vote_counter', async () => {
-            const instance = await VotingContract.deployed();
-            const accounts = await web3.eth.getAccounts();
+            let instance = await VotingContract.deployed();
 
-            let counter1 = await instance.vote(accounts).then(receipt => receipt.logs[0].args.vote_counter.toNumber());
-            let counter2 = await instance.vote(accounts).then(receipt => receipt.logs[0].args.vote_counter.toNumber());
+            let receipt1 = await instance.vote(accounts);
+            let receipt2 = await instance.vote(accounts);
 
-            assert.equal(counter2, counter1 + 1)
+            let getCounter = receipt => receipt.logs[0].args.vote_counter.toNumber();
 
+            assert.deepEqual(getCounter(receipt1) + 1, getCounter(receipt2))
         });
     });
 
     describe('when calling the delegate() function', () => {
         it('should emit one Delegate event', async () => {
-            const receipt = await instance.delegate(activist);
-            const e = receipt.logs[0];
+            let instance = await VotingContract.deployed();
 
+            let receipt = await instance.delegate(activist);
+
+            let e = receipt.logs[0];
             assert.equal(e.event, "Delegate");
             assert.equal(e.args.stakeholder, accounts[0]);
             assert.equal(e.args.activist, activist);
@@ -47,10 +43,14 @@ describe('Voting Contract', () => {
         });
 
         it('should increment delegation_counter', async () => {
-            let counter1 = await instance.delegate(activist).then(receipt => receipt.logs[0].args.delegation_counter.toNumber());
-            let counter2 = await instance.delegate(activist).then(receipt => receipt.logs[0].args.delegation_counter.toNumber());
+            let instance = await VotingContract.deployed();
 
-            assert.equal(counter2, counter1 + 1);
+            let receipt1 = await instance.delegate(activist);
+            let receipt2 = await instance.delegate(activist);
+
+            let getCounter = receipt => receipt.logs[0].args.delegation_counter.toNumber();
+
+            assert.deepEqual(getCounter(receipt1) + 1, getCounter(receipt2))
         });
     });
 });
