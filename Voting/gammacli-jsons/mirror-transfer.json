@@ -1,0 +1,14 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "mirrorDelegationByTransfer",
+    "Arguments": [
+        {
+            "Type": "string",
+            "Value": "0x045a6dcdbff3ce8f5f5c199de17c34ef4f821c182a7a97f8e8197f6a6fa5acf5"
+        },
+        {
+            "Type": "uint64",
+            "Value": "0"
+        }
+    ]
+}

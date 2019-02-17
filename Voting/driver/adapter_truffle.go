@@ -15,6 +15,7 @@ func AdapterForTruffleGanache(config *Config) EthereumAdapter {
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ganache",
+		startBlock:  0,
 	}
 }
 
@@ -23,6 +24,7 @@ func AdapterForTruffleRopsten(config *Config) EthereumAdapter {
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ropsten",
+		startBlock:  400000,
 	}
 }
 
@@ -30,6 +32,25 @@ type truffleAdapter struct {
 	debug       bool
 	projectPath string
 	network     string
+	startBlock  int
+}
+
+func (ta *truffleAdapter) GetStartOfHistoryBlock() int {
+	return ta.startBlock
+}
+
+func (ta *truffleAdapter) GetCurrentBlock() int {
+	bytesOutput := ta.run("exec ./truffle-scripts/getCurrentBlock.js")
+	out := struct {
+		CurrentBlock int
+	}{}
+	err := json.Unmarshal(bytesOutput, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytesOutput))
+	}
+	return out.CurrentBlock
+	//n, _ := strconv.ParseUint(out.CurrentBlock, 16, 32)
+	//return int(n)
 }
 
 func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
@@ -76,23 +97,14 @@ func (ta *truffleAdapter) DeployVotingContract() (ethereumVotingAddress string) 
 //	return ta.GetASBContractAddress()
 //}
 //
-//func (ta *truffleAdapter) GetASBContractAddress() (ethereumAsbAddress string) {
-//	bytes := ta.run("exec ./truffle-scripts/getASBAddress.js")
-//	out := struct {
-//		Address string
-//	}{}
-//	err := json.Unmarshal(bytes, &out)
-//	if err != nil {
-//		panic(err.Error() + "\n" + string(bytes))
-//	}
-//	return out.Address
-//}
 
 func (ta *truffleAdapter) FundStakeAccount(ethereumErc20Address string, userAccountIndexOnEthereum int, userInitialBalanceOnEthereum int) (userBalanceOnEthereumAfter int) {
+	amountToFund := toEthereumToken(userInitialBalanceOnEthereum) + 10*STAKE_TOKEN_DELEGATE_VALUE
+
 	ta.run("exec ./truffle-scripts/fundstakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"USER_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", userAccountIndexOnEthereum),
-		"USER_INITIAL_BALANCE_ON_ETHEREUM="+fmt.Sprintf("%d", userInitialBalanceOnEthereum),
+		"USER_INITIAL_BALANCE_ON_ETHEREUM="+fmt.Sprintf("%d", amountToFund),
 	)
 	return ta.GetBalanceByIndex(ethereumErc20Address, userAccountIndexOnEthereum)
 }
@@ -101,6 +113,21 @@ func (ta *truffleAdapter) AddValidatorAccount(ethereumValidatorAddress string, v
 	ta.run("exec ./truffle-scripts/addValidator.js",
 		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorAddress,
 		"VALIDATORS_ACCOUNT_ON_ETHEREUM="+validatorAccountOnEthereum,
+	)
+}
+
+func (ta *truffleAdapter) TransferFundsAccount(ethereumErc20Address string, from int, to int, amount int) {
+	var tokens uint64
+	if amount == 0 {
+		tokens = STAKE_TOKEN_DELEGATE_VALUE
+	} else {
+		tokens = toEthereumToken(amount)
+	}
+	ta.run("exec ./truffle-scripts/transfer.js",
+		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
+		"FROM_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", from),
+		"TO_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", to),
+		"TRANSFER_AMOUNT="+fmt.Sprintf("%d", tokens),
 	)
 }
 
@@ -162,7 +189,7 @@ func (ta *truffleAdapter) GetBalance(ethereumErc20Address string, userAccountOnE
 		panic(err.Error() + "\n" + string(bytes))
 	}
 	n, _ := strconv.ParseUint(out.Balance, 16, 32)
-	return int(n)
+	return fromEthereumToken(n)
 }
 
 func (ta *truffleAdapter) GetBalanceByIndex(ethereumErc20Address string, userAccountIndexOnEthereum int) (userBalanceOnEthereum int) {
@@ -178,7 +205,7 @@ func (ta *truffleAdapter) GetBalanceByIndex(ethereumErc20Address string, userAcc
 		panic(err.Error() + "\n" + string(bytes))
 	}
 	n, _ := strconv.ParseUint(out.Balance, 16, 32)
-	return int(n)
+	return fromEthereumToken(n)
 }
 
 func (ta *truffleAdapter) run(args string, env ...string) []byte {
