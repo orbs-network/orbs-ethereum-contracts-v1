@@ -21,9 +21,11 @@ contract('Federation', accounts => {
     });
 
     describe('when calling the addMember() function', () => {
-        it('should add the member to the list', async () => {
+        it('should add the member to the list and emit event', async () => {
             let instance = await FederationContract.deployed();
-            await instance.addMember(member);
+            await instance.addMember(member).then(receipt =>{
+                assert.equal(receipt.logs[0].event, "MemberAdded");
+            });
 
             let member1 = await instance.members(0);
             assert.equal(member1, member);
@@ -36,10 +38,8 @@ contract('Federation', accounts => {
             }
             let instance = await FederationContract.deployed();
             await instance.addMember(neverDeployedMember, {from: accounts[1]}).then(()=>{
-                assert.fail("expected calling addMember using a non owner account will fail")
-            }, err => {
-                // we expect the error - do nothing
-            })
+                assert.fail("calling addMember using a non owner account should fail")
+            }).catch(()=>{}); // we expect an error - suppress error and proceed with test
         });
     });
 
@@ -50,7 +50,47 @@ contract('Federation', accounts => {
 
             assert.lengthOf(members, 1);
             assert.equal(members[0], member)
+        });
+    });
 
+    describe('when calling the leave() function', () => {
+        if (accounts.length < 4) {
+            return
+        }
+        it('should fail for non member but succeed when called by a member', async () => {
+            let instance = await FederationContract.deployed();
+
+            await instance.addMember(accounts[2]);
+
+            let members = await instance.getCurrentMembers();
+            assert.include(members, accounts[2]);
+            let membersLengthWithElement = members.length;
+
+            await instance.leave({from: accounts[3]}).then(r => {
+                assert.lengthOf(r.logs, 0, "expected Left log to occur when non-member tries to leave");
+            });
+
+            await instance.getCurrentMembers().then(newMembers => {
+                assert.deepEqual(newMembers, members, "expected members to not change")
+            });
+
+            await instance.leave({from: accounts[2]}).then(r => {
+                assert.equal(r.logs[0].event, "MemberLeft")
+            });
+
+            members = await instance.getCurrentMembers();
+            assert.notInclude(members, accounts[2]);
+            assert.lengthOf(members, membersLengthWithElement -1);
+        });
+
+        it('should emit event', async () => {
+            let instance = await FederationContract.deployed();
+
+            await instance.addMember(accounts[2]);
+
+            await instance.leave({from: accounts[2]}).then(r => {
+                assert.equal(r.logs[0].event, "MemberLeft")
+            });
         });
     });
 });
