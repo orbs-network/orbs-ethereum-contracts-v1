@@ -11,15 +11,15 @@ var PUBLIC = sdk.Export(getTokenAddr, setTokenAddr, getTokenAbi, getVotingAddr, 
 	getOrbsConfigContract,
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
 	processVoting, getDelegatorStake)
-var SYSTEM = sdk.Export(_init, setTokenAbi, setVotingAbi, setValidatorsAbi, setOrbsConfigContract /* TODO v1 security run once */)
+var SYSTEM = sdk.Export(_init, setTokenAbi, setVotingAbi, setValidatorsAbi, setOrbsValidatorsConfigContract /* TODO v1 security run once */)
 
 //var EVENTS = sdk.Export(OrbsTransferredOut)
 
 // defaults
-const defaultOrbsConfigContract = "OrbsConfig"
+const defaultOrbsValidatorsConfigContract = "OrbsValidatorsConfig"
 const defaultTokenAbi = `[{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"_account","type":"address"},{"name":"_value","type":"uint256"}],"name":"assign","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
 const defaultTokenAddr = "0xE1623DFC79Fe86FB966F5784E4196406E02469fC"
-const defaultVotingAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"tuid","type":"uint256"},{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"bytes20"},{"indexed":false,"name":"value","type":"uint256"}],"name":"EthTransferredOut","type":"event"}]`
+const defaultVotingAbi = `[{"constant":true,"inputs":[],"name":"vote_counter","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function","signature":"0xcab1e244"},{"constant":true,"inputs":[],"name":"delegation_counter","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function","signature":"0xf28583cd"},{"anonymous":false,"inputs":[{"indexed":true,"name":"activist","type":"address"},{"indexed":false,"name":"candidates","type":"address[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event","signature":"0x8e74707f33682297df744388ec6b7a56c219db104289e482dd949ba15f80213d"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeholder","type":"address"},{"indexed":true,"name":"activist","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event","signature":"0x510b11bb3f3c799b11307c01ab7db0d335683ef5b2da98f7697de744f465eacc"},{"constant":false,"inputs":[{"name":"candidates","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function","signature":"0xed081329"},{"constant":false,"inputs":[{"name":"activist","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function","signature":"0x5c19a95c"}]`
 const defaultVotingAddr = "0xE1623DFC79Fe86FB966F5784E4196406E02469fC"
 const defaultValidatorsAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"tuid","type":"uint256"},{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"bytes20"},{"indexed":false,"name":"value","type":"uint256"}],"name":"EthTransferredOut","type":"event"}]`
 const defaultValidatorsAddr = "0xE1623DFC79Fe86FB966F5784E4196406E02469fC"
@@ -37,7 +37,7 @@ func _init() {
 	setTokenAbi(defaultTokenAbi)
 	setVotingAbi(defaultVotingAbi)
 	setValidatorsAbi(defaultValidatorsAbi)
-	setOrbsConfigContract(defaultOrbsConfigContract)
+	setOrbsValidatorsConfigContract(defaultOrbsValidatorsConfigContract)
 	//	setVotingAddr(defaultVotingAddr)
 	//	setTokenAddr(defaultErc20Addr)
 	//	setTokenContract(defaultTokenContract)
@@ -68,13 +68,13 @@ func mirrorDelegation(hexEncodedEthTxHash string) {
 }
 
 type Vote struct {
-	Voter                [20]byte
-	CommaListOfAddresses string
+	Activist   [20]byte
+	Candidates [][20]byte
 }
 
 func mirrorVote(hexEncodedEthTxHash string) {
-	e := &Vote{}
-	ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, "Vote", e)
+	//e := &Vote{}
+	//ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, "Vote", e)
 
 }
 
@@ -94,11 +94,26 @@ func setWinners() {
 
 }
 
+//type _stakeHolder struct {
+//	blockHeight int
+//	blockTxIndex int
+//	updatedBy string
+//	agent [20]byte
+//}
+//
+//func _getStakeHolder(addr [20]byte) *_stakeHolder {
+//
+//}
+//
+//func _setStakeHolder(addr [20]byte, value *_stakeHolder)  {
+//
+//}
+
 func getOrbsConfigContract() string {
 	return state.ReadString(ORBS_CONFIG_CONTRACT_KEY)
 }
 
-func setOrbsConfigContract(name string) { // upgrade
+func setOrbsValidatorsConfigContract(name string) { // upgrade
 	state.WriteString(ORBS_CONFIG_CONTRACT_KEY, name)
 }
 

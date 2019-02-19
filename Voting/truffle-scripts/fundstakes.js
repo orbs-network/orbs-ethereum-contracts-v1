@@ -1,6 +1,5 @@
 const erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
-const userAccountOnEthereumIndex = process.env.USER_ACCOUNT_INDEX_ON_ETHEREUM;
-const userInitialBalanceOnEthereum = process.env.USER_INITIAL_BALANCE_ON_ETHEREUM;
+const stakesStr = process.env.ACCOUNT_STAKES_ON_ETHEREUM;
 
 module.exports = async function(done) {
   try {
@@ -9,22 +8,22 @@ module.exports = async function(done) {
       throw("missing env variable ERC20_CONTRACT_ADDRESS");
     }
 
-    if (!userAccountOnEthereumIndex) {
-      throw("missing env variable USER_ACCOUNT_ON_ETHEREUM_INDEX");
+    if (!stakesStr) {
+      throw("missing env variable ACCOUNT_STAKES_ON_ETHEREUM");
     }
 
-    if (!userInitialBalanceOnEthereum) {
-      throw("missing env variable USER_INITIAL_BALANCE_ON_ETHEREUM");
-    }
-
-    const ercToken = artifacts.require('TestingERC20');
-    const instance = await ercToken.at(erc20ContractAddress);
+    const tokenInstance = await artifacts.require('TestingERC20').at(erc20ContractAddress);
 
     let accounts = await web3.eth.getAccounts();
-    let userAccountOnEthereum = accounts[userAccountOnEthereumIndex];
-    await instance.assign(userAccountOnEthereum, userInitialBalanceOnEthereum, {from: userAccountOnEthereum}).on("transactionHash", hash => {
-      console.error("TxHash: " + hash);
-    });
+    let stakes = JSON.parse(stakesStr);
+    let txs = [];
+    for(let i = 0;i < stakes.length;i++) {
+      txs.push(tokenInstance.assign(accounts[i], stakes[i]/*, {from: accounts[i]}*/)
+          .on("transactionHash", hash => {console.error("TxHash: " + hash);}
+      ));
+    }
+
+    await Promise.all(txs);
 
     done();
 

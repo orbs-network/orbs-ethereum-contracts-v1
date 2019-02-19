@@ -49,8 +49,6 @@ func (ta *truffleAdapter) GetCurrentBlock() int {
 		panic(err.Error() + "\n" + string(bytesOutput))
 	}
 	return out.CurrentBlock
-	//n, _ := strconv.ParseUint(out.CurrentBlock, 16, 32)
-	//return int(n)
 }
 
 func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
@@ -65,58 +63,40 @@ func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
 	return out.Address
 }
 
-func (ta *truffleAdapter) DeployValidatorsContract() (ethereumValidatorsAddress string) {
-	bytes := ta.run("exec ./truffle-scripts/deployValidators.js")
+func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) []int {
+	bytes := ta.run("exec ./truffle-scripts/getStakes.js",
+		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
+		"NUMBER_OF_STAKEHOLDERS_ETHEREUM="+fmt.Sprintf("%d", numberOfStakes),
+	)
 	out := struct {
-		Address string
+		Balances []string
 	}{}
 	err := json.Unmarshal(bytes, &out)
 	if err != nil {
 		panic(err.Error() + "\n" + string(bytes))
 	}
-	return out.Address
-}
-
-func (ta *truffleAdapter) DeployVotingContract() (ethereumVotingAddress string) {
-	bytes := ta.run("exec ./truffle-scripts/deployVoting.js")
-	out := struct {
-		Address string
-	}{}
-	err := json.Unmarshal(bytes, &out)
-	if err != nil {
-		panic(err.Error() + "\n" + string(bytes))
+	response := make([]int, len(out.Balances))
+	for i, v := range out.Balances {
+		n, _ := strconv.ParseUint(v, 16, 32)
+		response[i] = fromEthereumToken(n)
 	}
-	return out.Address
+	return response
 }
 
-//func (ta *truffleAdapter) DeployASBContract(ethereumErc20Address string, orbsAsbContractName string) (ethereumAsbAddress string) {
-//	ta.run("migrate --reset",
-//		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
-//		"ORBS_ASB_CONTRACT_NAME="+orbsAsbContractName,
-//	)
-//	return ta.GetASBContractAddress()
-//}
-//
-
-func (ta *truffleAdapter) FundStakeAccount(ethereumErc20Address string, userAccountIndexOnEthereum int, userInitialBalanceOnEthereum int) (userBalanceOnEthereumAfter int) {
-	amountToFund := toEthereumToken(userInitialBalanceOnEthereum) + 10*STAKE_TOKEN_DELEGATE_VALUE
+func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
+	ethStakes := make([]uint64, len(stakes))
+	for i, v := range stakes {
+		ethStakes[i] = toEthereumToken(v) + 10*STAKE_TOKEN_DELEGATE_VALUE
+	}
+	out, _ := json.Marshal(ethStakes)
 
 	ta.run("exec ./truffle-scripts/fundstakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
-		"USER_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", userAccountIndexOnEthereum),
-		"USER_INITIAL_BALANCE_ON_ETHEREUM="+fmt.Sprintf("%d", amountToFund),
-	)
-	return ta.GetBalanceByIndex(ethereumErc20Address, userAccountIndexOnEthereum)
-}
-
-func (ta *truffleAdapter) AddValidatorAccount(ethereumValidatorAddress string, validatorAccountOnEthereum string) {
-	ta.run("exec ./truffle-scripts/addValidator.js",
-		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorAddress,
-		"VALIDATORS_ACCOUNT_ON_ETHEREUM="+validatorAccountOnEthereum,
+		"ACCOUNT_STAKES_ON_ETHEREUM="+string(out),
 	)
 }
 
-func (ta *truffleAdapter) TransferFundsAccount(ethereumErc20Address string, from int, to int, amount int) {
+func (ta *truffleAdapter) Transfer(ethereumErc20Address string, from int, to int, amount int) {
 	var tokens uint64
 	if amount == 0 {
 		tokens = STAKE_TOKEN_DELEGATE_VALUE
@@ -131,50 +111,68 @@ func (ta *truffleAdapter) TransferFundsAccount(ethereumErc20Address string, from
 	)
 }
 
-//func (ta *truffleAdapter) TransferOut(ethereumErc20Address string, userAccountOnEthereum string, userAccountOnOrbs string, userTransferAmount int) (ethereumTxHash string, userBalanceOnEthereumAfter int) {
-//	ta.run("exec ./truffle-scripts/approve.js",
-//		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
-//		"USER_ACCOUNT_ON_ETHEREUM="+userAccountOnEthereum,
-//		"USER_TRANSFER_AMOUNT="+fmt.Sprintf("%d", userTransferAmount),
-//	)
-//	ta.run("exec ./truffle-scripts/allowance.js",
-//		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
-//		"USER_ACCOUNT_ON_ETHEREUM="+userAccountOnEthereum,
-//	)
-//	bytes := ta.run("exec ./truffle-scripts/transferOut.js",
-//		"USER_ACCOUNT_ON_ETHEREUM="+userAccountOnEthereum,
-//		"USER_ACCOUNT_ON_ORBS="+userAccountOnOrbs,
-//		"USER_TRANSFER_AMOUNT="+fmt.Sprintf("%d", userTransferAmount),
-//	)
-//	out := struct {
-//		TxHash string
-//	}{}
-//	err := json.Unmarshal(bytes, &out)
-//	if err != nil {
-//		panic(err.Error() + "\n" + string(bytes))
-//	}
-//	ta.run("exec ./truffle-scripts/allowance.js",
-//		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
-//		"USER_ACCOUNT_ON_ETHEREUM="+userAccountOnEthereum,
-//	)
-//	return out.TxHash, ta.GetBalance(ethereumErc20Address, userAccountOnEthereum)
-//}
-//
-//func (ta *truffleAdapter) TransferIn(ethereumErc20Address string, userAccountOnEthereum string, packedOrbsReceiptProof string, packedOrbsReceipt string) (ethereumTxHash string, userBalanceOnEthereumAfter int) {
-//	bytes := ta.run("exec ./truffle-scripts/transferIn.js",
-//		"USER_ACCOUNT_ON_ETHEREUM="+userAccountOnEthereum,
-//		"PACKED_ORBS_RECEIPT_PROOF="+packedOrbsReceiptProof,
-//		"PACKED_ORBS_RECEIPT="+packedOrbsReceipt,
-//	)
-//	out := struct {
-//		TxHash string
-//	}{}
-//	err := json.Unmarshal(bytes, &out)
-//	if err != nil {
-//		panic(err.Error() + "\n" + string(bytes))
-//	}
-//	return out.TxHash, ta.GetBalance(ethereumErc20Address, userAccountOnEthereum)
-//}
+func (ta *truffleAdapter) DeployValidatorsContract() (ethereumValidatorsAddress string) {
+	bytes := ta.run("exec ./truffle-scripts/deployValidators.js")
+	out := struct {
+		Address string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out.Address
+}
+
+func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []string {
+	bytes := ta.run("exec ./truffle-scripts/getValidators.js",
+		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
+	)
+	out := struct {
+		Validators []string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out.Validators
+}
+
+func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, validators []int) {
+	out, _ := json.Marshal(validators)
+	ta.run("exec ./truffle-scripts/setValidators.js",
+		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
+		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+	)
+}
+
+func (ta *truffleAdapter) DeployVotingContract() (ethereumVotingAddress string) {
+	bytes := ta.run("exec ./truffle-scripts/deployVoting.js")
+	out := struct {
+		Address string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out.Address
+}
+
+func (ta *truffleAdapter) Delegate(ethereumVotingAddress string, from int, to int) {
+	ta.run("exec ./truffle-scripts/delegate.js",
+		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
+		"FROM_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", from),
+		"TO_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", to),
+	)
+}
+
+func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, candidates [3]int) {
+	out, _ := json.Marshal(candidates)
+	ta.run("exec ./truffle-scripts/vote.js",
+		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
+		"ACTIVIST_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", activistIndex),
+		"CANDIDATE_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+	)
+}
 
 func (ta *truffleAdapter) GetBalance(ethereumErc20Address string, userAccountOnEthereum string) (userBalanceOnEthereum int) {
 	bytes := ta.run("exec ./truffle-scripts/getBalance.js",

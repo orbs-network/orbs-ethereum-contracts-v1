@@ -7,20 +7,23 @@ import (
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
 // DON'T FORGET TO UPDATE VALUES ACCORDING TO INSTRUCTIONS AFTER DEPLOY
-var stakeHoldersNumber = 10
+var stakeHoldersNumber = 15
 var activistsAccounts = []int{4, 6, 10}
+var validatorAccounts = []int{20, 21, 22, 23, 24}
 var configGanache = &driver.Config{
-	DebugLogs:                 true,                                            // shows detailed responses for every command
-	EthereumErc20Address:      "0x6523F7240F49386b85357d231c170546F126e555",    // update after deploy with the resulting value
-	EthereumValidatorsAddress: "",                                              // update after deploy with the resulting value
-	EthereumVotingAddress:     "",                                              // update after deploy with the resulting value
-	UserAccountOnEthereum:     "0xd1948B0252242B60DAb2E3566AD2971B87868644",    // one of your ganache accounts
-	UserAccountOnOrbs:         "user1",                                         // one of the IDs in orbs-test-keys.json
-	StakeHoldersNumber:        stakeHoldersNumber,                              // upto 20
-	StakeHoldersInitialValues: []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50}, // should length upto stakeholdernumber stake+1 for satoshis
-	ActivistsAccounts:         activistsAccounts,                               // indexes of activists up to 20
-	ValidatorsNumber:          5,                                               // user index 20 ... if you have more than 5 add more ganache accounts
+	DebugLogs:                 true,                                                            // shows detailed responses for every command
+	EthereumErc20Address:      "0x6523F7240F49386b85357d231c170546F126e555",                    // update after deploy with the resulting value
+	EthereumValidatorsAddress: "0x799e5fc31411D3fd2B9DB93FFCBB80A450972e77",                    // update after deploy with the resulting value
+	EthereumVotingAddress:     "0xF289cD86AB606195a577634B039a06f7245A2a77",                    // update after deploy with the resulting value
+	UserAccountOnEthereum:     "0xd1948B0252242B60DAb2E3566AD2971B87868644",                    // one of your ganache accounts
+	UserAccountOnOrbs:         "user1",                                                         // one of the IDs in orbs-test-keys.json
+	StakeHoldersNumber:        stakeHoldersNumber,                                              // upto 20
+	StakeHolderValues:         []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 0, 0, 50, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
+	ActivistsAccounts:         activistsAccounts,                                               // indexes of activists up to 20
+	ValidatorsAccounts:        validatorAccounts,                                               // user index 20 ... if you have more than 5 add more ganache accounts
 	Transfers:                 generateTransfers(stakeHoldersNumber, activistsAccounts),
+	Delegates:                 generateDelegates(stakeHoldersNumber, activistsAccounts),
+	Votes:                     generateVotes(activistsAccounts, validatorAccounts),
 }
 
 // before starting:
@@ -59,33 +62,13 @@ func TestFullFlowOnGanache(t *testing.T) {
 	ethereum := driver.AdapterForTruffleGanache(configGanache)
 
 	// Temp deploy of orbs contracts
-	//orbs.DeployContract( "OrbsVoting", "OrbsConfig")
-	//orbs.BindERC20ContractToEthereum("OrbsVoting", configGanache.EthereumErc20Address)
+	orbs.DeployContract("OrbsVoting", "OrbsValidatorsConfig")
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
 	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
 	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
-
-	//TestDeployOnGanache(t, orbs, ethereum)
-	//TestRecordOnGanache(t, orbs, ethereum)
-	//TestMirrorOnGanache(t, orbs, ethereum)
-	//TestProcessOnGanache(t, orbs, ethereum)
 }
-
-//func generateOrbsIfNil(orbs driver.OrbsAdapter) driver.OrbsAdapter {
-//	if orbs == nil {
-//		orbs = driver.AdapterForGammaCliLocal(configGanache)
-//	}
-//	return orbs
-//}
-//
-//func generateEthereumIfNil(ethereum driver.EthereumAdapter) driver.EthereumAdapter {
-//	if ethereum == nil {
-//		ethereum = driver.AdapterForTruffleGanache(configGanache)
-//	}
-//	return ethereum
-//}
 
 // value 0 -> delegate.
 func generateTransfers(stakeHolderNumber int, activists []int) []*driver.TransferEvent {
@@ -95,7 +78,7 @@ func generateTransfers(stakeHolderNumber int, activists []int) []*driver.Transfe
 		{5, 3, 0},  // delegate // two level
 		{8, 4, 50}, // regular transfer
 		{8, 4, 0},  // delegate
-		{1, 4, 0},  // delegate
+		//		{1, 4, 0},  // delegate
 		{8, 1, 10}, // regular transfer
 		{3, 10, 0}, // delegate
 		{9, 10, 0}, // delegate
@@ -103,6 +86,24 @@ func generateTransfers(stakeHolderNumber int, activists []int) []*driver.Transfe
 		{2, 4, 0},  // delegate // change mind
 		{8, 6, 0},  // delegate // change mind
 		{5, 9, 10}, // regular transfer
+	}
+
+}
+
+func generateDelegates(stakeHolderNumber int, activists []int) []*driver.DelegateEvent {
+	return []*driver.DelegateEvent{
+		{1, 4},  // delegate
+		{7, 10}, // delegate already transfer
+	}
+}
+
+func generateVotes(activists []int, validatorAccounts []int) []*driver.VoteEvent {
+	return []*driver.VoteEvent{
+		{4, [3]int{20, 21, 22}},
+		{10, [3]int{22, 23, 24}},
+		{6, [3]int{20, 21, 22}},
+		{4, [3]int{24, 21, 22}},  // revote
+		{15, [3]int{24, 21, 22}}, // not an activist
 	}
 
 }

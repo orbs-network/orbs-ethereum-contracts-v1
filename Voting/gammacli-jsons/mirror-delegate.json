@@ -1,6 +1,6 @@
 {
     "ContractName": "orbs_voting",
-    "MethodName": "mirrorDelegationByTransfer",
+    "MethodName": "mirrorDelegation",
     "Arguments": [
         {
             "Type": "string",

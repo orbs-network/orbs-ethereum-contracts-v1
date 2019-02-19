@@ -1,5 +1,5 @@
 
-const generateDelegateByTransfer = require('./generateDelegateByTransfer');
+const generateDelegateByTransfer = require('./findDelegateByTransferEvents');
 
 try {
     let delegateByTransferToSave = generateDelegateByTransfer();
