@@ -248,14 +248,7 @@ async function getAllPastTransferEvents(tokenContract) {
     let options = {
         fromBlock: startBlock,
         toBlock: endBlock
-        // fromBlock: currentBlock-100000,
-        // toBlock: currentBlock-100
-//        fromBlock: 4985940,//currentBlock-2000,
-//        toBlock: 4985941//currentBlock-1999
     };
-
-    // debug
-    //console.log(`from ${options.fromBlock} to ${options.toBlock}`);
 
     let mapOfTransfers = {};
     let listOfTransfers = [];
@@ -299,10 +292,6 @@ async function getAllPastTransferEvents(tokenContract) {
 
 function isTransferADelegateAction(event) {
     return event.raw.data === '0x0000000000000000000000000000000000000000000000000000000000000007';
- //   return IS_MAIN_NET
- //       ? event.raw.data === '0x0000000000000000000000000000000000000000000000000000000000000007'
- //       : event.raw.data === '0x0000000000000000000000000000000000000000000000000000000002faf080' //true
- //       ;
 }
 
 const TOPIC_FROM_ADDR = 1;
@@ -319,7 +308,6 @@ function isObjectNewerThanTx(latestDelegate, event) {
 
 function generateDelegateObject(block, transactionIndex, txHash, delegatorAddress, delegateeAddress, method) {
     return {
-//        Block: block, TxHash: txHash, DelegatorAddress: delegatorAddress, DelegateeAddress: delegateeAddress, Medthod: method
         block, transactionIndex, txHash, delegatorAddress, delegateeAddress, method
     }
 }
@@ -329,30 +317,8 @@ async function main() {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let tokenContract = await new web3.eth.Contract(TOKEN_ABI, erc20ContractAddress);
 
-    // debug
-//    let currentBlock = await web3.eth.getBlockNumber();
-    //console.log(tokenContract);
-//    console.log(`Connected to ${networkConnectionUrl} current block ${currentBlock}`);
-
-    // return [
-    //     {
-    //         Block: 5006450,
-    //         TxHash: '0xbe7cf40127b9504364d3237b1c75a347213258140f3ae49c337743b21d178979',
-    //         DelegatorAddress: '0xFC378dAA952ba7f163c4a11628f55a4df523b3EF',
-    //         DelegateeAddress: '0xf91DB2F257B4df352Cf4479A1d59511d34A3c08C',
-    //         Method: 'Transfer'
-    //     },
-    //     {
-    //         Block: 5006450,
-    //         TxHash: '0xbe7cf40127b9504364d3237b1c75a347213258140f3ae49c337743b21d178979',
-    //         DelegatorAddress: '0xFC378dAA952ba7f163c4a11628f55a4df523b3EF',
-    //         DelegateeAddress: '0xf91DB2F257B4df352Cf4479A1d59511d34A3c08C',
-    //         Method: 'Transfer'
-    //     }
-    // ];
-    //
-     return await getAllPastTransferEvents(tokenContract);
-};
+    return await getAllPastTransferEvents(tokenContract);
+}
 
 main()
     .then(results => {

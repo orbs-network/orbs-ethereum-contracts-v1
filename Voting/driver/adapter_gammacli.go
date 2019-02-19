@@ -28,9 +28,9 @@ type gammaCliAdapter struct {
 	env   string
 }
 
-func (gc *gammaCliAdapter) DeployContract(orbsVotingContractName string, orbsConfigContractName string) {
+func (gc *gammaCliAdapter) DeployContract(orbsVotingContractName string, orbsValidatorsConfigContractName string) {
 	gc.run("deploy ./orbs-contracts/_OrbsVoting/orbs_voting_contract.go -name " + orbsVotingContractName + " -signer user1")
-	gc.run("deploy ./orbs-contracts/_OrbsConfig/orbs_config_contract.go -name " + orbsConfigContractName + " -signer user1")
+	gc.run("deploy ./orbs-contracts/_OrbsValidatorsConfig/orbs_validators_config_contract.go -name " + orbsValidatorsConfigContractName + " -signer user1")
 }
 
 func (gc *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
@@ -38,16 +38,26 @@ func (gc *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName st
 }
 
 func (gc *gammaCliAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
-	gc.run("send-tx ./gammacli-jsons/asb-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
+	gc.run("send-tx ./gammacli-jsons/validators-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
 }
 
 func (gc *gammaCliAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
-	gc.run("send-tx ./gammacli-jsons/asb-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
+	gc.run("send-tx ./gammacli-jsons/voting-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
 }
 
 func (gc *gammaCliAdapter) MirrorDelegateByTransfer(orbsVotingContractName string, transferTransactionHash string, transferBlockNumber int) {
-	blockNumber := fmt.Sprintf("%d", transferBlockNumber)
-	gc.run("send-tx ./gammacli-jsons/mirror-transfer.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + transferTransactionHash + " -arg2 " + blockNumber)
+	//	blockNumber := fmt.Sprintf("%d", transferBlockNumber)
+	gc.run("send-tx ./gammacli-jsons/mirror-transfer.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + transferTransactionHash)
+}
+
+func (gc *gammaCliAdapter) MirrorDelegate(orbsVotingContractName string, transferTransactionHash string, transferBlockNumber int) {
+	//	blockNumber := fmt.Sprintf("%d", transferBlockNumber)
+	gc.run("send-tx ./gammacli-jsons/mirror-delegate.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + transferTransactionHash)
+}
+
+func (gc *gammaCliAdapter) MirrorVote(orbsVotingContractName string, transferTransactionHash string, transferBlockNumber int) {
+	//	blockNumber := fmt.Sprintf("%d", transferBlockNumber)
+	gc.run("send-tx ./gammacli-jsons/mirror-vote.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + transferTransactionHash)
 }
 
 func (gc *gammaCliAdapter) RunVotingProcess(orbsVotingContractName string) bool {

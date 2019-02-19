@@ -50,16 +50,10 @@ func toEthereumToken(testValue int) uint64 {
 	return uint64(testValue) * STAKE_TOKEN_FACTOR
 }
 
-type TransferEvent struct {
-	FromIndex int
-	ToIndex   int
-	Amount    int
-}
-
 func getOrbsVotingContractName() string {
 	return "OrbsVoting"
 }
 
-func getOrbsConfigContractName() string {
-	return "OrbsConfig"
+func getOrbsValidatorsConfigContractName() string {
+	return "OrbsValidatorsConfig"
 }
