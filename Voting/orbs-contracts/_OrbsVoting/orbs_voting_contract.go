@@ -73,8 +73,8 @@ type Vote struct {
 }
 
 func mirrorVote(hexEncodedEthTxHash string) {
-	e := &Vote{}
-	ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, "Vote", e)
+	//e := &Vote{}
+	//ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, "Vote", e)
 
 }
 
@@ -93,6 +93,21 @@ func processVoting() uint64 {
 func setWinners() {
 
 }
+
+//type _stakeHolder struct {
+//	blockHeight int
+//	blockTxIndex int
+//	updatedBy string
+//	agent [20]byte
+//}
+//
+//func _getStakeHolder(addr [20]byte) *_stakeHolder {
+//
+//}
+//
+//func _setStakeHolder(addr [20]byte, value *_stakeHolder)  {
+//
+//}
 
 func getOrbsConfigContract() string {
 	return state.ReadString(ORBS_CONFIG_CONTRACT_KEY)

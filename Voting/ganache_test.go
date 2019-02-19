@@ -62,7 +62,7 @@ func TestFullFlowOnGanache(t *testing.T) {
 	ethereum := driver.AdapterForTruffleGanache(configGanache)
 
 	// Temp deploy of orbs contracts
-	//orbs.DeployContract( "OrbsVoting", "OrbsValidatorsConfig")
+	orbs.DeployContract("OrbsVoting", "OrbsValidatorsConfig")
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
