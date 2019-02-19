@@ -4,8 +4,6 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract Federation is Ownable {
 
-    event Log(address);
-
     address[] public members;
 
     function addMember(address newMember) onlyOwner public {
@@ -14,10 +12,6 @@ contract Federation is Ownable {
         require(!isMember(newMember), "Address must not be already a member");
 
         members.push(newMember);
-
-        emit Log(owner());
-        emit Log(msg.sender);
-
     }
 
     function isMember(address m) internal view returns (bool) {
