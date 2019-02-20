@@ -57,8 +57,8 @@ func mirrorDelegationByTransfer(hexEncodedEthTxHash string) {
 }
 
 type Delegate struct {
-	From [20]byte
-	To   [20]byte
+	Delegator [20]byte
+	Agent     [20]byte
 }
 
 func mirrorDelegation(hexEncodedEthTxHash string) {
@@ -94,20 +94,20 @@ func setWinners() {
 
 }
 
-//type _stakeHolder struct {
-//	blockHeight int
-//	blockTxIndex int
-//	updatedBy string
-//	agent [20]byte
-//}
-//
-//func _getStakeHolder(addr [20]byte) *_stakeHolder {
-//
-//}
-//
-//func _setStakeHolder(addr [20]byte, value *_stakeHolder)  {
-//
-//}
+type _stakeHolder struct {
+	blockHeight  int
+	blockTxIndex int
+	updatedBy    string
+	agent        [20]byte
+}
+
+func _getStakeHolder(addr [20]byte) *_stakeHolder {
+
+}
+
+func _setStakeHolder(addr [20]byte, value *_stakeHolder) {
+
+}
 
 func getOrbsConfigContract() string {
 	return state.ReadString(ORBS_CONFIG_CONTRACT_KEY)
