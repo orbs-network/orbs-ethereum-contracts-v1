@@ -1,0 +1,19 @@
+{
+  "name": "federation_contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": " ",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openzeppelin-solidity": "^2.1.2",
+    "truffle": "^5.0.4",
+    "truffle-hdwallet-provider": "^1.0.3"
+  }
+}
