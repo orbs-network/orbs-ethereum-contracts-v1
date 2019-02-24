@@ -7,13 +7,16 @@
     "test": "test"
   },
   "scripts": {
-    "test": "truffle test"
+    "test": "truffle test",
+    "migrate": "truffle migrate --reset"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "openzeppelin-solidity": "^2.1.2",
-    "truffle": "^5.0.4",
     "truffle-hdwallet-provider": "^1.0.3"
+  },
+  "devDependencies": {
+    "truffle": "^5.0.5"
   }
 }
