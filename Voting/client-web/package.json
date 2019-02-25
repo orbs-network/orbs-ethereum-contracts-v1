@@ -23,6 +23,7 @@
     "typescript": "^3.3.3333"
   },
   "scripts": {
+    "postinstall": "./scripts/copy-contracts.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
