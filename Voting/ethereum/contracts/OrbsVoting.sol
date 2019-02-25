@@ -1,11 +1,11 @@
 pragma solidity 0.5.3;
 
-interface IVoting {
+interface IOrbsVoting {
     function vote(address[] calldata nodes_list) external;
     function delegate(address to) external;
 }
 
-contract OrbsVoting is IVoting {
+contract OrbsVoting is IOrbsVoting {
     struct VotingRecord {
         uint block_height;
         address[] nodes;
