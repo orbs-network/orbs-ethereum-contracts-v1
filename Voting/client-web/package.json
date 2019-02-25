@@ -1,35 +1,51 @@
 {
-  "name": "orbs-voting-client",
-  "version": "1.0.0",
-  "description": "Orb Voting Web Client",
-  "main": "index.js",
-  "keywords": [],
-  "author": "sergey@orbs.com",
-  "license": "MIT",
+  "name": "client-web",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://orbs-network.github.io/voting",
+  "dependencies": {
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "2.1.5",
+    "typescript": "^3.3.3333"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.6",
+    "@types/node": "^11.9.5",
+    "@types/react": "^16.8.4",
+    "@types/react-dom": "^16.8.2",
+    "@types/react-router-dom": "^4.3.1",
+    "husky": "^1.3.1",
+    "lint-staged": "^8.1.4",
+    "prettier": "^1.16.4"
+  },
   "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start",
-    "export": "next export",
-    "deploy": "./scripts/deploy.sh",
-    "lint": "prettier --write '{pages,components}/**/*.js'"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "prettier --single-quote --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "deploy": "npm run build && ./scripts/deploy.sh"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --single-quote --write",
+      "git add"
+    ]
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
-  "lint-staged": {
-    "{pages,components}/**/*.js": ["prettier --write", "git add"]
+  "eslintConfig": {
+    "extends": "react-app"
   },
-  "dependencies": {
-    "next": "^8.0.3",
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3"
-  },
-  "devDependencies": {
-    "husky": "^1.3.1",
-    "lint-staged": "^8.1.4",
-    "prettier": "1.16.4"
-  }
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
