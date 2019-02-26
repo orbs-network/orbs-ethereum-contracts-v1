@@ -19,7 +19,7 @@ module.exports = async function(done) {
     let validators = validatorIndexes.map(elem => accounts[elem]);
 
     let txs = validators.map(address => {
-      return validatorsInstance.addMember(address).on("transactionHash", hash => {
+      return validatorsInstance.addValidator(address).on("transactionHash", hash => {
         console.error("TxHash: " + hash);
       });
     });

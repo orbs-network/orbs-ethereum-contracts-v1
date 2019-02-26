@@ -9,7 +9,7 @@ module.exports = async function(done) {
 
     const validatorsInstance = await artifacts.require('IOrbsValidators').at(validatorsContractAddress);
 
-    let validatorAddresses = await validatorsInstance.getCurrentMembers();
+    let validatorAddresses = await validatorsInstance.getValidators();
 
     console.log(JSON.stringify({
       Validators: validatorAddresses
