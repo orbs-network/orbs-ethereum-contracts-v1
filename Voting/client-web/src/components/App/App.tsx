@@ -9,8 +9,8 @@ import {
   Link,
   RouteProps
 } from 'react-router-dom';
-import { validatorsContractFactory } from '../../services/contracts';
 import MetamaskService from '../../services/metamask';
+import { validatorsContractFactory } from '../../services/contracts';
 
 interface IState {
   validatorsContract: Object;
