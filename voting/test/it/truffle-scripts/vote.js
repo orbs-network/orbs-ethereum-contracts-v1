@@ -17,7 +17,7 @@ module.exports = async function(done) {
       throw("missing env variable CANDIDATE_ACCOUNT_INDEXES_ON_ETHEREUM");
     }
 
-    const votingInstance = await artifacts.require('Voting').at(votingContractAddress);
+    const votingInstance = await artifacts.require('IOrbsVoting').at(votingContractAddress);
 
     let accounts = await web3.eth.getAccounts();
     let candidateIndexes = JSON.parse(candiatesStr);

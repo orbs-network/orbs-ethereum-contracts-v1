@@ -7,9 +7,9 @@ module.exports = async function(done) {
       throw("missing env variable VALIDATORS_CONTRACT_ADDRESS");
     }
 
-    const validatorsInstance = await artifacts.require('Federation').at(validatorsContractAddress);
+    const validatorsInstance = await artifacts.require('IOrbsValidators').at(validatorsContractAddress);
 
-    let validatorAddresses = await validatorsInstance.getCurrentMembers();
+    let validatorAddresses = await validatorsInstance.getValidators();
 
     console.log(JSON.stringify({
       Validators: validatorAddresses

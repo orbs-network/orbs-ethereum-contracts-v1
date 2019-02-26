@@ -1,7 +1,7 @@
-package Voting
+package it
 
 import (
-	"github.com/orbs-network/orbs-ethereum-contracts/Voting/driver"
+	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
 	"testing"
 )
 
@@ -12,9 +12,9 @@ var activistsAccounts = []int{4, 6, 10}
 var validatorAccounts = []int{20, 21, 22, 23, 24}
 var configGanache = &driver.Config{
 	DebugLogs:                 true,                                                            // shows detailed responses for every command
-	EthereumErc20Address:      "0x6523F7240F49386b85357d231c170546F126e555",                    // update after deploy with the resulting value
-	EthereumValidatorsAddress: "0x799e5fc31411D3fd2B9DB93FFCBB80A450972e77",                    // update after deploy with the resulting value
-	EthereumVotingAddress:     "0xF289cD86AB606195a577634B039a06f7245A2a77",                    // update after deploy with the resulting value
+	EthereumErc20Address:      "",                                                              // update after deploy with the resulting value
+	EthereumValidatorsAddress: "",                                                              // update after deploy with the resulting value
+	EthereumVotingAddress:     "",                                                              // update after deploy with the resulting value
 	UserAccountOnEthereum:     "0xd1948B0252242B60DAb2E3566AD2971B87868644",                    // one of your ganache accounts
 	UserAccountOnOrbs:         "user1",                                                         // one of the IDs in orbs-test-keys.json
 	StakeHoldersNumber:        stakeHoldersNumber,                                              // upto 20

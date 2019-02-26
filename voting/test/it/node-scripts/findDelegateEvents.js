@@ -4,7 +4,8 @@ const networkConnectionUrl = process.env.NETWORK_URL_ON_ETHEREUM;
 const votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
 const startBlock = process.env.START_BLOCK_ON_ETHEREUM;
 const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
-const VOTING_ABI = [
+const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes_list","type":"address[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeholder","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes_list","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
+/*const VOTING_ABI = [
     {
         "constant": true,
         "inputs": [],
@@ -112,7 +113,7 @@ const VOTING_ABI = [
         "signature": "0x5c19a95c"
     }
 ];
-
+*/
 async function getAllPastDelegateEvents(tokenContract) {
     let options = {
         fromBlock: startBlock,

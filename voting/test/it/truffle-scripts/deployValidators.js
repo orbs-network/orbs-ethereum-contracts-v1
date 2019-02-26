@@ -1,8 +1,8 @@
 module.exports = async function(done) {
   try {
 
-    const voting = artifacts.require('Voting');
-    let instance = await voting.new();
+    const validators = artifacts.require('OrbsValidators');
+    let instance = await validators.new();
 
     console.log(JSON.stringify({
       Address: instance.address

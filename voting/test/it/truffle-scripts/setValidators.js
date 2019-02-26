@@ -12,14 +12,14 @@ module.exports = async function(done) {
       throw("missing env variable VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM");
     }
 
-    const validatorsInstance = await artifacts.require('Federation').at(validatorsContractAddress);
+    const validatorsInstance = await artifacts.require('IOrbsValidators').at(validatorsContractAddress);
 
     let accounts = await web3.eth.getAccounts();
     let validatorIndexes = JSON.parse(validatorAccountOnEthereumIndexes);
     let validators = validatorIndexes.map(elem => accounts[elem]);
 
     let txs = validators.map(address => {
-      return validatorsInstance.addMember(address).on("transactionHash", hash => {
+      return validatorsInstance.addValidator(address).on("transactionHash", hash => {
         console.error("TxHash: " + hash);
       });
     });
