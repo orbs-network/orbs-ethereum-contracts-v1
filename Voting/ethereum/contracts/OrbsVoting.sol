@@ -18,6 +18,9 @@ contract OrbsVoting is IOrbsVoting {
 
     mapping (address => VotingRecord[]) votingRecords;
 
+    // The version of the current federation smart contract.
+    uint public constant VERSION = 1;
+
     function vote(address[] memory nodes) public {
         require(nodes.length > 0, "Must provide non empty list");
 

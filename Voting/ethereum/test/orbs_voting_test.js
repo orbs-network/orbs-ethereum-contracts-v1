@@ -1,5 +1,6 @@
 
 const VotingContract = artifacts.require('OrbsVoting');
+
 const harness = require('./harness');
 
 const REJECTED = "REJECTED";
