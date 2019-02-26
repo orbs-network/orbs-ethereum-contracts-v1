@@ -1,22 +1,26 @@
 pragma solidity 0.5.3;
 
-interface IVoting {
+interface IOrbsVoting {
+    event Vote(address indexed voter, address[] nodes_list, uint vote_counter);
+    event Delegate(address indexed stakeholder, address indexed to, uint delegation_counter);
+
     function vote(address[] calldata nodes_list) external;
     function delegate(address to) external;
 }
 
-contract OrbsVoting is IVoting {
+contract OrbsVoting is IOrbsVoting {
     struct VotingRecord {
         uint block_height;
         address[] nodes;
     }
-    event Vote(address indexed voter, address[] nodes_list, uint vote_counter);
-    event Delegate(address indexed stakeholder, address indexed to, uint delegation_counter);
 
     uint vote_counter = 0; // will reset back to zero when uint is exhausted
     uint delegation_counter = 0; // will reset back to zero when uint is exhausted
 
     mapping (address => VotingRecord[]) votingRecords;
+
+    // The version of the current federation smart contract.
+    uint public constant VERSION = 1;
 
     function vote(address[] memory nodes) public {
         require(nodes.length > 0, "Must provide non empty list");
