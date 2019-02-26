@@ -4,8 +4,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IOrbsNetworkTopology.sol";
 
 interface IOrbsValidatorsRegistry {
-    // TODO rename register to setValidatorData
-    function register(string calldata _name, bytes calldata _ipvAddress, string calldata _website, address _orbsAddress) external;
+    function setValidatorData(string calldata _name, bytes calldata _ipvAddress, string calldata _website, address _orbsAddress) external;
     function getValidatorData(address _validator) external view returns (string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress);
     function getOrbsAddress(address _validator) external view returns (address _orbsAddress);
 }
@@ -76,7 +75,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         return false;
     }
 
-    function register(string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) public {
+    function setValidatorData(string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) public {
         require(bytes(_name).length > 0, "Please provide a valid name");
         require(bytes(_website).length > 0, "Please provide a valid website");
         require(isIpv4(_ipvAddress), "Please pass an address of up to 4 bytes");

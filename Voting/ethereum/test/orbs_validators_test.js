@@ -40,7 +40,7 @@ contract('OrbsValidators', accounts => {
     });
 
     describe('when calling the isValidator() function', () => {
-        it('should return true for registered validators and false to unknown validators', async () => {
+        it('should return true for listed validators and false to unknown validators', async () => {
             let instance = await OrbsValidators.deployed();
             const validatorAddr  = harness.numToAddress(1);
             const nonValidatorAddr  = harness.numToAddress(894);
@@ -81,17 +81,17 @@ contract('OrbsValidators', accounts => {
         });
     });
 
-    describe('when register() is called', () => {
+    describe('when setValidatorData() is called', () => {
         const name = "somename";
         const url = "http://somedomain.com/";
         const orbsAddr = harness.numToAddress(8765);
         const ip = "0x01020304"; // 4 bytes representing an address
 
-        it('should register data and return in using getValidatorData()', async () => {
+        it('should set data and return in using getValidatorData()', async () => {
             let instance = await OrbsValidators.deployed();
 
             await instance.addValidator(accounts[1]);
-            await instance.register(name, ip, url, orbsAddr, {from: accounts[1]});
+            await instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[1]});
             let result = await instance.getValidatorData(accounts[1]);
 
             assert.equal(result._name, name);
@@ -111,33 +111,33 @@ contract('OrbsValidators', accounts => {
             let instance = await OrbsValidators.deployed();
             await instance.addValidator(accounts[0]);
 
-            let result = await instance.register("", ip, url, orbsAddr).catch(() => REJECTED);
+            let result = await instance.setValidatorData("", ip, url, orbsAddr).catch(() => REJECTED);
             assert.equal(result, REJECTED);
 
-            result = await instance.register(undefined, ip, url, orbsAddr).catch(() => REJECTED);
+            result = await instance.setValidatorData(undefined, ip, url, orbsAddr).catch(() => REJECTED);
             assert.equal(result, REJECTED);
 
-            result = await instance.register(name, ip, url, orbsAddr).catch(() => REJECTED);
+            result = await instance.setValidatorData(name, ip, url, orbsAddr).catch(() => REJECTED);
             assert.notEqual(result, REJECTED);
 
 
-            result = await instance.register(name, ip, "", orbsAddr).catch(() => REJECTED);
+            result = await instance.setValidatorData(name, ip, "", orbsAddr).catch(() => REJECTED);
             assert.equal(result, REJECTED);
 
-            result = await instance.register(name, ip, undefined, orbsAddr).catch(() => REJECTED);
+            result = await instance.setValidatorData(name, ip, undefined, orbsAddr).catch(() => REJECTED);
             assert.equal(result, REJECTED);
 
-            result = await instance.register(name, ip, url, orbsAddr).catch(() => REJECTED);
+            result = await instance.setValidatorData(name, ip, url, orbsAddr).catch(() => REJECTED);
             assert.notEqual(result, REJECTED);
 
 
-            result = await instance.register(name, ip, url, "0x0").catch(() => REJECTED);
+            result = await instance.setValidatorData(name, ip, url, "0x0").catch(() => REJECTED);
             assert.equal(result, REJECTED);
 
-            result = await instance.register(name, ip, url, undefined).catch(() => REJECTED);
+            result = await instance.setValidatorData(name, ip, url, undefined).catch(() => REJECTED);
             assert.equal(result, REJECTED);
 
-            result = await instance.register(name, ip, url, orbsAddr).catch(() => REJECTED);
+            result = await instance.setValidatorData(name, ip, url, orbsAddr).catch(() => REJECTED);
             assert.notEqual(result, REJECTED);
         });
 
@@ -150,17 +150,17 @@ contract('OrbsValidators', accounts => {
             const orbsAddr2 = harness.numToAddress(39567);
 
             await instance.addValidator(accounts[1]);
-            const r1 = await instance.register(name2, ip2, url2, orbsAddr2).catch(() => REJECTED);
-            const r2 = await instance.register(name2, ip2, url2, orbsAddr2).catch(() => REJECTED);
-            const r3 = await instance.register(name, ip, url, orbsAddr, {from: accounts[1]}).catch(() => REJECTED);
+            const r1 = await instance.setValidatorData(name2, ip2, url2, orbsAddr2).catch(() => REJECTED);
+            const r2 = await instance.setValidatorData(name2, ip2, url2, orbsAddr2).catch(() => REJECTED);
+            const r3 = await instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[1]}).catch(() => REJECTED);
             assert.notEqual(r1, REJECTED, 'expected default account to succeed in setting value set #2');
             assert.notEqual(r2, REJECTED,'expected setting the same values twice to succeed (duplicate values for same account)');
             assert.notEqual(r3, REJECTED, 'expected alternate account to receive value set #1');
 
-            const r4 = await instance.register(name, ip2, url2, orbsAddr2).catch(() => REJECTED);
-            const r5 = await instance.register(name2, ip, url2, orbsAddr2).catch(() => REJECTED);
-            const r6 = await instance.register(name2, ip2, url, orbsAddr2).catch(() => REJECTED);
-            const r7 = await instance.register(name2, ip2, url2, orbsAddr).catch(() => REJECTED);
+            const r4 = await instance.setValidatorData(name, ip2, url2, orbsAddr2).catch(() => REJECTED);
+            const r5 = await instance.setValidatorData(name2, ip, url2, orbsAddr2).catch(() => REJECTED);
+            const r6 = await instance.setValidatorData(name2, ip2, url, orbsAddr2).catch(() => REJECTED);
+            const r7 = await instance.setValidatorData(name2, ip2, url2, orbsAddr).catch(() => REJECTED);
             assert.equal(r4, REJECTED, "expected setting another's name to fail");
             assert.equal(r5, REJECTED, "expected setting another's ip to fail");
             assert.equal(r6, REJECTED, "expected setting another's url to fail");
@@ -171,7 +171,7 @@ contract('OrbsValidators', accounts => {
         it('should fail if called by non validator', async () => {
             let instance = await OrbsValidators.deployed();
             await instance.leave();
-            let result = await instance.register(name, ip, url, orbsAddr).catch(() => REJECTED);
+            let result = await instance.setValidatorData(name, ip, url, orbsAddr).catch(() => REJECTED);
             assert.equal(result, REJECTED);
         });
 
@@ -179,9 +179,9 @@ contract('OrbsValidators', accounts => {
             let instance = await OrbsValidators.deployed();
 
             await instance.addValidator(accounts[0]);
-            const r1 = await instance.register(name, "0x0102030400000000000000", url, orbsAddr).catch((e) => {console.log(e); return REJECTED});
+            const r1 = await instance.setValidatorData(name, "0x0102030400000000000000", url, orbsAddr).catch((e) => {console.log(e); return REJECTED});
             assert.notEqual(r1, REJECTED);
-            const r2 = await instance.register(name, "0x0102030400000000000001", url, orbsAddr).catch(() => REJECTED);
+            const r2 = await instance.setValidatorData(name, "0x0102030400000000000001", url, orbsAddr).catch(() => REJECTED);
             assert.equal(r2, REJECTED);
         });
     });

@@ -10,8 +10,7 @@ interface IOrbsGuardians {
 }
 
 interface IOrbsGuardiansRegistry {
-    // TODO rename register to setGuardianData
-    function register(string calldata _name, string calldata _website) external;
+    function setGuardianData(string calldata _name, string calldata _website) external;
     function getGuardianData(address _validator) external view returns (string memory _name, string memory _website);
 }
 
@@ -72,7 +71,7 @@ contract OrbsGaurdians is Ownable, IOrbsGuardians, IOrbsGuardiansRegistry {
         return false;
     }
 
-    function register(string memory _name, string memory _website) public {
+    function setGuardianData(string memory _name, string memory _website) public {
         require(bytes(_name).length > 0, "Please provide a valid name");
         require(bytes(_website).length > 0, "Please provide a valid website");
 
