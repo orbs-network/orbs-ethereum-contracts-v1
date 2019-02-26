@@ -23,13 +23,14 @@
     "typescript": "^3.3.3333"
   },
   "scripts": {
-    "postinstall": "./scripts/copy-contracts.sh",
+    "postinstall": "npm run copy-contracts",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "prettier --single-quote --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
-    "deploy": "npm run build && ./scripts/deploy.sh"
+    "deploy": "npm run build && ./scripts/deploy.sh",
+    "copy-contracts": "./scripts/copy-contracts.sh"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [

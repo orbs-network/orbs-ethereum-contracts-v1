@@ -9,40 +9,24 @@ import {
   Link,
   RouteProps
 } from 'react-router-dom';
-import validatorsAbiJson from '../../contracts/OrbsValidators.json';
-import Web3 from 'web3';
+import { validatorsContractFactory } from '../../services/contracts';
+import MetamaskService from '../../services/metamask';
 
-const initValidatorsContract = () => {
-  const validatorsContractAddress =
-    '0xD3a92e0341307432FC6cD388F345a81adc992cC5';
-  const web3 = new Web3(ethereum as any);
-  return new web3.eth.Contract(
-    validatorsAbiJson.abi as any,
-    validatorsContractAddress
-  );
-};
+interface IState {
+  validatorsContract: Object;
+  metamaskService: MetamaskService;
+}
 
-const enableMetamask = (): Promise<string> => {
-  return ethereum.enable().then(
-    (addresses: string[]) => {
-      return addresses[0];
-    },
-    (err: any) => {
-      console.warn(err);
-      return Promise.reject();
-    }
-  );
-};
-
-class App extends Component<{}, { validatorsContract: Object }> {
+class App extends Component<{}, IState> {
   constructor(props) {
     super(props);
     this.state = {
-      validatorsContract: initValidatorsContract()
+      validatorsContract: validatorsContractFactory(),
+      metamaskService: new MetamaskService()
     };
   }
   componentDidMount() {
-    enableMetamask();
+    this.state.metamaskService.enable();
   }
   render() {
     return (
@@ -71,6 +55,7 @@ class App extends Component<{}, { validatorsContract: Object }> {
                 <GuardianPage
                   {...props}
                   validatorsContract={this.state.validatorsContract}
+                  metamaskService={this.state.metamaskService}
                 />
               )}
             />

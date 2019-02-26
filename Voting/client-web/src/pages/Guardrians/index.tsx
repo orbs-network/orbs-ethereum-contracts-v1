@@ -1,48 +1,32 @@
 import React, { useEffect, useState } from 'react';
 
-const GuardianPage = ({ validatorsContract }) => {
+const GuardianPage = ({ validatorsContract, metamaskService }) => {
   const [validators, setValidators] = useState([]);
   const [candidateValidator, setCandidateValidator] = useState('');
+
+  const from = metamaskService.getCurrentAddress();
 
   const fetchValidators = () => {
     validatorsContract.methods
       .getValidators()
-      .call({
-        from: ethereum.selectedAddress
-      })
-      .then(res => {
-        setValidators(res);
-      });
+      .call({ from })
+      .then(setValidators);
   };
 
   const addValidator = () => {
     validatorsContract.methods
       .addValidator(candidateValidator)
-      .send({
-        from: ethereum.selectedAddress
-      })
-      .then(
-        res => {
-          console.log(res);
-          fetchValidators();
-        },
-        err => {
-          console.log(err);
-        }
-      );
+      .send({ from })
+      .then(() => setCandidateValidator(''));
   };
 
   useEffect(() => {
-    if (validatorsContract.methods) {
-      fetchValidators();
-    }
+    fetchValidators();
   });
-
-  const address = ethereum.selectedAddress;
 
   return (
     <div>
-      <h3>Hello Guardian, {address}</h3>
+      <h3>Hello Guardian, {from}</h3>
       <ul>
         {validators.map(validator => (
           <li key={validator}>{validator}</li>
@@ -52,6 +36,7 @@ const GuardianPage = ({ validatorsContract }) => {
         <input
           type="text"
           placeholder="Enter validator address"
+          value={candidateValidator}
           onChange={ev => setCandidateValidator(ev.target.value)}
         />
         <button onClick={addValidator}>Add</button>
