@@ -167,7 +167,6 @@ contract('OrbsValidators', accounts => {
             assert.equal(r7, REJECTED, "expected setting another's orbsAddress to fail");
         });
 
-
         it('should fail if called by non validator', async () => {
             let instance = await OrbsValidators.deployed();
             await instance.leave();
@@ -224,7 +223,7 @@ contract('OrbsValidators', accounts => {
             let instance = await OrbsValidators.deployed();
 
             assert.equal((await instance.MAX_FEDERATION_MEMBERS()).toNumber(), 100, "expect a constant called MAX_FEDERATION_MEMBERS to euqal to 100 ");
-            assert.equal(instance.abi.find(element => element.name == 'MAX_FEDERATION_MEMBERS').constant, true, "expected MAX_FEDERATION_MEMBERS to be declared as constant");
+            assert.equal(instance.abi.find(element => element.name === 'MAX_FEDERATION_MEMBERS').constant, true, "expected MAX_FEDERATION_MEMBERS to be declared as constant");
         });
     });
 });
