@@ -32,14 +32,22 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
     uint public constant VERSION = 1;
 
     // Maximum number of the federation members.
-    uint public constant MAX_FEDERATION_MEMBERS = 100;
+    uint public constant MAX_VALIDATOR_LIMIT = 100;
+    uint public validatorLimit;
 
     address[] public validators;
     mapping (address => ValidatorData) public validatorsData;
 
+    constructor(uint _validatorLimit) public {
+        require(_validatorLimit <= MAX_VALIDATOR_LIMIT, "Validator limit too high");
+        require(_validatorLimit > 0, "Validator limit must be a positive value");
+
+        validatorLimit = _validatorLimit;
+    }
+
     function addValidator(address _validator) public onlyOwner {
         require(_validator != address(0), "Address must not be 0!");
-        require(validators.length <= MAX_FEDERATION_MEMBERS - 1, "Can't add more members!");
+        require(validators.length <= validatorLimit - 1, "Can't add more members!");
 
         require(!isValidator(_validator), "Address must not be already a member");
 

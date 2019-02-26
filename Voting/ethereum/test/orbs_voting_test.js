@@ -3,8 +3,6 @@ const VotingContract = artifacts.require('OrbsVoting');
 
 const harness = require('./harness');
 
-const REJECTED = "REJECTED";
-
 contract('Voting', accounts => {
     describe('when calling the vote() function', () => {
         it('should emit one Vote event', async () => {
@@ -33,15 +31,13 @@ contract('Voting', accounts => {
         it('should reject calls with empty array', async () => {
             let instance = await VotingContract.deployed();
 
-            let result = await instance.vote([]).catch(()=>REJECTED);
-            assert.equal(result, REJECTED);
+            await harness.assertReject(instance.vote([]));
         });
 
         it('should reject calls with 0 address', async () => {
             let instance = await VotingContract.deployed();
 
-            let result = await instance.vote([harness.numToAddress(1), harness.numToAddress(0)]).catch(()=>REJECTED);
-            assert.equal(result, REJECTED);
+            await harness.assertReject(instance.vote([harness.numToAddress(1), harness.numToAddress(0)]));
         });
 
         it('should consume gas consistently regardless of voting history', async () => {
@@ -101,9 +97,7 @@ contract('Voting', accounts => {
 
         it('fails if guardian never voted', async () => {
             let instance = await VotingContract.deployed();
-            const result = await instance.getLastVote(harness.numToAddress(654)).catch(() => REJECTED);
-
-            assert.equal(result, REJECTED);
+            await harness.assertReject(instance.getLastVote(harness.numToAddress(654)));
         });
     });
 });
