@@ -1,7 +1,7 @@
-package test
+package it
 
 import (
-	"github.com/orbs-network/orbs-ethereum-contracts/Voting/test/driver"
+	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
 	"testing"
 )
 
