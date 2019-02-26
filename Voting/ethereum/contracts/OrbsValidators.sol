@@ -11,6 +11,9 @@ interface IOrbsValidatorsRegistry {
 }
 
 interface IOrbsValidators {
+    event ValidatorAdded(address indexed validator);
+    event ValidatorLeft(address indexed validator);
+
     function addValidator(address _validator) external;
     function isValidator(address m) external view returns (bool);
     function getValidators() external view returns (address[] memory);
@@ -25,9 +28,6 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         string website;
         address orbsAddress;
     }
-
-    event ValidatorAdded(address indexed validator);
-    event ValidatorLeft(address indexed validator);
 
     // The version of the current federation smart contract.
     uint public constant VERSION = 1;

@@ -1,6 +1,9 @@
 pragma solidity 0.5.3;
 
 interface IOrbsVoting {
+    event Vote(address indexed voter, address[] nodes_list, uint vote_counter);
+    event Delegate(address indexed stakeholder, address indexed to, uint delegation_counter);
+
     function vote(address[] calldata nodes_list) external;
     function delegate(address to) external;
 }
@@ -10,8 +13,6 @@ contract OrbsVoting is IOrbsVoting {
         uint block_height;
         address[] nodes;
     }
-    event Vote(address indexed voter, address[] nodes_list, uint vote_counter);
-    event Delegate(address indexed stakeholder, address indexed to, uint delegation_counter);
 
     uint vote_counter = 0; // will reset back to zero when uint is exhausted
     uint delegation_counter = 0; // will reset back to zero when uint is exhausted
