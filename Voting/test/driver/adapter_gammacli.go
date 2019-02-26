@@ -29,8 +29,8 @@ type gammaCliAdapter struct {
 }
 
 func (gc *gammaCliAdapter) DeployContract(orbsVotingContractName string, orbsValidatorsConfigContractName string) {
-	gc.run("deploy ./orbs-contracts/_OrbsVoting/orbs_voting_contract.go -name " + orbsVotingContractName + " -signer user1")
-	gc.run("deploy ./orbs-contracts/_OrbsValidatorsConfig/orbs_validators_config_contract.go -name " + orbsValidatorsConfigContractName + " -signer user1")
+	gc.run("deploy ./../orbs/_OrbsVoting/orbs_voting_contract.go -name " + orbsVotingContractName + " -signer user1")
+	gc.run("deploy ./../orbs/_OrbsValidatorsConfig/orbs_validators_config_contract.go -name " + orbsValidatorsConfigContractName + " -signer user1")
 }
 
 func (gc *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {

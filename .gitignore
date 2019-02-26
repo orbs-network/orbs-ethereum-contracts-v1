@@ -2,6 +2,9 @@
 *.log
 
 .vscode/
+.idea/
+
+ASB/build
 
 Federation/dist
 Federation/coverage
@@ -11,8 +14,11 @@ Federation/allFiredEvents
 Federation/scTopics
 Federation/Unified.sol
 
-.idea/
+#consider removing this at all
+TestingERC20/build
+
+Voting/ethereum/build/
+Voting/test/build/
 
 **/node_modules/
-Voting/ethereum/build/
 # **/build/
