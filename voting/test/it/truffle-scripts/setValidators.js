@@ -12,7 +12,7 @@ module.exports = async function(done) {
       throw("missing env variable VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM");
     }
 
-    const validatorsInstance = await artifacts.require('Federation').at(validatorsContractAddress);
+    const validatorsInstance = await artifacts.require('IOrbsValidators').at(validatorsContractAddress);
 
     let accounts = await web3.eth.getAccounts();
     let validatorIndexes = JSON.parse(validatorAccountOnEthereumIndexes);

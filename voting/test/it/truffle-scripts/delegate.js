@@ -17,7 +17,7 @@ module.exports = async function(done) {
       throw("missing env variable TO_ACCOUNT_INDEX_ON_ETHEREUM");
     }
 
-    const votingInstance = await artifacts.require('Voting').at(votingContractAddress);
+    const votingInstance = await artifacts.require('IOrbsVoting').at(votingContractAddress);
 
     let accounts = await web3.eth.getAccounts();
     console.log(`from ${accounts[userAccountFrom]}(ind: ${userAccountFrom}) to ${accounts[userAccountTo]}(ind: ${userAccountTo})`);

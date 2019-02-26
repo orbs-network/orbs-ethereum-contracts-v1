@@ -12,7 +12,7 @@ module.exports = async function(done) {
       throw("missing env variable NUMBER_OF_STAKEHOLDERS_ETHEREUM");
     }
 
-    const ercToken = artifacts.require('TestingERC20');
+    const ercToken = artifacts.require('IERC20');
     const instance = await ercToken.at(erc20ContractAddress);
 
     let accounts = await web3.eth.getAccounts();

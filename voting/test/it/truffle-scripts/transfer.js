@@ -22,7 +22,7 @@ module.exports = async function(done) {
       throw("missing env variable TRANSFER_AMOUNT");
     }
 
-    const ercToken = artifacts.require('TestingERC20');
+    const ercToken = artifacts.require('IERC20');
     const instance = await ercToken.at(erc20ContractAddress);
 
 

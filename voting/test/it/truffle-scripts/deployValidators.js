@@ -1,7 +1,7 @@
 module.exports = async function(done) {
   try {
 
-    const validators = artifacts.require('Federation');
+    const validators = artifacts.require('OrbsValidators');
     let instance = await validators.new();
 
     console.log(JSON.stringify({
