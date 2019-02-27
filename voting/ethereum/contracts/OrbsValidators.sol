@@ -106,21 +106,31 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
 
     function getValidatorData(address _validator) public view returns (string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) {
         require(isValidator(_validator), "Please provide a listed Validator");
+        require(isSet(validatorsData[_validator]), "Validator data has not been set");
+
         return (validatorsData[_validator].name, validatorsData[_validator].ipvAddress, validatorsData[_validator].website, validatorsData[_validator].orbsAddress);
     }
 
     function getOrbsAddress(address _validator) public view returns (address _orbsAddress) {
         require(isValidator(_validator), "Please provide a listed Validator");
+        require(isSet(validatorsData[_validator]), "Validator data has not been set");
+
         return validatorsData[_validator].orbsAddress;
     }
 
     function getNetworkTopology() public view returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses) {
-        nodeAddresses = new address[](validators.length);
-        ipAddresses = new bytes4[](validators.length);
+        uint activeValidatorCount = countActiveValidators();
+        nodeAddresses = new address[](activeValidatorCount);
+        ipAddresses = new bytes4[](activeValidatorCount);
 
+        uint pushAt = 0;
         for (uint i = 0; i < validators.length; ++i) {
-            nodeAddresses[i] = validatorsData[validators[i]].orbsAddress;
-            ipAddresses[i] = ipv4Address(validatorsData[validators[i]].ipvAddress);
+            ValidatorData storage data = validatorsData[validators[i]];
+            if (isSet(data)) {
+                nodeAddresses[pushAt] = data.orbsAddress;
+                ipAddresses[pushAt] = ipv4Address(data.ipvAddress);
+                pushAt++;
+            }
         }
     }
 
@@ -140,5 +150,17 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
             }
         }
         return true;
+    }
+
+    function isSet(ValidatorData storage data) internal view returns (bool) {
+        return bytes(data.name).length > 0;
+    }
+
+    function countActiveValidators() internal view returns (uint count) {
+        for (uint i = 0; i < validators.length; i++) {
+            if (isSet(validatorsData[validators[i]])) {
+                count++;
+            }
+        }
     }
 }

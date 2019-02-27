@@ -1,12 +1,14 @@
 
 const OrbsValidators = artifacts.require('OrbsValidators');
-const harness = require('./harness');
+const driver = require('./driver');
+const assertResolve = require('./assertExtensions').assertResolve;
+const assertReject = require('./assertExtensions').assertReject;
 
 contract('OrbsValidators', accounts => {
     describe('when calling the addValidator() function', () => {
         it('should add the member to the list and emit event', async () => {
-            let instance = await OrbsValidators.deployed();
-            const validatorAddr  = harness.numToAddress(1);
+            let instance = await OrbsValidators.new(100);
+            const validatorAddr  = driver.numToAddress(1);
 
             let r = await instance.addValidator(validatorAddr);
             assert.equal(r.logs[0].event, "ValidatorAdded");
@@ -16,62 +18,69 @@ contract('OrbsValidators', accounts => {
         });
 
         it('should not allow address 0', async () => {
-            let instance = await OrbsValidators.deployed();
+            let instance = await OrbsValidators.new(100);
 
-            await harness.assertReject(instance.addValidator(harness.numToAddress(0)));
+            await assertReject(instance.addValidator(driver.numToAddress(0)));
         });
 
         it('does not allow initializing with validator limit out of range', async () => {
-            await harness.assertResolve(OrbsValidators.new(100));
+            await assertResolve(OrbsValidators.new(100));
 
-            await harness.assertReject(OrbsValidators.new(101));
-            await harness.assertReject(OrbsValidators.new(0));
+            await assertReject(OrbsValidators.new(101));
+            await assertReject(OrbsValidators.new(0));
         });
 
         it('enforces validator limit', async () => {
             const instance = await OrbsValidators.new(1);
 
-            await instance.addValidator(harness.numToAddress(1));
-            await harness.assertReject(instance.addValidator(harness.numToAddress(2)));
+            await instance.addValidator(driver.numToAddress(1));
+            await assertReject(instance.addValidator(driver.numToAddress(2)));
         });
 
         it('allows only owner to add validators', async () => {
-            let instance = await OrbsValidators.deployed();
-            await harness.assertReject(instance.addValidator(harness.numToAddress(22234), {from: accounts[1]}));
+            let instance = await OrbsValidators.new(100);
+            await assertReject(instance.addValidator(driver.numToAddress(22234), {from: accounts[1]}));
         });
 
     });
 
     describe('when calling the getValidators() function', () => {
-        it('should return all members', async () => {
-            let instance = await OrbsValidators.deployed();
-            const validatorAddr  = harness.numToAddress(1);
+        it('should return all validators with set data', async () => {
+            let instance = await OrbsValidators.new(100);
 
             let members = await instance.getValidators();
-            assert.lengthOf(members, 1);
+            assert.lengthOf(members, 0);
+
+            const validatorAddr1  = driver.numToAddress(1);
+            const validatorAddr2  = driver.numToAddress(2);
+
+            await assertResolve(instance.addValidator(validatorAddr1));
+            await assertResolve(instance.addValidator(validatorAddr2));
 
             members = await instance.getValidators();
 
-            assert.lengthOf(members, 1);
-            assert.equal(members[0], validatorAddr)
+            assert.equal(members[0], validatorAddr1);
+            assert.equal(members[1], validatorAddr2);
+            assert.lengthOf(members, 2);
         });
     });
 
     describe('when calling the isValidator() function', () => {
         it('should return true for listed validators and false to unknown validators', async () => {
-            let instance = await OrbsValidators.deployed();
-            const validatorAddr  = harness.numToAddress(1);
-            const nonValidatorAddr  = harness.numToAddress(894);
+            let instance = await OrbsValidators.new(100);
+            const validatorAddr  = driver.numToAddress(1);
+            const nonValidatorAddr  = driver.numToAddress(894);
+
+            await assertResolve(instance.addValidator(validatorAddr));
 
             assert.isOk(await instance.isValidator(validatorAddr));
             assert.isNotOk(await instance.isValidator(nonValidatorAddr));
-
         });
     });
 
     describe('when calling the leave() function', () => {
         it('should fail for non member but succeed when called by a member', async () => {
-            let instance = await OrbsValidators.deployed();
+            let instance = await OrbsValidators.new(100);
 
             await instance.addValidator(accounts[0]);
             assert.isOk(await instance.isValidator(accounts[0]));
@@ -90,7 +99,7 @@ contract('OrbsValidators', accounts => {
         });
 
         it('should emit event', async () => {
-            let instance = await OrbsValidators.deployed();
+            let instance = await OrbsValidators.new(100);
 
             await instance.addValidator(accounts[0]);
 
@@ -102,46 +111,48 @@ contract('OrbsValidators', accounts => {
     describe('when setValidatorData() is called', () => {
         const name = "somename";
         const url = "http://somedomain.com/";
-        const orbsAddr = harness.numToAddress(8765);
+        const orbsAddr = driver.numToAddress(8765);
         const ip = "0x01020304"; // 4 bytes representing an address
 
-        it('should set data and return in using getValidatorData()', async () => {
-            let instance = await OrbsValidators.deployed();
+        describe('and then getValidatorData() is called', () => {
+            it('should return the entry', async () => {
+                let instance = await OrbsValidators.new(100);
 
-            await instance.addValidator(accounts[1]);
-            await instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[1]});
-            let result = await instance.getValidatorData(accounts[1]);
+                await instance.addValidator(accounts[1]);
+                await instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[1]});
+                let result = await instance.getValidatorData(accounts[1]);
 
-            assert.equal(result._name, name);
-            assert.equal(result._ipvAddress, ip);
-            assert.equal(result._website, url);
-            assert.equal(result._orbsAddress, orbsAddr);
-            assert.equal(result._name, result[0]);
-            assert.equal(result._ipvAddress, result[1]);
-            assert.equal(result._website, result[2]);
-            assert.equal(result._orbsAddress, orbsAddr);
+                assert.equal(result._name, name);
+                assert.equal(result._ipvAddress, ip);
+                assert.equal(result._website, url);
+                assert.equal(result._orbsAddress, orbsAddr);
+                assert.equal(result._name, result[0]);
+                assert.equal(result._ipvAddress, result[1]);
+                assert.equal(result._website, result[2]);
+                assert.equal(result._orbsAddress, orbsAddr);
 
-            await harness.assertResolve(instance.leave({from: accounts[1]})); // cleanup
+                await assertResolve(instance.leave({from: accounts[1]})); // cleanup
+            });
         });
 
         it('should reject invalid input', async () => {
-            let instance = await OrbsValidators.deployed();
+            let instance = await OrbsValidators.new(100);
             await instance.addValidator(accounts[0]);
 
-            await harness.assertReject(instance.setValidatorData("", ip, url, orbsAddr));
-            await harness.assertReject(instance.setValidatorData(undefined, ip, url, orbsAddr));
+            await assertReject(instance.setValidatorData("", ip, url, orbsAddr));
+            await assertReject(instance.setValidatorData(undefined, ip, url, orbsAddr));
 
-            await harness.assertResolve(instance.setValidatorData(name, ip, url, orbsAddr));
+            await assertResolve(instance.setValidatorData(name, ip, url, orbsAddr));
 
-            await harness.assertReject(instance.setValidatorData(name, ip, "", orbsAddr));
-            await harness.assertReject(instance.setValidatorData(name, ip, undefined, orbsAddr));
+            await assertReject(instance.setValidatorData(name, ip, "", orbsAddr));
+            await assertReject(instance.setValidatorData(name, ip, undefined, orbsAddr));
 
-            await harness.assertResolve(instance.setValidatorData(name, ip, url, orbsAddr));
+            await assertResolve(instance.setValidatorData(name, ip, url, orbsAddr));
 
-            await harness.assertReject(instance.setValidatorData(name, ip, url, "0x0"));
-            await harness.assertReject(instance.setValidatorData(name, ip, url, undefined));
+            await assertReject(instance.setValidatorData(name, ip, url, "0x0"));
+            await assertReject(instance.setValidatorData(name, ip, url, undefined));
 
-            await harness.assertResolve(instance.setValidatorData(name, ip, url, orbsAddr));
+            await assertResolve(instance.setValidatorData(name, ip, url, orbsAddr));
         });
 
         it('should reject duplicate entries', async () => {
@@ -150,44 +161,83 @@ contract('OrbsValidators', accounts => {
             const name2 = "another Name";
             const ip2 = [0,0,0,0];
             const url2 = "http://";
-            const orbsAddr2 = harness.numToAddress(39567);
+            const orbsAddr2 = driver.numToAddress(39567);
 
+            await instance.addValidator(accounts[0]);
             await instance.addValidator(accounts[1]);
-            await harness.assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2), 'expected default account to succeed in setting value set #2');
-            await harness.assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2), 'expected setting the same values twice to succeed (duplicate values for same account)');
-            await harness.assertResolve(instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[1]}), 'expected alternate account to receive value set #1');
 
-            await harness.assertReject(instance.setValidatorData(name, ip2, url2, orbsAddr2), "expected setting another's name to fail");
-            await harness.assertReject(instance.setValidatorData(name2, ip, url2, orbsAddr2), "expected setting another's ip to fail");
-            await harness.assertReject(instance.setValidatorData(name2, ip2, url, orbsAddr2), "expected setting another's url to fail");
-            await harness.assertReject(instance.setValidatorData(name2, ip2, url2, orbsAddr), "expected setting another's orbsAddress to fail");
+            await assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2), 'expected default account to succeed in setting value set #2');
+            await assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2), 'expected setting the same values twice to succeed (duplicate values for same account)');
+            await assertResolve(instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[1]}), 'expected alternate account to receive value set #1');
+
+            await assertReject(instance.setValidatorData(name, ip2, url2, orbsAddr2), "expected setting another's name to fail");
+            await assertReject(instance.setValidatorData(name2, ip, url2, orbsAddr2), "expected setting another's ip to fail");
+            await assertReject(instance.setValidatorData(name2, ip2, url, orbsAddr2), "expected setting another's url to fail");
+            await assertReject(instance.setValidatorData(name2, ip2, url2, orbsAddr), "expected setting another's orbsAddress to fail");
         });
 
         it('should fail if called by non validator', async () => {
-            let instance = await OrbsValidators.deployed();
+            let instance = await OrbsValidators.new(100);
             await instance.leave();
-            await harness.assertReject(instance.setValidatorData(name, ip, url, orbsAddr));
+            await assertReject(instance.setValidatorData(name, ip, url, orbsAddr));
         });
 
         it('should reject an ip address longer than 4 bytes', async () => {
-            let instance = await OrbsValidators.deployed();
+            let instance = await OrbsValidators.new(100);
 
-            await instance.addValidator(accounts[0]);
-            await harness.assertResolve(instance.setValidatorData(name, "0x0102030400000000000000", url, orbsAddr));
+            await assertResolve(instance.addValidator(accounts[0]));
+            await assertResolve(instance.setValidatorData(name, "0x0102030400000000000000", url, orbsAddr));
 
-            await harness.assertReject(instance.setValidatorData(name, "0x0102030400000000000001", url, orbsAddr));
+            await assertReject(instance.setValidatorData(name, "0x0102030400000000000001", url, orbsAddr));
         });
     });
 
     describe('when getValidatorData() is called', () => {
-        // TODO fill
+        it('should return an error if no data was previously set', async () => {
+            let instance = await OrbsValidators.new(100);
+
+            await assertResolve(instance.addValidator(accounts[0]));
+            await assertReject(instance.getValidatorData(accounts[0]));
+        });
     });
 
     describe('when getOrbsAddress() is called', () => {
-        // TODO fill
+        it('should return the last address set, or an error if no data was set', async () => {
+            let instance = await OrbsValidators.new(100);
+
+            const orbsAddress = driver.numToAddress(12345);
+
+            await assertResolve(instance.addValidator(accounts[0]));
+            await assertReject(instance.getOrbsAddress(accounts[0]));
+
+            await instance.setValidatorData("test", "0xaabbccdd", "url", orbsAddress);
+            const fetchedAddress = await instance.getOrbsAddress(accounts[0]);
+
+            assert.equal(fetchedAddress, orbsAddress, "expected fetched address to match the last one set");
+        });
     });
 
     describe('when getNetworkTopology() is called', () => {
-        // TODO fill
+        it('should return the all the addresses of validators that were set', async () => {
+            let instance = await OrbsValidators.new(100);
+
+            let addresses = [driver.numToAddress(12345), driver.numToAddress(6789)];
+            let ips = ["0xaabbccdd", "0x11223344"];
+
+
+            await assertResolve(instance.addValidator(accounts[0]));
+            await assertResolve(instance.addValidator(accounts[1])); // decoy - we never set data for this guy
+            await assertResolve(instance.addValidator(accounts[2]));
+
+            // set data only for the first and the last
+            await instance.setValidatorData("test0", ips[0], "url0", addresses[0], {from: accounts[0]});
+            await instance.setValidatorData("test1", ips[1], "url1", addresses[1], {from: accounts[2]});
+
+            const networkTopology = await instance.getNetworkTopology();
+
+            assert(networkTopology.nodeAddresses.length !== 3, "expected network topology to exclude added validators  with no data set");
+            assert.deepEqual(networkTopology.nodeAddresses, addresses, "expected the array of addresses to return");
+            assert.deepEqual(networkTopology.ipAddresses, ips, "expected the array of ips to return");
+        });
     });
 });

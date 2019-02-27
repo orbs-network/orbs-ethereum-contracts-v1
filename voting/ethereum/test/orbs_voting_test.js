@@ -1,12 +1,14 @@
 
 const VotingContract = artifacts.require('OrbsVoting');
 
-const harness = require('./harness');
+const driver = require('./driver');
+const assertResolve = require('./assertExtensions').assertResolve;
+const assertReject = require('./assertExtensions').assertReject;
 
 contract('Voting', accounts => {
     describe('when calling the vote() function', () => {
         it('should emit one Vote event', async () => {
-            let instance = await VotingContract.deployed();
+            let instance = await VotingContract.new();
 
             let receipt = await instance.vote(accounts);
 
@@ -18,7 +20,7 @@ contract('Voting', accounts => {
         });
 
         it('should increment vote_counter', async () => {
-            let instance = await VotingContract.deployed();
+            let instance = await VotingContract.new();
 
             let receipt1 = await instance.vote(accounts);
             let receipt2 = await instance.vote(accounts);
@@ -29,15 +31,15 @@ contract('Voting', accounts => {
         });
 
         it('should reject calls with empty array', async () => {
-            let instance = await VotingContract.deployed();
+            let instance = await VotingContract.new();
 
-            await harness.assertReject(instance.vote([]));
+            await assertReject(instance.vote([]));
         });
 
         it('should reject calls with 0 address', async () => {
-            let instance = await VotingContract.deployed();
+            let instance = await VotingContract.new();
 
-            await harness.assertReject(instance.vote([harness.numToAddress(1), harness.numToAddress(0)]));
+            await assertReject(instance.vote([driver.numToAddress(1), driver.numToAddress(0)]));
         });
 
         it('should consume gas consistently regardless of voting history', async () => {
@@ -47,8 +49,8 @@ contract('Voting', accounts => {
 
     describe('when calling the delegate() function', () => {
         it('should emit one Delegate event', async () => {
-            let instance = await VotingContract.deployed();
-            let to = harness.numToAddress(1);
+            let instance = await VotingContract.new();
+            let to = driver.numToAddress(1);
 
             let receipt = await instance.delegate(to);
 
@@ -60,8 +62,8 @@ contract('Voting', accounts => {
         });
 
         it('should increment delegation_counter', async () => {
-            let instance = await VotingContract.deployed();
-            let to = harness.numToAddress(1);
+            let instance = await VotingContract.new();
+            let to = driver.numToAddress(1);
 
             let receipt1 = await instance.delegate(to);
             let receipt2 = await instance.delegate(to);
@@ -74,10 +76,10 @@ contract('Voting', accounts => {
 
     describe('when calling the getLastVote() function', () => {
         it('returns the last vote made by a voter', async () => {
-            let instance = await VotingContract.deployed();
+            let instance = await VotingContract.new();
 
-            const firstVote = [harness.numToAddress(6), harness.numToAddress(7)];
-            const secondVote = [harness.numToAddress(8), harness.numToAddress(9)];
+            const firstVote = [driver.numToAddress(6), driver.numToAddress(7)];
+            const secondVote = [driver.numToAddress(8), driver.numToAddress(9)];
 
             const firstVoteBlockHeight = await instance.vote(firstVote).then(r => r.receipt.blockNumber);
             const reportedFirstVote = await instance.getLastVote(accounts[0]);
@@ -96,8 +98,8 @@ contract('Voting', accounts => {
         });
 
         it('fails if guardian never voted', async () => {
-            let instance = await VotingContract.deployed();
-            await harness.assertReject(instance.getLastVote(harness.numToAddress(654)));
+            let instance = await VotingContract.new();
+            await assertReject(instance.getLastVote(driver.numToAddress(654)));
         });
     });
 });
