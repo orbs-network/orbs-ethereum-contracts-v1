@@ -2,7 +2,7 @@ import './App.css';
 import Home from '../../pages/Home';
 import React, { Component } from 'react';
 import GuardianPage from '../../pages/Guardrians';
-import Stakeholders from '../../pages/Stakeholders';
+import StakeholderPage from '../../pages/Stakeholders';
 import {
   BrowserRouter as Router,
   Route,
@@ -10,10 +10,16 @@ import {
   RouteProps
 } from 'react-router-dom';
 import MetamaskService from '../../services/metamask';
-import { validatorsContractFactory } from '../../services/contracts';
+import {
+  validatorsContractFactory,
+  guardiansContractFactory,
+  votingContractFactory
+} from '../../services/contracts';
 
 interface IState {
   validatorsContract: Object;
+  guardiansContract: Object;
+  votingContract: Object;
   metamaskService: MetamaskService;
 }
 
@@ -22,11 +28,13 @@ class App extends Component<{}, IState> {
     super(props);
     this.state = {
       validatorsContract: validatorsContractFactory(),
+      guardiansContract: guardiansContractFactory(),
+      votingContract: votingContractFactory(),
       metamaskService: new MetamaskService()
     };
   }
-  componentDidMount() {
-    this.state.metamaskService.enable();
+  async componentDidMount() {
+    await this.state.metamaskService.enable();
   }
   render() {
     return (
@@ -39,7 +47,9 @@ class App extends Component<{}, IState> {
                 <Link to="/">Home</Link>
               </li>
               <li>
-                <Link to="/stakeholder">Stakeholder</Link>
+                <Link to="/stakeholder" data-hook="nav-stakeholder">
+                  Stakeholder
+                </Link>
               </li>
               <li>
                 <Link to="/guardian">Guardian</Link>
@@ -48,13 +58,24 @@ class App extends Component<{}, IState> {
           </nav>
           <main>
             <Route exact path="/" component={Home} />
-            <Route path="/stakeholder" component={Stakeholders} />
+            <Route
+              path="/stakeholder"
+              component={(props: RouteProps) => (
+                <StakeholderPage
+                  {...props}
+                  votingContract={this.state.votingContract}
+                  metamaskService={this.state.metamaskService}
+                  guardiansContract={this.state.guardiansContract}
+                />
+              )}
+            />
             <Route
               path="/guardian"
               component={(props: RouteProps) => (
                 <GuardianPage
                   {...props}
                   validatorsContract={this.state.validatorsContract}
+                  votingContract={this.state.votingContract}
                   metamaskService={this.state.metamaskService}
                 />
               )}

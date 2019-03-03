@@ -24,6 +24,7 @@
   },
   "scripts": {
     "postinstall": "npm run copy-contracts",
+    "prestart": "node ./harness.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

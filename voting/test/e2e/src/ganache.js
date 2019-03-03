@@ -18,4 +18,4 @@ const stop = async containerId => {
   return docker.command(`stop ${containerId}`);
 };
 
-module.exports = { start, stop };
+module.exports = { start, stop, GANACHE_PORT };
