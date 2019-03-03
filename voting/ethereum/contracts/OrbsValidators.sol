@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IOrbsNetworkTopology.sol";
 
 interface IOrbsValidatorsRegistry {
-    function setValidatorData(string calldata _name, bytes calldata _ipvAddress, string calldata _website, address _orbsAddress) external;
+    function register(string calldata _name, bytes calldata _ipvAddress, string calldata _website, address _orbsAddress) external;
     function getValidatorData(address _validator) external view returns (string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress);
     function getOrbsAddress(address _validator) external view returns (address _orbsAddress);
 }
@@ -16,7 +16,6 @@ interface IOrbsValidators {
     function addValidator(address _validator) external;
     function isValidator(address m) external view returns (bool);
     function getValidators() external view returns (address[] memory);
-    function leave() external returns (bool);
 }
 
 contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IOrbsNetworkTopology {
@@ -35,19 +34,23 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
     uint public constant MAX_VALIDATOR_LIMIT = 100;
     uint public validatorLimit;
 
+    IOrbsValidatorsRegistry public registry;
+
     address[] public validators;
     mapping (address => ValidatorData) public validatorsData;
 
-    constructor(uint _validatorLimit) public {
-        require(_validatorLimit <= MAX_VALIDATOR_LIMIT, "Validator limit too high");
+    constructor(address _registryAddress, uint _validatorLimit) public {
+        require(_registryAddress != address(0), "Registry contract address may not be 0!");
         require(_validatorLimit > 0, "Validator limit must be a positive value");
+        require(_validatorLimit <= MAX_VALIDATOR_LIMIT, "Validator limit too high");
 
         validatorLimit = _validatorLimit;
+        registry = IOrbsValidatorsRegistry(_registryAddress);
     }
 
     function addValidator(address _validator) public onlyOwner {
         require(_validator != address(0), "Address must not be 0!");
-        require(validators.length <= validatorLimit - 1, "Can't add more members!");
+        require(validators.length <= validatorLimit - 1 && validators.length <= MAX_VALIDATOR_LIMIT - 1, "Can't add more members!");
 
         require(!isValidator(_validator), "Address must not be already a member");
 
@@ -97,7 +100,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         return false;
     }
 
-    function setValidatorData(string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) public {
+    function register(string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) public {
         require(bytes(_name).length > 0, "Please provide a valid name");
         require(bytes(_website).length > 0, "Please provide a valid website");
         require(isIpv4(_ipvAddress), "Please pass an address of up to 4 bytes");
