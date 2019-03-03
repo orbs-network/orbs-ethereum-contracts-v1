@@ -1,47 +1,79 @@
 import React, { useEffect, useState } from 'react';
+import { get, save } from '../../services/vote-storage';
 
-const GuardianPage = ({ validatorsContract, metamaskService }) => {
-  const [validators, setValidators] = useState([]);
-  const [candidateValidator, setCandidateValidator] = useState('');
+const GuardianPage = ({
+  validatorsContract,
+  votingContract,
+  metamaskService
+}) => {
+  const [validators, setValidators] = useState({});
+  const [proposedValidator, setProposedValidator] = useState('');
 
   const from = metamaskService.getCurrentAddress();
 
-  const fetchValidators = () => {
-    validatorsContract.methods
+  const fetchValidators = async () => {
+    const validatorsInState = await validatorsContract.methods
       .getValidators()
-      .call({ from })
-      .then(setValidators);
+      .call({ from });
+
+    const validatorsInStorage = get();
+    const resultValidators = {};
+    validatorsInState.forEach(address => (resultValidators[address] = false));
+    validatorsInStorage.forEach(address => (resultValidators[address] = true));
+    setValidators(resultValidators);
   };
 
   const addValidator = () => {
     validatorsContract.methods
-      .addValidator(candidateValidator)
+      .addValidator(proposedValidator)
       .send({ from })
-      .then(() => setCandidateValidator(''));
+      .then(() => setProposedValidator(''));
+  };
+
+  const commitVote = async () => {
+    const stagedValidators = Object.keys(validators).filter(
+      address => validators[address]
+    );
+    await votingContract.methods.vote(stagedValidators).send({ from });
+    save(stagedValidators);
+  };
+
+  const toggleCheck = (address: string) => {
+    validators[address] = !validators[address];
   };
 
   useEffect(() => {
     fetchValidators();
-  });
+  }, []);
 
   return (
-    <div>
+    <>
       <h3>Hello Guardian, {from}</h3>
       <ul>
-        {validators.map(validator => (
-          <li key={validator}>{validator}</li>
-        ))}
+        {Object.keys(validators) &&
+          Object.keys(validators).map(address => (
+            <li key={address}>
+              <input
+                type="checkbox"
+                value={address}
+                defaultChecked={validators[address]}
+                onChange={() => toggleCheck(address)}
+              />
+              <span>{address}</span>
+            </li>
+          ))}
       </ul>
       <div>
         <input
           type="text"
           placeholder="Enter validator address"
-          value={candidateValidator}
-          onChange={ev => setCandidateValidator(ev.target.value)}
+          value={proposedValidator}
+          onChange={ev => setProposedValidator(ev.target.value)}
         />
         <button onClick={addValidator}>Add</button>
+        <button onClick={commitVote}>Vote</button>
       </div>
-    </div>
+    </>
   );
 };
 

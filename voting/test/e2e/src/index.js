@@ -1,9 +1,8 @@
-const util = require('util');
+const ganache = require('./ganache');
 const puppeteer = require('puppeteer');
+const contracts = require('./contracts');
 const staticServer = require('./static-server');
 const metamask = require('./metamask-extension');
-const contracts = require('./contracts');
-const ganache = require('./ganache');
 
 let containerId, staticServerProcess, browser;
 
@@ -16,12 +15,8 @@ let containerId, staticServerProcess, browser;
  * 5. Start static server
  * 6. Configure metamask extension
  * 7. Inject contract addresses to voting page
- *
  */
 const setup = async () => {
-  // await util.promisify(exec)('./scripts/build-client.sh');
-  // await util.promisify(exec)('./scripts/build-metamask.sh');
-  containerId = await ganache.start();
   const contractAddresses = await contracts.deploy();
   staticServerProcess = staticServer.start();
 
@@ -36,19 +31,20 @@ const setup = async () => {
   await votingPage.evaluateOnNewDocument(OrbsContractsInfo => {
     window['__OrbsContractsInfo__'] = OrbsContractsInfo;
   }, contractAddresses);
-  
+
   await votingPage.goto(`http://localhost:${staticServer.PORT}/voting`, {
     waitUntil: 'networkidle2'
   });
 
   await metamask.configure(browser);
   await votingPage.bringToFront();
+
+  return { page: votingPage, browser };
 };
 
 const tearDown = async () => {
   await browser.close();
   await staticServerProcess.kill();
-  await ganache.stop(containerId);
 };
 
 module.exports = { setup, tearDown };

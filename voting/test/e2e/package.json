@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "lint": "prettier --single-quote --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+    "lint": "prettier --single-quote --write '{src,__tests__}/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "test": "jest"
   },
   "keywords": [],
   "author": "sergey@orbs.com",
