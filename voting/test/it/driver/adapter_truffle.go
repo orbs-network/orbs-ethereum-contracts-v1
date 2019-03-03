@@ -90,7 +90,7 @@ func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
 	}
 	out, _ := json.Marshal(ethStakes)
 
-	ta.run("exec ./truffle-scripts/fundstakes.js",
+	ta.run("exec ./truffle-scripts/fundStakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"ACCOUNT_STAKES_ON_ETHEREUM="+string(out),
 	)

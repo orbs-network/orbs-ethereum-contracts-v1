@@ -1,0 +1,14 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "_getDelegatorStake",
+    "Arguments": [
+        {
+            "Type": "bytes",
+            "Value": "0xe46Dd32d653C1dea4F8272b83656534374883654"
+        },
+        {
+            "Type": "uint64",
+            "Value": "0"
+        }
+    ]
+}

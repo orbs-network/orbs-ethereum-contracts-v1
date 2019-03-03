@@ -4,116 +4,8 @@ const networkConnectionUrl = process.env.NETWORK_URL_ON_ETHEREUM;
 const votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
 const startBlock = process.env.START_BLOCK_ON_ETHEREUM;
 const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
-const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes_list","type":"address[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeholder","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes_list","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
-/*const VOTING_ABI = [
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "vote_counter",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function",
-        "signature": "0xcab1e244"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "delegation_counter",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function",
-        "signature": "0xf28583cd"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "name": "activist",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "name": "candidates",
-                "type": "address[]"
-            },
-            {
-                "indexed": false,
-                "name": "vote_counter",
-                "type": "uint256"
-            }
-        ],
-        "name": "Vote",
-        "type": "event",
-        "signature": "0x8e74707f33682297df744388ec6b7a56c219db104289e482dd949ba15f80213d"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "name": "stakeholder",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "name": "activist",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "name": "delegation_counter",
-                "type": "uint256"
-            }
-        ],
-        "name": "Delegate",
-        "type": "event",
-        "signature": "0x510b11bb3f3c799b11307c01ab7db0d335683ef5b2da98f7697de744f465eacc"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "candidates",
-                "type": "address[]"
-            }
-        ],
-        "name": "vote",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0xed081329"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "activist",
-                "type": "address"
-            }
-        ],
-        "name": "delegate",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x5c19a95c"
-    }
-];
-*/
+const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodeslist","type":"address[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeholder","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes_list","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
+
 async function getVoteEvents(tokenContract) {
     let options = {
         fromBlock: startBlock,
@@ -126,6 +18,7 @@ async function getVoteEvents(tokenContract) {
         let events = await tokenContract.getPastEvents('Vote', options);
         for (let i = events.length-1; i >= 0;i--) {
             let event = events[i];
+            //console.log(event);
             let activistAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);//event.returnValues['0'];
             let currentActivistIndex = mapActivistToVote[activistAddress];
             if (typeof currentActivistIndex === 'number' && isObjectNewerThanTx(votes[currentActivistIndex], event) ) {
@@ -155,7 +48,7 @@ function getAddressFromTopic(event, i) {
 }
 
 function getCandidates(event) {
-    return event.returnValues.candidates;
+    return event.returnValues.nodeslist;
 }
 
 function isObjectNewerThanTx(latestDelegate, event) {

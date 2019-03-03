@@ -2,14 +2,18 @@ package driver
 
 type OrbsAdapter interface {
 	DeployContract(orbsVotingContractName string, orbsConfigContractName string)
+	SetFirstElectionBlockHeight(orbsVotingContractName string, blockHeight int)
 
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
 	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
 	BindVotingContractToEthereum(orbsVotingContractName string, ethereumAsbAddress string)
 
-	MirrorDelegateByTransfer(orbsVotingContractName string, transferTransactionHash string, transferBlockNumber int)
-	MirrorDelegate(orbsVotingContractName string, transferTransactionHash string, transferBlockNumber int)
-	MirrorVote(orbsVotingContractName string, transferTransactionHash string, transferBlockNumber int)
+	MirrorDelegateByTransfer(orbsVotingContractName string, transferTransactionHash string)
+	MirrorDelegate(orbsVotingContractName string, transferTransactionHash string)
+	MirrorVote(orbsVotingContractName string, transferTransactionHash string)
+	GetVoteData(orbsVotingContractName string, activist string) (addresses string, blockNumber uint64, txIndex uint32)
+	GetDelegateData(orbsVotingContractName string, delegator string) (addr string, blockNumber uint64, txIndex uint32, method string)
+	GetDelegatorStakeAtBlockNumber(orbsVotingContractName string, delegator string, blockNumber int) int
 
 	RunVotingProcess(orbsVotingContractName string) bool
 	GetElectedNodes(orbsConfigContractName string, blockHeight int) []string

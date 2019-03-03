@@ -15,6 +15,7 @@ type Config struct {
 	StakeHolderValues         []int
 	ActivistsAccounts         []int
 	ValidatorsAccounts        []int
+	SetupOverEthereumBlock    int
 	Transfers                 []*TransferEvent
 	Delegates                 []*DelegateEvent
 	Votes                     []*VoteEvent

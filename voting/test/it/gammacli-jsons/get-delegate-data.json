@@ -1,0 +1,10 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "getDelegationData",
+    "Arguments": [
+        {
+            "Type": "bytes",
+            "Value": "0xe46Dd32d653C1dea4F8272b83656534374883654"
+        }
+    ]
+}

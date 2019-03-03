@@ -9,31 +9,52 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	require.NoError(t, config.Validate(false))
 	na := NodeAdater(config)
+
+	// TODO NOAM TODO temp TODO v1
+	//ethereum.Transfer(config.EthereumErc20Address, 14, 13, 1)
+	//ethereum.SetValidators(config.EthereumValidatorsAddress, config.ValidatorsAccounts)
+
 	currentBlock := ethereum.GetCurrentBlock()
 
-	logStage("Running script to find Delegate Transfer Events ...")
-	delegateByTransferEvents := na.FindDelegateByTransferEvents(config.EthereumErc20Address, ethereum.GetStartOfHistoryBlock(), currentBlock)
-	// TODO v1 calculate how many delegate transfer, which to/from -- issue i hold index and not address ??
-	//require.Equal(t, 7, len(delegateByTransferEvents), "should be 8 transfer txs")
-	logStageDone("Delegate Transfer events = %v", delegateByTransferEvents)
+	logStage("Set election date ...")
+	orbs.SetFirstElectionBlockHeight(getOrbsVotingContractName(), currentBlock+1)
+	logStageDone("Election date in ethereum block number = %d", currentBlock+1)
 
-	logStage("Mirroring %d Delegate Transfer Events ...", len(delegateByTransferEvents))
-	for _, dt := range delegateByTransferEvents {
-		orbs.MirrorDelegateByTransfer(getOrbsVotingContractName(), dt.TxHash, dt.Block)
-	}
-	logStageDone("Mirroring Delegate Transfer")
-
-	logStage("Running script to find Delegate Events ...")
-	delegateEvents := na.FindDelegateEvents(config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock)
-	// TODO v1 calculate how many delegate which to/from -- issue i hold index and not address ??
-	//require.Equal(t, 7, len(delegateByTransferEvents), "should be 8 transfer txs")
-	logStageDone("Delegate Transfer events = %v", delegateEvents)
-
-	logStage("Mirroring %d Delegate Events ...", len(delegateEvents))
-	for _, dt := range delegateEvents {
-		orbs.MirrorDelegate(getOrbsVotingContractName(), dt.TxHash, dt.Block)
-	}
-	logStageDone("Mirroring Delegate")
+	//logStage("Running script to find Delegate Transfer Events ...")
+	//delegateByTransferEvents := na.FindDelegateByTransferEvents(config.EthereumErc20Address, ethereum.GetStartOfHistoryBlock(), currentBlock)
+	//// TODO v1 calculate how many delegate transfer, which to/from -- issue i hold index and not address ??
+	////require.Equal(t, 7, len(delegateByTransferEvents), "should be 8 transfer txs")
+	//logStageDone("Delegate Transfer events = %v", delegateByTransferEvents)
+	//
+	//logStage("Mirroring %d Delegate Transfer Events ...", len(delegateByTransferEvents))
+	//for _, dt := range delegateByTransferEvents {
+	//	orbs.MirrorDelegateByTransfer(getOrbsVotingContractName(), dt.TxHash)
+	//	// check it was set in state
+	//	addr, blockNumber, txIndex, method := orbs.GetDelegateData(getOrbsVotingContractName(), dt.DelegatorAddress)
+	//	require.EqualValues(t, dt.DelegateeAddress, addr)
+	//	require.EqualValues(t, dt.Block, blockNumber)
+	//	require.EqualValues(t, dt.TransactionIndex, txIndex)
+	//	require.EqualValues(t, dt.Method, method)
+	//}
+	//logStageDone("Mirroring Delegate Transfer")
+	//
+	//logStage("Running script to find Delegate Events ...")
+	//delegateEvents := na.FindDelegateEvents(config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock)
+	//// TODO v1 calculate how many delegate which to/from -- issue i hold index and not address ??
+	////require.Equal(t, 7, len(delegateByTransferEvents), "should be 8 transfer txs")
+	//logStageDone("Delegate Transfer events = %v", delegateEvents)
+	//
+	//logStage("Mirroring %d Delegate Events ...", len(delegateEvents))
+	//for _, dt := range delegateEvents {
+	//	orbs.MirrorDelegate(getOrbsVotingContractName(), dt.TxHash)
+	//	// Checking state after delegation mirror
+	//	addr, blockNumber, txIndex, method := orbs.GetDelegateData(getOrbsVotingContractName(), dt.DelegatorAddress)
+	//	require.EqualValues(t, dt.DelegateeAddress, addr)
+	//	require.EqualValues(t, dt.Block, blockNumber)
+	//	require.EqualValues(t, dt.TransactionIndex, txIndex)
+	//	require.EqualValues(t, dt.Method, method)
+	//}
+	//logStageDone("Mirroring Delegate")
 
 	logStage("Running script to find Voting Events ...")
 	votingEvents := na.FindVoteEvents(config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock)
@@ -43,7 +64,14 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	logStage("Mirroring %d Voting Events ...", len(votingEvents))
 	for _, vt := range votingEvents {
-		orbs.MirrorVote(getOrbsVotingContractName(), vt.TxHash, vt.Block)
+		orbs.MirrorVote(getOrbsVotingContractName(), vt.TxHash)
+	}
+	// Checking state after vote mirror
+	for _, dt := range votingEvents {
+		addrs, blockNumber, txIndex := orbs.GetVoteData(getOrbsVotingContractName(), dt.ActivistAddress)
+		require.EqualValues(t, dt.CandidateAddresses, addrs)
+		require.EqualValues(t, dt.Block, blockNumber)
+		require.EqualValues(t, dt.TransactionIndex, txIndex)
 	}
 	logStageDone("Mirroring Voting")
 

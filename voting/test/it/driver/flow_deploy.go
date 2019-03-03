@@ -53,6 +53,7 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStage("Using existing Ethereum Validators contract...")
 		logStageDone("Ethereum Validators Address=%s", config.EthereumValidatorsAddress)
 	}
+	// TODO NOAM TODO v1 due diligence of validators
 
 	logStage("Binding Ethereum contracts to Orbs ...")
 	orbs.BindERC20ContractToEthereum(getOrbsVotingContractName(), config.EthereumErc20Address)

@@ -1,0 +1,10 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "setFirstElectionBlockHeight",
+    "Arguments": [
+        {
+            "Type": "uint64",
+            "Value": "0"
+        }
+    ]
+}
