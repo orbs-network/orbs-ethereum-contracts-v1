@@ -8,13 +8,28 @@ const StakeholderPage = ({
   const from = metamaskService.getCurrentAddress();
 
   const [candidate, setCandidate] = useState('');
-  const [guardians, setGuardians] = useState([]);
+  const [guardians, setGuardians] = useState({} as {
+    [address: string]: { name: string; url: string };
+  });
 
-  const fetchGuardians = () => {
-    guardiansContract.methods
+  const fetchGuardians = async () => {
+    const addresses = await guardiansContract.methods
       .getGuardians()
-      .call({ from })
-      .then(setGuardians);
+      .call({ from });
+    const details = await Promise.all(
+      addresses.map(address =>
+        guardiansContract.methods.getGuardianData(address).call({ from })
+      )
+    );
+    setGuardians(
+      addresses.reduce((acc, curr, idx) => {
+        acc[curr] = {
+          name: details[idx]['_name'],
+          url: details[idx]['_website']
+        };
+        return acc;
+      }, {})
+    );
   };
 
   useEffect(() => {
@@ -29,20 +44,26 @@ const StakeholderPage = ({
     <>
       <h3>Hello Stakeholder, {from}</h3>
       <div>
-        <ul>
-          {guardians &&
-            guardians.map(g => (
-              <li key={g}>
+        <dl>
+          {Object.keys(guardians) &&
+            Object.keys(guardians).map(address => (
+              <dt key={address}>
                 <input
                   type="radio"
                   name="candidate"
-                  value={g}
+                  value={address}
                   onChange={ev => setCandidate(ev.target.value)}
                 />
-                <span>{g}</span>
-              </li>
+                <a
+                  href={guardians[address].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {guardians[address].name}
+                </a>
+              </dt>
             ))}
-        </ul>
+        </dl>
         <button onClick={delegate}>Delegate</button>
       </div>
     </>

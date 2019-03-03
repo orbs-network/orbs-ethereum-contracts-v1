@@ -6,7 +6,9 @@ const GuardianPage = ({
   votingContract,
   metamaskService
 }) => {
-  const [validators, setValidators] = useState({});
+  const [validators, setValidators] = useState({} as {
+    [address: string]: { checked: boolean; name: string; url: string };
+  });
   const [proposedValidator, setProposedValidator] = useState('');
 
   const from = metamaskService.getCurrentAddress();
@@ -16,10 +18,31 @@ const GuardianPage = ({
       .getValidators()
       .call({ from });
 
+    const validatorsInfo = await Promise.all(
+      validatorsInState.map(address =>
+        validatorsContract.methods.getValidatorData(address).call({ from })
+      )
+    );
+
     const validatorsInStorage = get();
-    const resultValidators = {};
-    validatorsInState.forEach(address => (resultValidators[address] = false));
-    validatorsInStorage.forEach(address => (resultValidators[address] = true));
+
+    const resultValidators = validatorsInState.reduce(
+      (acc, currAddress, idx) => {
+        acc[currAddress] = {
+          checked: false,
+          name: validatorsInfo[idx]['_name'],
+          url: validatorsInfo[idx]['_website']
+        };
+        return acc;
+      },
+      {}
+    );
+
+    validatorsInStorage.forEach(address => {
+      if (resultValidators[address] !== undefined) {
+        resultValidators[address].checked = true;
+      }
+    });
     setValidators(resultValidators);
   };
 
@@ -27,19 +50,20 @@ const GuardianPage = ({
     validatorsContract.methods
       .addValidator(proposedValidator)
       .send({ from })
+      .then(() => fetchValidators())
       .then(() => setProposedValidator(''));
   };
 
   const commitVote = async () => {
     const stagedValidators = Object.keys(validators).filter(
-      address => validators[address]
+      address => validators[address].checked
     );
     await votingContract.methods.vote(stagedValidators).send({ from });
     save(stagedValidators);
   };
 
   const toggleCheck = (address: string) => {
-    validators[address] = !validators[address];
+    validators[address].checked = !validators[address].checked;
   };
 
   useEffect(() => {
@@ -49,20 +73,26 @@ const GuardianPage = ({
   return (
     <>
       <h3>Hello Guardian, {from}</h3>
-      <ul>
+      <dl>
         {Object.keys(validators) &&
           Object.keys(validators).map(address => (
-            <li key={address}>
+            <dt key={address}>
               <input
                 type="checkbox"
                 value={address}
-                defaultChecked={validators[address]}
+                defaultChecked={validators[address].checked}
                 onChange={() => toggleCheck(address)}
               />
-              <span>{address}</span>
-            </li>
+              <a
+                href={validators[address].url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {validators[address].name}
+              </a>
+            </dt>
           ))}
-      </ul>
+      </dl>
       <div>
         <input
           type="text"
