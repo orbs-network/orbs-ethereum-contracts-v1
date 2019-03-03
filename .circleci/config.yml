@@ -15,5 +15,6 @@ jobs:
 workflows:
   version: 2
   commit:
-    - asb
-    - voting
+    jobs:
+      - asb
+      - voting
