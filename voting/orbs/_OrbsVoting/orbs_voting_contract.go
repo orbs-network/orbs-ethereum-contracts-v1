@@ -35,6 +35,8 @@ var DELEGATION_BY_TRANSFER_NAME = "Transfer"
 var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(7)
 var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(500)
 
+var ELECTED_VALIDATORS = 5
+
 // state keys
 var ORBS_CONFIG_CONTRACT_KEY = []byte("_TOKEN_CONTRACT_KEY_")
 var TOKEN_ETH_ADDR_KEY = []byte("_TOKEN_ETH_ADDR_KEY_")
@@ -163,14 +165,15 @@ func mirrorVote(hexEncodedEthTxHash string) {
 			e.Voter, e.Nodeslist, eventBlockHeight, eventBlockTxIndex, stateBlockHeight, stateBlockTxIndex))
 	}
 
-	// TODO noam due-diligent activist missing
-
-	candidates := make([]byte, 0, len(e.Nodeslist)*20)
-	for _, v := range e.Nodeslist {
-		candidates = append(candidates, v[:]...)
+	if stateBlockHeight == 0 { // new guardian
+		numOfGuardians := _getNumberOfGurdians()
+		state.WriteBytes(_formatGuardianIterator(numOfGuardians), e.Voter[:])
+		_setNumberOfGurdians(numOfGuardians + 1)
 	}
 
-	state.WriteBytes(_formatActivistCandidateKey(e.Voter[:]), candidates)
+	// TODO noam due-diligent activist missing
+
+	_setCandidates(e.Voter[:], e.Nodeslist)
 	state.WriteUint64(_formatActivistBlockHeightKey(e.Voter[:]), eventBlockHeight)
 	state.WriteUint32(_formatActivistBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
 }
@@ -181,16 +184,49 @@ func getVoteData(activist []byte) (addr []byte, blockNumber uint64, txIndex uint
 		state.ReadUint32(_formatActivistBlockTxIndexKey(activist))
 }
 
-func _formatActivistCandidateKey(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("Activist_%s_Candidates", hex.EncodeToString(delegator)))
+var GUARDIAN_COUNT = []byte("Guardian_Address_Count")
+
+func _getNumberOfGurdians() uint32 {
+	return state.ReadUint32(GUARDIAN_COUNT)
 }
 
-func _formatActivistBlockHeightKey(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("Activist_%s_BlockHeight", hex.EncodeToString(delegator)))
+func _setNumberOfGurdians(numberOfGuardians uint32) {
+	state.WriteUint32(GUARDIAN_COUNT, numberOfGuardians)
 }
 
-func _formatActivistBlockTxIndexKey(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("Activist_%s_BlockTxIndex", hex.EncodeToString(delegator)))
+func _formatGuardianIterator(num uint32) []byte {
+	return []byte(fmt.Sprintf("Guardian_Address_%d", num))
+}
+
+func _formatActivistCandidateKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Activist_%s_Candidates", hex.EncodeToString(guardian)))
+}
+
+func _getCandidates(guardian []byte) [][20]byte {
+	candidates := state.ReadBytes(_formatActivistCandidateKey(guardian))
+	numCandidate := len(candidates) / 20
+	candidatesList := make([][20]byte, numCandidate)
+	for i := 0; i < numCandidate; i++ {
+		copy(candidatesList[i][:], candidates[i*20:i*20+20])
+	}
+	return candidatesList
+}
+
+func _setCandidates(guardian []byte, candidateList [][20]byte) {
+	candidates := make([]byte, 0, len(candidateList)*20)
+	for _, v := range candidateList {
+		candidates = append(candidates, v[:]...)
+	}
+
+	state.WriteBytes(_formatActivistCandidateKey(guardian), candidates)
+}
+
+func _formatActivistBlockHeightKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Activist_%s_BlockHeight", hex.EncodeToString(guardian)))
+}
+
+func _formatActivistBlockTxIndexKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Activist_%s_BlockTxIndex", hex.EncodeToString(guardian)))
 }
 
 func processVoting() uint64 {
@@ -201,6 +237,66 @@ func processVoting() uint64 {
 	// save to state
 
 	return 1
+}
+
+func processVotingInternal(blockNumber uint64) [][20]byte {
+	var allValidators [][20]byte
+	ethereum.CallMethodAtBlock(blockNumber, getValidatorsAddr(), getValidatorsAbi(), "getValidators", &allValidators)
+
+	validatorsVoted := make(map[[20]byte]uint64)
+	numOfGuardians := _getNumberOfGurdians()
+	for i := uint32(0); i < numOfGuardians; i++ {
+		guardian := state.ReadBytes(_formatGuardianIterator(i))
+		stake := _getDelegatorStake(guardian, blockNumber)
+		candidateList := _getCandidates(guardian)
+		for _, candidate := range candidateList {
+			validatorsVoted[candidate] = validatorsVoted[candidate] + stake
+		}
+	}
+
+	electedValidators := newTopElected(validatorsVoted, ELECTED_VALIDATORS)
+	for validator := range validatorsVoted {
+		electedValidators._push(validator)
+	}
+	//numOfElected := len(validatorsVoted)
+	//electedValidators := make([][20]byte, 0, numOfElected)
+	//for validator := range validatorsVoted {
+	//	electedValidators = append(electedValidators, validator)
+	//}
+
+	return electedValidators.topItems
+}
+
+// TODO NOAM TODO v1 unit test this.
+type topElected struct {
+	base     map[[20]byte]uint64
+	topItems [][20]byte
+	maxSize  int
+	currSize int
+}
+
+func newTopElected(voted map[[20]byte]uint64, maxSize int) *topElected {
+	return &topElected{base: voted, topItems: make([][20]byte, maxSize), maxSize: maxSize}
+}
+func (te *topElected) _push(newItem [20]byte) {
+	pos := -1
+	for i := 0; i < te.currSize; i++ {
+		if te.base[te.topItems[i]] < te.base[newItem] {
+			pos = i
+			break
+		}
+	}
+	if pos == -1 {
+		if te.currSize < te.maxSize {
+			te.topItems[te.currSize] = newItem
+			te.currSize++
+		}
+	} else {
+		for i := te.currSize - 1; i > pos; i-- {
+			te.topItems[i] = te.topItems[i-1]
+		}
+		te.topItems[pos] = newItem
+	}
 }
 
 var VOTING_PROCESS_STATE_KEY = []byte("Voting_Process_State")

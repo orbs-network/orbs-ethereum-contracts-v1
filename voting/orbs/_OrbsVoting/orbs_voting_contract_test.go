@@ -340,30 +340,97 @@ func TestOrbsVotingContract_processVoting_MirroringPeriodNotEnded(t *testing.T) 
 func TestOrbsVotingContract_getStakeFromEthereum(t *testing.T) {
 	addr := [20]byte{0x01}
 	blockHeight := uint64(100)
+	stakeSetup := 64
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 
 		// prepare
-		m.MockEthereumCallMethodAtBlock(blockHeight, getTokenAddr(), getTokenAbi(), "balanceOf", func(out interface{}) {
-			i, ok := out.(**big.Int)
-			if ok {
-				*i = big.NewInt(64)
-			} else {
-				panic(fmt.Sprintf("wrong something %s", out))
-			}
-		}, addr)
+		setStakeInEthereum(m, blockHeight, addr, stakeSetup)
 
 		// call
 		stake := _getDelegatorStake(addr[:], blockHeight)
 
 		// assert
 		m.VerifyMocks()
-		require.EqualValues(t, 64, stake)
+		require.EqualValues(t, stakeSetup, stake)
 	})
 }
 
+/****
+ * process
+ */
+
+func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
+	validatorAddresses := [][20]byte{{0x01}, {0x02}, {0x03}, {0x04}, {0x05}, {0x06}, {0x07}, {0x08}, {0x09}}
+	guardianAddresses := [][20]byte{{0xa0}, {0xa1}, {0xa2}, {0xa3}}
+	guardianVote := [][][20]byte{
+		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[6], validatorAddresses[5]},
+		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[6], validatorAddresses[5]},
+		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[3], validatorAddresses[7]},
+		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[4], validatorAddresses[8]},
+	}
+	guardianStakes := []int{100, 200, 400, 1000}
+	blockNumber := uint64(1000)
+
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		setFirstElectionBlockHeight(blockNumber)
+
+		// prepare
+		mockValidatorsInEthereum(m, blockNumber, validatorAddresses)
+		mockGuardianCalculatedStake(m, blockNumber, guardianAddresses, guardianStakes)
+		mockGuardianVotesInOrbs(guardianAddresses, guardianVote)
+
+		// call
+		elected := processVotingInternal(blockNumber)
+
+		// assert
+		m.VerifyMocks()
+		require.ElementsMatch(t, [][20]byte{validatorAddresses[0], validatorAddresses[1], validatorAddresses[2], validatorAddresses[4], validatorAddresses[8]}, elected)
+	})
+}
+
+func mockGuardianVotesInOrbs(guardians [][20]byte, votes [][][20]byte) {
+	_setNumberOfGurdians(uint32(len(guardians)))
+	for i := range guardians {
+		_setCandidates(guardians[i][:], votes[i])
+		state.WriteBytes(_formatGuardianIterator(uint32(i)), guardians[i][:])
+	}
+}
+
+func mockGuardianCalculatedStake(m Mockery, blockNumber uint64, guardians [][20]byte, stakes []int) {
+	for i := range guardians {
+		setStakeInEthereum(m, blockNumber, guardians[i], stakes[i])
+	}
+}
+
 // helpers
+func mockValidatorsInEthereum(m Mockery, blockNumber uint64, addresses [][20]byte) {
+	m.MockEthereumCallMethodAtBlock(blockNumber, getValidatorsAddr(), getValidatorsAbi(), "getValidators", func(out interface{}) {
+		ethAddresses, ok := out.(*[][20]byte)
+		if ok {
+			*ethAddresses = addresses
+		} else {
+			panic(fmt.Sprintf("wrong type %s", out))
+		}
+	})
+}
+
+func setStakeInEthereum(m Mockery, blockHeight uint64, address [20]byte, stake int) {
+	//var ethAddress [20]byte
+	//copy(ethAddress[:], address)
+
+	m.MockEthereumCallMethodAtBlock(blockHeight, getTokenAddr(), getTokenAbi(), "balanceOf", func(out interface{}) {
+		i, ok := out.(**big.Int)
+		if ok {
+			*i = big.NewInt(int64(stake))
+		} else {
+			panic(fmt.Sprintf("wrong something %s", out))
+		}
+	}, address)
+}
+
 func setBasicTiming(m Mockery) {
 	setTiming(m, 150, 200)
 }
