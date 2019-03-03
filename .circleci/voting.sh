@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -x
+#!/bin/bash -x
 
 echo "Building the test container for the voting contracts.."
 docker build -t orbs:voting -f docker/images/voting/Dockerfile .
