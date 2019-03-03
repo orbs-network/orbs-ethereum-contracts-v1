@@ -55,8 +55,8 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         emit ValidatorAdded(_validator);
     }
 
-    function isValidator(address m) public view returns (bool) {
-        for (uint i = 0; i < validators.length; ++i) {
+    function wasAdded(address m) public view returns (bool) {
+        for (uint i = 0; i < validators.length; i++) {
             if (validators[i] == m) {
                 return true;
             }
@@ -64,8 +64,22 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         return false;
     }
 
+    function isValidator(address m) public view returns (bool) {
+        return hasData(m);
+    }
+
     function getValidators() public view returns (address[] memory) {
-        return validators;
+        uint activeValidatorCount = countActiveValidators();
+        address[] memory validatorAddresses = new address[](activeValidatorCount);
+
+        uint pushAt = 0;
+        for (uint i = 0; i < validators.length; i++) {
+            if (hasData(validators[i])) {
+                validatorAddresses[pushAt] = validators[i];
+                pushAt++;
+            }
+        }
+        return validatorAddresses;
     }
 
     function leave() public returns (bool) {
@@ -88,7 +102,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         require(bytes(_website).length > 0, "Please provide a valid website");
         require(isIpv4(_ipvAddress), "Please pass an address of up to 4 bytes");
         require(_orbsAddress != address(0), "Please provide a valid Orbs Address");
-        require(isValidator(msg.sender), "Caller must be a validator");
+        require(wasAdded(msg.sender), "Validator must first be listed");
 
         for (uint i = 0; i < validators.length; i++) {
             if (validators[i] == msg.sender) {
@@ -105,32 +119,26 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
     }
 
     function getValidatorData(address _validator) public view returns (string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) {
-        require(isValidator(_validator), "Please provide a listed Validator");
-        require(isSet(validatorsData[_validator]), "Validator data has not been set");
+        require(isValidator(_validator), "Please provide a listed Validator with set data");
 
         return (validatorsData[_validator].name, validatorsData[_validator].ipvAddress, validatorsData[_validator].website, validatorsData[_validator].orbsAddress);
     }
 
     function getOrbsAddress(address _validator) public view returns (address _orbsAddress) {
         require(isValidator(_validator), "Please provide a listed Validator");
-        require(isSet(validatorsData[_validator]), "Validator data has not been set");
 
         return validatorsData[_validator].orbsAddress;
     }
 
     function getNetworkTopology() public view returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses) {
-        uint activeValidatorCount = countActiveValidators();
-        nodeAddresses = new address[](activeValidatorCount);
-        ipAddresses = new bytes4[](activeValidatorCount);
+        address[] memory activeValidators = getValidators(); // already filters out those without data
+        nodeAddresses = new address[](activeValidators.length);
+        ipAddresses = new bytes4[](activeValidators.length);
 
-        uint pushAt = 0;
-        for (uint i = 0; i < validators.length; ++i) {
-            ValidatorData storage data = validatorsData[validators[i]];
-            if (isSet(data)) {
-                nodeAddresses[pushAt] = data.orbsAddress;
-                ipAddresses[pushAt] = ipv4Address(data.ipvAddress);
-                pushAt++;
-            }
+        for (uint i = 0; i < activeValidators.length; i++) {
+            ValidatorData storage data = validatorsData[activeValidators[i]];
+            nodeAddresses[i] = data.orbsAddress;
+            ipAddresses[i] = ipv4Address(data.ipvAddress);
         }
     }
 
@@ -143,7 +151,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         }
     }
 
-    function isIpv4(bytes memory inBytes) pure internal returns (bool){
+    function isIpv4(bytes memory inBytes) internal pure returns (bool){
         for (uint256 i = 4; i < inBytes.length; i++) { // scan byte #5 onward
             if (inBytes[i] != 0) {
                 return false;
@@ -152,13 +160,13 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         return true;
     }
 
-    function isSet(ValidatorData storage data) internal view returns (bool) {
-        return bytes(data.name).length > 0;
+    function hasData(address validator) internal view returns (bool) {
+        return bytes(validatorsData[validator].name).length > 0;
     }
 
     function countActiveValidators() internal view returns (uint count) {
         for (uint i = 0; i < validators.length; i++) {
-            if (isSet(validatorsData[validators[i]])) {
+            if (hasData(validators[i])) {
                 count++;
             }
         }

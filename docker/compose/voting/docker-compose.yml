@@ -1,0 +1,23 @@
+version: "3"
+services:
+  gamma:
+    image: orbsnetwork/gamma:experimental
+    ports:
+      - 8080:8080
+    entrypoint:
+      - /bin/sh
+      - -c
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && /opt/orbs/gamma-server
+  ganache:
+    image: trufflesuite/ganache-cli
+    ports:
+      - 7545:7545
+    command: -a 25 -m 'vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid' -i 5777 -p 7545
+  voting:
+    depends_on:
+      - gamma
+      - ganache
+    image: orbs:voting
+    command: tail -f /etc/hosts
+    environment:
+      GANACHE_HOST: "ganache"

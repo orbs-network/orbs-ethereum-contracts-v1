@@ -87,6 +87,12 @@ module.exports = {
       network_id: '5777',
       accounts: 25,
     },
+    e2e: {
+      host: 'localhost',
+      port: 8545,
+      network_id: '5777',
+      accounts: 25,
+    },
   },
   // Set default mocha options here, use special reporters etc.
   mocha: {

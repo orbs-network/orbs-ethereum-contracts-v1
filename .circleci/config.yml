@@ -1,7 +1,20 @@
 version: 2
 jobs:
-  build:
+  asb:
     machine: true
     steps:
       - checkout
       - run: ./.circleci/main.sh
+
+  voting:
+    machine: true
+    steps:
+      - checkout
+      - run: ./.circleci/voting.sh
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - asb
+      - voting

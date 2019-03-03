@@ -1,7 +1,7 @@
 pragma solidity 0.5.3;
 
 interface IOrbsVoting {
-    event Vote(address indexed voter, address[] nodes_list, uint vote_counter);
+    event Vote(address indexed voter, bytes20[] nodes_list, uint vote_counter);
     event Delegate(address indexed stakeholder, address indexed to, uint delegation_counter);
 
     function vote(address[] calldata nodes_list) external;
@@ -25,15 +25,17 @@ contract OrbsVoting is IOrbsVoting {
     function vote(address[] memory nodes) public {
         require(nodes.length > 0, "Must provide non empty list");
 
+        bytes20[] memory addressesAsBytes20 = new bytes20[](nodes.length);
         for (uint i=0; i < nodes.length; i++) {
             require(nodes[i] != address(0), "All nodes must be non 0");
+            addressesAsBytes20[i] = bytes20(nodes[i]);
         }
 
         vote_counter++;
 
         votingRecords[msg.sender].push(VotingRecord(block.number, nodes));
 
-        emit Vote(msg.sender, nodes, vote_counter);
+        emit Vote(msg.sender, addressesAsBytes20, vote_counter);
     }
 
     function delegate(address to) public {

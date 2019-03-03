@@ -16,7 +16,7 @@ contract('Voting', accounts => {
             assert.equal(e.event, "Vote");
             assert.equal(e.args.voter, accounts[0]);
             assert.equal(e.args.vote_counter, 1);
-            assert.deepEqual(e.args.nodes_list, accounts);
+            assert.deepEqual(e.args.nodes_list, accounts.map(a => a.toLowerCase()));
         });
 
         it('should increment vote_counter', async () => {

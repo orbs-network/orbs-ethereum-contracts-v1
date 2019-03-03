@@ -51,27 +51,25 @@ contract('OrbsValidators', accounts => {
             let members = await instance.getValidators();
             assert.lengthOf(members, 0);
 
-            const validatorAddr1  = driver.numToAddress(1);
-            const validatorAddr2  = driver.numToAddress(2);
+            const validatorAddr1  = accounts[1];
+            const validatorAddr2  = accounts[2];
 
-            await assertResolve(instance.addValidator(validatorAddr1));
-            await assertResolve(instance.addValidator(validatorAddr2));
+            await driver.addValidatorWithData(instance, validatorAddr1);
+            await driver.addValidatorWithData(instance, validatorAddr2);
 
             members = await instance.getValidators();
 
-            assert.equal(members[0], validatorAddr1);
-            assert.equal(members[1], validatorAddr2);
-            assert.lengthOf(members, 2);
+            assert.deepEqual(members, [validatorAddr1, validatorAddr2]);
         });
     });
 
     describe('when calling the isValidator() function', () => {
         it('should return true for listed validators and false to unknown validators', async () => {
             let instance = await OrbsValidators.new(100);
-            const validatorAddr  = driver.numToAddress(1);
+            const validatorAddr  = accounts[3];
             const nonValidatorAddr  = driver.numToAddress(894);
 
-            await assertResolve(instance.addValidator(validatorAddr));
+            await driver.addValidatorWithData(instance, validatorAddr);
 
             assert.isOk(await instance.isValidator(validatorAddr));
             assert.isNotOk(await instance.isValidator(nonValidatorAddr));
@@ -82,17 +80,20 @@ contract('OrbsValidators', accounts => {
         it('should fail for non member but succeed when called by a member', async () => {
             let instance = await OrbsValidators.new(100);
 
-            await instance.addValidator(accounts[0]);
-            assert.isOk(await instance.isValidator(accounts[0]));
+            await driver.addValidatorWithData(instance, accounts[1]); // add validator and set data
+            assert.isOk(await instance.isValidator(accounts[1]));
 
-            let r1 = await instance.leave();
+            let r1 = await instance.leave({from: accounts[1]});
             assert.equal(r1.logs[0].event, "ValidatorLeft");
+            assert.isNotOk(await instance.isValidator(accounts[1]));
 
-            assert.isNotOk(await instance.isValidator(accounts[0]));
+            await assertResolve(instance.addValidator(accounts[3])); // add validator but don't set data
+            let r2 = await instance.leave({from: accounts[3]});
+            assert.equal(r2.logs[0].event, "ValidatorLeft");
 
             let validatorsBefore = await instance.getValidators();
-            let r2 = await instance.leave();
-            assert.lengthOf(r2.logs, 0, "expected Left log to not occur when non-member tries to leave");
+            let r3 = await instance.leave();
+            assert.lengthOf(r3.logs, 0, "expected Left log to not occur when non-member tries to leave");
 
             let validatorsAfter = await instance.getValidators();
             assert.deepEqual(validatorsAfter, validatorsBefore, "expected members to not change");
@@ -164,16 +165,16 @@ contract('OrbsValidators', accounts => {
             const orbsAddr2 = driver.numToAddress(39567);
 
             await instance.addValidator(accounts[0]);
+            await assertResolve(instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[0]}), 'expected one account to receive value set #1');
+
             await instance.addValidator(accounts[1]);
+            await assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2, {from: accounts[1]}), 'expected default account to succeed in setting value set #2');
+            await assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2, {from: accounts[1]}), 'expected setting the same values twice to succeed (duplicate values for same account)');
 
-            await assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2), 'expected default account to succeed in setting value set #2');
-            await assertResolve(instance.setValidatorData(name2, ip2, url2, orbsAddr2), 'expected setting the same values twice to succeed (duplicate values for same account)');
-            await assertResolve(instance.setValidatorData(name, ip, url, orbsAddr, {from: accounts[1]}), 'expected alternate account to receive value set #1');
-
-            await assertReject(instance.setValidatorData(name, ip2, url2, orbsAddr2), "expected setting another's name to fail");
-            await assertReject(instance.setValidatorData(name2, ip, url2, orbsAddr2), "expected setting another's ip to fail");
-            await assertReject(instance.setValidatorData(name2, ip2, url, orbsAddr2), "expected setting another's url to fail");
-            await assertReject(instance.setValidatorData(name2, ip2, url2, orbsAddr), "expected setting another's orbsAddress to fail");
+            await assertReject(instance.setValidatorData(name, ip2, url2, orbsAddr2, {from: accounts[1]}), "expected setting another's name to fail");
+            await assertReject(instance.setValidatorData(name2, ip, url2, orbsAddr2, {from: accounts[1]}), "expected setting another's ip to fail");
+            await assertReject(instance.setValidatorData(name2, ip2, url, orbsAddr2, {from: accounts[1]}), "expected setting another's url to fail");
+            await assertReject(instance.setValidatorData(name2, ip2, url2, orbsAddr, {from: accounts[1]}), "expected setting another's orbsAddress to fail");
         });
 
         it('should fail if called by non validator', async () => {
@@ -226,7 +227,7 @@ contract('OrbsValidators', accounts => {
 
 
             await assertResolve(instance.addValidator(accounts[0]));
-            await assertResolve(instance.addValidator(accounts[1])); // decoy - we never set data for this guy
+            await assertResolve(instance.addValidator(accounts[1])); // decoy - this guy never sets its data
             await assertResolve(instance.addValidator(accounts[2]));
 
             // set data only for the first and the last

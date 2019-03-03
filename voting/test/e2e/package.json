@@ -1,0 +1,26 @@
+{
+  "name": "voting-e2e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "lint": "prettier --single-quote --write '{src,__tests__}/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "sergey@orbs.com",
+  "license": "MIT",
+  "dependencies": {
+    "jest": "^24.1.0",
+    "jest-puppeteer": "^4.0.0",
+    "puppeteer": "^1.12.2",
+    "serve": "^10.1.2",
+    "truffle": "^5.0.5",
+    "web3": "^1.0.0-beta.46"
+  },
+  "devDependencies": {
+    "docker-cli-js": "^2.5.1",
+    "prettier": "^1.16.4"
+  }
+}
