@@ -20,4 +20,4 @@ services:
     image: orbs:voting
     command: tail -f /etc/hosts
     environment:
-      GANACHE_HOST: "ganache"
+      GANACHE_HOST: "http://ganache:7545"

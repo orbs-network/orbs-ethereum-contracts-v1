@@ -9,11 +9,15 @@ import (
 )
 
 func NodeAdater(config *Config) *nodeAdapter {
+	ethereumUrl, result := os.LookupEnv("GANACHE_HOST")
+	if result == false {
+		ethereumUrl = "http://localhost:7545/"
+	}
+
 	return &nodeAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
-		//		etherumUrl:  "'http://13.209.220.37:8545/'",
-		etherumUrl: "http://localhost:7545/",
+		etherumUrl:  ethereumUrl,
 	}
 }
 
