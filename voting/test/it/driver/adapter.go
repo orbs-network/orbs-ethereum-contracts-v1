@@ -11,6 +11,7 @@ type OrbsAdapter interface {
 	MirrorDelegateByTransfer(orbsVotingContractName string, transferTransactionHash string)
 	MirrorDelegate(orbsVotingContractName string, transferTransactionHash string)
 	MirrorVote(orbsVotingContractName string, transferTransactionHash string)
+	MirrorVoteTemp(orbsVotingContractName string, activist string, blockNumber int, txIndex int, candidates string)
 	GetVoteData(orbsVotingContractName string, activist string) (addresses string, blockNumber uint64, txIndex uint32)
 	GetDelegateData(orbsVotingContractName string, delegator string) (addr string, blockNumber uint64, txIndex uint32, method string)
 	GetDelegatorStakeAtBlockNumber(orbsVotingContractName string, delegator string, blockNumber int) int

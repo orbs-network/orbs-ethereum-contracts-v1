@@ -250,7 +250,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, blockHeight, txIndex, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
-			v.Nodeslist = candidateAddrs
+			v.Nodes_list = candidateAddrs
 		})
 
 		mirrorVote(txHex)
@@ -283,7 +283,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockHeight(t *testi
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
-			v.Nodeslist = candidateAddrs
+			v.Nodes_list = candidateAddrs
 		})
 
 		require.Panics(t, func() {
@@ -308,7 +308,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
-			v.Nodeslist = candidateAddrs
+			v.Nodes_list = candidateAddrs
 		})
 
 		require.Panics(t, func() {
@@ -346,7 +346,7 @@ func TestOrbsVotingContract_getStakeFromEthereum(t *testing.T) {
 		_init()
 
 		// prepare
-		setStakeInEthereum(m, blockHeight, addr, stakeSetup)
+		mockStakeInEthereum(m, blockHeight, addr, stakeSetup)
 
 		// call
 		stake := _getDelegatorStake(addr[:], blockHeight)
@@ -371,6 +371,10 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[4], validatorAddresses[8]},
 	}
 	guardianStakes := []int{100, 200, 400, 1000}
+	delegatorAddresses := [][20]byte{{0xb0}, {0xb1}, {0xb2}, {0xb3}, {0xb4}, {0xb5}, {0xb6}, {0xb7}, {0xb8}, {0xb9}, {0xba}, {0xbb}}
+	delegatorStakes := []int{500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
+	delegatorGuardians := [][20]byte{{0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}}
+
 	blockNumber := uint64(1000)
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -379,7 +383,9 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 
 		// prepare
 		mockValidatorsInEthereum(m, blockNumber, validatorAddresses)
-		mockGuardianCalculatedStake(m, blockNumber, guardianAddresses, guardianStakes)
+		mockStakesInEthereum(m, blockNumber, guardianAddresses, guardianStakes)
+		mockStakesInEthereum(m, blockNumber, delegatorAddresses, delegatorStakes)
+		mockDelegationsInOrbs(delegatorAddresses, delegatorGuardians)
 		mockGuardianVotesInOrbs(guardianAddresses, guardianVote)
 
 		// call
@@ -387,7 +393,7 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 
 		// assert
 		m.VerifyMocks()
-		require.ElementsMatch(t, [][20]byte{validatorAddresses[0], validatorAddresses[1], validatorAddresses[2], validatorAddresses[4], validatorAddresses[8]}, elected)
+		require.ElementsMatch(t, [][20]byte{validatorAddresses[0], validatorAddresses[1], validatorAddresses[2], validatorAddresses[3], validatorAddresses[7]}, elected)
 	})
 }
 
@@ -399,9 +405,17 @@ func mockGuardianVotesInOrbs(guardians [][20]byte, votes [][][20]byte) {
 	}
 }
 
-func mockGuardianCalculatedStake(m Mockery, blockNumber uint64, guardians [][20]byte, stakes []int) {
+func mockDelegationsInOrbs(delegators [][20]byte, guardians [][20]byte) {
+	_setNumberOfDelegators(uint32(len(delegators)))
+	for i := range delegators {
+		state.WriteBytes(_formatDelegatorAgentKey(delegators[i][:]), guardians[i][:])
+		state.WriteBytes(_formatDelegatorIterator(uint32(i)), delegators[i][:])
+	}
+}
+
+func mockStakesInEthereum(m Mockery, blockNumber uint64, guardians [][20]byte, stakes []int) {
 	for i := range guardians {
-		setStakeInEthereum(m, blockNumber, guardians[i], stakes[i])
+		mockStakeInEthereum(m, blockNumber, guardians[i], stakes[i])
 	}
 }
 
@@ -417,7 +431,7 @@ func mockValidatorsInEthereum(m Mockery, blockNumber uint64, addresses [][20]byt
 	})
 }
 
-func setStakeInEthereum(m Mockery, blockHeight uint64, address [20]byte, stake int) {
+func mockStakeInEthereum(m Mockery, blockHeight uint64, address [20]byte, stake int) {
 	//var ethAddress [20]byte
 	//copy(ethAddress[:], address)
 
