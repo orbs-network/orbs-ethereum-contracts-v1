@@ -18,7 +18,7 @@ func TestOrbsVotingContract_mirrorDelegationData(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_HEIGHT, 150)
+		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
 
 		// call
 		_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockHeight, eventBlockTxIndex, eventName)
@@ -40,7 +40,7 @@ func TestOrbsVotingContract_mirrorDelegationData_TransferDoesNotReplaceDelegate(
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_HEIGHT, 150)
+		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_NAME)
@@ -60,7 +60,7 @@ func TestOrbsVotingContract_mirrorDelegationData_DelegateReplacesTransfer(t *tes
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_HEIGHT, 150)
+		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_BY_TRANSFER_NAME)
@@ -87,7 +87,7 @@ func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockHeigh
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_HEIGHT, 150)
+		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), eventName)
@@ -108,7 +108,7 @@ func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockTxInd
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_HEIGHT, 150)
+		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), eventName)
@@ -130,7 +130,7 @@ func TestOrbsVotingContract_mirrorDelegationData_EventBlockHeightAfterElection(t
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_HEIGHT, 150)
+		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
 
 		//assert
 		require.Panics(t, func() {
@@ -391,12 +391,15 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 
 		// call
 		elected := processVotingInternal(blockNumber)
-		for elected == nil {
+		i := 0
+		maxNumberOfProcess := len(guardianAddresses) + len(delegatorAddresses) + 2
+		for i := 0; i < maxNumberOfProcess && elected == nil; i++ {
 			elected = processVotingInternal(blockNumber)
 		}
 
 		// assert
 		m.VerifyMocks()
+		require.True(t, i <= maxNumberOfProcess, "did not finish in correct amount of passes")
 		require.EqualValues(t, "", _getVotingProcessState())
 		require.ElementsMatch(t, [][20]byte{validatorAddresses[0], validatorAddresses[1], validatorAddresses[2], validatorAddresses[3], validatorAddresses[7]}, elected)
 	})
@@ -455,6 +458,6 @@ func setBasicTiming(m Mockery) {
 }
 func setTiming(m Mockery, electionBlock uint64, currentBlock int) {
 	m.MockEthereumGetBlockNumber(currentBlock)
-	state.WriteUint64(ELECTION_BLOCK_HEIGHT, electionBlock)
+	state.WriteUint64(ELECTION_BLOCK_NUMBER, electionBlock)
 
 }

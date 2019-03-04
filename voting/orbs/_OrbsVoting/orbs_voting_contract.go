@@ -34,20 +34,11 @@ const defaultValidatorsAddr = "0x607117B536d803EA4f600569E5014c1CeE5a74D9"
 var DELEGATION_NAME = "Delegate"
 var DELEGATION_BY_TRANSFER_NAME = "Transfer"
 var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(7)
-var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(3) // 600
+var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(3)  // TODO NOAM TODO v1 600
+var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(500) // TODO NOAM TODO v1 50000
+var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(200)   // TODO NOAM TODO v1 20000
 
 var ELECTED_VALIDATORS = 5
-
-// state keys
-var ORBS_CONFIG_CONTRACT_KEY = []byte("_TOKEN_CONTRACT_KEY_")
-var TOKEN_ETH_ADDR_KEY = []byte("_TOKEN_ETH_ADDR_KEY_")
-var TOKEN_ABI_KEY = []byte("_TOKEN_ABI_KEY_")
-var VOTING_ETH_ADDR_KEY = []byte("_VOTING_ETH_ADDR_KEY_")
-var VOTING_ABI_KEY = []byte("_VOTING_ABI_KEY_")
-var VALIDATORS_ETH_ADDR_KEY = []byte("_VALIDATORS_ETH_ADDR_KEY_")
-var VALIDATORS_ABI_KEY = []byte("_VALIDATORS_ABI_KEY_")
-
-var ELECTION_BLOCK_HEIGHT = []byte("Election_Block_Height")
 
 func _init() {
 	setTokenAbi(defaultTokenAbi)
@@ -119,7 +110,7 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockHeight uint
 
 	if stateBlockHeight == 0 { // new delegator
 		numOfDelegators := _getNumberOfDelegators()
-		state.WriteBytes(_formatDelegatorIterator(numOfDelegators), delegator)
+		_setDelegatorAtIndex(numOfDelegators, delegator)
 		_setNumberOfDelegators(numOfDelegators + 1)
 	}
 
@@ -176,6 +167,10 @@ func _formatDelegatorBlockTxIndexKey(delegator []byte) []byte {
 
 func _formatDelegatorMethod(delegator []byte) []byte {
 	return []byte(fmt.Sprintf("StakeHolder_%s_Method", hex.EncodeToString(delegator)))
+}
+
+func _formatDelegatorStakeKey(delegator []byte) []byte {
+	return []byte(fmt.Sprintf("StakeHolder_%s_Stake", hex.EncodeToString(delegator)))
 }
 
 type Vote struct {
@@ -271,13 +266,16 @@ func _formatActivistBlockTxIndexKey(guardian []byte) []byte {
 	return []byte(fmt.Sprintf("Activist_%s_BlockTxIndex", hex.EncodeToString(guardian)))
 }
 
+func _formatGuardianStakeKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Guardian_%s_Stake", hex.EncodeToString(guardian)))
+}
+
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {
 		panic(fmt.Sprintf("mirror period (%d) for election (%d) did not end, cannot start processing", currentBlock, _getElectionBlockHeight()))
 	}
 
-	_setVotingProcessState(VOTING_PROCESS_STATE_GUARDIANSS)
 	electedValidators := processVotingInternal(currentBlock)
 	if electedValidators != nil {
 		_updateElected(electedValidators)
@@ -296,46 +294,101 @@ func _updateElected(elected [][20]byte) {
 }
 
 func processVotingInternal(blockNumber uint64) [][20]byte {
-	elected := _calculateVotes(blockNumber)
-	_setVotingProcessState("")
-	return elected
+	if _getVotingProcessState() == "" {
+		_setVotingProcessState(VOTING_PROCESS_STATE_GUARDIANSS)
+	}
+
+	if _getVotingProcessState() == VOTING_PROCESS_STATE_GUARDIANSS {
+		_collectNextGuardianStakeFromEthereum(blockNumber)
+		return nil
+	} else if _getVotingProcessState() == VOTING_PROCESS_STATE_DELEGATORS {
+		_collectNextDelegatorStakeFromEthereum(blockNumber)
+		return nil
+	} else if _getVotingProcessState() == VOTING_PROCESS_STATE_CALCULATIONS {
+		elected := _calculateVotes(blockNumber)
+		_setVotingProcessState("")
+		return elected
+	}
+	// TODO NoaM ToDO v1 cleanup
+	return nil
+}
+
+func _collectNextGuardianStakeFromEthereum(blockNumber uint64) {
+	nextIndex := _getVotingProcessItem()
+	_collectOneGuardianStakeFromEthereum(blockNumber, nextIndex)
+	nextIndex++
+	if nextIndex >= _getNumberOfGurdians() {
+		_setVotingProcessItem(0)
+		_setVotingProcessState(VOTING_PROCESS_STATE_DELEGATORS)
+		fmt.Printf("moving to state %s \n", VOTING_PROCESS_STATE_DELEGATORS)
+	} else {
+		_setVotingProcessItem(nextIndex)
+	}
+}
+
+func _collectOneGuardianStakeFromEthereum(blockNumber uint64, i int) {
+	guardian := _getGuardianAtIndex(i)
+	stake := _getDelegatorStake(guardian[:], blockNumber)
+	state.WriteUint64(_formatGuardianStakeKey(guardian[:]), stake)
+	fmt.Printf("noam : guardian %x , stake %d \n", guardian, stake)
+}
+
+func _collectNextDelegatorStakeFromEthereum(blockNumber uint64) {
+	nextIndex := _getVotingProcessItem()
+	_collectOneDelegatorStakeFromEthereum(blockNumber, nextIndex)
+	nextIndex++
+	if nextIndex >= _getNumberOfDelegators() {
+		_setVotingProcessItem(0)
+		_setVotingProcessState(VOTING_PROCESS_STATE_CALCULATIONS)
+		fmt.Printf("moving to state %s \n", VOTING_PROCESS_STATE_CALCULATIONS)
+	} else {
+		_setVotingProcessItem(nextIndex)
+	}
+}
+
+func _collectOneDelegatorStakeFromEthereum(blockNumber uint64, i int) {
+	delegator := _getDelegatorAtIndex(i)
+	stake := _getDelegatorStake(delegator[:], blockNumber)
+	state.WriteUint64(_formatDelegatorStakeKey(delegator[:]), stake)
+	fmt.Printf("noam : user %x , stake %d \n", delegator, stake)
 }
 
 func _calculateVotes(blockNumber uint64) [][20]byte {
-	var allValidators [][20]byte
-	ethereum.CallMethodAtBlock(blockNumber, getValidatorsAddr(), getValidatorsAbi(), "getValidators", &allValidators)
-
-	delegatorStakes := make(map[[20]byte]uint64)
-	guardianDelegators := make(map[[20]byte][][20]byte)
-
-	_collectDelegatorsStake(blockNumber, delegatorStakes)
-
-	_collectDelegatorsGuardians(guardianDelegators)
-
 	guardianStakes := make(map[[20]byte]uint64)
+	delegatorStakes := make(map[[20]byte]uint64)
+	guardianToDelegators := make(map[[20]byte][][20]byte)
+
+	_collectGuardiansStake(guardianStakes)
+
+	_collectDelegatorsStake(delegatorStakes)
+	for guardian := range guardianStakes {
+		delete(delegatorStakes, guardian)
+	}
+
+	_findGuardianDelegators(guardianToDelegators)
+
 	candidateVotes := make(map[[20]byte]uint64)
+	_aggregateAllVotes(guardianStakes, guardianToDelegators, delegatorStakes, candidateVotes)
 
-	_collectGuardiansStake(blockNumber, guardianStakes)
+	var validValidators [][20]byte
+	ethereum.CallMethodAtBlock(blockNumber, getValidatorsAddr(), getValidatorsAbi(), "getValidators", &validValidators)
+	validateCandidateVotes := _filterValidaElectedValidators(candidateVotes, validValidators)
 
-	_aggregateAllVotes(guardianStakes, guardianDelegators, delegatorStakes, candidateVotes)
-
-	// TODO noam todo v1 filter validated validators (allValidators)
-
-	return _getTopElectedValidators(candidateVotes)
+	return _getTopElectedValidators(validateCandidateVotes)
 }
 
-func _collectDelegatorsStake(blockNumber uint64, delegatorStakes map[[20]byte]uint64) {
+func _collectDelegatorsStake(delegatorStakes map[[20]byte]uint64) {
 	numOfDelegators := _getNumberOfDelegators()
 	fmt.Printf("noam : %d delegators\n", numOfDelegators)
 	for i := 0; i < numOfDelegators; i++ {
 		delegator := _getDelegatorAtIndex(i)
-		stake := _getDelegatorStake(delegator[:], blockNumber)
+		stake := state.ReadUint64(_formatDelegatorStakeKey(delegator[:]))
 		delegatorStakes[delegator] = stake
 		fmt.Printf("noam : user %x , stake %d \n", delegator, stake)
 	}
 }
 
-func _collectDelegatorsGuardians(guardianDelegators map[[20]byte][][20]byte) {
+func _findGuardianDelegators(guardianDelegators map[[20]byte][][20]byte) {
 	numOfDelegators := _getNumberOfDelegators()
 	for i := 0; i < numOfDelegators; i++ {
 		delegator := _getDelegatorAtIndex(i)
@@ -351,11 +404,11 @@ func _collectDelegatorsGuardians(guardianDelegators map[[20]byte][][20]byte) {
 	}
 }
 
-func _collectGuardiansStake(blockNumber uint64, guardianStakes map[[20]byte]uint64) {
+func _collectGuardiansStake(guardianStakes map[[20]byte]uint64) {
 	numOfGuardians := _getNumberOfGurdians()
 	for i := 0; i < numOfGuardians; i++ {
 		guardian := _getGuardianAtIndex(i)
-		stake := _getDelegatorStake(guardian[:], blockNumber)
+		stake := state.ReadUint64(_formatGuardianStakeKey(guardian[:]))
 		guardianStakes[guardian] = stake
 		fmt.Printf("noam : guardian %x , stake %d \n", guardian, stake)
 	}
@@ -382,6 +435,16 @@ func _aggregateAllVotes(guardianStakes map[[20]byte]uint64, guardianDelegators m
 	}
 }
 
+func _filterValidaElectedValidators(candidateVotes map[[20]byte]uint64, validValidators [][20]byte) map[[20]byte]uint64 {
+	validCandidateVotes := make(map[[20]byte]uint64)
+	for _, validValidator := range validValidators {
+		if validCandidateVote, ok := candidateVotes[validValidator]; ok {
+			validCandidateVotes[validValidator] = validCandidateVote
+		}
+	}
+	return validCandidateVotes
+}
+
 func _getTopElectedValidators(candidateVotes map[[20]byte]uint64) [][20]byte {
 	electedValidators := newTopElected(ELECTED_VALIDATORS)
 	for validator, votes := range candidateVotes {
@@ -394,50 +457,10 @@ func _getTopElectedValidators(candidateVotes map[[20]byte]uint64) [][20]byte {
 
 }
 
-// TODO NOAM TODO v1 unit test this.
-type topElected struct {
-	items    [][20]byte
-	values   []uint64
-	maxSize  int
-	currSize int
-}
-
-func newTopElected(maxSize int) *topElected {
-	return &topElected{items: make([][20]byte, maxSize), values: make([]uint64, maxSize), maxSize: maxSize}
-}
-func (te *topElected) _push(newItem [20]byte, newValue uint64) {
-	pos := -1
-	for i := 0; i < te.currSize; i++ {
-		if te.values[i] < newValue {
-			pos = i
-			break
-		}
-	}
-	if pos == -1 {
-		if te.currSize < te.maxSize {
-			te.items[te.currSize] = newItem
-			te.values[te.currSize] = newValue
-			te.currSize++
-		}
-	} else {
-		startPos := te.maxSize - 1
-		if te.currSize < te.maxSize {
-			te.currSize++
-			startPos = te.currSize - 1
-		}
-		for i := startPos; i > pos; i-- {
-			te.items[i] = te.items[i-1]
-			te.values[i] = te.values[i-1]
-		}
-		te.items[pos] = newItem
-		te.values[pos] = newValue
-	}
-}
-
 var VOTING_PROCESS_STATE_KEY = []byte("Voting_Process_State")
 var VOTING_PROCESS_STATE_ITERATOR_LOCATION_KEY = []byte("Voting_Process_State_Itr")
 
-const VOTING_PROCESS_STATE_STAKEHOLDERS = "StakeHolders"
+const VOTING_PROCESS_STATE_DELEGATORS = "StakeHolders"
 const VOTING_PROCESS_STATE_GUARDIANSS = "Guardians"
 const VOTING_PROCESS_STATE_CALCULATIONS = "Calculations"
 const VOTING_PROCESS_STATE_CLEANUP = "CleanUp"
@@ -473,17 +496,19 @@ func _getDelegatorStake(ethAddr []byte, blockNumber uint64) uint64 {
 /*****
  * timings
  */
+var ELECTION_BLOCK_NUMBER = []byte("Election_Block_Number")
+
 func _getElectionBlockHeight() uint64 {
-	return state.ReadUint64(ELECTION_BLOCK_HEIGHT)
+	return state.ReadUint64(ELECTION_BLOCK_NUMBER)
 }
 
 func _setElectionBlockHeight(blockHeight uint64) {
-	state.WriteUint64(ELECTION_BLOCK_HEIGHT, blockHeight)
+	state.WriteUint64(ELECTION_BLOCK_NUMBER, blockHeight)
 }
 
 func setFirstElectionBlockHeight(blockHeight uint64) {
 	//if _getElectionBlockHeight() == 0 { TODO NOam todo v1 remove comment and/or change way of doing it
-	state.WriteUint64(ELECTION_BLOCK_HEIGHT, blockHeight)
+	state.WriteUint64(ELECTION_BLOCK_NUMBER, blockHeight)
 	//}
 }
 
@@ -491,9 +516,70 @@ func _isAfterElectionMirroring(blockHeight uint64) bool {
 	return blockHeight > _getElectionBlockHeight()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
 }
 
+/***
+ * Helpers
+ */
+func _addressSliceToArray(a []byte) [20]byte {
+	var array [20]byte
+	copy(array[:], a)
+	return array
+}
+
+/***
+ * Sort top elected
+ */
+// TODO NOAM TODO v1 unit test this.
+type topElected struct {
+	items    [][20]byte
+	values   []uint64
+	maxSize  int
+	currSize int
+}
+
+func newTopElected(maxSize int) *topElected {
+	return &topElected{items: make([][20]byte, maxSize), values: make([]uint64, maxSize), maxSize: maxSize}
+}
+
+func (te *topElected) _push(newItem [20]byte, newValue uint64) {
+	pos := -1
+	for i := 0; i < te.currSize; i++ {
+		if te.values[i] < newValue {
+			pos = i
+			break
+		}
+	}
+	if pos == -1 {
+		if te.currSize < te.maxSize {
+			te.items[te.currSize] = newItem
+			te.values[te.currSize] = newValue
+			te.currSize++
+		}
+	} else {
+		startPos := te.maxSize - 1
+		if te.currSize < te.maxSize {
+			te.currSize++
+			startPos = te.currSize - 1
+		}
+		for i := startPos; i > pos; i-- {
+			te.items[i] = te.items[i-1]
+			te.values[i] = te.values[i-1]
+		}
+		te.items[pos] = newItem
+		te.values[pos] = newValue
+	}
+}
+
 /*****
  * Connections to other contracts - TODO v1 is this temp ?
  */
+var ORBS_CONFIG_CONTRACT_KEY = []byte("_TOKEN_CONTRACT_KEY_")
+var TOKEN_ETH_ADDR_KEY = []byte("_TOKEN_ETH_ADDR_KEY_")
+var TOKEN_ABI_KEY = []byte("_TOKEN_ABI_KEY_")
+var VOTING_ETH_ADDR_KEY = []byte("_VOTING_ETH_ADDR_KEY_")
+var VOTING_ABI_KEY = []byte("_VOTING_ABI_KEY_")
+var VALIDATORS_ETH_ADDR_KEY = []byte("_VALIDATORS_ETH_ADDR_KEY_")
+var VALIDATORS_ABI_KEY = []byte("_VALIDATORS_ABI_KEY_")
+
 func getOrbsConfigContract() string {
 	return state.ReadString(ORBS_CONFIG_CONTRACT_KEY)
 }
