@@ -97,6 +97,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
                 return;
             }
         }
+        revert("Unknown Validator Address");
     }
 
     function register(string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) public {

@@ -2,10 +2,10 @@
 module.exports.assertReject = async (promise, message) => {
     try{
         await promise;
-        assert.fail(message);
     }catch (e) {
         return e;
     }
+    assert.fail(message);
 };
 
 module.exports.assertResolve = async (promise, message) => {

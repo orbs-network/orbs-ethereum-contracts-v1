@@ -95,7 +95,7 @@ contract('OrbsValidators', accounts => {
             let r2 = await driver.OrbsValidators.remove(accounts[2]);
             assert.equal(r2.logs[0].event, "ValidatorRemoved");
 
-            await assertReject(driver.OrbsValidators.remove(accounts[3]), "expected failure when called with unknown validator");
+            await assertReject(driver.OrbsValidators.remove(accounts[7]), "expected failure when called with unknown validator");
         });
 
         it('fails if not by owner', async () => {
