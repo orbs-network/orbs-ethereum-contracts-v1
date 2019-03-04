@@ -1,6 +1,6 @@
-const OrbsValidators = artifacts.require('OrbsGaurdians');
+const OrbsValidators = artifacts.require('OrbsGuardians');
 
 
-contract('OrbsGaurdians', accounts => {
+contract('OrbsGuardians', accounts => {
     // TODO fill
 });
