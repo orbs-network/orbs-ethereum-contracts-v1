@@ -1,8 +1,9 @@
 package it
 
 import (
-	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
 	"testing"
+
+	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
 )
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO

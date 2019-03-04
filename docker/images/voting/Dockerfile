@@ -3,11 +3,12 @@ ENV GAMMA_HOST="gamma"
 
 COPY docker/images/voting/bring-gamma.sh /tmp/bring-gamma.sh
 
-WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting/test/it
+WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting
 
+COPY voting/ .
+
+WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting/test/it
 COPY docker/images/voting/entrypoint.sh .
-COPY voting/test/it .
-COPY build ./build/
 
 RUN rm -f orbs-gamma-config.json && \
     rm -f truffle-config.js && \
