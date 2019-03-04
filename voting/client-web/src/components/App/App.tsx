@@ -1,15 +1,17 @@
 import './App.css';
-import Home from '../../pages/Home';
+import Main from '../Main';
+import Header from '../Header';
+import Sidebar from '../Sidebar';
 import React, { Component } from 'react';
-import GuardianPage from '../../pages/Guardrians';
-import StakeholderPage from '../../pages/Stakeholders';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  RouteProps
-} from 'react-router-dom';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { BrowserRouter as Router } from 'react-router-dom';
 import MetamaskService from '../../services/metamask';
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  WithStyles,
+  withStyles
+} from '@material-ui/core/styles';
 import {
   validatorsContractFactory,
   guardiansContractFactory,
@@ -23,7 +25,28 @@ interface IState {
   metamaskService: MetamaskService;
 }
 
-class App extends Component<{}, IState> {
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    primary: { main: '#09142c' },
+    secondary: { main: '#74f6fd' },
+    background: {
+      default: '#0a0f25',
+      paper: '#192a45'
+    }
+  },
+  typography: {
+    useNextVariants: true
+  }
+});
+
+const styles = () => ({
+  root: {
+    display: 'flex'
+  }
+});
+
+class App extends Component<WithStyles, IState> {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,55 +60,20 @@ class App extends Component<{}, IState> {
     await this.state.metamaskService.enable();
   }
   render() {
+    const { classes } = this.props;
     return (
       <Router basename={process.env.PUBLIC_URL}>
-        <div>
-          <header />
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/stakeholder" data-hook="nav-stakeholder">
-                  Stakeholder
-                </Link>
-              </li>
-              <li>
-                <Link to="/guardian">Guardian</Link>
-              </li>
-            </ul>
-          </nav>
-          <main>
-            <Route exact path="/" component={Home} />
-            <Route
-              path="/stakeholder"
-              component={(props: RouteProps) => (
-                <StakeholderPage
-                  {...props}
-                  votingContract={this.state.votingContract}
-                  metamaskService={this.state.metamaskService}
-                  guardiansContract={this.state.guardiansContract}
-                />
-              )}
-            />
-            <Route
-              path="/guardian"
-              component={(props: RouteProps) => (
-                <GuardianPage
-                  {...props}
-                  validatorsContract={this.state.validatorsContract}
-                  votingContract={this.state.votingContract}
-                  metamaskService={this.state.metamaskService}
-                />
-              )}
-            />
-          </main>
-          <footer />
-        </div>
+        <MuiThemeProvider theme={theme}>
+          <CssBaseline />
+          <div className={classes.root}>
+            <Header />
+            <Sidebar />
+            <Main {...this.state} />
+          </div>
+        </MuiThemeProvider>
       </Router>
     );
   }
 }
 
-export default App;
+export default withStyles(styles)(App);

@@ -1,9 +1,26 @@
+import Link from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 import React, { useState, useEffect } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import {
+  Typography,
+  FormControl,
+  RadioGroup,
+  Radio,
+  FormControlLabel
+} from '@material-ui/core';
+
+const styles = () => ({
+  container: {
+    padding: '15px'
+  }
+});
 
 const StakeholderPage = ({
   guardiansContract,
   votingContract,
-  metamaskService
+  metamaskService,
+  classes
 }) => {
   const from = metamaskService.getCurrentAddress();
 
@@ -41,33 +58,38 @@ const StakeholderPage = ({
   };
 
   return (
-    <>
-      <h3>Hello Stakeholder, {from}</h3>
-      <div>
-        <dl>
+    <div className={classes.container}>
+      <Typography variant="h6" color="textPrimary" noWrap>
+        Here you can delegate your vote to somebody else
+      </Typography>
+      <FormControl>
+        <RadioGroup onChange={(_, val) => setCandidate(val)}>
           {Object.keys(guardians) &&
             Object.keys(guardians).map(address => (
-              <dt key={address}>
-                <input
-                  type="radio"
-                  name="candidate"
-                  value={address}
-                  onChange={ev => setCandidate(ev.target.value)}
-                />
-                <a
-                  href={guardians[address].url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {guardians[address].name}
-                </a>
-              </dt>
+              <FormControlLabel
+                key={address}
+                value={address}
+                control={<Radio />}
+                label={
+                  <Link
+                    href={guardians[address].url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="secondary"
+                    variant="body1"
+                  >
+                    {guardians[address].name}
+                  </Link>
+                }
+              />
             ))}
-        </dl>
-        <button onClick={delegate}>Delegate</button>
-      </div>
-    </>
+        </RadioGroup>
+        <Button onClick={delegate} variant="outlined" color="secondary">
+          Delegate
+        </Button>
+      </FormControl>
+    </div>
   );
 };
 
-export default StakeholderPage;
+export default withStyles(styles)(StakeholderPage);

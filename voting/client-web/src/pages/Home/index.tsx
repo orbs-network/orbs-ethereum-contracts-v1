@@ -1,7 +1,14 @@
 import React from 'react';
+import { Typography } from '@material-ui/core';
 
 const Home = () => {
-  return <h2>Welcome to Orbs Voting</h2>;
+  return (
+    <>
+      <Typography variant="h3" color="textPrimary" noWrap>
+        Welcome to Orbs Voting
+      </Typography>
+    </>
+  );
 };
 
 export default Home;

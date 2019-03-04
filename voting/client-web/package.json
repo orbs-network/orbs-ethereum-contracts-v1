@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://orbs-network.github.io/voting",
   "dependencies": {
+    "@material-ui/core": "^3.9.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-router-dom": "^4.3.1",
