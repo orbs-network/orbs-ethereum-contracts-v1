@@ -1,16 +1,16 @@
 package driver
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
-
 	require.NoError(t, config.Validate(false))
 
-	blockStartingRecord := ethereum.GetCurrentBlock()
-	account0BalanceBefore := config.StakeHolderValues[0]
+	// blockStartingRecord := ethereum.GetCurrentBlock()
+	// account0BalanceBefore := config.StakeHolderValues[0]
 
 	logStage("Doing %d Transfers ", len(config.Transfers))
 
@@ -37,17 +37,17 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 
 	// Test callmethodatblock works
-	logStage("Check Recoding is visible from orbs ")
-	account0BalanceAfter := config.StakeHolderValues[0]
-	blockEndingRecord := ethereum.GetCurrentBlock()
+	// logStage("Check Recoding is visible from orbs ")
+	// account0BalanceAfter := config.StakeHolderValues[0]
+	// blockEndingRecord := ethereum.GetCurrentBlock()
 
-	orbsAccount0BalanceBefore := orbs.GetDelegatorStakeAtBlockNumber(getOrbsVotingContractName(), "0x30Fa9C078E094AfD0C45B62A1D75953C21B19611", blockStartingRecord)
-	orbsAccount0BalanceAfter := orbs.GetDelegatorStakeAtBlockNumber(getOrbsVotingContractName(), "0x30Fa9C078E094AfD0C45B62A1D75953C21B19611", blockEndingRecord)
+	// orbsAccount0BalanceBefore := orbs.GetDelegatorStakeAtBlockNumber(getOrbsVotingContractName(), "0x30Fa9C078E094AfD0C45B62A1D75953C21B19611", blockStartingRecord)
+	// orbsAccount0BalanceAfter := orbs.GetDelegatorStakeAtBlockNumber(getOrbsVotingContractName(), "0x30Fa9C078E094AfD0C45B62A1D75953C21B19611", blockEndingRecord)
 
-	require.EqualValues(t, account0BalanceBefore, orbsAccount0BalanceBefore)
-	logStageDone("before %d , after %d ", orbsAccount0BalanceBefore, orbsAccount0BalanceAfter)
-	require.EqualValues(t, account0BalanceAfter, orbsAccount0BalanceAfter)
-	logStageDone("Recording visible from orbs ok!")
+	// require.EqualValues(t, account0BalanceBefore, orbsAccount0BalanceBefore)
+	// logStageDone("before %d , after %d ", orbsAccount0BalanceBefore, orbsAccount0BalanceAfter)
+	// require.EqualValues(t, account0BalanceAfter, orbsAccount0BalanceAfter)
+	// logStageDone("Recording visible from orbs ok!")
 
 	logSummary("Recording Phase all done.\n\n")
 
