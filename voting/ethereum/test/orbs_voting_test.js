@@ -1,16 +1,19 @@
 
-const VotingContract = artifacts.require('OrbsVoting');
-
-const driver = require('./driver');
-const assertResolve = require('./assertExtensions').assertResolve;
-const assertReject = require('./assertExtensions').assertReject;
+const {Driver, numToAddress} = require('./driver');
+const {assertResolve, assertReject} = require('./assertExtensions');
 
 contract('Voting', accounts => {
+    let driver;
+
+    beforeEach(() => {
+        driver = new Driver();
+    });
+
     describe('when calling the vote() function', () => {
         it('should emit one Vote event', async () => {
-            let instance = await VotingContract.new();
+            await driver.deployVoting();
 
-            let receipt = await instance.vote(accounts);
+            let receipt = await driver.OrbsVoting.vote(accounts);
 
             let e = receipt.logs[0];
             assert.equal(e.event, "Vote");
@@ -20,10 +23,10 @@ contract('Voting', accounts => {
         });
 
         it('should increment vote_counter', async () => {
-            let instance = await VotingContract.new();
+            await driver.deployVoting();
 
-            let receipt1 = await instance.vote(accounts);
-            let receipt2 = await instance.vote(accounts);
+            let receipt1 = await driver.OrbsVoting.vote(accounts);
+            let receipt2 = await driver.OrbsVoting.vote(accounts);
 
             let getCounter = receipt => receipt.logs[0].args.vote_counter.toNumber();
 
@@ -31,15 +34,15 @@ contract('Voting', accounts => {
         });
 
         it('should reject calls with empty array', async () => {
-            let instance = await VotingContract.new();
+            await driver.deployVoting();
 
-            await assertReject(instance.vote([]));
+            await assertReject(driver.OrbsVoting.vote([]));
         });
 
         it('should reject calls with 0 address', async () => {
-            let instance = await VotingContract.new();
+            await driver.deployVoting();
 
-            await assertReject(instance.vote([driver.numToAddress(1), driver.numToAddress(0)]));
+            await assertReject(driver.OrbsVoting.vote([numToAddress(1), numToAddress(0)]));
         });
 
         it('should consume gas consistently regardless of voting history', async () => {
@@ -49,10 +52,10 @@ contract('Voting', accounts => {
 
     describe('when calling the delegate() function', () => {
         it('should emit one Delegate event', async () => {
-            let instance = await VotingContract.new();
-            let to = driver.numToAddress(1);
+            await driver.deployVoting();
+            let to = numToAddress(1);
 
-            let receipt = await instance.delegate(to);
+            let receipt = await driver.OrbsVoting.delegate(to);
 
             let e = receipt.logs[0];
             assert.equal(e.event, "Delegate");
@@ -62,11 +65,11 @@ contract('Voting', accounts => {
         });
 
         it('should increment delegation_counter', async () => {
-            let instance = await VotingContract.new();
-            let to = driver.numToAddress(1);
+            await driver.deployVoting();
+            let to = numToAddress(1);
 
-            let receipt1 = await instance.delegate(to);
-            let receipt2 = await instance.delegate(to);
+            let receipt1 = await driver.OrbsVoting.delegate(to);
+            let receipt2 = await driver.OrbsVoting.delegate(to);
 
             let getCounter = receipt => receipt.logs[0].args.delegation_counter.toNumber();
 
@@ -76,13 +79,13 @@ contract('Voting', accounts => {
 
     describe('when calling the getLastVote() function', () => {
         it('returns the last vote made by a voter', async () => {
-            let instance = await VotingContract.new();
+            await driver.deployVoting();
 
-            const firstVote = [driver.numToAddress(6), driver.numToAddress(7)];
-            const secondVote = [driver.numToAddress(8), driver.numToAddress(9)];
+            const firstVote = [numToAddress(6), numToAddress(7)];
+            const secondVote = [numToAddress(8), numToAddress(9)];
 
-            const firstVoteBlockHeight = await instance.vote(firstVote).then(r => r.receipt.blockNumber);
-            const reportedFirstVote = await instance.getLastVote(accounts[0]);
+            const firstVoteBlockHeight = await driver.OrbsVoting.vote(firstVote).then(r => r.receipt.blockNumber);
+            const reportedFirstVote = await driver.OrbsVoting.getLastVote(accounts[0]);
 
             assert.deepEqual(reportedFirstVote[0], firstVote);
             assert.equal(reportedFirstVote[1].toNumber(), firstVoteBlockHeight);
@@ -90,16 +93,16 @@ contract('Voting', accounts => {
             assert.deepEqual(reportedFirstVote[0], reportedFirstVote.nodes, "expected first item in tuple to be nodes");
             assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.block_height.toNumber(), "expected second item in tuple to be block height");
 
-            const secondVoteBlockHeight = await instance.vote(secondVote).then(r => r.receipt.blockNumber);
-            const reportedSecondVote = await instance.getLastVote(accounts[0]);
+            const secondVoteBlockHeight = await driver.OrbsVoting.vote(secondVote).then(r => r.receipt.blockNumber);
+            const reportedSecondVote = await driver.OrbsVoting.getLastVote(accounts[0]);
 
             assert.deepEqual(reportedSecondVote[0], secondVote);
             assert.equal(reportedSecondVote[1].toNumber(), secondVoteBlockHeight);
         });
 
         it('fails if guardian never voted', async () => {
-            let instance = await VotingContract.new();
-            await assertReject(instance.getLastVote(driver.numToAddress(654)));
+            await driver.deployVoting();
+            await assertReject(driver.OrbsVoting.getLastVote(numToAddress(654)));
         });
     });
 });

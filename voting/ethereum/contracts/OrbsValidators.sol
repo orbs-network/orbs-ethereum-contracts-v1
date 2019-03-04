@@ -11,11 +11,11 @@ interface IOrbsValidatorsRegistry {
 
 interface IOrbsValidators {
     event ValidatorAdded(address indexed validator);
-    event ValidatorLeft(address indexed validator);
+    event ValidatorRemoved(address indexed validator);
 
     function addValidator(address _validator) external;
     function isValidator(address m) external view returns (bool);
-    function getValidators() external view returns (address[] memory);
+    function getValidators() external view returns (bytes20[] memory);
 }
 
 contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IOrbsNetworkTopology {
@@ -71,33 +71,32 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
         return hasData(m);
     }
 
-    function getValidators() public view returns (address[] memory) {
+    function getValidators() public view returns (bytes20[] memory) {
         uint activeValidatorCount = countActiveValidators();
-        address[] memory validatorAddresses = new address[](activeValidatorCount);
+        bytes20[] memory validatorAddresses = new bytes20[](activeValidatorCount);
 
         uint pushAt = 0;
         for (uint i = 0; i < validators.length; i++) {
             if (hasData(validators[i])) {
-                validatorAddresses[pushAt] = validators[i];
+                validatorAddresses[pushAt] = bytes20(validators[i]);
                 pushAt++;
             }
         }
         return validatorAddresses;
     }
 
-    function leave() public returns (bool) {
+    function remove(address _validator) public onlyOwner {
         for (uint i = 0; i < validators.length; ++i) {
-            if (validators[i] == msg.sender) {
+            if (validators[i] == _validator) {
                 validators[i] = validators[validators.length - 1];
-                delete validatorsData[msg.sender];
+                delete validatorsData[_validator];
                 delete validators[i];
                 validators.length--;
 
-                emit ValidatorLeft(msg.sender);
-                return true;
+                emit ValidatorRemoved(_validator);
+                return;
             }
         }
-        return false;
     }
 
     function register(string memory _name, bytes memory _ipvAddress, string memory _website, address _orbsAddress) public {
@@ -134,12 +133,12 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsValidatorsRegistry, IO
     }
 
     function getNetworkTopology() public view returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses) {
-        address[] memory activeValidators = getValidators(); // already filters out those without data
+        bytes20[] memory activeValidators = getValidators(); // already filters out those without data
         nodeAddresses = new address[](activeValidators.length);
         ipAddresses = new bytes4[](activeValidators.length);
 
         for (uint i = 0; i < activeValidators.length; i++) {
-            ValidatorData storage data = validatorsData[activeValidators[i]];
+            ValidatorData storage data = validatorsData[address(activeValidators[i])];
             nodeAddresses[i] = data.orbsAddress;
             ipAddresses[i] = ipv4Address(data.ipvAddress);
         }
