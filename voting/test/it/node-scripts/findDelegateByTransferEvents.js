@@ -79,7 +79,7 @@ async function main() {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let tokenContract = await new web3.eth.Contract(TOKEN_ABI, erc20ContractAddress);
 
-    return await getAllPastTransferEvents(tokenContract);
+    return getAllPastTransferEvents(tokenContract);
 }
 
 main()
