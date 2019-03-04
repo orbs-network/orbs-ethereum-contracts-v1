@@ -1,9 +1,9 @@
 import React from 'react';
-import Home from '../../pages/Home';
-import GuardianPage from '../../pages/Guardrians';
+import Home from '../Home';
+import GuardianPage from '../Guardrians';
+import StakeholderPage from '../Stakeholders';
 import { Route, RouteProps } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import StakeholderPage from '../../pages/Stakeholders';
 
 const styles = theme => ({
   content: {
