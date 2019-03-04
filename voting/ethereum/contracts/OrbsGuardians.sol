@@ -16,6 +16,7 @@ contract OrbsGuardians is IOrbsGuardians {
     struct GuardianData {
         string name;
         string website;
+        uint index;
     }
 
     // The version of the current federation smart contract.
@@ -52,17 +53,19 @@ contract OrbsGuardians is IOrbsGuardians {
     function leave() public {
         require(isGuardian(msg.sender), "Sender is not a Guardian");
 
-        for (uint i = 0; i < guardians.length; ++i) {
-            if (guardians[i] == msg.sender) {
-                guardians[i] = guardians[guardians.length - 1];
-                delete guardiansData[msg.sender];
-                delete guardians[i];
-                guardians.length--;
+        uint i = guardiansData[msg.sender].index;
 
-                emit GuardianLeft(msg.sender);
-                return;
-            }
-        }
+        assert(guardians[i] == msg.sender); // if this is not the case we are in limbo
+
+        guardians[i] = guardians[guardians.length - 1]; // move the last element to the evacuating index
+        guardiansData[guardians[i]].index = i; // and adjust it's lookup index
+
+        delete guardiansData[msg.sender];
+        guardians.length--;
+
+        emit GuardianLeft(msg.sender);
+        return;
+
     }
 
     function register(string memory _name, string memory _website) public {
@@ -71,11 +74,12 @@ contract OrbsGuardians is IOrbsGuardians {
 
         bool adding = !isGuardian(msg.sender);
 
-        guardiansData[msg.sender] = GuardianData(_name, _website);
         if (adding) {
+            guardiansData[msg.sender] = GuardianData(_name, _website, guardians.length);
             guardians.push(msg.sender);
             emit GuardianAdded(msg.sender);
         } else {
+            guardiansData[msg.sender] = GuardianData(_name, _website, guardiansData[msg.sender].index);
             emit GuardianModified(msg.sender);
         }
     }

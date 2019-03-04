@@ -2,10 +2,7 @@
 const OrbsValidators = artifacts.require('OrbsValidators');
 const OrbsValidatorsRegistry = artifacts.require('OrbsValidatorsRegistry');
 const OrbsVoting = artifacts.require('OrbsVoting');
-
-
-
-const {assertResolve, assertReject} = require('./assertExtensions');
+const OrbsGuardians = artifacts.require('OrbsGuardians');
 
 module.exports.numToAddress = (num) => {
     return web3.utils.toChecksumAddress(web3.utils.padLeft(web3.utils.toHex(num), 40));
@@ -30,6 +27,10 @@ module.exports.Driver = class {
             await this.deployRegistry();
         }
         this.OrbsValidators = await OrbsValidators.new(this.OrbsRegistry.address, maxValidators);
+    };
+
+    async deployGuardians() {
+        this.OrbsGuardians = await OrbsGuardians.new();
     };
 
     async deployValidatorsWithRegistry(maxValidators) {
