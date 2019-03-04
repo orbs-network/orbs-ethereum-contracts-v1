@@ -1,9 +1,8 @@
 package it
 
 import (
-	"testing"
-
 	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
+	"testing"
 )
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
@@ -79,8 +78,8 @@ func generateVotes(activists []int, validatorAccounts []int) []*driver.VoteEvent
 		{4, [3]int{20, 21, 22}},
 		{10, [3]int{22, 23, 24}},
 		{6, [3]int{20, 21, 22}},
-		{4, [3]int{24, 21, 22}}, // revoke
-		//{15, [3]int{24, 21, 22}}, // not an activist
+		{4, [3]int{24, 21, 22}},  // revote
+		{15, [3]int{24, 21, 22}}, // not an activist
 	}
 
 }

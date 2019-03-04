@@ -9,9 +9,6 @@ import (
 func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
 	require.NoError(t, config.Validate(false))
 
-	// blockStartingRecord := ethereum.GetCurrentBlock()
-	// account0BalanceBefore := config.StakeHolderValues[0]
-
 	logStage("Doing %d Transfers ", len(config.Transfers))
 
 	for i := 0; i < len(config.Transfers); i++ {
@@ -36,19 +33,5 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStageDone("Voted")
 	}
 
-	// Test callmethodatblock works
-	// logStage("Check Recoding is visible from orbs ")
-	// account0BalanceAfter := config.StakeHolderValues[0]
-	// blockEndingRecord := ethereum.GetCurrentBlock()
-
-	// orbsAccount0BalanceBefore := orbs.GetDelegatorStakeAtBlockNumber(getOrbsVotingContractName(), "0x30Fa9C078E094AfD0C45B62A1D75953C21B19611", blockStartingRecord)
-	// orbsAccount0BalanceAfter := orbs.GetDelegatorStakeAtBlockNumber(getOrbsVotingContractName(), "0x30Fa9C078E094AfD0C45B62A1D75953C21B19611", blockEndingRecord)
-
-	// require.EqualValues(t, account0BalanceBefore, orbsAccount0BalanceBefore)
-	// logStageDone("before %d , after %d ", orbsAccount0BalanceBefore, orbsAccount0BalanceAfter)
-	// require.EqualValues(t, account0BalanceAfter, orbsAccount0BalanceAfter)
-	// logStageDone("Recording visible from orbs ok!")
-
 	logSummary("Recording Phase all done.\n\n")
-
 }

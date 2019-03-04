@@ -382,6 +382,7 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 		setFirstElectionBlockHeight(blockNumber)
 
 		// prepare
+		_setVotingProcessState(VOTING_PROCESS_STATE_GUARDIANSS)
 		mockValidatorsInEthereum(m, blockNumber, validatorAddresses)
 		mockStakesInEthereum(m, blockNumber, guardianAddresses, guardianStakes)
 		mockStakesInEthereum(m, blockNumber, delegatorAddresses, delegatorStakes)
@@ -390,9 +391,13 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 
 		// call
 		elected := processVotingInternal(blockNumber)
+		for elected == nil {
+			elected = processVotingInternal(blockNumber)
+		}
 
 		// assert
 		m.VerifyMocks()
+		require.EqualValues(t, "", _getVotingProcessState())
 		require.ElementsMatch(t, [][20]byte{validatorAddresses[0], validatorAddresses[1], validatorAddresses[2], validatorAddresses[3], validatorAddresses[7]}, elected)
 	})
 }

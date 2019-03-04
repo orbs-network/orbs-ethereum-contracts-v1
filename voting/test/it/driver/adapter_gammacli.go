@@ -78,11 +78,6 @@ func (gamma *gammaCliAdapter) MirrorVote(orbsVotingContractName string, transfer
 	gamma.run("send-tx ./gammacli-jsons/mirror-vote.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + transferTransactionHash)
 }
 
-func (gamma *gammaCliAdapter) MirrorVoteTemp(orbsVotingContractName string, activist string, blockNumber int, txIndex int, candidates string) {
-	gamma.run("send-tx ./gammacli-jsons/mirror-vote-temp.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + activist +
-		" -arg2 " + fmt.Sprintf("%d", blockNumber) + " -arg3 " + fmt.Sprintf("%d", txIndex) + " -arg4 " + candidates)
-}
-
 func (gamma *gammaCliAdapter) GetVoteData(orbsVotingContractName string, activist string) (addresses string, blockNumber uint64, txIndex uint32) {
 	bytes := gamma.run("run-query ./gammacli-jsons/get-vote-data.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + activist)
 	out := struct {
