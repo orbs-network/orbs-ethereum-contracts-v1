@@ -108,31 +108,6 @@ contract('OrbsValidators', accounts => {
         });
     });
 
-    describe('when getValidatorData() is called', () => {
-        it('should return an error if no data was previously set', async () => {
-            await driver.deployValidatorsWithRegistry(100);
-
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[0]));
-            await assertReject(driver.OrbsValidators.getValidatorData(accounts[0]));
-        });
-    });
-
-    describe('when getOrbsAddress() is called', () => {
-        it('should return the last address set, or an error if no data was set', async () => {
-            await driver.deployValidatorsWithRegistry(100);
-
-            const orbsAddress = numToAddress(12345);
-
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[0]));
-            await assertReject(driver.OrbsValidators.getOrbsAddress(accounts[0]));
-
-            await driver.OrbsValidators.register("test", "0xaabbccdd", "url", orbsAddress);
-            const fetchedAddress = await driver.OrbsValidators.getOrbsAddress(accounts[0]);
-
-            assert.equal(fetchedAddress, orbsAddress, "expected fetched address to match the last one set");
-        });
-    });
-
     describe('when getNetworkTopology() is called', () => {
         it('should return the all the addresses of validators that were set', async () => {
             await driver.deployValidatorsWithRegistry(100);
@@ -146,8 +121,8 @@ contract('OrbsValidators', accounts => {
             await assertResolve(driver.OrbsValidators.addValidator(accounts[2]));
 
             // set data only for the first and the last
-            await driver.OrbsValidators.register("test0", ips[0], "url0", addresses[0], {from: accounts[0]});
-            await driver.OrbsValidators.register("test1", ips[1], "url1", addresses[1], {from: accounts[2]});
+            await driver.OrbsRegistry.register("test0", ips[0], "url0", addresses[0], {from: accounts[0]});
+            await driver.OrbsRegistry.register("test1", ips[1], "url1", addresses[1], {from: accounts[2]});
 
             const networkTopology = await driver.OrbsValidators.getNetworkTopology();
 
