@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 interface IOrbsGuardians {
     function register(string calldata _name, string calldata _website) external;
-    function getGuardianData(address _validator) external view returns (string memory _name, string memory _website);
+    function getGuardianData(address _validator) external view returns (string memory name, string memory website);
     function isGuardian(address _guardian) external view returns (bool);
     function getGuardians(uint offset, uint limit) external view returns (address[] memory);
     function leave() external;
@@ -34,7 +34,7 @@ contract OrbsGuardians is IOrbsGuardians {
     }
 
     function getGuardians(uint offset, uint limit) public view returns (address[] memory) {
-        require(offset < guardians.length.sub(1), "Offset too high");
+        require(offset < guardians.length, "Offset too high");
         require(limit <= 100, "Page size may not exceed 100");
 
         if (offset.add(limit) > guardians.length) { // clip page to array size
@@ -84,7 +84,7 @@ contract OrbsGuardians is IOrbsGuardians {
         }
     }
 
-    function getGuardianData(address _guardian) public view returns (string memory _name, string memory _website) {
+    function getGuardianData(address _guardian) public view returns (string memory name, string memory website) {
         require(isGuardian(_guardian), "Please provide a listed Guardian");
         return (guardiansData[_guardian].name, guardiansData[_guardian].website);
     }
