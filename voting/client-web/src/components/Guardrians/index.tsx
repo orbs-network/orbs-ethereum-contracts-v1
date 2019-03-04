@@ -1,15 +1,31 @@
+import Link from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 import React, { useEffect, useState } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import { get, save } from '../../services/vote-storage';
+import {
+  Typography,
+  FormControl,
+  FormGroup,
+  Checkbox,
+  FormControlLabel
+} from '@material-ui/core';
+
+const styles = () => ({
+  container: {
+    padding: '15px'
+  }
+});
 
 const GuardianPage = ({
   validatorsContract,
   votingContract,
-  metamaskService
+  metamaskService,
+  classes
 }) => {
   const [validators, setValidators] = useState({} as {
     [address: string]: { checked: boolean; name: string; url: string };
   });
-  const [proposedValidator, setProposedValidator] = useState('');
 
   const from = metamaskService.getCurrentAddress();
 
@@ -46,14 +62,6 @@ const GuardianPage = ({
     setValidators(resultValidators);
   };
 
-  const addValidator = () => {
-    validatorsContract.methods
-      .addValidator(proposedValidator)
-      .send({ from })
-      .then(() => fetchValidators())
-      .then(() => setProposedValidator(''));
-  };
-
   const commitVote = async () => {
     const stagedValidators = Object.keys(validators).filter(
       address => validators[address].checked
@@ -71,40 +79,44 @@ const GuardianPage = ({
   }, []);
 
   return (
-    <>
-      <h3>Hello Guardian, {from}</h3>
-      <dl>
-        {Object.keys(validators) &&
-          Object.keys(validators).map(address => (
-            <dt key={address}>
-              <input
-                type="checkbox"
+    <div className={classes.container}>
+      <Typography variant="h6" color="textPrimary" noWrap>
+        Here you can vote for a validators
+      </Typography>
+      <FormControl>
+        <FormGroup>
+          {Object.keys(validators) &&
+            Object.keys(validators).map(address => (
+              <FormControlLabel
+                key={address}
                 value={address}
-                defaultChecked={validators[address].checked}
-                onChange={() => toggleCheck(address)}
+                control={
+                  <Checkbox
+                    value={address}
+                    defaultChecked={validators[address].checked}
+                    onChange={() => toggleCheck(address)}
+                  />
+                }
+                label={
+                  <Link
+                    href={validators[address].url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="secondary"
+                    variant="body1"
+                  >
+                    {validators[address].name}
+                  </Link>
+                }
               />
-              <a
-                href={validators[address].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {validators[address].name}
-              </a>
-            </dt>
-          ))}
-      </dl>
-      <div>
-        <input
-          type="text"
-          placeholder="Enter validator address"
-          value={proposedValidator}
-          onChange={ev => setProposedValidator(ev.target.value)}
-        />
-        <button onClick={addValidator}>Add</button>
-        <button onClick={commitVote}>Vote</button>
-      </div>
-    </>
+            ))}
+        </FormGroup>
+        <Button onClick={commitVote} variant="outlined" color="secondary">
+          Vote
+        </Button>
+      </FormControl>
+    </div>
   );
 };
 
-export default GuardianPage;
+export default withStyles(styles)(GuardianPage);
