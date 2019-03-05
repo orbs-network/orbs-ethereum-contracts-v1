@@ -365,8 +365,10 @@ type harness struct {
 
 	nextGuardianAddress  byte
 	nextDelegatorAddress byte
-	guardians            []*guardian
-	delegators           []*delegator
+	nextValidatorAddress byte
+
+	guardians  []*guardian
+	delegators []*delegator
 }
 
 type actor struct {
@@ -410,7 +412,7 @@ func (f *harness) setupOrbsState() {
 }
 
 func newHarness() *harness {
-	return &harness{nextGuardianAddress: 0xa0}
+	return &harness{nextGuardianAddress: 0xa0, nextDelegatorAddress: 0xb0, nextValidatorAddress: 0x01}
 }
 
 func (f *harness) addGuardian(stake int) *guardian {
@@ -444,6 +446,13 @@ func (f *harness) mockDelegationsInOrbs() {
 	}
 }
 
+func (f *harness) addValidator() [20]byte {
+	validator := [20]byte{f.nextValidatorAddress}
+	f.validatorAddresses = append(f.validatorAddresses, validator)
+	f.nextValidatorAddress++
+	return validator
+}
+
 // helpers
 func mockValidatorsInEthereum(m Mockery, blockNumber uint64, addresses [][20]byte) {
 	m.MockEthereumCallMethodAtBlock(blockNumber, getValidatorsAddr(), getValidatorsAbi(), "getValidators", func(out interface{}) {
@@ -474,19 +483,17 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 	h := newHarness()
 	h.electionBlock = uint64(60000)
 	h.blockNumber = h.electionBlock + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS + 2
-
-	h.validatorAddresses = [][20]byte{{0x01}, {0x02}, {0x03}, {0x04}, {0x05}, {0x06}, {0x07}, {0x08}, {0x09}}
-
-	var g1, g2, g3, g4, g5 = h.addGuardian(100), h.addGuardian(200), h.addGuardian(400), h.addGuardian(1000), h.addGuardian(10000000)
-
 	aRecentVoteBlock := h.electionBlock - 1
 	anAncientVoteBlock := h.electionBlock - 2*VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS - 2
 
-	g1.vote(aRecentVoteBlock, h.validatorAddresses[1], h.validatorAddresses[0], h.validatorAddresses[2], h.validatorAddresses[6], h.validatorAddresses[5])
-	g2.vote(aRecentVoteBlock, h.validatorAddresses[1], h.validatorAddresses[0], h.validatorAddresses[2], h.validatorAddresses[6], h.validatorAddresses[5])
-	g3.vote(aRecentVoteBlock, h.validatorAddresses[1], h.validatorAddresses[0], h.validatorAddresses[2], h.validatorAddresses[3], h.validatorAddresses[7])
-	g4.vote(aRecentVoteBlock, h.validatorAddresses[1], h.validatorAddresses[0], h.validatorAddresses[2], h.validatorAddresses[4], h.validatorAddresses[8])
-	g5.vote(anAncientVoteBlock, h.validatorAddresses[8])
+	var v1, v2, v3, v4, v5, v6, v7, v8, v9 = h.addValidator(), h.addValidator(), h.addValidator(), h.addValidator(), h.addValidator(), h.addValidator(), h.addValidator(), h.addValidator(), h.addValidator()
+	var g1, g2, g3, g4, g5 = h.addGuardian(100), h.addGuardian(200), h.addGuardian(400), h.addGuardian(1000), h.addGuardian(10000000)
+
+	g1.vote(aRecentVoteBlock, v2, v1, v3, v7, v6)
+	g2.vote(aRecentVoteBlock, v2, v1, v3, v7, v6)
+	g3.vote(aRecentVoteBlock, v2, v1, v3, v4, v8)
+	g4.vote(aRecentVoteBlock, v2, v1, v3, v5, v9)
+	g5.vote(anAncientVoteBlock, v9)
 
 	for i := 0; i < 10; i++ {
 		h.addDelegator(500, g3.address)
@@ -515,7 +522,7 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 		m.VerifyMocks()
 		require.True(t, i <= expectedNumOfStateTransitions, "did not finish in correct amount of passes")
 		require.EqualValues(t, "", _getVotingProcessState())
-		require.ElementsMatch(t, [][20]byte{h.validatorAddresses[0], h.validatorAddresses[1], h.validatorAddresses[2], h.validatorAddresses[3], h.validatorAddresses[7]}, elected)
+		require.ElementsMatch(t, [][20]byte{v1, v2, v3, v4, v8}, elected)
 	})
 }
 
