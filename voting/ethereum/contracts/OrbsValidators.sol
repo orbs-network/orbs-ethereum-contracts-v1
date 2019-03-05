@@ -1,18 +1,10 @@
 pragma solidity 0.5.3;
 
+
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IOrbsNetworkTopology.sol";
+import "./IOrbsValidators.sol";
 import "./OrbsValidatorsRegistry.sol";
-
-
-interface IOrbsValidators {
-    event ValidatorAdded(address indexed validator);
-    event ValidatorRemoved(address indexed validator);
-
-    function addValidator(address _validator) external;
-    function isValidator(address m) external view returns (bool);
-    function getValidators() external view returns (bytes20[] memory validators);
-}
 
 
 contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
