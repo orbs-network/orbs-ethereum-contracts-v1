@@ -24,10 +24,10 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.5.3;\n\ninterface IOrbsNetworkTopology {\n    // TODO - break this into two calls - getValidators and getValidatorDate\n    function getNetworkTopology() external view returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses);\n}\n\n",
-  "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/Voting/ethereum/contracts/IOrbsNetworkTopology.sol",
+  "source": "pragma solidity ^0.5.3;\n\ninterface IOrbsNetworkTopology {\n    // TODO - break this into two calls - getValidators and getValidatorData\n    function getNetworkTopology() external view returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses);\n}\n\n",
+  "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
   "ast": {
-    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/Voting/ethereum/contracts/IOrbsNetworkTopology.sol",
+    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
     "exportedSymbols": {
       "IOrbsNetworkTopology": [
         11
@@ -169,7 +169,7 @@
     "src": "0:257:0"
   },
   "legacyAST": {
-    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/Voting/ethereum/contracts/IOrbsNetworkTopology.sol",
+    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
     "exportedSymbols": {
       "IOrbsNetworkTopology": [
         11
@@ -316,7 +316,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-02-26T10:02:36.084Z",
+  "updatedAt": "2019-03-04T14:22:59.515Z",
   "devdoc": {
     "methods": {}
   },

@@ -1,13 +1,17 @@
+
 module.exports.assertReject = async (promise, message) => {
-    const error = await promise.then(()=>{
-        assert.fail(message);
-    },(e) => e);
-    return error;
+    try{
+        await promise;
+    }catch (e) {
+        return e;
+    }
+    assert.fail(message);
 };
 
 module.exports.assertResolve = async (promise, message) => {
-    const result = await promise.then(r => r, () => {
+    try{
+        return await promise;
+    }catch (e) {
         assert.fail(message);
-    });
-    return result;
+    }
 };
