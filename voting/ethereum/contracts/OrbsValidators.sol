@@ -4,6 +4,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IOrbsNetworkTopology.sol";
 import "./OrbsValidatorsRegistry.sol";
 
+
 interface IOrbsValidators {
     event ValidatorAdded(address indexed validator);
     event ValidatorRemoved(address indexed validator);
@@ -12,6 +13,7 @@ interface IOrbsValidators {
     function isValidator(address m) external view returns (bool);
     function getValidators() external view returns (bytes20[] memory);
 }
+
 
 contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
@@ -27,9 +29,9 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     address[] public validators;
 
     constructor(address _registryAddress, uint _validatorLimit) public {
-        require(_registryAddress != address(0), "Registry contract address may not be 0!");
-        require(_validatorLimit > 0, "Validator limit must be a positive value");
-        require(_validatorLimit <= MAX_VALIDATOR_LIMIT, "Validator limit too high");
+        require(_registryAddress != address(0), "Registry contract address 0");
+        require(_validatorLimit > 0, "limit must be positive");
+        require(_validatorLimit <= MAX_VALIDATOR_LIMIT, "limit is too high");
 
         validatorLimit = _validatorLimit;
         registry = IOrbsValidatorsRegistry(_registryAddress);

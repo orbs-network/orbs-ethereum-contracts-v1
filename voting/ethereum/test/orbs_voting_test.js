@@ -59,7 +59,7 @@ contract('Voting', accounts => {
 
             let e = receipt.logs[0];
             assert.equal(e.event, "Delegate");
-            assert.equal(e.args.stakeholder, accounts[0]);
+            assert.equal(e.args.delegator, accounts[0]);
             assert.equal(e.args.to, to);
             assert.equal(e.args.delegation_counter, 1);
         });

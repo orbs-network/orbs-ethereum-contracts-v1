@@ -11,6 +11,7 @@ interface IOrbsValidatorsRegistry {
     function isValidator(address m) external view returns (bool);
 }
 
+
 contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     struct ValidatorData {

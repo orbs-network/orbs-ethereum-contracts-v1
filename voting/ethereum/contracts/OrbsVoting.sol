@@ -2,11 +2,12 @@ pragma solidity 0.5.3;
 
 interface IOrbsVoting {
     event Vote(address indexed voter, bytes20[] nodes_list, uint vote_counter);
-    event Delegate(address indexed stakeholder, address indexed to, uint delegation_counter);
+    event Delegate(address indexed delegator, address indexed to, uint delegation_counter);
 
     function vote(address[] calldata nodes_list) external;
     function delegate(address to) external;
 }
+
 
 contract OrbsVoting is IOrbsVoting {
     struct VotingRecord {
@@ -53,5 +54,4 @@ contract OrbsVoting is IOrbsVoting {
         block_height = lastVote.block_height;
         nodes = lastVote.nodes;
     }
-
 }
