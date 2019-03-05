@@ -165,7 +165,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 		// prepare
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, DELEGATION_NAME, blockHeight, txIndex, func(out interface{}) {
 			v := out.(*Delegate)
-			v.Stakeholder = delegatorAddr
+			v.Delegator = delegatorAddr
 			v.To = agentAddr
 		})
 
@@ -455,7 +455,7 @@ func mockStakeInEthereum(m Mockery, blockHeight uint64, address [20]byte, stake 
 
 func setTimingInMirror(m Mockery) {
 	election := uint64(150)
-	setTiming(m, election, int(election + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS) - 2)
+	setTiming(m, election, int(election+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)-2)
 }
 func setTiming(m Mockery, electionBlock uint64, currentBlock int) {
 	m.MockEthereumGetBlockNumber(currentBlock)

@@ -40,12 +40,13 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	deployingEthereumValidators := config.EthereumValidatorsAddress == ""
 	if deployingEthereumValidators {
-		logStage("Deploying Ethereum Validators contract...")
-		config.EthereumValidatorsAddress = ethereum.DeployValidatorsContract()
-		logStageDone("Ethereum Validators contract Address=%s", config.EthereumValidatorsAddress)
+		logStage("Deploying Ethereum Validators contracts ...")
+		config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress = ethereum.DeployValidatorsContract()
+		logStageDone("Ethereum Validators contract Address=%s\nEthereum Validators Registry contract Address=%s",
+			config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress)
 
 		logStage("Setting Ethereum Validators accounts ...")
-		ethereum.SetValidators(config.EthereumValidatorsAddress, config.ValidatorsAccounts)
+		ethereum.SetValidators(config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress, config.ValidatorsAccounts)
 		validators := ethereum.GetValidators(config.EthereumValidatorsAddress)
 		require.Len(t, validators, len(config.ValidatorsAccounts))
 		logStageDone("Set Validators to be %v", validators)
@@ -53,7 +54,6 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStage("Using existing Ethereum Validators contract...")
 		logStageDone("Ethereum Validators Address=%s", config.EthereumValidatorsAddress)
 	}
-	// TODO NOAM TODO v1 due diligence of validators
 
 	logStage("Binding Ethereum contracts to Orbs ...")
 	orbs.BindERC20ContractToEthereum(getOrbsVotingContractName(), config.EthereumErc20Address)
