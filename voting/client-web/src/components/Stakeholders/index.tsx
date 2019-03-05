@@ -9,6 +9,7 @@ import {
   Radio,
   FormControlLabel
 } from '@material-ui/core';
+import { compileFunction } from 'vm';
 
 const styles = () => ({
   container: {
@@ -38,20 +39,19 @@ const StakeholderPage = ({
         guardiansContract.methods.getGuardianData(address).call({ from })
       )
     );
-    setGuardians(
-      addresses.reduce((acc, curr, idx) => {
-        acc[curr] = {
-          name: details[idx]['_name'],
-          url: details[idx]['_website']
-        };
-        return acc;
-      }, {})
-    );
+    const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
+      acc[curr] = {
+        name: details[idx]['_name'],
+        url: details[idx]['_website']
+      };
+      return acc;
+    }, {});
+    setGuardians(guardiansStateObject);
   };
 
   useEffect(() => {
     fetchGuardians();
-  }, []);
+  }, [guardians]);
 
   const delegate = () => {
     votingContract.methods.delegate(candidate).send({ from });
@@ -69,9 +69,10 @@ const StakeholderPage = ({
               <FormControlLabel
                 key={address}
                 value={address}
-                control={<Radio />}
+                control={<Radio data-testid={`guardian-${address}-radio`} />}
                 label={
                   <Link
+                    data-testid={`guardian-${address}-label`}
                     href={guardians[address].url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -84,7 +85,12 @@ const StakeholderPage = ({
               />
             ))}
         </RadioGroup>
-        <Button onClick={delegate} variant="outlined" color="secondary">
+        <Button
+          data-testid={`delegate-button`}
+          onClick={delegate}
+          variant="outlined"
+          color="secondary"
+        >
           Delegate
         </Button>
       </FormControl>
