@@ -160,7 +160,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setBasicTiming(m)
+		setTimingInMirror(m)
 
 		// prepare
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, DELEGATION_NAME, blockHeight, txIndex, func(out interface{}) {
@@ -190,7 +190,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setBasicTiming(m)
+		setTimingInMirror(m)
 
 		// prepare
 		m.MockEthereumLog(getTokenAddr(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, blockHeight, txIndex, func(out interface{}) {
@@ -219,7 +219,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer_WrongValue(t *testing.T) 
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setBasicTiming(m)
+		setTimingInMirror(m)
 
 		// prepare
 		m.MockEthereumLog(getTokenAddr(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, 100, 10, func(out interface{}) {
@@ -244,7 +244,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setBasicTiming(m)
+		setTimingInMirror(m)
 
 		// prepare
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, blockHeight, txIndex, func(out interface{}) {
@@ -276,7 +276,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockHeight(t *testi
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setBasicTiming(m)
+		setTimingInMirror(m)
 
 		// prepare
 		state.WriteUint64(_formatActivistBlockHeightKey(activistAddr[:]), 101)
@@ -300,7 +300,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setBasicTiming(m)
+		setTimingInMirror(m)
 
 		// prepare
 		state.WriteUint64(_formatActivistBlockHeightKey(activistAddr[:]), 100)
@@ -324,12 +324,9 @@ func TestOrbsVotingContract_processVoting(t *testing.T) {
 }
 
 func TestOrbsVotingContract_processVoting_MirroringPeriodNotEnded(t *testing.T) {
-	t.Skip()
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setBasicTiming(m)
-
-		// prepare
+		setTimingInMirror(m)
 
 		require.Panics(t, func() {
 			processVoting()
@@ -385,7 +382,6 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 		setFirstElectionBlockHeight(electionBlock)
 
 		// prepare
-		//m.MockEthereumGetBlockNumber(int(blockNumber))
 		mockValidatorsInEthereum(m, blockNumber, validatorAddresses)
 		mockStakesInEthereum(m, blockNumber, guardianAddresses, guardianStakes)
 		mockStakesInEthereum(m, blockNumber, delegatorAddresses, delegatorStakes)
@@ -408,19 +404,20 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 	})
 }
 
-func mockGuardianVotesInOrbs(guardians [][20]byte, votes [][][20]byte) {
-	_setNumberOfGurdians(uint32(len(guardians)))
+func mockGuardianVotesInOrbs(guardians [][20]byte, votes [][][20]byte, votesBlock []uint64) {
+	_setNumberOfGurdians(len(guardians))
 	for i := range guardians {
 		_setCandidates(guardians[i][:], votes[i])
-		state.WriteBytes(_formatGuardianIterator(uint32(i)), guardians[i][:])
+		state.WriteBytes(_formatGuardianIterator(i), guardians[i][:])
+		state.WriteUint64(_formatActivistBlockHeightKey(guardians[i][:]), votesBlock[i])
 	}
 }
 
 func mockDelegationsInOrbs(delegators [][20]byte, guardians [][20]byte) {
-	_setNumberOfDelegators(uint32(len(delegators)))
+	_setNumberOfDelegators(len(delegators))
 	for i := range delegators {
 		state.WriteBytes(_formatDelegatorAgentKey(delegators[i][:]), guardians[i][:])
-		state.WriteBytes(_formatDelegatorIterator(uint32(i)), delegators[i][:])
+		state.WriteBytes(_formatDelegatorIterator(i), delegators[i][:])
 	}
 }
 
@@ -456,8 +453,9 @@ func mockStakeInEthereum(m Mockery, blockHeight uint64, address [20]byte, stake 
 	}, address)
 }
 
-func setBasicTiming(m Mockery) {
-	setTiming(m, 150, 200)
+func setTimingInMirror(m Mockery) {
+	election := uint64(150)
+	setTiming(m, election, int(election + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS) - 2)
 }
 func setTiming(m Mockery, electionBlock uint64, currentBlock int) {
 	m.MockEthereumGetBlockNumber(currentBlock)

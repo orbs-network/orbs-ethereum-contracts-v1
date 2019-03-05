@@ -9,7 +9,6 @@ type Config struct {
 	EthereumErc20Address      string
 	EthereumValidatorsAddress string
 	EthereumVotingAddress     string
-	UserAccountOnEthereum     string
 	UserAccountOnOrbs         string
 	StakeHoldersNumber        int
 	StakeHolderValues         []int
@@ -32,9 +31,6 @@ func (config *Config) Validate(isDeploy bool) error {
 		if config.EthereumVotingAddress == "" {
 			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "OrbsAsbContractName")
 		}
-	}
-	if config.UserAccountOnEthereum == "" {
-		return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "UserAccountOnEthereum")
 	}
 	if config.UserAccountOnOrbs == "" {
 		return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "UserAccountOnOrbs")
