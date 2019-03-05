@@ -14,7 +14,7 @@ interface IOrbsVoting {
         address[] memory nodes,
         uint block_height
     );
-    }
+}
 
 
 contract OrbsVoting is IOrbsVoting {

@@ -35,6 +35,42 @@ contract OrbsGuardians is IOrbsGuardians {
     address[] public guardians;
     mapping (address => GuardianData) public guardiansData;
 
+    function register(string memory _name, string memory _website) public {
+        require(bytes(_name).length > 0, "Please provide a valid name");
+        require(bytes(_website).length > 0, "Please provide a valid website");
+
+        bool adding = !isGuardian(msg.sender);
+        uint index;
+        if (adding) {
+            index = guardians.length;
+            guardians.push(msg.sender);
+            emit GuardianAdded(msg.sender);
+        } else {
+            index = guardiansData[msg.sender].index;
+            emit GuardianModified(msg.sender);
+        }
+
+        guardiansData[msg.sender] = GuardianData(_name, _website, index);
+    }
+
+    function leave() public {
+        require(isGuardian(msg.sender), "Sender is not a Guardian");
+
+        uint i = guardiansData[msg.sender].index;
+
+        assert(guardians[i] == msg.sender);
+
+        guardians[i] = guardians[guardians.length - 1]; // switch with last
+        guardiansData[guardians[i]].index = i; // update it's lookup index
+
+        delete guardiansData[msg.sender];
+        guardians.length--;
+
+        emit GuardianLeft(msg.sender);
+        return;
+
+    }
+
     function isGuardian(address _guardian) public view returns (bool) {
         return bytes(guardiansData[_guardian].name).length > 0;
     }
@@ -56,42 +92,6 @@ contract OrbsGuardians is IOrbsGuardians {
         }
 
         return result;
-    }
-
-    function leave() public {
-        require(isGuardian(msg.sender), "Sender is not a Guardian");
-
-        uint i = guardiansData[msg.sender].index;
-
-        assert(guardians[i] == msg.sender);
-
-        guardians[i] = guardians[guardians.length - 1]; // switch with last
-        guardiansData[guardians[i]].index = i; // update it's lookup index
-
-        delete guardiansData[msg.sender];
-        guardians.length--;
-
-        emit GuardianLeft(msg.sender);
-        return;
-
-    }
-
-    function register(string memory _name, string memory _website) public {
-        require(bytes(_name).length > 0, "Please provide a valid name");
-        require(bytes(_website).length > 0, "Please provide a valid website");
-
-        bool adding = !isGuardian(msg.sender);
-        uint index;
-        if (adding) {
-            index = guardians.length;
-            guardians.push(msg.sender);
-            emit GuardianAdded(msg.sender);
-        } else {
-            index = guardiansData[msg.sender].index;
-            emit GuardianModified(msg.sender);
-        }
-
-        guardiansData[msg.sender] = GuardianData(_name, _website, index);
     }
 
     function getGuardianData(address _guardian) public view returns (

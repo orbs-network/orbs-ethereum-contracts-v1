@@ -42,26 +42,6 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     mapping (bytes32 => address) public lookupUrl;
     mapping (address => address) public lookupOrbsAddr;
 
-
-    function isValidator(address addr) public view returns (bool) {
-        return bytes(validatorsData[addr].name).length > 0;
-    }
-
-    function leave() public {
-        require(isValidator(msg.sender), "Sender is not a listed Validator");
-
-        ValidatorData storage data = validatorsData[msg.sender];
-
-        delete lookupName[keccak256(bytes(data.name))];
-        delete lookupIpV4[keccak256(data.ipvAddress)];
-        delete lookupUrl[keccak256(bytes(data.website))];
-        delete lookupOrbsAddr[data.orbsAddress];
-
-        delete validatorsData[msg.sender];
-
-        emit ValidatorLeft(msg.sender);
-    }
-
     function register(
         string memory _name,
         bytes memory _ipvAddress,
@@ -112,6 +92,21 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         emit ValidatorRegistered(msg.sender);
     }
 
+    function leave() public {
+        require(isValidator(msg.sender), "Sender is not a listed Validator");
+
+        ValidatorData storage data = validatorsData[msg.sender];
+
+        delete lookupName[keccak256(bytes(data.name))];
+        delete lookupIpV4[keccak256(data.ipvAddress)];
+        delete lookupUrl[keccak256(bytes(data.website))];
+        delete lookupOrbsAddr[data.orbsAddress];
+
+        delete validatorsData[msg.sender];
+
+        emit ValidatorLeft(msg.sender);
+    }
+
     function getValidatorData(address _validator) public view returns (
         string memory _name,
         bytes memory _ipvAddress,
@@ -134,6 +129,10 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         require(isValidator(_validator), "Unlisted Validator");
 
         return validatorsData[_validator].orbsAddress;
+    }
+
+    function isValidator(address addr) public view returns (bool) {
+        return bytes(validatorsData[addr].name).length > 0;
     }
 
     function isIpv4(bytes memory inBytes) internal pure returns (bool){

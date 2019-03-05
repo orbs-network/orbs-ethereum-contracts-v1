@@ -51,14 +51,19 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         emit ValidatorAdded(_validator);
     }
 
-    function wasAdded(address m) internal view returns (bool) {
+    function remove(address _validator) public onlyOwner {
         uint count = approvedValidators.length;
-        for (uint i = 0; i < count; i++) {
-            if (approvedValidators[i] == m) {
-                return true;
+        for (uint i = 0; i < count; ++i) {
+            if (approvedValidators[i] == _validator) {
+                approvedValidators[i] = approvedValidators[count - 1];
+                delete approvedValidators[i];
+                approvedValidators.length--;
+
+                emit ValidatorRemoved(_validator);
+                return;
             }
         }
-        return false;
+        revert("Unknown Validator Address");
     }
 
     function isValidator(address m) public view returns (bool) {
@@ -79,21 +84,6 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         }
     }
 
-    function remove(address _validator) public onlyOwner {
-        uint count = approvedValidators.length;
-        for (uint i = 0; i < count; ++i) {
-            if (approvedValidators[i] == _validator) {
-                approvedValidators[i] = approvedValidators[count - 1];
-                delete approvedValidators[i];
-                approvedValidators.length--;
-
-                emit ValidatorRemoved(_validator);
-                return;
-            }
-        }
-        revert("Unknown Validator Address");
-    }
-
     function getNetworkTopology() public view returns (
         address[] memory nodeAddresses,
         bytes4[] memory ipAddresses
@@ -111,15 +101,14 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         }
     }
 
-    function ipv4Address(bytes memory inBytes) pure internal returns (
-        bytes4 outBytes4
-    ) {
-        uint256 bytesAvailable = inBytes.length < 4 ? inBytes.length : 4;
-        for (uint256 i = 0; i < bytesAvailable; i++) {
-            bytes4 shifter = inBytes[i];
-            shifter = shifter >> 8 * i;
-            outBytes4 = outBytes4 | shifter;
+    function wasAdded(address m) internal view returns (bool) {
+        uint count = approvedValidators.length;
+        for (uint i = 0; i < count; i++) {
+            if (approvedValidators[i] == m) {
+                return true;
+            }
         }
+        return false;
     }
 
     function countRegisteredValidators() internal view returns (uint) {
@@ -131,5 +120,16 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
             }
         }
         return result;
+    }
+
+    function ipv4Address(bytes memory inBytes) internal pure returns (
+        bytes4 outBytes4
+    ) {
+        uint256 bytesAvailable = inBytes.length < 4 ? inBytes.length : 4;
+        for (uint256 i = 0; i < bytesAvailable; i++) {
+            bytes4 shifter = inBytes[i];
+            shifter = shifter >> 8 * i;
+            outBytes4 = outBytes4 | shifter;
+        }
     }
 }
