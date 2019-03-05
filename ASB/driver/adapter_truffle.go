@@ -73,6 +73,10 @@ func (ta *truffleAdapter) FundUserAccount(ethereumErc20Address string, userAccou
 	return ta.GetBalance(ethereumErc20Address, userAccountOnEthereum)
 }
 
+func (ta *truffleAdapter) WaitForFinality() {
+	ta.run("exec ./truffle-scripts/makeFinal.js")
+}
+
 func (ta *truffleAdapter) TransferOut(ethereumErc20Address string, userAccountOnEthereum string, userAccountOnOrbs string, userTransferAmount int) (ethereumTxHash string, userBalanceOnEthereumAfter int) {
 	ta.run("exec ./truffle-scripts/approve.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,

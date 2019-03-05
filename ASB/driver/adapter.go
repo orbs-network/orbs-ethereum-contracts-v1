@@ -19,4 +19,5 @@ type EthereumAdapter interface {
 	TransferOut(ethereumErc20Address string, userAccountOnEthereum string, userAccountOnOrbs string, userTransferAmount int) (ethereumTxHash string, userBalanceOnEthereumAfter int)
 	TransferIn(ethereumErc20Address string, userAccountOnEthereum string, packedOrbsReceiptProof string, packedOrbsReceipt string) (ethereumTxHash string, userBalanceOnEthereumAfter int)
 	GetBalance(ethereumErc20Address string, userAccountOnEthereum string) (userBalanceOnEthereum int)
+	WaitForFinality()
 }
