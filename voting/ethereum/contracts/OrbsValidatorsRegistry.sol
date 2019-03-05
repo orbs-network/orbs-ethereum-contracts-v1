@@ -41,12 +41,12 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     uint public constant VERSION = 1;
 
-    mapping (address => ValidatorData) public validatorsData;
+    mapping(address => ValidatorData) public validatorsData;
 
-    mapping (bytes32 => address) public lookupName;
-    mapping (bytes32 => address) public lookupIpV4;
-    mapping (bytes32 => address) public lookupUrl;
-    mapping (address => address) public lookupOrbsAddr;
+    mapping(bytes32 => address) public lookupName;
+    mapping(bytes32 => address) public lookupIpV4;
+    mapping(bytes32 => address) public lookupUrl;
+    mapping(address => address) public lookupOrbsAddr;
 
     function register(
         string memory _name,

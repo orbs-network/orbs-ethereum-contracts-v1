@@ -34,7 +34,7 @@ contract OrbsGuardians is IOrbsGuardians {
     event GuardianModified(address indexed validator);
 
     address[] public guardians;
-    mapping (address => GuardianData) public guardiansData;
+    mapping(address => GuardianData) public guardiansData;
 
     function register(string memory _name, string memory _website) public {
         require(bytes(_name).length > 0, "Please provide a valid name");

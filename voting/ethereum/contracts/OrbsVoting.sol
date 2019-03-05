@@ -26,7 +26,7 @@ contract OrbsVoting is IOrbsVoting {
     uint vote_counter = 0;
     uint delegation_counter = 0;
 
-    mapping (address => VotingRecord[]) votingRecords;
+    mapping(address => VotingRecord[]) votingRecords;
 
     // The version of the current federation smart contract.
     uint public constant VERSION = 1;
