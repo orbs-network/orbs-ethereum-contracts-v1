@@ -111,16 +111,17 @@ func (ta *truffleAdapter) Transfer(ethereumErc20Address string, from int, to int
 	)
 }
 
-func (ta *truffleAdapter) DeployValidatorsContract() (ethereumValidatorsAddress string) {
+func (ta *truffleAdapter) DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) {
 	bytes := ta.run("exec ./truffle-scripts/deployValidators.js")
 	out := struct {
-		Address string
+		ValidatorsAddress         string
+		ValidatorsRegistryAddress string
 	}{}
 	err := json.Unmarshal(bytes, &out)
 	if err != nil {
 		panic(err.Error() + "\n" + string(bytes))
 	}
-	return out.Address
+	return out.ValidatorsAddress, out.ValidatorsRegistryAddress
 }
 
 func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []string {
@@ -137,10 +138,11 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []stri
 	return out.Validators
 }
 
-func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, validators []int) {
+func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int) {
 	out, _ := json.Marshal(validators)
 	ta.run("exec ./truffle-scripts/setValidators.js",
 		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
+		"VALIDATORS_REGISTRY_CONTRACT_ADDRESS="+ethereumValidatorsRegAddress,
 		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
 	)
 }

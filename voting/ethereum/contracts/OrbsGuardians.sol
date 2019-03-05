@@ -6,13 +6,14 @@ interface IOrbsGuardians {
     function register(string calldata _name, string calldata _website) external;
     function leave() external;
     function isGuardian(address _guardian) external view returns (bool);
-    function getGuardianData(address _validator) external view returns (
-        string memory name,
-        string memory website
-    );
-    function getGuardians(uint offset, uint limit) external view returns (
-        address[] memory
-    );
+    function getGuardianData(address _validator)
+        external
+        view
+        returns (string memory name, string memory website);
+    function getGuardians(uint offset, uint limit)
+        external
+        view
+        returns (address[] memory);
 }
 
 
@@ -35,27 +36,22 @@ contract OrbsGuardians is IOrbsGuardians {
     address[] public guardians;
     mapping (address => GuardianData) public guardiansData;
 
-    function isGuardian(address _guardian) public view returns (bool) {
-        return bytes(guardiansData[_guardian].name).length > 0;
-    }
+    function register(string memory _name, string memory _website) public {
+        require(bytes(_name).length > 0, "Please provide a valid name");
+        require(bytes(_website).length > 0, "Please provide a valid website");
 
-    function getGuardians(uint offset, uint limit) public view returns (
-        address[] memory
-    ) {
-        require(offset < guardians.length, "Offset too high");
-        require(limit <= 100, "Page size may not exceed 100");
-
-        if (offset.add(limit) > guardians.length) { // clip page to array size
-            limit = guardians.length.sub(offset);
+        bool adding = !isGuardian(msg.sender);
+        uint index;
+        if (adding) {
+            index = guardians.length;
+            guardians.push(msg.sender);
+            emit GuardianAdded(msg.sender);
+        } else {
+            index = guardiansData[msg.sender].index;
+            emit GuardianModified(msg.sender);
         }
 
-        address[] memory result = new address[](limit);
-
-        for (uint i = 0; i < result.length; i++) {
-            result[i] = guardians[offset.add(i)];
-        }
-
-        return result;
+        guardiansData[msg.sender] = GuardianData(_name, _website, index);
     }
 
     function leave() public {
@@ -76,28 +72,36 @@ contract OrbsGuardians is IOrbsGuardians {
 
     }
 
-    function register(string memory _name, string memory _website) public {
-        require(bytes(_name).length > 0, "Please provide a valid name");
-        require(bytes(_website).length > 0, "Please provide a valid website");
-
-        bool adding = !isGuardian(msg.sender);
-        uint index;
-        if (adding) {
-            index = guardians.length;
-            guardians.push(msg.sender);
-            emit GuardianAdded(msg.sender);
-        } else {
-            index = guardiansData[msg.sender].index;
-            emit GuardianModified(msg.sender);
-        }
-
-        guardiansData[msg.sender] = GuardianData(_name, _website, index);
+    function isGuardian(address _guardian) public view returns (bool) {
+        return bytes(guardiansData[_guardian].name).length > 0;
     }
 
-    function getGuardianData(address _guardian) public view returns (
-        string memory name,
-        string memory website
-    ) {
+    function getGuardians(uint offset, uint limit)
+        public
+        view returns (address[] memory)
+    {
+        require(offset < guardians.length, "Offset too high");
+        require(limit <= 100, "Page size may not exceed 100");
+
+        if (offset.add(limit) > guardians.length) { // clip page to array size
+            limit = guardians.length.sub(offset);
+        }
+
+        address[] memory result = new address[](limit);
+
+        uint resultLength = result.length;
+        for (uint i = 0; i < resultLength; i++) {
+            result[i] = guardians[offset.add(i)];
+        }
+
+        return result;
+    }
+
+    function getGuardianData(address _guardian)
+        public
+        view
+        returns (string memory name, string memory website)
+    {
         require(isGuardian(_guardian), "Please provide a listed Guardian");
         return (guardiansData[_guardian].name, guardiansData[_guardian].website);
     }

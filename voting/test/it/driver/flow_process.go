@@ -18,7 +18,7 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	//orbs.SetFirstElectionBlockHeight(getOrbsVotingContractName(), currentBlock+1)
 	//logStageDone("Election date in ethereum block number = %d", currentBlock+1)
 
-	for !isDone && steps < 10 {
+	for !isDone && steps < 100 {
 		isDone = orbs.RunVotingProcess(getOrbsVotingContractName())
 		steps++
 	}

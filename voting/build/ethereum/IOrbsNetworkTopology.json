@@ -24,7 +24,7 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.5.3;\n\n\ninterface IOrbsNetworkTopology {\n    function getNetworkTopology() external view returns (\n        address[] memory nodeAddresses,\n        bytes4[] memory ipAddresses\n    );\n}\n\n",
+  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsNetworkTopology {\n    function getNetworkTopology()\n        external\n        view\n        returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses);\n}\n\n",
   "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
   "ast": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
@@ -40,12 +40,11 @@
         "id": 1,
         "literals": [
           "solidity",
-          "^",
           "0.5",
           ".3"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:0"
+        "src": "0:22:0"
       },
       {
         "baseContracts": [],
@@ -73,7 +72,7 @@
               "id": 2,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "90:2:0"
+              "src": "89:2:0"
             },
             "returnParameters": {
               "id": 9,
@@ -85,7 +84,7 @@
                   "name": "nodeAddresses",
                   "nodeType": "VariableDeclaration",
                   "scope": 10,
-                  "src": "125:30:0",
+                  "src": "139:30:0",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -97,7 +96,7 @@
                       "id": 3,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "125:7:0",
+                      "src": "139:7:0",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -107,7 +106,7 @@
                     "id": 4,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "125:9:0",
+                    "src": "139:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -122,7 +121,7 @@
                   "name": "ipAddresses",
                   "nodeType": "VariableDeclaration",
                   "scope": 10,
-                  "src": "165:27:0",
+                  "src": "171:27:0",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -134,7 +133,7 @@
                       "id": 6,
                       "name": "bytes4",
                       "nodeType": "ElementaryTypeName",
-                      "src": "165:6:0",
+                      "src": "171:6:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes4",
                         "typeString": "bytes4"
@@ -143,7 +142,7 @@
                     "id": 7,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "165:8:0",
+                    "src": "171:8:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes4_$dyn_storage_ptr",
                       "typeString": "bytes4[]"
@@ -153,20 +152,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "115:83:0"
+              "src": "138:61:0"
             },
             "scope": 11,
-            "src": "63:136:0",
+            "src": "62:138:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
         "scope": 12,
-        "src": "26:175:0"
+        "src": "25:177:0"
       }
     ],
-    "src": "0:203:0"
+    "src": "0:204:0"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
@@ -182,12 +181,11 @@
         "id": 1,
         "literals": [
           "solidity",
-          "^",
           "0.5",
           ".3"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:0"
+        "src": "0:22:0"
       },
       {
         "baseContracts": [],
@@ -215,7 +213,7 @@
               "id": 2,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "90:2:0"
+              "src": "89:2:0"
             },
             "returnParameters": {
               "id": 9,
@@ -227,7 +225,7 @@
                   "name": "nodeAddresses",
                   "nodeType": "VariableDeclaration",
                   "scope": 10,
-                  "src": "125:30:0",
+                  "src": "139:30:0",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -239,7 +237,7 @@
                       "id": 3,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "125:7:0",
+                      "src": "139:7:0",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
@@ -249,7 +247,7 @@
                     "id": 4,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "125:9:0",
+                    "src": "139:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -264,7 +262,7 @@
                   "name": "ipAddresses",
                   "nodeType": "VariableDeclaration",
                   "scope": 10,
-                  "src": "165:27:0",
+                  "src": "171:27:0",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -276,7 +274,7 @@
                       "id": 6,
                       "name": "bytes4",
                       "nodeType": "ElementaryTypeName",
-                      "src": "165:6:0",
+                      "src": "171:6:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes4",
                         "typeString": "bytes4"
@@ -285,7 +283,7 @@
                     "id": 7,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "165:8:0",
+                    "src": "171:8:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes4_$dyn_storage_ptr",
                       "typeString": "bytes4[]"
@@ -295,20 +293,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "115:83:0"
+              "src": "138:61:0"
             },
             "scope": 11,
-            "src": "63:136:0",
+            "src": "62:138:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
         "scope": 12,
-        "src": "26:175:0"
+        "src": "25:177:0"
       }
     ],
-    "src": "0:203:0"
+    "src": "0:204:0"
   },
   "compiler": {
     "name": "solc",
@@ -316,7 +314,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-03-05T09:53:48.253Z",
+  "updatedAt": "2019-03-05T11:19:59.270Z",
   "devdoc": {
     "methods": {}
   },

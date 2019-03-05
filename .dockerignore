@@ -1,6 +1,10 @@
 Federation/
 TestingERC20/
 .circleci/
+voting/test/it/package-lock.json
+voting/test/it/node_modules/
+ASB/node_modules/
+ASB/package-lock.json
 /.gitignore
 /*.js
 /*.sh

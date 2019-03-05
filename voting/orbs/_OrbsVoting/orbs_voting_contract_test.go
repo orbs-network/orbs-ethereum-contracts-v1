@@ -165,7 +165,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 		// prepare
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, DELEGATION_NAME, blockHeight, txIndex, func(out interface{}) {
 			v := out.(*Delegate)
-			v.Stakeholder = delegatorAddr
+			v.Delegator = delegatorAddr
 			v.To = agentAddr
 		})
 
