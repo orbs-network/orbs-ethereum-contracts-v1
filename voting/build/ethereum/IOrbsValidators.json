@@ -29,7 +29,7 @@
       "constant": false,
       "inputs": [
         {
-          "name": "_validator",
+          "name": "validator",
           "type": "address"
         }
       ],
@@ -43,7 +43,7 @@
       "constant": true,
       "inputs": [
         {
-          "name": "m",
+          "name": "validator",
           "type": "address"
         }
       ],
@@ -64,7 +64,7 @@
       "name": "getValidators",
       "outputs": [
         {
-          "name": "validators",
+          "name": "",
           "type": "bytes20[]"
         }
       ],
@@ -77,7 +77,7 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsValidators {\n    event ValidatorAdded(address indexed validator);\n    event ValidatorRemoved(address indexed validator);\n\n    function addValidator(address _validator) external;\n    function isValidator(address m) external view returns (bool);\n    function getValidators() external view returns (bytes20[] memory validators);\n}\n",
+  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsValidators {\n    event ValidatorAdded(address indexed validator);\n    event ValidatorRemoved(address indexed validator);\n\n    function addValidator(address validator) external;\n    function isValidator(address validator) external view returns (bool);\n    function getValidators() external view returns (bytes20[] memory);\n}\n",
   "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidators.sol",
   "ast": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidators.sol",
@@ -214,10 +214,10 @@
                 {
                   "constant": false,
                   "id": 62,
-                  "name": "_validator",
+                  "name": "validator",
                   "nodeType": "VariableDeclaration",
                   "scope": 65,
-                  "src": "188:18:2",
+                  "src": "188:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -239,16 +239,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "187:20:2"
+              "src": "187:19:2"
             },
             "returnParameters": {
               "id": 64,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "216:0:2"
+              "src": "215:0:2"
             },
             "scope": 79,
-            "src": "166:51:2",
+            "src": "166:50:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -269,10 +269,10 @@
                 {
                   "constant": false,
                   "id": 67,
-                  "name": "m",
+                  "name": "validator",
                   "nodeType": "VariableDeclaration",
                   "scope": 72,
-                  "src": "243:9:2",
+                  "src": "242:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -283,7 +283,7 @@
                     "id": 66,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "243:7:2",
+                    "src": "242:7:2",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -294,7 +294,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "242:11:2"
+              "src": "241:19:2"
             },
             "returnParameters": {
               "id": 71,
@@ -306,7 +306,7 @@
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "scope": 72,
-                  "src": "277:4:2",
+                  "src": "284:4:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -317,7 +317,7 @@
                     "id": 69,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "277:4:2",
+                    "src": "284:4:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -327,10 +327,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "276:6:2"
+              "src": "283:6:2"
             },
             "scope": 79,
-            "src": "222:61:2",
+            "src": "221:69:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -348,7 +348,7 @@
               "id": 73,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "310:2:2"
+              "src": "317:2:2"
             },
             "returnParameters": {
               "id": 77,
@@ -357,10 +357,10 @@
                 {
                   "constant": false,
                   "id": 76,
-                  "name": "validators",
+                  "name": "",
                   "nodeType": "VariableDeclaration",
                   "scope": 78,
-                  "src": "336:27:2",
+                  "src": "343:16:2",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -372,7 +372,7 @@
                       "id": 74,
                       "name": "bytes20",
                       "nodeType": "ElementaryTypeName",
-                      "src": "336:7:2",
+                      "src": "343:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes20",
                         "typeString": "bytes20"
@@ -381,7 +381,7 @@
                     "id": 75,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "336:9:2",
+                    "src": "343:9:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes20_$dyn_storage_ptr",
                       "typeString": "bytes20[]"
@@ -391,20 +391,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "335:29:2"
+              "src": "342:18:2"
             },
             "scope": 79,
-            "src": "288:77:2",
+            "src": "295:66:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
         "scope": 80,
-        "src": "25:342:2"
+        "src": "25:338:2"
       }
     ],
-    "src": "0:368:2"
+    "src": "0:364:2"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidators.sol",
@@ -541,10 +541,10 @@
                 {
                   "constant": false,
                   "id": 62,
-                  "name": "_validator",
+                  "name": "validator",
                   "nodeType": "VariableDeclaration",
                   "scope": 65,
-                  "src": "188:18:2",
+                  "src": "188:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -566,16 +566,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "187:20:2"
+              "src": "187:19:2"
             },
             "returnParameters": {
               "id": 64,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "216:0:2"
+              "src": "215:0:2"
             },
             "scope": 79,
-            "src": "166:51:2",
+            "src": "166:50:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -596,10 +596,10 @@
                 {
                   "constant": false,
                   "id": 67,
-                  "name": "m",
+                  "name": "validator",
                   "nodeType": "VariableDeclaration",
                   "scope": 72,
-                  "src": "243:9:2",
+                  "src": "242:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -610,7 +610,7 @@
                     "id": 66,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "243:7:2",
+                    "src": "242:7:2",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -621,7 +621,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "242:11:2"
+              "src": "241:19:2"
             },
             "returnParameters": {
               "id": 71,
@@ -633,7 +633,7 @@
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "scope": 72,
-                  "src": "277:4:2",
+                  "src": "284:4:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -644,7 +644,7 @@
                     "id": 69,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "277:4:2",
+                    "src": "284:4:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -654,10 +654,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "276:6:2"
+              "src": "283:6:2"
             },
             "scope": 79,
-            "src": "222:61:2",
+            "src": "221:69:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -675,7 +675,7 @@
               "id": 73,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "310:2:2"
+              "src": "317:2:2"
             },
             "returnParameters": {
               "id": 77,
@@ -684,10 +684,10 @@
                 {
                   "constant": false,
                   "id": 76,
-                  "name": "validators",
+                  "name": "",
                   "nodeType": "VariableDeclaration",
                   "scope": 78,
-                  "src": "336:27:2",
+                  "src": "343:16:2",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -699,7 +699,7 @@
                       "id": 74,
                       "name": "bytes20",
                       "nodeType": "ElementaryTypeName",
-                      "src": "336:7:2",
+                      "src": "343:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes20",
                         "typeString": "bytes20"
@@ -708,7 +708,7 @@
                     "id": 75,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "336:9:2",
+                    "src": "343:9:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes20_$dyn_storage_ptr",
                       "typeString": "bytes20[]"
@@ -718,20 +718,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "335:29:2"
+              "src": "342:18:2"
             },
             "scope": 79,
-            "src": "288:77:2",
+            "src": "295:66:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
         "scope": 80,
-        "src": "25:342:2"
+        "src": "25:338:2"
       }
     ],
-    "src": "0:368:2"
+    "src": "0:364:2"
   },
   "compiler": {
     "name": "solc",
@@ -739,7 +739,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-03-05T12:41:23.903Z",
+  "updatedAt": "2019-03-05T15:01:55.483Z",
   "devdoc": {
     "methods": {}
   },

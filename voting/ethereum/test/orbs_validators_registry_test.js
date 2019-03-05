@@ -52,14 +52,14 @@ contract('OrbsValidatorsRegistry', accounts => {
                 await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
                 let result = await driver.OrbsRegistry.getValidatorData(accounts[1]);
 
-                assert.equal(result._name, name);
-                assert.equal(result._ipvAddress, ip);
-                assert.equal(result._website, url);
-                assert.equal(result._orbsAddress, orbsAddr);
-                assert.equal(result._name, result[0]);
-                assert.equal(result._ipvAddress, result[1]);
-                assert.equal(result._website, result[2]);
-                assert.equal(result._orbsAddress, orbsAddr);
+                assert.equal(result.name, name);
+                assert.equal(result.ipvAddress, ip);
+                assert.equal(result.website, url);
+                assert.equal(result.orbsAddress, orbsAddr);
+                assert.equal(result.name, result[0]);
+                assert.equal(result.ipvAddress, result[1]);
+                assert.equal(result.website, result[2]);
+                assert.equal(result.orbsAddress, orbsAddr);
             });
         });
 

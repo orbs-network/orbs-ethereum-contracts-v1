@@ -2,10 +2,10 @@ pragma solidity 0.5.3;
 
 
 interface IOrbsGuardians {
-    function register(string calldata _name, string calldata _website) external;
+    function register(string calldata name, string calldata website) external;
     function leave() external;
-    function isGuardian(address _guardian) external view returns (bool);
-    function getGuardianData(address _validator)
+    function isGuardian(address guardian) external view returns (bool);
+    function getGuardianData(address validator)
     external
     view
     returns (string memory name, string memory website);

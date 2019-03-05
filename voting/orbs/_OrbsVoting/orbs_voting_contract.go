@@ -26,7 +26,7 @@ var SYSTEM = sdk.Export(_init, setTokenAbi, setVotingAbi, setValidatorsAbi, setO
 const defaultOrbsValidatorsConfigContract = "OrbsValidatorsConfig"
 const defaultTokenAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
 const defaultTokenAddr = "0xC5515Ba056eb0515FDd2207bCCbf3beE2a6d4749"
-const defaultVotingAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes_list","type":"bytes20[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeholder","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes_list","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
+const defaultVotingAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeholder","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
 const defaultVotingAddr = "0x316B0251873f8c3A3dF4CE09030aB22EFafea211"
 const defaultValidatorsAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorLeft","type":"event"},{"constant":false,"inputs":[{"name":"_validator","type":"address"}],"name":"addValidator","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"m","type":"address"}],"name":"isValidator","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getValidators","outputs":[{"name":"","type":"bytes20[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
 const defaultValidatorsAddr = "0x607117B536d803EA4f600569E5014c1CeE5a74D9"
@@ -179,7 +179,7 @@ func _formatDelegatorStakeKey(delegator []byte) []byte {
 
 type Vote struct {
 	Voter      [20]byte
-	Nodes_list [][20]byte
+	Nodes [][20]byte
 }
 
 func mirrorVote(hexEncodedEthTxHash string) {
@@ -189,13 +189,13 @@ func mirrorVote(hexEncodedEthTxHash string) {
 	electionBlockHeight := _getElectionBlockHeight()
 	if eventBlockHeight > electionBlockHeight {
 		panic(fmt.Errorf("vote of activist %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
-			e.Voter, e.Nodes_list, eventBlockHeight, electionBlockHeight))
+			e.Voter, e.Nodes, eventBlockHeight, electionBlockHeight))
 	}
 	stateBlockHeight := state.ReadUint64(_formatActivistBlockHeightKey(e.Voter[:]))
 	stateBlockTxIndex := state.ReadUint32(_formatActivistBlockTxIndexKey(e.Voter[:]))
 	if stateBlockHeight > eventBlockHeight || (stateBlockHeight == eventBlockHeight && stateBlockTxIndex > eventBlockTxIndex) {
 		panic(fmt.Errorf("vote of activist %v to %v with block-height %d and tx-index %d failed since already have newer block-height %d and tx-index %d",
-			e.Voter, e.Nodes_list, eventBlockHeight, eventBlockTxIndex, stateBlockHeight, stateBlockTxIndex))
+			e.Voter, e.Nodes, eventBlockHeight, eventBlockTxIndex, stateBlockHeight, stateBlockTxIndex))
 	}
 
 	if stateBlockHeight == 0 { // new guardian
@@ -206,7 +206,7 @@ func mirrorVote(hexEncodedEthTxHash string) {
 
 	// TODO noam due-diligent activist missing
 
-	_setCandidates(e.Voter[:], e.Nodes_list)
+	_setCandidates(e.Voter[:], e.Nodes)
 	state.WriteUint64(_formatActivistBlockHeightKey(e.Voter[:]), eventBlockHeight)
 	state.WriteUint32(_formatActivistBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
 }

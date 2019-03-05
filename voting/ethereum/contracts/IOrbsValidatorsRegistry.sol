@@ -6,26 +6,26 @@ interface IOrbsValidatorsRegistry {
     event ValidatorRegistered(address indexed validator);
 
     function register(
-        string calldata _name,
-        bytes calldata _ipvAddress,
-        string calldata _website,
-        address _orbsAddress
+        string calldata name,
+        bytes calldata ipvAddress,
+        string calldata website,
+        address orbsAddress
     )
     external;
     function leave() external;
-    function getValidatorData(address _validator)
+    function getValidatorData(address validator)
     external
     view
     returns (
-        string memory _name,
-        bytes memory _ipvAddress,
-        string memory _website,
-        address _orbsAddress
+        string memory name,
+        bytes memory ipvAddress,
+        string memory website,
+        address orbsAddress
     );
 
-    function isValidator(address m) external view returns (bool);
-    function getOrbsAddress(address _validator)
+    function isValidator(address validator) external view returns (bool);
+    function getOrbsAddress(address validator)
     external
     view
-    returns (address _orbsAddress);
+    returns (address orbsAddress);
 }

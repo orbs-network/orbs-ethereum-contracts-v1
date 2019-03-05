@@ -250,7 +250,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, blockHeight, txIndex, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
-			v.Nodes_list = candidateAddrs
+			v.Nodes = candidateAddrs
 		})
 
 		mirrorVote(txHex)
@@ -283,7 +283,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockHeight(t *testi
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
-			v.Nodes_list = candidateAddrs
+			v.Nodes = candidateAddrs
 		})
 
 		require.Panics(t, func() {
@@ -308,7 +308,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
-			v.Nodes_list = candidateAddrs
+			v.Nodes = candidateAddrs
 		})
 
 		require.Panics(t, func() {
