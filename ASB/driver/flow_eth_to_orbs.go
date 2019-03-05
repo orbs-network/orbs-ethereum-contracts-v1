@@ -25,6 +25,8 @@ func RunEthToOrbsFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum E
 
 	require.Equal(t, ethereumInitialBalance-config.UserTransferAmountToOrbs, userEthereumBalance)
 
+	ethereum.WaitForFinality()
+
 	logStage("Doing TransferIn to Orbs...")
 	userOrbsBalance := orbs.TransferIn(config.OrbsErc20ContractName, config.OrbsAsbContractName, config.UserAccountOnOrbs, ethereumTxHash)
 	logStageDone("BalanceOnOrbs=%d", userOrbsBalance)
