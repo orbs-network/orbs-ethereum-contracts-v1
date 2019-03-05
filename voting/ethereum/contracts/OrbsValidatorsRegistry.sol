@@ -136,8 +136,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     }
 
     function isIpv4(bytes memory inBytes) internal pure returns (bool){
-        uint count = inBytes.length;
-        for (uint256 i = 4; i < count; i++) { // only 0's beyond the 4th byte
+        uint inBytesLength = inBytes.length;
+        for (uint256 i = 4; i < inBytesLength; i++) { // only 0's beyond the 4th byte
             if (inBytes[i] != 0) {
                 return false;
             }

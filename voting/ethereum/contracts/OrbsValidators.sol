@@ -45,17 +45,17 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
                 "Can't add more members!"
         );
 
-        require(!wasAdded(_validator), "Address must not be already a member");
+        require(!isApproved(_validator), "Address must not be already a member");
 
         approvedValidators.push(_validator);
         emit ValidatorAdded(_validator);
     }
 
     function remove(address _validator) public onlyOwner {
-        uint count = approvedValidators.length;
-        for (uint i = 0; i < count; ++i) {
+        uint approvedLength = approvedValidators.length;
+        for (uint i = 0; i < approvedLength; ++i) {
             if (approvedValidators[i] == _validator) {
-                approvedValidators[i] = approvedValidators[count - 1];
+                approvedValidators[i] = approvedValidators[approvedLength - 1];
                 delete approvedValidators[i];
                 approvedValidators.length--;
 
@@ -67,7 +67,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     }
 
     function isValidator(address m) public view returns (bool) {
-        return wasAdded(m) && registry.isValidator(m);
+        return isApproved(m) && registry.isValidator(m);
     }
 
     function getValidators() public view returns (bytes20[] memory validators) {
@@ -75,8 +75,8 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         validators = new bytes20[](activeValidatorCount);
 
         uint pushAt = 0;
-        uint count = approvedValidators.length;
-        for (uint i = 0; i < count; i++) {
+        uint approvedLength = approvedValidators.length;
+        for (uint i = 0; i < approvedLength; i++) {
             if (registry.isValidator(approvedValidators[i])) {
                 validators[pushAt] = bytes20(approvedValidators[i]);
                 pushAt++;
@@ -88,11 +88,12 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         address[] memory nodeAddresses,
         bytes4[] memory ipAddresses
     ) {
-        bytes20[] memory validators = getValidators(); // filters unregistered
-        nodeAddresses = new address[](validators.length);
-        ipAddresses = new bytes4[](validators.length);
+        bytes20[] memory validators = getValidators(); // filter unregistered
+        uint validatorsLength = validators.length;
+        nodeAddresses = new address[](validatorsLength);
+        ipAddresses = new bytes4[](validatorsLength);
 
-        for (uint i = 0; i < validators.length; i++) {
+        for (uint i = 0; i < validatorsLength; i++) {
             bytes memory ip;
             address orbsAddr;
             (,ip,,orbsAddr) = registry.getValidatorData(address(validators[i]));
@@ -101,9 +102,9 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         }
     }
 
-    function wasAdded(address m) internal view returns (bool) {
-        uint count = approvedValidators.length;
-        for (uint i = 0; i < count; i++) {
+    function isApproved(address m) internal view returns (bool) {
+        uint approvedLength = approvedValidators.length;
+        for (uint i = 0; i < approvedLength; i++) {
             if (approvedValidators[i] == m) {
                 return true;
             }
@@ -112,14 +113,14 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     }
 
     function countRegisteredValidators() internal view returns (uint) {
-        uint result = 0;
-        uint count = approvedValidators.length;
-        for (uint i = 0; i < count; i++) {
+        uint registeredCount = 0;
+        uint approvedLength = approvedValidators.length;
+        for (uint i = 0; i < approvedLength; i++) {
             if (registry.isValidator(approvedValidators[i])) {
-                result++;
+                registeredCount++;
             }
         }
-        return result;
+        return registeredCount;
     }
 
     function ipv4Address(bytes memory inBytes) internal pure returns (

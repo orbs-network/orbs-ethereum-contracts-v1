@@ -34,8 +34,9 @@ contract OrbsVoting is IOrbsVoting {
     function vote(address[] memory nodes) public {
         require(nodes.length > 0, "Must provide non empty list");
 
-        bytes20[] memory addressesAsBytes20 = new bytes20[](nodes.length);
-        for (uint i=0; i < nodes.length; i++) {
+        uint nodesLength = nodes.length;
+        bytes20[] memory addressesAsBytes20 = new bytes20[](nodesLength);
+        for (uint i=0; i < nodesLength; i++) {
             require(nodes[i] != address(0), "All nodes must be non 0");
             addressesAsBytes20[i] = bytes20(nodes[i]);
         }

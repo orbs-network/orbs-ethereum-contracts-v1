@@ -87,7 +87,8 @@ contract OrbsGuardians is IOrbsGuardians {
 
         address[] memory result = new address[](limit);
 
-        for (uint i = 0; i < result.length; i++) {
+        uint resultLength = result.length;
+        for (uint i = 0; i < resultLength; i++) {
             result[i] = guardians[offset.add(i)];
         }
 
