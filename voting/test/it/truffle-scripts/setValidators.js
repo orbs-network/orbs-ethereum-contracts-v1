@@ -1,4 +1,5 @@
 const validatorsContractAddress = process.env.VALIDATORS_CONTRACT_ADDRESS;
+const validatorsRegistryContractAddress = process.env.VALIDATORS_REGISTRY_CONTRACT_ADDRESS;
 const validatorAccountOnEthereumIndexes = process.env.VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM;
 
 module.exports = async function(done) {
@@ -6,6 +7,10 @@ module.exports = async function(done) {
 
     if (!validatorsContractAddress) {
       throw("missing env variable VALIDATORS_CONTRACT_ADDRESS");
+    }
+
+    if (!validatorsRegistryContractAddress) {
+      throw("missing env variable VALIDATORS_REGISTRY_CONTRACT_ADDRESS");
     }
 
     if (!validatorAccountOnEthereumIndexes) {
@@ -26,6 +31,16 @@ module.exports = async function(done) {
 
     await Promise.all(txs);
 
+    const validatorsRegInstance = await artifacts.require('IOrbsValidatorsRegistry').at(validatorsRegistryContractAddress);
+
+    let i = 0;
+    txs = validators.map(address => {
+      i++;
+      return validatorsRegInstance.register(`name${i}`, `0x${(i + "00000000").slice(0, 8)}`, `https://www.validator${i}.com`, address,  {from: address})
+          .on("transactionHash", hash => {console.error("TxHash: " + hash);});
+    });
+
+    await Promise.all(txs);
     done();
 
   } catch (e) {

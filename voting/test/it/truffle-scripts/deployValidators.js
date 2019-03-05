@@ -1,11 +1,15 @@
 module.exports = async function(done) {
   try {
 
+    const validatorsRegistry = artifacts.require('OrbsValidatorsRegistry');
+    let instanceValidatorsRegistry = await validatorsRegistry.new(20);
+
     const validators = artifacts.require('OrbsValidators');
-    let instance = await validators.new(20);
+    let instanceValidators = await validators.new(instanceValidatorsRegistry.address, 20);
 
     console.log(JSON.stringify({
-      Address: instance.address
+      ValidatorsAddress: instanceValidators.address,
+      ValidatorsRegistryAddress: instanceValidatorsRegistry.address
     }, null, 2));
 
     done();

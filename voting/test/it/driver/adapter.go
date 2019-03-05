@@ -28,9 +28,9 @@ type EthereumAdapter interface {
 	SetStakes(ethereumErc20Address string, stakes []int)
 	Transfer(ethereumErc20Address string, from int, to int, amount int)
 
-	DeployValidatorsContract() (ethereumValidatorsAddress string)
+	DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string)
 	GetValidators(ethereumValidatorsAddress string) []string
-	SetValidators(ethereumValidatorsAddress string, validators []int)
+	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int)
 
 	DeployVotingContract() (ethereumVotingAddress string)
 	Delegate(ethereumVotingAddress string, from int, to int)

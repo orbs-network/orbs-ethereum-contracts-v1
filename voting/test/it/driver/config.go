@@ -5,19 +5,20 @@ import (
 )
 
 type Config struct {
-	DebugLogs                 bool
-	EthereumErc20Address      string
-	EthereumValidatorsAddress string
-	EthereumVotingAddress     string
-	UserAccountOnOrbs         string
-	StakeHoldersNumber        int
-	StakeHolderValues         []int
-	ActivistsAccounts         []int
-	ValidatorsAccounts        []int
-	SetupOverEthereumBlock    int
-	Transfers                 []*TransferEvent
-	Delegates                 []*DelegateEvent
-	Votes                     []*VoteEvent
+	DebugLogs                    bool
+	EthereumErc20Address         string
+	EthereumValidatorsAddress    string
+	EthereumValidatorsRegAddress string
+	EthereumVotingAddress        string
+	UserAccountOnOrbs            string
+	StakeHoldersNumber           int
+	StakeHolderValues            []int
+	ActivistsAccounts            []int
+	ValidatorsAccounts           []int
+	SetupOverEthereumBlock       int
+	Transfers                    []*TransferEvent
+	Delegates                    []*DelegateEvent
+	Votes                        []*VoteEvent
 }
 
 func (config *Config) Validate(isDeploy bool) error {
@@ -26,10 +27,13 @@ func (config *Config) Validate(isDeploy bool) error {
 			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "EthereumErc20Address")
 		}
 		if config.EthereumValidatorsAddress == "" {
-			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "OrbsErc20ContractName")
+			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "EthereumValidatorsAddress")
+		}
+		if config.EthereumValidatorsRegAddress == "" {
+			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "EthereumValidatorsRegAddress")
 		}
 		if config.EthereumVotingAddress == "" {
-			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "OrbsAsbContractName")
+			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "EthereumVotingAddress")
 		}
 	}
 	if config.UserAccountOnOrbs == "" {
