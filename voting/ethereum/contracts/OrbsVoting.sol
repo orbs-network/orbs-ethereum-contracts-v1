@@ -10,10 +10,10 @@ interface IOrbsVoting {
 
     function vote(address[] calldata nodes_list) external;
     function delegate(address to) external;
-    function getLastVote(address _guardian) external view returns (
-        address[] memory nodes,
-        uint block_height
-    );
+    function getLastVote(address _guardian)
+        external
+        view
+        returns (address[] memory nodes, uint block_height);
 }
 
 
@@ -53,10 +53,11 @@ contract OrbsVoting is IOrbsVoting {
         emit Delegate(msg.sender, to, delegation_counter);
     }
 
-    function getLastVote(address _guardian) public view returns (
-        address[] memory nodes,
-        uint block_height
-    ) {
+    function getLastVote(address _guardian)
+        public
+        view
+        returns (address[] memory nodes, uint block_height)
+    {
         VotingRecord[] storage votings = votingRecords[_guardian];
 
         require(votings.length > 0, "Guardian never voted");

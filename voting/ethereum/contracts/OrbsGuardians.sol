@@ -6,13 +6,14 @@ interface IOrbsGuardians {
     function register(string calldata _name, string calldata _website) external;
     function leave() external;
     function isGuardian(address _guardian) external view returns (bool);
-    function getGuardianData(address _validator) external view returns (
-        string memory name,
-        string memory website
-    );
-    function getGuardians(uint offset, uint limit) external view returns (
-        address[] memory
-    );
+    function getGuardianData(address _validator)
+        external
+        view
+        returns (string memory name, string memory website);
+    function getGuardians(uint offset, uint limit)
+        external
+        view
+        returns (address[] memory);
 }
 
 
@@ -75,9 +76,10 @@ contract OrbsGuardians is IOrbsGuardians {
         return bytes(guardiansData[_guardian].name).length > 0;
     }
 
-    function getGuardians(uint offset, uint limit) public view returns (
-        address[] memory
-    ) {
+    function getGuardians(uint offset, uint limit)
+        public
+        view returns (address[] memory)
+    {
         require(offset < guardians.length, "Offset too high");
         require(limit <= 100, "Page size may not exceed 100");
 
@@ -95,10 +97,11 @@ contract OrbsGuardians is IOrbsGuardians {
         return result;
     }
 
-    function getGuardianData(address _guardian) public view returns (
-        string memory name,
-        string memory website
-    ) {
+    function getGuardianData(address _guardian)
+        public
+        view
+        returns (string memory name, string memory website)
+    {
         require(isGuardian(_guardian), "Please provide a listed Guardian");
         return (guardiansData[_guardian].name, guardiansData[_guardian].website);
     }

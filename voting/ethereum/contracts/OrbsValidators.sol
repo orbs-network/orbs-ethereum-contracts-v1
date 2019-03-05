@@ -84,10 +84,11 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         }
     }
 
-    function getNetworkTopology() public view returns (
-        address[] memory nodeAddresses,
-        bytes4[] memory ipAddresses
-    ) {
+    function getNetworkTopology()
+        public
+        view
+        returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses)
+    {
         bytes20[] memory validators = getValidators(); // filter unregistered
         uint validatorsLength = validators.length;
         nodeAddresses = new address[](validatorsLength);
@@ -123,9 +124,11 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         return registeredCount;
     }
 
-    function ipv4Address(bytes memory inBytes) internal pure returns (
-        bytes4 outBytes4
-    ) {
+    function ipv4Address(bytes memory inBytes)
+        internal
+        pure
+        returns (bytes4 outBytes4)
+    {
         uint256 bytesAvailable = inBytes.length < 4 ? inBytes.length : 4;
         for (uint256 i = 0; i < bytesAvailable; i++) {
             bytes4 shifter = inBytes[i];
