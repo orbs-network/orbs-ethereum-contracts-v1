@@ -66,11 +66,6 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	logStage("Mirroring %d Voting Events ...", len(votingEvents))
 	for _, vt := range votingEvents {
 		orbs.MirrorVote(getOrbsVotingContractName(), vt.TxHash)
-		//candidates := "0x"
-		//for _, s := range vt.CandidateAddresses {
-		//	candidates += s[2:]
-		//}
-		//orbs.MirrorVoteTemp(getOrbsVotingContractName(), vt.ActivistAddress, vt.Block, vt.TransactionIndex, candidates)
 	}
 	// Checking state after vote mirror
 	for _, vt := range votingEvents {

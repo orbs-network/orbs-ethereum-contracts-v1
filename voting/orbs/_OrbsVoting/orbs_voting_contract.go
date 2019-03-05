@@ -14,7 +14,7 @@ import (
 var PUBLIC = sdk.Export(getTokenAddr, setTokenAddr, getTokenAbi, getVotingAddr, setVotingAddr, getVotingAbi, getValidatorsAddr, setValidatorsAddr, getValidatorsAbi,
 	getOrbsConfigContract,
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
-	getVoteData, getDelegationData, setVoteData, // TODO v1 todo noam temp - i think remove completet
+	getVoteData, getDelegationData, // TODO v1 todo noam temp - i think remove completet
 	_getDelegatorStake, // todo v1 todo noam remove from public
 	processVoting,
 	setFirstElectionBlockHeight)
@@ -88,7 +88,7 @@ func mirrorDelegation(hexEncodedEthTxHash string) {
 func _mirrorPeriodValidator() {
 	currentBlock := ethereum.GetBlockNumber()
 	if _isAfterElectionMirroring(currentBlock) {
-		panic("mirror period for election ended, resubmit next election")
+		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, _getElectionBlockHeight()))
 	}
 }
 
@@ -444,6 +444,7 @@ func _aggregateVotesOneGuardianRecursive(currentLevelGuardian [20]byte, guardian
 	currentVotes := delegatorStakes[currentLevelGuardian]
 	if ok {
 		for _, delegate := range guardianDelegatorList {
+			// TODO check loop to self delegation
 			currentVotes = safeuint64.Add(currentVotes, _aggregateVotesOneGuardianRecursive(delegate, guardianDelegators, delegatorStakes))
 		}
 	}
