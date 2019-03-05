@@ -362,32 +362,35 @@ func TestOrbsVotingContract_getStakeFromEthereum(t *testing.T) {
  */
 
 func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
+	electionBlock := uint64(60000)
+	blockNumber := electionBlock + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS + 2
+
 	validatorAddresses := [][20]byte{{0x01}, {0x02}, {0x03}, {0x04}, {0x05}, {0x06}, {0x07}, {0x08}, {0x09}}
-	guardianAddresses := [][20]byte{{0xa0}, {0xa1}, {0xa2}, {0xa3}}
+	guardianAddresses := [][20]byte{{0xa0}, {0xa1}, {0xa2}, {0xa3}, {0xa4}}
+	guardianVoteBlock := []uint64{electionBlock - 1, electionBlock - 1, electionBlock - 1, electionBlock - 1, electionBlock - 2*VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS - 2}
 	guardianVote := [][][20]byte{
 		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[6], validatorAddresses[5]},
 		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[6], validatorAddresses[5]},
 		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[3], validatorAddresses[7]},
 		{validatorAddresses[1], validatorAddresses[0], validatorAddresses[2], validatorAddresses[4], validatorAddresses[8]},
+		{validatorAddresses[8]},
 	}
-	guardianStakes := []int{100, 200, 400, 1000}
+	guardianStakes := []int{100, 200, 400, 1000, 10000000}
 	delegatorAddresses := [][20]byte{{0xb0}, {0xb1}, {0xb2}, {0xb3}, {0xb4}, {0xb5}, {0xb6}, {0xb7}, {0xb8}, {0xb9}, {0xba}, {0xbb}}
 	delegatorStakes := []int{500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
-	delegatorGuardians := [][20]byte{{0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}}
-
-	blockNumber := uint64(1000)
+	delegatorGuardians := [][20]byte{{0xb1}, {0xb2}, {0xa3}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}, {0xa2}}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setFirstElectionBlockHeight(blockNumber)
+		setFirstElectionBlockHeight(electionBlock)
 
 		// prepare
-		_setVotingProcessState(VOTING_PROCESS_STATE_GUARDIANSS)
+		//m.MockEthereumGetBlockNumber(int(blockNumber))
 		mockValidatorsInEthereum(m, blockNumber, validatorAddresses)
 		mockStakesInEthereum(m, blockNumber, guardianAddresses, guardianStakes)
 		mockStakesInEthereum(m, blockNumber, delegatorAddresses, delegatorStakes)
 		mockDelegationsInOrbs(delegatorAddresses, delegatorGuardians)
-		mockGuardianVotesInOrbs(guardianAddresses, guardianVote)
+		mockGuardianVotesInOrbs(guardianAddresses, guardianVote, guardianVoteBlock)
 
 		// call
 		elected := processVotingInternal(blockNumber)
