@@ -64,7 +64,7 @@ contract OrbsGuardians is IOrbsGuardians {
         public
         view returns (address[] memory)
     {
-        if (offset >= guardians.length) { // return an empty list if none available
+        if (offset >= guardians.length) { // offset out of bounds
             return new address[](0);
         }
 
