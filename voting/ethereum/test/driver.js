@@ -39,14 +39,8 @@ module.exports.Driver = class {
     };
 
     async addValidatorWithData(validatorAddress) {
-        this.runningCounter++;
-        const name = "somename" + this.runningCounter;
-        const url = "http://somedomain.com/?" + this.runningCounter;
-        const orbsAddr = exports.numToAddress(8765 + this.runningCounter);
-        const ip = ("0x" + this.runningCounter +"00000000").slice(0, 10);
-
         await this.OrbsValidators.addValidator(validatorAddress);
-        await this.OrbsRegistry.register(name, ip, url, orbsAddr, {from: validatorAddress});
+        await this.register(validatorAddress);
     };
 
     async register(validatorAddress) {

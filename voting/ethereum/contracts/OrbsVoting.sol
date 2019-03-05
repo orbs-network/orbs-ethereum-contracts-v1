@@ -1,32 +1,19 @@
 pragma solidity 0.5.3;
 
-interface IOrbsVoting {
-    event Vote(address indexed voter, bytes20[] nodes_list, uint vote_counter);
-    event Delegate(
-        address indexed delegator,
-        address indexed to,
-        uint delegation_counter
-    );
 
-    function vote(address[] calldata nodes_list) external;
-    function delegate(address to) external;
-    function getLastVote(address _guardian)
-        external
-        view
-        returns (address[] memory nodes, uint block_height);
-}
+import "./IOrbsVoting.sol";
 
 
 contract OrbsVoting is IOrbsVoting {
     struct VotingRecord {
-        uint block_height;
+        uint blockHeight;
         address[] nodes;
     }
 
-    uint vote_counter = 0;
-    uint delegation_counter = 0;
+    uint voteCounter = 0;
+    uint delegationCounter = 0;
 
-    mapping (address => VotingRecord[]) votingRecords;
+    mapping(address => VotingRecord[]) votingRecords;
 
     // The version of the current federation smart contract.
     uint public constant VERSION = 1;
@@ -41,30 +28,30 @@ contract OrbsVoting is IOrbsVoting {
             addressesAsBytes20[i] = bytes20(nodes[i]);
         }
 
-        vote_counter++;
+        voteCounter++;
 
         votingRecords[msg.sender].push(VotingRecord(block.number, nodes));
 
-        emit Vote(msg.sender, addressesAsBytes20, vote_counter);
+        emit Vote(msg.sender, addressesAsBytes20, voteCounter);
     }
 
     function delegate(address to) public {
-        delegation_counter++;
-        emit Delegate(msg.sender, to, delegation_counter);
+        delegationCounter++;
+        emit Delegate(msg.sender, to, delegationCounter);
     }
 
-    function getLastVote(address _guardian)
+    function getLastVote(address guardian)
         public
         view
-        returns (address[] memory nodes, uint block_height)
+        returns (address[] memory nodes, uint blockHeight)
     {
-        VotingRecord[] storage votings = votingRecords[_guardian];
+        VotingRecord[] storage votings = votingRecords[guardian];
 
         require(votings.length > 0, "Guardian never voted");
 
         VotingRecord storage lastVote = votings[votings.length - 1];
 
-        block_height = lastVote.block_height;
+        blockHeight = lastVote.blockHeight;
         nodes = lastVote.nodes;
     }
 }

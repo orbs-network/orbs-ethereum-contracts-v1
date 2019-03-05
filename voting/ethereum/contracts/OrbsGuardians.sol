@@ -1,21 +1,7 @@
 pragma solidity 0.5.3;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-
-interface IOrbsGuardians {
-    function register(string calldata _name, string calldata _website) external;
-    function leave() external;
-    function isGuardian(address _guardian) external view returns (bool);
-    function getGuardianData(address _validator)
-        external
-        view
-        returns (string memory name, string memory website);
-    function getGuardians(uint offset, uint limit)
-        external
-        view
-        returns (address[] memory);
-}
-
+import "./IOrbsGuardians.sol";
 
 contract OrbsGuardians is IOrbsGuardians {
     using SafeMath for uint256;
@@ -34,11 +20,11 @@ contract OrbsGuardians is IOrbsGuardians {
     event GuardianModified(address indexed validator);
 
     address[] public guardians;
-    mapping (address => GuardianData) public guardiansData;
+    mapping(address => GuardianData) public guardiansData;
 
-    function register(string memory _name, string memory _website) public {
-        require(bytes(_name).length > 0, "Please provide a valid name");
-        require(bytes(_website).length > 0, "Please provide a valid website");
+    function register(string memory name, string memory website) public {
+        require(bytes(name).length > 0, "Please provide a valid name");
+        require(bytes(website).length > 0, "Please provide a valid website");
 
         bool adding = !isGuardian(msg.sender);
         uint index;
@@ -51,7 +37,7 @@ contract OrbsGuardians is IOrbsGuardians {
             emit GuardianModified(msg.sender);
         }
 
-        guardiansData[msg.sender] = GuardianData(_name, _website, index);
+        guardiansData[msg.sender] = GuardianData(name, website, index);
     }
 
     function leave() public {
@@ -68,12 +54,10 @@ contract OrbsGuardians is IOrbsGuardians {
         guardians.length--;
 
         emit GuardianLeft(msg.sender);
-        return;
-
     }
 
-    function isGuardian(address _guardian) public view returns (bool) {
-        return bytes(guardiansData[_guardian].name).length > 0;
+    function isGuardian(address guardian) public view returns (bool) {
+        return bytes(guardiansData[guardian].name).length > 0;
     }
 
     function getGuardians(uint offset, uint limit)
@@ -97,12 +81,12 @@ contract OrbsGuardians is IOrbsGuardians {
         return result;
     }
 
-    function getGuardianData(address _guardian)
+    function getGuardianData(address guardian)
         public
         view
         returns (string memory name, string memory website)
     {
-        require(isGuardian(_guardian), "Please provide a listed Guardian");
-        return (guardiansData[_guardian].name, guardiansData[_guardian].website);
+        require(isGuardian(guardian), "Please provide a listed Guardian");
+        return (guardiansData[guardian].name, guardiansData[guardian].website);
     }
 }
