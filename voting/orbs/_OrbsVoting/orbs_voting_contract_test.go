@@ -262,9 +262,9 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 			candidates = append(candidates, v[:]...)
 		}
 
-		require.EqualValues(t, candidates, state.ReadBytes(_formatActivistCandidateKey(activistAddr[:])))
-		require.EqualValues(t, blockHeight, state.ReadUint64(_formatActivistBlockHeightKey(activistAddr[:])))
-		require.EqualValues(t, txIndex, state.ReadUint32(_formatActivistBlockTxIndexKey(activistAddr[:])))
+		require.EqualValues(t, candidates, state.ReadBytes(_formatGuardianCandidateKey(activistAddr[:])))
+		require.EqualValues(t, blockHeight, state.ReadUint64(_formatGuardianBlockHeightKey(activistAddr[:])))
+		require.EqualValues(t, txIndex, state.ReadUint32(_formatGuardianBlockTxIndexKey(activistAddr[:])))
 	})
 }
 
@@ -279,7 +279,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockHeight(t *testi
 		setTimingInMirror(m)
 
 		// prepare
-		state.WriteUint64(_formatActivistBlockHeightKey(activistAddr[:]), 101)
+		state.WriteUint64(_formatGuardianBlockHeightKey(activistAddr[:]), 101)
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
@@ -303,8 +303,8 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 		setTimingInMirror(m)
 
 		// prepare
-		state.WriteUint64(_formatActivistBlockHeightKey(activistAddr[:]), 100)
-		state.WriteUint64(_formatActivistBlockTxIndexKey(activistAddr[:]), 50)
+		state.WriteUint64(_formatGuardianBlockHeightKey(activistAddr[:]), 100)
+		state.WriteUint64(_formatGuardianBlockTxIndexKey(activistAddr[:]), 50)
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
@@ -433,8 +433,8 @@ func (f *harness) mockGuardianVotesInOrbs() {
 	_setNumberOfGurdians(len(f.guardians))
 	for i, guardian := range f.guardians {
 		_setCandidates(guardian.address[:], guardian.votedValidators)
+		state.WriteUint64(_formatGuardianBlockHeightKey(guardian.address[:]), guardian.voteBlock)
 		state.WriteBytes(_formatGuardianIterator(i), guardian.address[:])
-		state.WriteUint64(_formatActivistBlockHeightKey(guardian.address[:]), guardian.voteBlock)
 	}
 }
 

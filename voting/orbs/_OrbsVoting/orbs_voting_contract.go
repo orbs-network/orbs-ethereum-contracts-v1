@@ -188,13 +188,13 @@ func mirrorVote(hexEncodedEthTxHash string) {
 	eventBlockHeight, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, "Vote", e)
 	electionBlockHeight := _getElectionBlockHeight()
 	if eventBlockHeight > electionBlockHeight {
-		panic(fmt.Errorf("vote of activist %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
+		panic(fmt.Errorf("vote of guardian %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
 			e.Voter, e.Nodes_list, eventBlockHeight, electionBlockHeight))
 	}
-	stateBlockHeight := state.ReadUint64(_formatActivistBlockHeightKey(e.Voter[:]))
-	stateBlockTxIndex := state.ReadUint32(_formatActivistBlockTxIndexKey(e.Voter[:]))
+	stateBlockHeight := state.ReadUint64(_formatGuardianBlockHeightKey(e.Voter[:]))
+	stateBlockTxIndex := state.ReadUint32(_formatGuardianBlockTxIndexKey(e.Voter[:]))
 	if stateBlockHeight > eventBlockHeight || (stateBlockHeight == eventBlockHeight && stateBlockTxIndex > eventBlockTxIndex) {
-		panic(fmt.Errorf("vote of activist %v to %v with block-height %d and tx-index %d failed since already have newer block-height %d and tx-index %d",
+		panic(fmt.Errorf("vote of guardian %v to %v with block-height %d and tx-index %d failed since already have newer block-height %d and tx-index %d",
 			e.Voter, e.Nodes_list, eventBlockHeight, eventBlockTxIndex, stateBlockHeight, stateBlockTxIndex))
 	}
 
@@ -204,17 +204,17 @@ func mirrorVote(hexEncodedEthTxHash string) {
 		_setNumberOfGurdians(numOfGuardians + 1)
 	}
 
-	// TODO noam due-diligent activist missing
+	// TODO noam due-diligent guardian missing
 
 	_setCandidates(e.Voter[:], e.Nodes_list)
-	state.WriteUint64(_formatActivistBlockHeightKey(e.Voter[:]), eventBlockHeight)
-	state.WriteUint32(_formatActivistBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
+	state.WriteUint64(_formatGuardianBlockHeightKey(e.Voter[:]), eventBlockHeight)
+	state.WriteUint32(_formatGuardianBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
 }
 
-func getVoteData(activist []byte) (addr []byte, blockNumber uint64, txIndex uint32) {
-	return state.ReadBytes(_formatActivistCandidateKey(activist)),
-		state.ReadUint64(_formatActivistBlockHeightKey(activist)),
-		state.ReadUint32(_formatActivistBlockTxIndexKey(activist))
+func getVoteData(guardian []byte) (addr []byte, blockNumber uint64, txIndex uint32) {
+	return state.ReadBytes(_formatGuardianCandidateKey(guardian)),
+		state.ReadUint64(_formatGuardianBlockHeightKey(guardian)),
+		state.ReadUint32(_formatGuardianBlockTxIndexKey(guardian))
 }
 
 var GUARDIAN_COUNT = []byte("Guardian_Address_Count")
@@ -239,12 +239,12 @@ func _setGuardianAtIndex(index int, guardian []byte) {
 	state.WriteBytes(_formatGuardianIterator(index), guardian)
 }
 
-func _formatActivistCandidateKey(guardian []byte) []byte {
-	return []byte(fmt.Sprintf("Activist_%s_Candidates", hex.EncodeToString(guardian)))
+func _formatGuardianCandidateKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Guardian_%s_Candidates", hex.EncodeToString(guardian)))
 }
 
 func _getCandidates(guardian []byte) [][20]byte {
-	candidates := state.ReadBytes(_formatActivistCandidateKey(guardian))
+	candidates := state.ReadBytes(_formatGuardianCandidateKey(guardian))
 	numCandidate := len(candidates) / 20
 	candidatesList := make([][20]byte, numCandidate)
 	for i := 0; i < numCandidate; i++ {
@@ -259,15 +259,15 @@ func _setCandidates(guardian []byte, candidateList [][20]byte) {
 		candidates = append(candidates, v[:]...)
 	}
 
-	state.WriteBytes(_formatActivistCandidateKey(guardian), candidates)
+	state.WriteBytes(_formatGuardianCandidateKey(guardian), candidates)
 }
 
-func _formatActivistBlockHeightKey(guardian []byte) []byte {
-	return []byte(fmt.Sprintf("Activist_%s_BlockHeight", hex.EncodeToString(guardian)))
+func _formatGuardianBlockHeightKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Guardian_%s_BlockHeight", hex.EncodeToString(guardian)))
 }
 
-func _formatActivistBlockTxIndexKey(guardian []byte) []byte {
-	return []byte(fmt.Sprintf("Activist_%s_BlockTxIndex", hex.EncodeToString(guardian)))
+func _formatGuardianBlockTxIndexKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Guardian_%s_BlockTxIndex", hex.EncodeToString(guardian)))
 }
 
 func _formatGuardianStakeKey(guardian []byte) []byte {
@@ -384,7 +384,7 @@ func _collectGuardiansStake(guardianStakes map[[20]byte]uint64) {
 	numOfGuardians := _getNumberOfGurdians()
 	for i := 0; i < numOfGuardians; i++ {
 		guardian := _getGuardianAtIndex(i)
-		voteBlockNumer := state.ReadUint64(_formatActivistBlockHeightKey(guardian[:]))
+		voteBlockNumer := state.ReadUint64(_formatGuardianBlockHeightKey(guardian[:]))
 		if voteBlockNumer > safeuint64.Sub(_getElectionBlockHeight(), VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) {
 			stake := state.ReadUint64(_formatGuardianStakeKey(guardian[:]))
 			guardianStakes[guardian] = stake
