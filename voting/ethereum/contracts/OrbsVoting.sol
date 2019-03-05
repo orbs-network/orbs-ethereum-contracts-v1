@@ -2,11 +2,19 @@ pragma solidity 0.5.3;
 
 interface IOrbsVoting {
     event Vote(address indexed voter, bytes20[] nodes_list, uint vote_counter);
-    event Delegate(address indexed delegator, address indexed to, uint delegation_counter);
+    event Delegate(
+        address indexed delegator,
+        address indexed to,
+        uint delegation_counter
+    );
 
     function vote(address[] calldata nodes_list) external;
     function delegate(address to) external;
-}
+    function getLastVote(address _guardian) external view returns (
+        address[] memory nodes,
+        uint block_height
+    );
+    }
 
 
 contract OrbsVoting is IOrbsVoting {
@@ -15,8 +23,8 @@ contract OrbsVoting is IOrbsVoting {
         address[] nodes;
     }
 
-    uint vote_counter = 0; // will reset back to zero when uint is exhausted
-    uint delegation_counter = 0; // will reset back to zero when uint is exhausted
+    uint vote_counter = 0;
+    uint delegation_counter = 0;
 
     mapping (address => VotingRecord[]) votingRecords;
 
@@ -44,7 +52,10 @@ contract OrbsVoting is IOrbsVoting {
         emit Delegate(msg.sender, to, delegation_counter);
     }
 
-    function getLastVote(address _guardian) public view returns (address[] memory nodes, uint block_height) {
+    function getLastVote(address _guardian) public view returns (
+        address[] memory nodes,
+        uint block_height
+    ) {
         VotingRecord[] storage votings = votingRecords[_guardian];
 
         require(votings.length > 0, "Guardian never voted");

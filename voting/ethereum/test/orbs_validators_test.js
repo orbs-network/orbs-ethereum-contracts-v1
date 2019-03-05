@@ -17,7 +17,7 @@ contract('OrbsValidators', accounts => {
             let r = await driver.OrbsValidators.addValidator(validatorAddr);
             assert.equal(r.logs[0].event, "ValidatorAdded");
 
-            let member1 = await driver.OrbsValidators.validators(0);
+            let member1 = await driver.OrbsValidators.approvedValidators(0);
             assert.equal(member1, validatorAddr);
         });
 
