@@ -29,7 +29,6 @@
     "typescript": "^3.3.3333"
   },
   "scripts": {
-    "postinstall": "npm run copy-contracts",
     "prestart": "node ./harness.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -37,7 +36,7 @@
     "eject": "react-scripts eject",
     "lint": "prettier --single-quote --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "deploy": "npm run build && ./scripts/deploy.sh",
-    "copy-contracts": "./scripts/copy-contracts.sh"
+    "update-contracts": "./scripts/update-contracts-info.js"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [

@@ -6,7 +6,7 @@ const OrbsValidatorsRegistryContractJSON = require('./src/contracts/OrbsValidato
 
 (async () => {
   const web3 = new Web3('http://localhost:7545');
-  const from = '0x0eF55A56D268bB7A01e9D0eA0e9dd56b6DF05F1d';
+  const from = '0x9D4dB91AaA3573A67Ff7604EAcfC73d03e2C9c7A';
 
   const guardiansContract = new web3.eth.Contract(
     OrbsGuardiansContractJSON.abi,
@@ -28,11 +28,9 @@ const OrbsValidatorsRegistryContractJSON = require('./src/contracts/OrbsValidato
     .getGuardians(0, 100)
     .call({ from });
   const validators = await validatorsContract.methods.getValidators().call({ from });
-  const data = await validatorsRegistryContract.methods.getValidatorData("0x98117ebd3d4ba9e3f9d5d2201f3f0954e3d4281c").call();
 
   console.log('Guardians:\n', guardians);
   console.log('Validators:\n', validators);
-  console.log('Data:\n', data);
 
   process.exit();
 })();

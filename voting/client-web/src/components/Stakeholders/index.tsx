@@ -9,7 +9,6 @@ import {
   Radio,
   FormControlLabel
 } from '@material-ui/core';
-import { compileFunction } from 'vm';
 
 const styles = () => ({
   container: {
@@ -53,8 +52,11 @@ const StakeholderPage = ({
     fetchGuardians();
   }, []);
 
-  const delegate = () => {
-    votingContract.methods.delegate(candidate).send({ from });
+  const delegate = async () => {
+    const receipt = await votingContract.methods
+      .delegate(candidate)
+      .send({ from });
+    console.log(receipt);
   };
 
   return (

@@ -5,7 +5,7 @@ const OrbsGuardiansContractJSON = require('./src/contracts/OrbsGuardians.json');
 const OrbsValidatorsContractJSON = require('./src/contracts/OrbsValidators.json');
 const OrbsValidatorsRegistryContractJSON = require('./src/contracts/OrbsValidatorsRegistry.json');
 
-const from = '0x0eF55A56D268bB7A01e9D0eA0e9dd56b6DF05F1d';
+const from = '0x9D4dB91AaA3573A67Ff7604EAcfC73d03e2C9c7A';
 const web3 = new Web3('http://localhost:7545');
 const chance = new Chance();
 

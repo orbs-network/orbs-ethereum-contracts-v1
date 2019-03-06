@@ -69,8 +69,11 @@ const GuardianPage = ({
     const stagedValidators = Object.keys(validators).filter(
       address => validators[address].checked
     );
-    await votingContract.methods.vote(stagedValidators).send({ from });
+    const receipt = await votingContract.methods
+      .vote(stagedValidators)
+      .send({ from });
     save(stagedValidators);
+    console.log(receipt);
   };
 
   const toggleCheck = (address: string) => {
