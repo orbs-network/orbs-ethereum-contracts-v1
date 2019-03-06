@@ -78,7 +78,7 @@ module.exports = {
       // production: true    // Treats this network as if it was a public net. (default: false)
     // }
     ropsten: {
-      provider: () => new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141'),
+      provider: () => new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141', 0, 10),
       network_id: '3',
     },
     development: {
