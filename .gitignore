@@ -5,6 +5,7 @@
 .idea/
 
 ASB/build
+ASB/package-lock.json
 
 Federation/dist
 Federation/coverage
@@ -19,6 +20,7 @@ TestingERC20/build
 
 Voting/ethereum/build/
 Voting/test/it/build/
+Voting/test/it/package-lock.json
 
 **/node_modules/
 # **/build/

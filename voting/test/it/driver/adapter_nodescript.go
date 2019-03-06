@@ -80,8 +80,12 @@ type voteData struct {
 	TransactionIndex   int
 	TxHash             string
 	ActivistAddress    string
-	CandidateAddresses []string
+	CandidateAddresses string
 	Method             string
+}
+
+func (v *voteData) getAddresses() []string {
+	return strings.Split(v.CandidateAddresses, ",")
 }
 
 func (na *nodeAdapter) FindVoteEvents(ethereumVotingAddress string, startBlock int, endBlock int) []voteData {
@@ -96,6 +100,7 @@ func (na *nodeAdapter) FindVoteEvents(ethereumVotingAddress string, startBlock i
 	if err != nil {
 		panic(err.Error() + "\n" + string(bytes))
 	}
+
 	return out
 }
 
