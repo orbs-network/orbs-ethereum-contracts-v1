@@ -19,6 +19,7 @@ const styles = () => ({
 
 const GuardianPage = ({
   validatorsContract,
+  validatorsRegistryContract,
   votingContract,
   metamaskService,
   classes
@@ -30,13 +31,15 @@ const GuardianPage = ({
   const from = metamaskService.getCurrentAddress();
 
   const fetchValidators = async () => {
-    const validatorsInState = await validatorsContract.methods
+    let validatorsInState = await validatorsContract.methods
       .getValidators()
       .call({ from });
 
     const validatorsInfo = await Promise.all(
       validatorsInState.map(address =>
-        validatorsContract.methods.getValidatorData(address).call({ from })
+        validatorsRegistryContract.methods
+          .getValidatorData(address)
+          .call({ from })
       )
     );
 
@@ -46,8 +49,8 @@ const GuardianPage = ({
       (acc, currAddress, idx) => {
         acc[currAddress] = {
           checked: false,
-          name: validatorsInfo[idx]['_name'],
-          url: validatorsInfo[idx]['_website']
+          name: validatorsInfo[idx]['name'],
+          url: validatorsInfo[idx]['website']
         };
         return acc;
       },
@@ -66,8 +69,11 @@ const GuardianPage = ({
     const stagedValidators = Object.keys(validators).filter(
       address => validators[address].checked
     );
-    await votingContract.methods.vote(stagedValidators).send({ from });
+    const receipt = await votingContract.methods
+      .vote(stagedValidators)
+      .send({ from });
     save(stagedValidators);
+    console.log(receipt);
   };
 
   const toggleCheck = (address: string) => {

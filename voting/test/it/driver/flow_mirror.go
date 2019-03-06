@@ -71,7 +71,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	for _, vt := range votingEvents {
 		addresses, blockNumber, txIndex := orbs.GetVoteData(getOrbsVotingContractName(), vt.ActivistAddress)
 		candidatesStr := "0x"
-		for _, s := range vt.CandidateAddresses {
+		for _, s := range vt.getAddresses() {
 			candidatesStr += s[2:]
 		}
 		require.EqualValues(t, strings.ToLower(candidatesStr), strings.ToLower(addresses))

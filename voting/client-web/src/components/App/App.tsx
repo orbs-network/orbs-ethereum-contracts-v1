@@ -15,13 +15,15 @@ import {
 import {
   validatorsContractFactory,
   guardiansContractFactory,
-  votingContractFactory
+  votingContractFactory,
+  validatorsRegistryContractFactory
 } from '../../services/contracts';
 
 interface IState {
   validatorsContract: Object;
   guardiansContract: Object;
   votingContract: Object;
+  validatorsRegistryContract: Object;
   metamaskService: MetamaskService;
 }
 
@@ -51,6 +53,7 @@ class App extends Component<WithStyles, IState> {
     super(props);
     this.state = {
       validatorsContract: validatorsContractFactory(),
+      validatorsRegistryContract: validatorsRegistryContractFactory(),
       guardiansContract: guardiansContractFactory(),
       votingContract: votingContractFactory(),
       metamaskService: new MetamaskService()
@@ -67,7 +70,6 @@ class App extends Component<WithStyles, IState> {
           <CssBaseline />
           <div className={classes.root}>
             <Header />
-            <Sidebar />
             <Main {...this.state} />
           </div>
         </MuiThemeProvider>
