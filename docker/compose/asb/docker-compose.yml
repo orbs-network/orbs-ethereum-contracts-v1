@@ -12,7 +12,7 @@ services:
     image: trufflesuite/ganache-cli
     ports:
       - 7545:7545
-    command: -m 'vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid' -i 5777 -p 7545
+    command: -m 'vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid' -i 5777 -p 7545 -t $GANACHE_START_TIME
   asb:
     depends_on:
       - gamma

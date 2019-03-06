@@ -5,6 +5,8 @@ docker build -t orbs:asb -f docker/images/asb/Dockerfile .
 
 echo "Starting up test environment.."
 docker-compose -f docker/compose/asb/docker-compose.yml down -v
+
+export GANACHE_START_TIME=$(node -e "console.log(new Date(new Date() - 120000))")
 docker-compose -f docker/compose/asb/docker-compose.yml up -d
 docker exec asb_gamma_1 echo "ganache host.docker.internal" > /etc/hosts
 
