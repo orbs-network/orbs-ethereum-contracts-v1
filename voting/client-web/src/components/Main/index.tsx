@@ -8,7 +8,8 @@ import { withStyles } from '@material-ui/core/styles';
 const styles = theme => ({
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3
+    padding: theme.spacing.unit * 5,
+    width: '100%'
   },
   toolbar: theme.mixins.toolbar
 });
@@ -22,11 +23,11 @@ const Main = ({
   classes
 }) => {
   return (
-    <main>
+    <main className={classes.content}>
       <div className={classes.toolbar} />
       <Route exact path="/" component={Home} />
       <Route
-        path="/stakeholder"
+        path="/delegator"
         component={(props: RouteProps) => (
           <StakeholderPage
             {...props}

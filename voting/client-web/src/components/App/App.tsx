@@ -70,7 +70,6 @@ class App extends Component<WithStyles, IState> {
           <CssBaseline />
           <div className={classes.root}>
             <Header />
-            <Sidebar />
             <Main {...this.state} />
           </div>
         </MuiThemeProvider>
