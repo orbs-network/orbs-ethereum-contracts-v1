@@ -18,6 +18,7 @@ const Main = ({
   metamaskService,
   guardiansContract,
   validatorsContract,
+  validatorsRegistryContract,
   classes
 }) => {
   return (
@@ -41,6 +42,7 @@ const Main = ({
           <GuardianPage
             {...props}
             validatorsContract={validatorsContract}
+            validatorsRegistryContract={validatorsRegistryContract}
             votingContract={votingContract}
             metamaskService={metamaskService}
           />

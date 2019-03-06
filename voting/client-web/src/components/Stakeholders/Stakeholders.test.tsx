@@ -37,11 +37,19 @@ describe('Stakeholders components', () => {
 
     Object.keys(guardiansData).forEach(address => {
       expect(getByTestId(`guardian-${address}-label`)['href']).toEqual(
-        guardiansData[address]._website
+        guardiansData[address].website
       );
       expect(getByTestId(`guardian-${address}-label`).innerHTML).toEqual(
-        guardiansData[address]._name
+        guardiansData[address].name
       );
     });
+  });
+
+  it('delegate should be disabled if nothing is selected', () => {
+    const props = {
+      guardiansContract: driver.given.guardiansContract(guardiansData),
+      votingContract: driver.given.votingContract(),
+      metamaskService: driver.given.metamaskService()
+    };
   });
 });
