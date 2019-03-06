@@ -16,7 +16,7 @@ contract('OrbsGuardians', accounts => {
 
             await assertReject(driver.OrbsGuardians.getGuardianData(accounts[1]), "expected getting data before registration to fail");
             assert.isNotOk(await driver.OrbsGuardians.isGuardian(accounts[1]), "expected isGuardian to return false before registration");
-            await assertReject(driver.OrbsGuardians.getGuardians(0, 10), "expected getting data before registration to fail");
+            assert.deepEqual(await driver.OrbsGuardians.getGuardians(0, 10), [], "expected an empty guardian list before registration");
 
             await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1]});
 
@@ -66,6 +66,22 @@ contract('OrbsGuardians', accounts => {
     });
 
     describe('when calling the getGuardians() function', () => {
+        it('returns an empty array if offset is out of range', async () => {
+            await driver.deployGuardians();
+
+            const empty1 = await driver.OrbsGuardians.getGuardians(0, 10);
+            assert.deepEqual(empty1, [], "expected an empty array before anyone registered");
+
+            // register one guardian
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1]});
+
+            const empty2 = await driver.OrbsGuardians.getGuardians(1, 10); // first unavailable offset
+            assert.deepEqual(empty2, [], "expected an empty array when requested unavailable offset");
+
+            const empty3 = await driver.OrbsGuardians.getGuardians(100, 10); // far unavailable offset
+            assert.deepEqual(empty3, [], "expected an empty array when requested unavailable offset");
+        });
+
         it('should return the requested page', async () => {
             await driver.deployGuardians();
 
@@ -94,14 +110,6 @@ contract('OrbsGuardians', accounts => {
             const empty = await driver.OrbsGuardians.getGuardians(1, 0);
             assert.deepEqual(empty, [], "expected empty list");
         });
-
-        it('should fail for offest out of range', async () => {
-            await driver.deployGuardians();
-
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1]});
-
-            await assertReject(driver.OrbsGuardians.getGuardians(1, 10), "expected requesting element at index 1 to fail when there is only one guardian");
-        });
     });
 
     describe('when calling the leave() function', () => {
@@ -125,7 +133,8 @@ contract('OrbsGuardians', accounts => {
 
             await driver.OrbsGuardians.leave({from: accounts[3]});
 
-            await assertReject(driver.OrbsGuardians.getGuardians(0, 10), "expected getGuardians to fail after everyone left");
+            const noneLeft = await driver.OrbsGuardians.getGuardians(0, 10);
+            assert.deepEqual(noneLeft, [], "expected an empty list after everyone left");
         });
 
     });

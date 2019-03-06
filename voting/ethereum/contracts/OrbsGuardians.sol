@@ -64,10 +64,13 @@ contract OrbsGuardians is IOrbsGuardians {
         public
         view returns (address[] memory)
     {
-        require(offset < guardians.length, "Offset too high");
+        if (offset >= guardians.length) { // offset out of bounds
+            return new address[](0);
+        }
+
         require(limit <= 100, "Page size may not exceed 100");
 
-        if (offset.add(limit) > guardians.length) { // clip page to array size
+        if (offset.add(limit) > guardians.length) { // clip limit to array size
             limit = guardians.length.sub(offset);
         }
 
