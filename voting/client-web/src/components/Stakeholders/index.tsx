@@ -88,6 +88,7 @@ const StakeholderPage = ({
             ))}
         </RadioGroup>
         <Button
+          disabled={!candidate}
           data-testid={`delegate-button`}
           onClick={delegate}
           variant="outlined"
