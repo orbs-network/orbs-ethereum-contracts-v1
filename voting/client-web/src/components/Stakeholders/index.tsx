@@ -32,7 +32,7 @@ const StakeholderPage = ({
 
   const fetchGuardians = async () => {
     const addresses = await guardiansContract.methods
-      .getGuardians()
+      .getGuardians(0, 100)
       .call({ from });
     const details = await Promise.all(
       addresses.map(address =>
@@ -41,8 +41,8 @@ const StakeholderPage = ({
     );
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
-        name: details[idx]['_name'],
-        url: details[idx]['_website']
+        name: details[idx]['name'],
+        url: details[idx]['website']
       };
       return acc;
     }, {});
@@ -51,7 +51,7 @@ const StakeholderPage = ({
 
   useEffect(() => {
     fetchGuardians();
-  }, [guardians]);
+  }, []);
 
   const delegate = () => {
     votingContract.methods.delegate(candidate).send({ from });
