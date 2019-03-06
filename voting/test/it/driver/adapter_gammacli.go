@@ -94,21 +94,6 @@ func (gamma *gammaCliAdapter) GetVoteData(orbsVotingContractName string, activis
 	return out.OutputArguments[0].Value, blockNumber, uint32(txIndex64)
 }
 
-func (gamma *gammaCliAdapter) GetDelegatorStakeAtBlockNumber(orbsVotingContractName string, delegator string, blockNumber int) int {
-	bytes := gamma.run("run-query ./gammacli-jsons/get-stake.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + delegator + " -arg2 " + fmt.Sprintf("%d", blockNumber))
-	out := struct {
-		OutputArguments []*struct {
-			Value string
-		}
-	}{}
-	err := json.Unmarshal(bytes, &out)
-	if err != nil {
-		panic(err.Error() + "\n" + string(bytes))
-	}
-	stake, _ := strconv.ParseUint(out.OutputArguments[0].Value, 10, 32)
-	return fromEthereumToken(stake)
-}
-
 func (gamma *gammaCliAdapter) RunVotingProcess(orbsVotingContractName string) bool {
 	bytes := gamma.run("send-tx ./gammacli-jsons/process-voting.json -signer user1 -name " + orbsVotingContractName)
 	out := struct {
