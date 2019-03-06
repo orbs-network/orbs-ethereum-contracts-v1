@@ -22,8 +22,8 @@ const HDWalletProvider = require('truffle-hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
 
-// First address with Ether: 0x03818abd13919d26BE670B6523b5f76495F7f48f
-const mnemonic = 'device traffic admit exist network cereal ordinary phrase equip flip creek anger';
+const mnemonic = process.env.ROPSTEN_SECRET;
+
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
@@ -78,7 +78,7 @@ module.exports = {
       // production: true    // Treats this network as if it was a public net. (default: false)
     // }
     ropsten: {
-      provider: () => new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141', 0, 10),
+      provider: () => new HDWalletProvider(mnemonic, process.env.ROPSTEN_INFURA_URL, 0, 10),
       network_id: '3',
     },
     development: {
