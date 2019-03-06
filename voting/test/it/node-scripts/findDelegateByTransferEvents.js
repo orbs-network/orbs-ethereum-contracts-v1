@@ -19,13 +19,9 @@ async function getAllPastTransferEvents(tokenContract) {
 //        console.log(events.length);
         for (let i = events.length-1; i >= 0;i--) {
             let event = events[i];
-            //console.log(event);
-            //           console.log(`found ${event.blockNumber} ${event.returnValues['0']} ${event.returnValues['1']} ${event.raw.data}`);
-            if (isTransferADelegateAction(event)) { // its the right amount
-//                console.log(event);
+             if (isTransferADelegateAction(event)) { // its the right amount
                 let delegatorAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);//event.returnValues['0'];
                 let currentDelegateIndex = mapOfTransfers[delegatorAddress];
-//                console.log(`${i} ${delegatorAddress} ${currentDelegateIndex} ${event.blockNumber} ${event.transactionIndex} ${JSON.stringify(event.returnValues, null, 2)}`)
                 if (typeof currentDelegateIndex === 'number' && isObjectNewerThanTx(listOfTransfers[currentDelegateIndex], event) ) {
                     continue;
                 }
@@ -40,11 +36,6 @@ async function getAllPastTransferEvents(tokenContract) {
             }
         }
 
-        // debug
-        // console.log(`found ${events.length} events of which ${listOfTransfers.length} are delegation transfers`);
-        // for (let transfer of listOfTransfers) {
-        //     console.log(transfer);
-        // }
         return listOfTransfers;
     } catch (error) {
         console.log(error);

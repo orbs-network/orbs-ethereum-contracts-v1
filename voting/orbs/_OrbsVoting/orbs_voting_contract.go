@@ -17,7 +17,7 @@ var PUBLIC = sdk.Export(getTokenAddr, setTokenAddr, getTokenAbi, getVotingAddr, 
 	getVoteData, getDelegationData, // TODO v1 todo noam temp - i think remove completet
 	_getDelegatorStake, // todo v1 todo noam remove from public
 	processVoting,
-	setFirstElectionBlockHeight)
+	setFirstElectionBlockNumber)
 var SYSTEM = sdk.Export(_init, setTokenAbi, setVotingAbi, setValidatorsAbi, setOrbsValidatorsConfigContract /* TODO v1 security run once */)
 
 //var EVENTS = sdk.Export(OrbsTransferredOut)
@@ -63,13 +63,13 @@ type Transfer struct {
 func mirrorDelegationByTransfer(hexEncodedEthTxHash string) {
 	_mirrorPeriodValidator()
 	e := &Transfer{}
-	eventBlockHeight, eventBlockTxIndex := ethereum.GetTransactionLog(getTokenAddr(), getTokenAbi(), hexEncodedEthTxHash, DELEGATION_BY_TRANSFER_NAME, e)
+	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getTokenAddr(), getTokenAbi(), hexEncodedEthTxHash, DELEGATION_BY_TRANSFER_NAME, e)
 
 	if DELEGATION_BY_TRANSFER_VALUE.Cmp(e.Value) != 0 {
 		panic(fmt.Errorf("mirrorDelegateByTransfer from %v to %v failed since %d is wrong delegation value", e.From, e.To, e.Value.Uint64()))
 	}
 
-	_mirrorDelegationData(e.From[:], e.To[:], eventBlockHeight, eventBlockTxIndex, DELEGATION_BY_TRANSFER_NAME)
+	_mirrorDelegationData(e.From[:], e.To[:], eventBlockNumber, eventBlockTxIndex, DELEGATION_BY_TRANSFER_NAME)
 }
 
 type Delegate struct {
@@ -80,53 +80,53 @@ type Delegate struct {
 func mirrorDelegation(hexEncodedEthTxHash string) {
 	_mirrorPeriodValidator()
 	e := &Delegate{}
-	eventBlockHeight, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, DELEGATION_NAME, e)
+	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, DELEGATION_NAME, e)
 
-	_mirrorDelegationData(e.Delegator[:], e.To[:], eventBlockHeight, eventBlockTxIndex, DELEGATION_NAME)
+	_mirrorDelegationData(e.Delegator[:], e.To[:], eventBlockNumber, eventBlockTxIndex, DELEGATION_NAME)
 }
 
 func _mirrorPeriodValidator() {
 	currentBlock := ethereum.GetBlockNumber()
 	if _isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, _getElectionBlockHeight()))
+		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, _getElectionBlockNumber()))
 	}
 }
 
-func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockHeight uint64, eventBlockTxIndex uint32, eventName string) {
-	electionBlockHeight := _getElectionBlockHeight()
-	if eventBlockHeight > electionBlockHeight {
+func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint64, eventBlockTxIndex uint32, eventName string) {
+	electionBlockNumber := _getElectionBlockNumber()
+	if eventBlockNumber > electionBlockNumber {
 		panic(fmt.Errorf("delegate with medthod %s from %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
-			eventName, delegator, agent, eventBlockHeight, electionBlockHeight))
+			eventName, delegator, agent, eventBlockNumber, electionBlockNumber))
 	}
 	stateMethod := state.ReadString(_formatDelegatorMethod(delegator))
-	stateBlockHeight := uint64(0)
+	stateBlockNumber := uint64(0)
 	if stateMethod == DELEGATION_NAME && eventName == DELEGATION_BY_TRANSFER_NAME {
 		panic(fmt.Errorf("delegate with medthod %s from %v to %v failed since already have delegation with method %s",
 			eventName, delegator, agent, stateMethod))
 	} else if stateMethod == eventName {
-		stateBlockHeight = state.ReadUint64(_formatDelegatorBlockHeightKey(delegator))
+		stateBlockNumber = state.ReadUint64(_formatDelegatorBlockNumberKey(delegator))
 		stateBlockTxIndex := state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegator))
-		if stateBlockHeight > eventBlockHeight || (stateBlockHeight == eventBlockHeight && stateBlockTxIndex > eventBlockTxIndex) {
+		if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex > eventBlockTxIndex) {
 			panic(fmt.Errorf("delegate from %v to %v with block-height %d and tx-index %d failed since already have newer block-height %d and tx-index %d",
-				delegator, agent, eventBlockHeight, eventBlockTxIndex, stateBlockHeight, stateBlockTxIndex))
+				delegator, agent, eventBlockNumber, eventBlockTxIndex, stateBlockNumber, stateBlockTxIndex))
 		}
 	}
 
-	if stateBlockHeight == 0 { // new delegator
+	if stateBlockNumber == 0 { // new delegator
 		numOfDelegators := _getNumberOfDelegators()
 		_setDelegatorAtIndex(numOfDelegators, delegator)
 		_setNumberOfDelegators(numOfDelegators + 1)
 	}
 
 	state.WriteBytes(_formatDelegatorAgentKey(delegator), agent)
-	state.WriteUint64(_formatDelegatorBlockHeightKey(delegator), eventBlockHeight)
+	state.WriteUint64(_formatDelegatorBlockNumberKey(delegator), eventBlockNumber)
 	state.WriteUint32(_formatDelegatorBlockTxIndexKey(delegator), eventBlockTxIndex)
 	state.WriteString(_formatDelegatorMethod(delegator), eventName)
 }
 
 func getDelegationData(delegator []byte) (addr []byte, blockNumber uint64, txIndex uint32, method string) {
 	return state.ReadBytes(_formatDelegatorAgentKey(delegator)),
-		state.ReadUint64(_formatDelegatorBlockHeightKey(delegator)),
+		state.ReadUint64(_formatDelegatorBlockNumberKey(delegator)),
 		state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegator)),
 		state.ReadString(_formatDelegatorMethod(delegator))
 }
@@ -158,47 +158,47 @@ func _getDelegatorGuardian(delegator []byte) [20]byte {
 }
 
 func _formatDelegatorAgentKey(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("StakeHolder_%s_Agent", hex.EncodeToString(delegator)))
+	return []byte(fmt.Sprintf("Delegator_%s_Agent", hex.EncodeToString(delegator)))
 }
 
-func _formatDelegatorBlockHeightKey(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("StakeHolder_%s_BlockHeight", hex.EncodeToString(delegator)))
+func _formatDelegatorBlockNumberKey(delegator []byte) []byte {
+	return []byte(fmt.Sprintf("Delegator_%s_BlockNumber", hex.EncodeToString(delegator)))
 }
 
 func _formatDelegatorBlockTxIndexKey(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("StakeHolder_%s_BlockTxIndex", hex.EncodeToString(delegator)))
+	return []byte(fmt.Sprintf("Delegator_%s_BlockTxIndex", hex.EncodeToString(delegator)))
 }
 
 func _formatDelegatorMethod(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("StakeHolder_%s_Method", hex.EncodeToString(delegator)))
+	return []byte(fmt.Sprintf("Delegator_%s_Method", hex.EncodeToString(delegator)))
 }
 
 func _formatDelegatorStakeKey(delegator []byte) []byte {
-	return []byte(fmt.Sprintf("StakeHolder_%s_Stake", hex.EncodeToString(delegator)))
+	return []byte(fmt.Sprintf("Delegator_%s_Stake", hex.EncodeToString(delegator)))
 }
 
 type Vote struct {
-	Voter      [20]byte
+	Voter [20]byte
 	Nodes [][20]byte
 }
 
 func mirrorVote(hexEncodedEthTxHash string) {
 	_mirrorPeriodValidator()
 	e := &Vote{}
-	eventBlockHeight, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, "Vote", e)
-	electionBlockHeight := _getElectionBlockHeight()
-	if eventBlockHeight > electionBlockHeight {
+	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, "Vote", e)
+	electionBlockNumber := _getElectionBlockNumber()
+	if eventBlockNumber > electionBlockNumber {
 		panic(fmt.Errorf("vote of guardian %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
-			e.Voter, e.Nodes, eventBlockHeight, electionBlockHeight))
+			e.Voter, e.Nodes, eventBlockNumber, electionBlockNumber))
 	}
-	stateBlockHeight := state.ReadUint64(_formatGuardianBlockHeightKey(e.Voter[:]))
+	stateBlockNumber := state.ReadUint64(_formatGuardianBlockNumberKey(e.Voter[:]))
 	stateBlockTxIndex := state.ReadUint32(_formatGuardianBlockTxIndexKey(e.Voter[:]))
-	if stateBlockHeight > eventBlockHeight || (stateBlockHeight == eventBlockHeight && stateBlockTxIndex > eventBlockTxIndex) {
+	if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex > eventBlockTxIndex) {
 		panic(fmt.Errorf("vote of guardian %v to %v with block-height %d and tx-index %d failed since already have newer block-height %d and tx-index %d",
-			e.Voter, e.Nodes, eventBlockHeight, eventBlockTxIndex, stateBlockHeight, stateBlockTxIndex))
+			e.Voter, e.Nodes, eventBlockNumber, eventBlockTxIndex, stateBlockNumber, stateBlockTxIndex))
 	}
 
-	if stateBlockHeight == 0 { // new guardian
+	if stateBlockNumber == 0 { // new guardian
 		numOfGuardians := _getNumberOfGurdians()
 		_setGuardianAtIndex(numOfGuardians, e.Voter[:])
 		_setNumberOfGurdians(numOfGuardians + 1)
@@ -207,13 +207,13 @@ func mirrorVote(hexEncodedEthTxHash string) {
 	// TODO noam due-diligent guardian missing
 
 	_setCandidates(e.Voter[:], e.Nodes)
-	state.WriteUint64(_formatGuardianBlockHeightKey(e.Voter[:]), eventBlockHeight)
+	state.WriteUint64(_formatGuardianBlockNumberKey(e.Voter[:]), eventBlockNumber)
 	state.WriteUint32(_formatGuardianBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
 }
 
 func getVoteData(guardian []byte) (addr []byte, blockNumber uint64, txIndex uint32) {
 	return state.ReadBytes(_formatGuardianCandidateKey(guardian)),
-		state.ReadUint64(_formatGuardianBlockHeightKey(guardian)),
+		state.ReadUint64(_formatGuardianBlockNumberKey(guardian)),
 		state.ReadUint32(_formatGuardianBlockTxIndexKey(guardian))
 }
 
@@ -262,8 +262,8 @@ func _setCandidates(guardian []byte, candidateList [][20]byte) {
 	state.WriteBytes(_formatGuardianCandidateKey(guardian), candidates)
 }
 
-func _formatGuardianBlockHeightKey(guardian []byte) []byte {
-	return []byte(fmt.Sprintf("Guardian_%s_BlockHeight", hex.EncodeToString(guardian)))
+func _formatGuardianBlockNumberKey(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Guardian_%s_BlockNumber", hex.EncodeToString(guardian)))
 }
 
 func _formatGuardianBlockTxIndexKey(guardian []byte) []byte {
@@ -277,12 +277,13 @@ func _formatGuardianStakeKey(guardian []byte) []byte {
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Sprintf("mirror period (%d) for election (%d) did not end, cannot start processing", currentBlock, _getElectionBlockHeight()))
+		panic(fmt.Sprintf("mirror period (%d) for election (%d) did not end, cannot start processing", currentBlock, _getElectionBlockNumber()))
 	}
 
 	electedValidators := processVotingInternal(currentBlock)
 	if electedValidators != nil {
 		_updateElected(electedValidators)
+		_setElectionBlockNumber(safeuint64.Add(_getElectionBlockNumber(), ELECTION_PERIOD_LENGTH_IN_BLOCKS))
 		return 1
 	} else {
 		return 0
@@ -384,13 +385,13 @@ func _collectGuardiansStake(guardianStakes map[[20]byte]uint64) {
 	numOfGuardians := _getNumberOfGurdians()
 	for i := 0; i < numOfGuardians; i++ {
 		guardian := _getGuardianAtIndex(i)
-		voteBlockNumer := state.ReadUint64(_formatGuardianBlockHeightKey(guardian[:]))
-		if voteBlockNumer > safeuint64.Sub(_getElectionBlockHeight(), VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) {
+		voteBlockNumber := state.ReadUint64(_formatGuardianBlockNumberKey(guardian[:]))
+		if voteBlockNumber > safeuint64.Sub(_getElectionBlockNumber(), VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) {
 			stake := state.ReadUint64(_formatGuardianStakeKey(guardian[:]))
 			guardianStakes[guardian] = stake
 			fmt.Printf("noam : guardian %x , stake %d \n", guardian, stake)
 		} else {
-			fmt.Printf("noam : guardian %x voted at %d is too old, ignoring as guardian \n", guardian, voteBlockNumer)
+			fmt.Printf("noam : guardian %x voted at %d is too old, ignoring as guardian \n", guardian, voteBlockNumber)
 		}
 	}
 }
@@ -515,22 +516,22 @@ func _getDelegatorStake(ethAddr []byte, blockNumber uint64) uint64 {
  */
 var ELECTION_BLOCK_NUMBER = []byte("Election_Block_Number")
 
-func _getElectionBlockHeight() uint64 {
+func _getElectionBlockNumber() uint64 {
 	return state.ReadUint64(ELECTION_BLOCK_NUMBER)
 }
 
-func _setElectionBlockHeight(blockHeight uint64) {
-	state.WriteUint64(ELECTION_BLOCK_NUMBER, blockHeight)
+func _setElectionBlockNumber(BlockNumber uint64) {
+	state.WriteUint64(ELECTION_BLOCK_NUMBER, BlockNumber)
 }
 
-func setFirstElectionBlockHeight(blockHeight uint64) {
-	//if _getElectionBlockHeight() == 0 { TODO NOam todo v1 remove comment and/or change way of doing it
-	state.WriteUint64(ELECTION_BLOCK_NUMBER, blockHeight)
+func setFirstElectionBlockNumber(BlockNumber uint64) {
+	//if _getElectionBlockNumber() == 0 { TODO NOam todo v1 remove comment and/or change way of doing it
+	state.WriteUint64(ELECTION_BLOCK_NUMBER, BlockNumber)
 	//}
 }
 
-func _isAfterElectionMirroring(blockHeight uint64) bool {
-	return blockHeight > _getElectionBlockHeight()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
+func _isAfterElectionMirroring(BlockNumber uint64) bool {
+	return BlockNumber > _getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
 }
 
 /***

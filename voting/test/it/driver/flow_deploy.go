@@ -21,7 +21,7 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStageDone("Ethereum ERC20 Address=%s", config.EthereumErc20Address)
 	}
 
-	logStage("Funding/Setting Ethereum staked account ...")
+	logStage("Setting Delegators' Ethereum staked account ...")
 	ethereum.SetStakes(config.EthereumErc20Address, config.StakeHolderValues)
 	balances := ethereum.GetStakes(config.EthereumErc20Address, config.StakeHoldersNumber)
 	require.Len(t, balances, len(config.StakeHolderValues))
@@ -63,7 +63,7 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	var erc20Txt, votingTxt, validatorTxt string
 	if deployingEthereumErc20 {
-		erc20Txt = fmt.Sprintf("EthereumErc20Address: %s\n\n", config.EthereumErc20Address)
+		erc20Txt = fmt.Sprintf("EthereumErc20Address: %s\n", config.EthereumErc20Address)
 	}
 	if deployingEthereumVoting {
 		votingTxt = fmt.Sprintf("EthereumVotingAddress: %s\n", config.EthereumVotingAddress)

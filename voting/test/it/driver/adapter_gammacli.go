@@ -3,7 +3,6 @@ package driver
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -144,25 +143,6 @@ func (gamma *gammaCliAdapter) GetElectedNodes(orbsConfigContractName string, blo
 	}
 
 	return respose
-}
-
-func (gamma *gammaCliAdapter) OrbsUserIdToHexAddress(orbsUserId string) (userAccountOnOrbsHex string) {
-	file, err := ioutil.ReadFile("orbs-test-keys.json")
-	if err != nil {
-		panic(err.Error())
-	}
-	type Key struct {
-		PrivateKey []byte
-		PublicKey  []byte
-		Address    string // base58
-	}
-	keys := make(map[string]*Key)
-	json.Unmarshal(file, &keys)
-	key, found := keys[orbsUserId]
-	if !found {
-		panic("UserId " + orbsUserId + " not found in orbs-test-keys.json")
-	}
-	return key.Address
 }
 
 func (gamma *gammaCliAdapter) run(args string, env ...string) []byte {

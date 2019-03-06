@@ -176,38 +176,6 @@ func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, 
 	)
 }
 
-func (ta *truffleAdapter) GetBalance(ethereumErc20Address string, userAccountOnEthereum string) (userBalanceOnEthereum int) {
-	bytes := ta.run("exec ./truffle-scripts/getBalance.js",
-		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
-		"USER_ACCOUNT_ON_ETHEREUM="+userAccountOnEthereum,
-	)
-	out := struct {
-		Balance string
-	}{}
-	err := json.Unmarshal(bytes, &out)
-	if err != nil {
-		panic(err.Error() + "\n" + string(bytes))
-	}
-	n, _ := strconv.ParseUint(out.Balance, 16, 32)
-	return fromEthereumToken(n)
-}
-
-func (ta *truffleAdapter) GetBalanceByIndex(ethereumErc20Address string, userAccountIndexOnEthereum int) (userBalanceOnEthereum int) {
-	bytes := ta.run("exec ./truffle-scripts/getBalanceByIndex.js",
-		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
-		"USER_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", userAccountIndexOnEthereum),
-	)
-	out := struct {
-		Balance string
-	}{}
-	err := json.Unmarshal(bytes, &out)
-	if err != nil {
-		panic(err.Error() + "\n" + string(bytes))
-	}
-	n, _ := strconv.ParseUint(out.Balance, 16, 32)
-	return fromEthereumToken(n)
-}
-
 func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	args += " --network " + ta.network
 	if ta.debug {

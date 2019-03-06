@@ -28,7 +28,7 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 
 	for i := 0; i < len(config.Votes); i++ {
-		logStage("Vote %d : Ethereum user account %d votes for %v ...", i, config.Votes[i].ActivistIndex, config.Votes[i].Candidates)
+		logStage("Vote %d : Ethereum guardian account %d votes for %v ...", i, config.Votes[i].ActivistIndex, config.Votes[i].Candidates)
 		ethereum.Vote(config.EthereumVotingAddress, config.Votes[i].ActivistIndex, config.Votes[i].Candidates)
 		logStageDone("Voted")
 	}

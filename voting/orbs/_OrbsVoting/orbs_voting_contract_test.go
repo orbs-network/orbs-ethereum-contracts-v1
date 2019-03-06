@@ -13,7 +13,7 @@ func TestOrbsVotingContract_mirrorDelegationData(t *testing.T) {
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
 	eventName := "Txt"
-	eventBlockHeight := uint64(100)
+	eventBlockNumber := uint64(100)
 	eventBlockTxIndex := uint32(10)
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -21,11 +21,11 @@ func TestOrbsVotingContract_mirrorDelegationData(t *testing.T) {
 		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
 
 		// call
-		_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockHeight, eventBlockTxIndex, eventName)
+		_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockNumber, eventBlockTxIndex, eventName)
 
 		// assert
 		require.EqualValues(t, agentAddr[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr[:])))
-		require.EqualValues(t, eventBlockHeight, state.ReadUint64(_formatDelegatorBlockHeightKey(delegatorAddr)))
+		require.EqualValues(t, eventBlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr)))
 		require.EqualValues(t, eventBlockTxIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr)))
 		require.EqualValues(t, eventName, state.ReadBytes(_formatDelegatorMethod(delegatorAddr)))
 	})
@@ -35,7 +35,7 @@ func TestOrbsVotingContract_mirrorDelegationData_TransferDoesNotReplaceDelegate(
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
 	eventName := DELEGATION_BY_TRANSFER_NAME
-	eventBlockHeight := uint64(100)
+	eventBlockNumber := uint64(100)
 	eventBlockTxIndex := uint32(10)
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -46,7 +46,7 @@ func TestOrbsVotingContract_mirrorDelegationData_TransferDoesNotReplaceDelegate(
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_NAME)
 
 		require.Panics(t, func() {
-			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockHeight, eventBlockTxIndex, eventName)
+			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockNumber, eventBlockTxIndex, eventName)
 		}, "should panic because newer delegate")
 	})
 }
@@ -55,7 +55,7 @@ func TestOrbsVotingContract_mirrorDelegationData_DelegateReplacesTransfer(t *tes
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
 	eventName := DELEGATION_NAME
-	eventBlockHeight := uint64(100)
+	eventBlockNumber := uint64(100)
 	eventBlockTxIndex := uint32(10)
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -64,25 +64,25 @@ func TestOrbsVotingContract_mirrorDelegationData_DelegateReplacesTransfer(t *tes
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_BY_TRANSFER_NAME)
-		state.WriteUint64(_formatDelegatorBlockHeightKey(delegatorAddr), 105)
+		state.WriteUint64(_formatDelegatorBlockNumberKey(delegatorAddr), 105)
 		state.WriteUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr), 50)
 
 		// call
-		_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockHeight, eventBlockTxIndex, eventName)
+		_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockNumber, eventBlockTxIndex, eventName)
 
 		// assert
 		require.EqualValues(t, agentAddr[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr)))
-		require.EqualValues(t, eventBlockHeight, state.ReadUint64(_formatDelegatorBlockHeightKey(delegatorAddr)))
+		require.EqualValues(t, eventBlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr)))
 		require.EqualValues(t, eventBlockTxIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr)))
 		require.EqualValues(t, DELEGATION_NAME, state.ReadBytes(_formatDelegatorMethod(delegatorAddr)))
 	})
 }
 
-func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockHeight(t *testing.T) {
+func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockNumber(t *testing.T) {
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
 	eventName := "Txt"
-	eventBlockHeight := uint64(100)
+	eventBlockNumber := uint64(100)
 	eventBlockTxIndex := uint32(10)
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -91,10 +91,10 @@ func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockHeigh
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), eventName)
-		state.WriteUint64(_formatDelegatorBlockHeightKey(delegatorAddr), 101)
+		state.WriteUint64(_formatDelegatorBlockNumberKey(delegatorAddr), 101)
 
 		require.Panics(t, func() {
-			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockHeight, eventBlockTxIndex, eventName)
+			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockNumber, eventBlockTxIndex, eventName)
 		}, "should panic because newer block")
 	})
 }
@@ -103,7 +103,7 @@ func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockTxInd
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
 	eventName := "Txt"
-	eventBlockHeight := uint64(100)
+	eventBlockNumber := uint64(100)
 	eventBlockTxIndex := uint32(10)
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -112,20 +112,20 @@ func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockTxInd
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), eventName)
-		state.WriteUint64(_formatDelegatorBlockHeightKey(delegatorAddr), 100)
+		state.WriteUint64(_formatDelegatorBlockNumberKey(delegatorAddr), 100)
 		state.WriteUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr), 50)
 
 		require.Panics(t, func() {
-			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockHeight, eventBlockTxIndex, eventName)
+			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockNumber, eventBlockTxIndex, eventName)
 		}, "should panic because newer tx index")
 	})
 }
 
-func TestOrbsVotingContract_mirrorDelegationData_EventBlockHeightAfterElection(t *testing.T) {
+func TestOrbsVotingContract_mirrorDelegationData_EventBlockNumberAfterElection(t *testing.T) {
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
 	eventName := "Txt"
-	eventBlockHeight := uint64(200)
+	eventBlockNumber := uint64(200)
 	eventBlockTxIndex := uint32(10)
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -134,7 +134,7 @@ func TestOrbsVotingContract_mirrorDelegationData_EventBlockHeightAfterElection(t
 
 		//assert
 		require.Panics(t, func() {
-			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockHeight, eventBlockTxIndex, eventName)
+			_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockNumber, eventBlockTxIndex, eventName)
 		}, "should panic because event is too new")
 	})
 }
@@ -155,7 +155,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 	txHex := "0xabcd"
 	delegatorAddr := [20]byte{0x01}
 	agentAddr := [20]byte{0x02}
-	blockHeight := 100
+	BlockNumber := 100
 	txIndex := 10
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -163,7 +163,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, DELEGATION_NAME, blockHeight, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, DELEGATION_NAME, BlockNumber, txIndex, func(out interface{}) {
 			v := out.(*Delegate)
 			v.Delegator = delegatorAddr
 			v.To = agentAddr
@@ -174,7 +174,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 		// assert
 		m.VerifyMocks()
 		require.EqualValues(t, agentAddr[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr[:])))
-		require.EqualValues(t, blockHeight, state.ReadUint64(_formatDelegatorBlockHeightKey(delegatorAddr[:])))
+		require.EqualValues(t, BlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr[:])))
 		require.EqualValues(t, txIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr[:])))
 		require.EqualValues(t, DELEGATION_NAME, state.ReadString(_formatDelegatorMethod(delegatorAddr[:])))
 	})
@@ -185,7 +185,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 	delegatorAddr := [20]byte{0x01}
 	agentAddr := [20]byte{0x02}
 	value := big.NewInt(7)
-	blockHeight := 100
+	BlockNumber := 100
 	txIndex := 10
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -193,7 +193,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getTokenAddr(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, blockHeight, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getTokenAddr(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, BlockNumber, txIndex, func(out interface{}) {
 			v := out.(*Transfer)
 			v.From = delegatorAddr
 			v.To = agentAddr
@@ -207,7 +207,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 		m.VerifyMocks()
 		// TODO noam type address
 		require.EqualValues(t, agentAddr[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr[:])))
-		require.EqualValues(t, blockHeight, state.ReadUint64(_formatDelegatorBlockHeightKey(delegatorAddr[:])))
+		require.EqualValues(t, BlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr[:])))
 		require.EqualValues(t, txIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr[:])))
 		require.EqualValues(t, DELEGATION_BY_TRANSFER_NAME, state.ReadBytes(_formatDelegatorMethod(delegatorAddr[:])))
 	})
@@ -239,7 +239,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 	activistAddr := [20]byte{0x01}
 	candidateAddrs := [][20]byte{{0x02}, {0x03}, {0x04}}
 	eventName := "Vote"
-	blockHeight := 100
+	BlockNumber := 100
 	txIndex := 10
 
 	InServiceScope(nil, nil, func(m Mockery) {
@@ -247,7 +247,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, blockHeight, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, BlockNumber, txIndex, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
 			v.Nodes = candidateAddrs
@@ -263,12 +263,12 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 		}
 
 		require.EqualValues(t, candidates, state.ReadBytes(_formatGuardianCandidateKey(activistAddr[:])))
-		require.EqualValues(t, blockHeight, state.ReadUint64(_formatGuardianBlockHeightKey(activistAddr[:])))
+		require.EqualValues(t, BlockNumber, state.ReadUint64(_formatGuardianBlockNumberKey(activistAddr[:])))
 		require.EqualValues(t, txIndex, state.ReadUint32(_formatGuardianBlockTxIndexKey(activistAddr[:])))
 	})
 }
 
-func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockHeight(t *testing.T) {
+func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockNumber(t *testing.T) {
 	txHex := "0xabcd"
 	activistAddr := [20]byte{0x01}
 	candidateAddrs := [][20]byte{{0x02}, {0x03}, {0x04}}
@@ -279,7 +279,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockHeight(t *testi
 		setTimingInMirror(m)
 
 		// prepare
-		state.WriteUint64(_formatGuardianBlockHeightKey(activistAddr[:]), 101)
+		state.WriteUint64(_formatGuardianBlockNumberKey(activistAddr[:]), 101)
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
 			v.Voter = activistAddr
@@ -303,7 +303,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 		setTimingInMirror(m)
 
 		// prepare
-		state.WriteUint64(_formatGuardianBlockHeightKey(activistAddr[:]), 100)
+		state.WriteUint64(_formatGuardianBlockNumberKey(activistAddr[:]), 100)
 		state.WriteUint64(_formatGuardianBlockTxIndexKey(activistAddr[:]), 50)
 		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, eventName, 100, 10, func(out interface{}) {
 			v := out.(*Vote)
@@ -336,17 +336,17 @@ func TestOrbsVotingContract_processVoting_MirroringPeriodNotEnded(t *testing.T) 
 
 func TestOrbsVotingContract_getStakeFromEthereum(t *testing.T) {
 	addr := [20]byte{0x01}
-	blockHeight := uint64(100)
+	BlockNumber := uint64(100)
 	stakeSetup := 64
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 
 		// prepare
-		mockStakeInEthereum(m, blockHeight, addr, stakeSetup)
+		mockStakeInEthereum(m, BlockNumber, addr, stakeSetup)
 
 		// call
-		stake := _getDelegatorStake(addr[:], blockHeight)
+		stake := _getDelegatorStake(addr[:], BlockNumber)
 
 		// assert
 		m.VerifyMocks()
@@ -406,7 +406,7 @@ func (f *harness) setupEthereumState(m Mockery) {
 }
 
 func (f *harness) setupOrbsState() {
-	setFirstElectionBlockHeight(f.electionBlock)
+	setFirstElectionBlockNumber(f.electionBlock)
 	f.mockDelegationsInOrbs()
 	f.mockGuardianVotesInOrbs()
 }
@@ -433,7 +433,7 @@ func (f *harness) mockGuardianVotesInOrbs() {
 	_setNumberOfGurdians(len(f.guardians))
 	for i, guardian := range f.guardians {
 		_setCandidates(guardian.address[:], guardian.votedValidators)
-		state.WriteUint64(_formatGuardianBlockHeightKey(guardian.address[:]), guardian.voteBlock)
+		state.WriteUint64(_formatGuardianBlockNumberKey(guardian.address[:]), guardian.voteBlock)
 		state.WriteBytes(_formatGuardianIterator(i), guardian.address[:])
 	}
 }
@@ -465,11 +465,11 @@ func mockValidatorsInEthereum(m Mockery, blockNumber uint64, addresses [][20]byt
 	})
 }
 
-func mockStakeInEthereum(m Mockery, blockHeight uint64, address [20]byte, stake int) {
+func mockStakeInEthereum(m Mockery, BlockNumber uint64, address [20]byte, stake int) {
 	//var ethAddress [20]byte
 	//copy(ethAddress[:], address)
 
-	m.MockEthereumCallMethodAtBlock(blockHeight, getTokenAddr(), getTokenAbi(), "balanceOf", func(out interface{}) {
+	m.MockEthereumCallMethodAtBlock(BlockNumber, getTokenAddr(), getTokenAbi(), "balanceOf", func(out interface{}) {
 		i, ok := out.(**big.Int)
 		if ok {
 			*i = big.NewInt(int64(stake))

@@ -11,10 +11,6 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	require.NoError(t, config.Validate(false))
 	na := NodeAdater(config)
 
-	// TODO NOAM TODO temp TODO v1
-	//ethereum.Transfer(config.EthereumErc20Address, 14, 13, 1)
-	//ethereum.SetValidators(config.EthereumValidatorsAddress, config.ValidatorsAccounts)
-
 	currentBlock := ethereum.GetCurrentBlock()
 
 	logStage("Set election date ...")

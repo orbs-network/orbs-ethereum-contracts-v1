@@ -22,10 +22,6 @@ module.exports = async function(done) {
     }
 
     let balances = await Promise.all(txs);
-    //let balances = txs.map(r => r);
-
-//    let userAccountOnEthereum = accounts[userAccountOnEthereumIndex];
-//    let balance = await instance.balanceOf(userAccountOnEthereum, {from: userAccountOnEthereum});
 
     console.log(JSON.stringify({
       Balances: balances

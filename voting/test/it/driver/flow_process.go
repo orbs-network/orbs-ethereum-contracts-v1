@@ -12,11 +12,6 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	logStage("Running processing ...")
 	steps := 0
 	isDone := false
-	//currentBlock := ethereum.GetCurrentBlock()
-	//
-	//logStage("Set election date ...")
-	//orbs.SetFirstElectionBlockHeight(getOrbsVotingContractName(), currentBlock+1)
-	//logStageDone("Election date in ethereum block number = %d", currentBlock+1)
 
 	for !isDone && steps < 100 {
 		isDone = orbs.RunVotingProcess(getOrbsVotingContractName())
@@ -24,7 +19,7 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	}
 	logStageDone("Ran process calls %d times", steps)
 
-	require.True(t, steps < 100 /* v1 how many steps ?*/, "should be n steps")
+	require.True(t, steps < 100 /* TODO v1 TODO NOAM how many steps ?*/, "should be n steps")
 
 	logStage("Running processing ...")
 	winners := orbs.GetElectedNodes(getOrbsValidatorsConfigContractName(), 100 /* TODO v1 get block*/)
