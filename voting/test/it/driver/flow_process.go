@@ -10,19 +10,20 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	require.NoError(t, config.Validate(false))
 
 	logStage("Running processing ...")
+	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + 2
 	steps := 0
 	isDone := false
 
-	for !isDone && steps < 100 {
+	for !isDone && steps < maxSteps {
 		isDone = orbs.RunVotingProcess(getOrbsVotingContractName())
 		steps++
 	}
-	logStageDone("Ran process calls %d times", steps)
+	logStageDone("RunVotingProcess called %d times", steps)
 
-	require.True(t, steps < 100 /* TODO v1 TODO NOAM how many steps ?*/, "should be n steps")
+	require.True(t, steps < maxSteps, "should be n steps")
 
 	logStage("Running processing ...")
-	winners := orbs.GetElectedNodes(getOrbsValidatorsConfigContractName(), 100 /* TODO v1 get block*/)
+	winners := orbs.GetElectedNodes(getOrbsValidatorsConfigContractName())
 	logStageDone("And the %d winners are .... %v", len(winners), winners)
 
 	logSummary("Process Phase all done.")

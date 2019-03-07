@@ -6,36 +6,76 @@ import (
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 )
 
-var PUBLIC = sdk.Export(updateElectionResults, getElectedNodesByHeight, getNumberOfNodesUpdates, getElectedNodesByIndex)
+var PUBLIC = sdk.Export(updateElectionResults, getElectionResults, getElectionResultsByBlockNumber, getElectionResultsByIndex, getElectionResultsBlockNumberByIndex, getNumberOfElections)
 var SYSTEM = sdk.Export(_init)
-
-var CURRENT_ELECTION_INDEX_KEY = []byte("_CURRENT_ELECTION_INDEX_KEY_")
 
 func _init() {
 }
 
-func updateElectionResults(elected []byte) {
-	state.WriteBytes(_formatElectionByHeight(0), elected)
+func updateElectionResults(elected []byte, blockNumber uint64) {
+	index := getNumberOfElections()
+	if getElectionResultsBlockNumberByIndex(index) > blockNumber {
+		panic(fmt.Sprintf("Election results rejected as new election happend at block %d which is older than last election %d",
+			blockNumber, getElectionResultsBlockNumberByIndex(index)))
+	}
+	index++
+	_setElectionResultsBlockNumberAtIndex(index, blockNumber)
+	_setElectionResultsAtIndex(index, elected)
+	_setNumberOfElections(index)
 }
 
-func getElectedNodesByHeight(blockHeight uint64) []byte {
-	return state.ReadBytes(_formatElectionByHeight(0))
-	//response, _ := hex.DecodeString("E1623DFC79Fe86FB966F5784E4196406E02469fC976b531A6e028fC3448321f3c210c119a2Fc8e8f9Df065a8EdB226B986BE68ff5f08Fe3F0310C066c3a5866f39f80021E9dba7cb76453A5BA4174231")
-	//return response
+func getElectionResults() []byte {
+	index := getNumberOfElections()
+	return getElectionResultsByIndex(index)
 }
 
-func _formatElectionByHeight(num uint32) []byte {
-	return []byte(fmt.Sprintf("Election_%d", num))
+func getElectionResultsByBlockNumber(blockNumber uint64) []byte {
+	numberOfElections := getNumberOfElections()
+	for i := numberOfElections; i > 0; i-- {
+		if getElectionResultsBlockNumberByIndex(i) < blockNumber {
+			return getElectionResultsByIndex(i)
+		}
+	}
+	return _getDefaultElectionResults()
 }
 
-func getNumberOfNodesUpdates() uint64 {
-	return state.ReadUint64(CURRENT_ELECTION_INDEX_KEY)
+func _getDefaultElectionResults() []byte {
+	defElected := [20]byte{0x10} // TODO v1 get defaults
+	return defElected[:]
 }
 
-func setNumberOfNodesUpdates(index uint64) {
-	state.WriteUint64(CURRENT_ELECTION_INDEX_KEY, index)
+func _formatElectionsNumber() []byte {
+	return []byte("_CURRENT_ELECTION_INDEX_KEY_")
 }
 
-func getElectedNodesByIndex(index uint64) {
+func getNumberOfElections() uint32 {
+	return state.ReadUint32(_formatElectionsNumber())
+}
 
+func _setNumberOfElections(index uint32) {
+	state.WriteUint32(_formatElectionsNumber(), index)
+}
+
+func _formatElectionsBlockNumber(index uint32) []byte {
+	return []byte(fmt.Sprintf("Elections_%d_BlockNumber", index))
+}
+
+func getElectionResultsBlockNumberByIndex(index uint32) uint64 {
+	return state.ReadUint64(_formatElectionsBlockNumber(index))
+}
+
+func _setElectionResultsBlockNumberAtIndex(index uint32, blockNumber uint64) {
+	state.WriteUint64(_formatElectionsBlockNumber(index), blockNumber)
+}
+
+func _formatElectionValidator(index uint32) []byte {
+	return []byte(fmt.Sprintf("Elections_%d_Validators", index))
+}
+
+func getElectionResultsByIndex(index uint32) []byte {
+	return state.ReadBytes(_formatElectionValidator(index))
+}
+
+func _setElectionResultsAtIndex(index uint32, elected []byte) {
+	state.WriteBytes(_formatElectionValidator(index), elected)
 }
