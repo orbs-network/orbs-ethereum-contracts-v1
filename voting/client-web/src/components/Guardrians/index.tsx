@@ -28,9 +28,8 @@ const GuardianPage = ({
     [address: string]: { checked: boolean; name: string; url: string };
   });
 
-  const from = metamaskService.getCurrentAddress();
-
   const fetchValidators = async () => {
+    const from = await metamaskService.enable();
     let validatorsInState = await validatorsContract.methods
       .getValidators()
       .call({ from });
@@ -66,6 +65,7 @@ const GuardianPage = ({
   };
 
   const commitVote = async () => {
+    const from = await metamaskService.enable();
     const stagedValidators = Object.keys(validators).filter(
       address => validators[address].checked
     );

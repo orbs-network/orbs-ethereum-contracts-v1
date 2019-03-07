@@ -59,9 +59,6 @@ class App extends Component<WithStyles, IState> {
       metamaskService: new MetamaskService()
     };
   }
-  async componentDidMount() {
-    await this.state.metamaskService.enable();
-  }
   render() {
     const { classes } = this.props;
     return (

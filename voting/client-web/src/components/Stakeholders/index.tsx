@@ -22,14 +22,13 @@ const StakeholderPage = ({
   metamaskService,
   classes
 }) => {
-  const from = metamaskService.getCurrentAddress();
-
   const [candidate, setCandidate] = useState('');
   const [guardians, setGuardians] = useState({} as {
     [address: string]: { name: string; url: string };
   });
 
   const fetchGuardians = async () => {
+    const from = await metamaskService.enable();
     const addresses = await guardiansContract.methods
       .getGuardians(0, 100)
       .call({ from });
@@ -53,6 +52,7 @@ const StakeholderPage = ({
   }, []);
 
   const delegate = async () => {
+    const from = await metamaskService.enable();
     const receipt = await votingContract.methods
       .delegate(candidate)
       .send({ from });

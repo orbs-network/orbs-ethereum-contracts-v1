@@ -49,7 +49,7 @@ describe('Stakeholders components', () => {
     const { getByTestId, getByValue } = driver.renderWithProps(props);
     await waitForElement(() => getByValue(firstAddress));
     getByValue(firstAddress).click();
-    getByTestId('delegate-button').click();
+    await getByTestId('delegate-button').click();
     expect(delegateSpy).toHaveBeenCalledWith(firstAddress);
   });
 });
