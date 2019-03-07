@@ -5,7 +5,7 @@ import { render } from 'react-testing-library';
 export class StakeholdersDriver {
   withMetamaskService() {
     return {
-      getCurrentAddress() {
+      enable() {
         return 'some-fake-address';
       }
     };

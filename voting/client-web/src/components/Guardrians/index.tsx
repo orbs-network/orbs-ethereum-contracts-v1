@@ -1,19 +1,14 @@
-import Link from '@material-ui/core/Link';
+import ValidatorsList from './list';
+import Explanations from './explanations';
 import Button from '@material-ui/core/Button';
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { get, save } from '../../services/vote-storage';
-import {
-  Typography,
-  FormControl,
-  FormGroup,
-  Checkbox,
-  FormControlLabel
-} from '@material-ui/core';
 
 const styles = () => ({
-  container: {
-    padding: '15px'
+  voteButton: {
+    textAlign: 'center' as any,
+    marginTop: 30
   }
 });
 
@@ -28,9 +23,8 @@ const GuardianPage = ({
     [address: string]: { checked: boolean; name: string; url: string };
   });
 
-  const from = metamaskService.getCurrentAddress();
-
   const fetchValidators = async () => {
+    const from = await metamaskService.enable();
     let validatorsInState = await validatorsContract.methods
       .getValidators()
       .call({ from });
@@ -65,7 +59,15 @@ const GuardianPage = ({
     setValidators(resultValidators);
   };
 
+  const isVoteDisabled = () => {
+    const stagedValidators = Object.keys(validators).filter(
+      address => validators[address].checked
+    );
+    return stagedValidators.length === 0;
+  };
+
   const commitVote = async () => {
+    const from = await metamaskService.enable();
     const stagedValidators = Object.keys(validators).filter(
       address => validators[address].checked
     );
@@ -78,6 +80,7 @@ const GuardianPage = ({
 
   const toggleCheck = (address: string) => {
     validators[address].checked = !validators[address].checked;
+    setValidators(Object.assign({}, validators));
   };
 
   useEffect(() => {
@@ -85,43 +88,23 @@ const GuardianPage = ({
   }, []);
 
   return (
-    <div className={classes.container}>
-      <Typography variant="h6" color="textPrimary" noWrap>
-        Here you can vote for a validators
-      </Typography>
-      <FormControl>
-        <FormGroup>
-          {Object.keys(validators) &&
-            Object.keys(validators).map(address => (
-              <FormControlLabel
-                key={address}
-                value={address}
-                control={
-                  <Checkbox
-                    value={address}
-                    defaultChecked={validators[address].checked}
-                    onChange={() => toggleCheck(address)}
-                  />
-                }
-                label={
-                  <Link
-                    href={validators[address].url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    color="secondary"
-                    variant="body1"
-                  >
-                    {validators[address].name}
-                  </Link>
-                }
-              />
-            ))}
-        </FormGroup>
-        <Button onClick={commitVote} variant="outlined" color="secondary">
+    <>
+      <Explanations />
+      <ValidatorsList
+        validators={validators}
+        onToggle={address => toggleCheck(address)}
+      />
+      <div className={classes.voteButton}>
+        <Button
+          onClick={commitVote}
+          variant="outlined"
+          color="secondary"
+          disabled={isVoteDisabled()}
+        >
           Vote
         </Button>
-      </FormControl>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -92,7 +92,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
             address orbsAddr;
             (,ip,,orbsAddr) = registry.getValidatorData(address(validators[i]));
             nodeAddresses[i] = orbsAddr;
-            ipAddresses[i] = ipv4Address(ip);
+            ipAddresses[i] = ipAddress(ip);
         }
     }
 
@@ -117,7 +117,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         return registeredCount;
     }
 
-    function ipv4Address(bytes memory inBytes)
+    function ipAddress(bytes memory inBytes)
         internal
         pure
         returns (bytes4)

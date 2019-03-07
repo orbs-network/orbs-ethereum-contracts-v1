@@ -13,29 +13,24 @@ describe('Stakeholders components', () => {
   afterEach(cleanup);
 
   it('should render guardians', async () => {
-    const { getByRole, getByTestId } = driver.renderWithData(guardiansData);
-    const radiogroup = getByRole('radiogroup');
+    const { getByTestId } = driver.renderWithData(guardiansData);
+    const guardianList = getByTestId('guardians-list');
 
-    await waitForElement(() => radiogroup.children.length);
+    await waitForElement(() => guardianList.children.length);
 
-    expect(radiogroup.children.length).toEqual(
+    expect(guardianList.children.length).toEqual(
       Object.keys(guardiansData).length
     );
 
     Object.keys(guardiansData).forEach(address => {
-      expect(getByTestId(`guardian-${address}-label`)).toHaveAttribute(
-        'href',
-        guardiansData[address].website
-      );
-      expect(getByTestId(`guardian-${address}-label`).innerHTML).toEqual(
+      expect(getByTestId(`guardian-${address}-name`)).toContainHTML(
         guardiansData[address].name
       );
+      expect(getByTestId(`guardian-${address}-address`)).toContainHTML(address);
+      expect(getByTestId(`guardian-${address}-url`)).toContainHTML(
+        guardiansData[address].website
+      );
     });
-  });
-
-  it('delegate should be disabled if nothing is selected', () => {
-    const { getByTestId } = driver.renderWithData(guardiansData);
-    expect(getByTestId('delegate-button')).toBeDisabled();
   });
 
   it('should delegate to a selected candidate', async () => {
@@ -46,10 +41,16 @@ describe('Stakeholders components', () => {
     };
     const delegateSpy = jest.spyOn(props.votingContract.methods, 'delegate');
     const firstAddress = Object.keys(guardiansData)[0];
-    const { getByTestId, getByValue } = driver.renderWithProps(props);
-    await waitForElement(() => getByValue(firstAddress));
-    getByValue(firstAddress).click();
-    getByTestId('delegate-button').click();
+
+    const { getByTestId } = driver.renderWithProps(props);
+    const guardianList = getByTestId('guardians-list');
+    await waitForElement(() => guardianList.children.length);
+
+    getByTestId(`guardian-${firstAddress}`).click();
+
+    await waitForElement(() => getByTestId('guardian-dialog'));
+
+    await getByTestId('delegate-button').click();
     expect(delegateSpy).toHaveBeenCalledWith(firstAddress);
   });
 });
