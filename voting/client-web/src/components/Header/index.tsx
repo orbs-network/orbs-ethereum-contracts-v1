@@ -11,13 +11,15 @@ const styles = theme => ({
     width: 140
   },
   nav: {
-    display: 'flex',
     marginLeft: 30,
-    width: '32%',
-    justifyContent: 'space-around'
+    display: 'inherit'
+  },
+  navItem: {
+    padding: '0 13px'
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1
+    zIndex: theme.zIndex.drawer + 1,
+    padding: 8
   }
 });
 
@@ -29,17 +31,17 @@ const Header = ({ classes }) => {
           <img className={classes.logo} src={logo} alt="Orbs" />
         </Link>
         <nav className={classes.nav}>
-          <Link to="/delegator">
+          <Link to="/delegator" className={classes.navItem}>
             <Typography variant="h6" color="secondary" noWrap>
               DELEGATORS
             </Typography>
           </Link>
-          <Link to="/guardian">
+          <Link to="/guardian" className={classes.navItem}>
             <Typography variant="h6" color="secondary" noWrap>
               GUARDIANS
             </Typography>
           </Link>
-          <Link to="/">
+          <Link to="/" className={classes.navItem}>
             <Typography variant="h6" color="secondary" noWrap>
               VALIDATORS
             </Typography>
