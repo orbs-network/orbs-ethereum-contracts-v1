@@ -47,7 +47,8 @@ Make sure you see
 > TxReceipt Status:Success
 
 ##### Note
-* Registration values are unique among validators. No two validators may register
+* Registration values are unique among validators, except for IP address which 
+is expected to be unique but is not enforced by the contract. 
 with same name, website url, Orbs node public address, or Orbs node IP address. 
 * To make changes to your registration repeat the process providing new values
  
