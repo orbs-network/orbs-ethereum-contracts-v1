@@ -53,11 +53,11 @@ contract('OrbsValidatorsRegistry', accounts => {
                 let result = await driver.OrbsRegistry.getValidatorData(accounts[1]);
 
                 assert.equal(result.name, name);
-                assert.equal(result.ipvAddress, ip);
+                assert.equal(result.ipAddress, ip);
                 assert.equal(result.website, url);
                 assert.equal(result.orbsAddress, orbsAddr);
                 assert.equal(result.name, result[0]);
-                assert.equal(result.ipvAddress, result[1]);
+                assert.equal(result.ipAddress, result[1]);
                 assert.equal(result.website, result[2]);
                 assert.equal(result.orbsAddress, orbsAddr);
             });
