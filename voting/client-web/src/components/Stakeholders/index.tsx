@@ -1,31 +1,18 @@
-import Link from '@material-ui/core/Link';
-import Button from '@material-ui/core/Button';
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import {
-  Typography,
-  FormControl,
-  RadioGroup,
-  Radio,
-  FormControlLabel
-} from '@material-ui/core';
-
-const styles = () => ({
-  container: {
-    padding: '15px'
-  }
-});
+import GuardiansList from './list';
+import Explanations from './explanations';
+import GuardianDialog from './dialog';
 
 const StakeholderPage = ({
   guardiansContract,
   votingContract,
-  metamaskService,
-  classes
+  metamaskService
 }) => {
-  const [candidate, setCandidate] = useState('');
   const [guardians, setGuardians] = useState({} as {
     [address: string]: { name: string; url: string };
   });
+  const [selectedGuardian, setSelectedGuardian] = useState('');
+  const [dialogState, setDialogState] = useState(false);
 
   const fetchGuardians = async () => {
     const from = await metamaskService.enable();
@@ -51,7 +38,7 @@ const StakeholderPage = ({
     fetchGuardians();
   }, []);
 
-  const delegate = async () => {
+  const delegate = async candidate => {
     const from = await metamaskService.enable();
     const receipt = await votingContract.methods
       .delegate(candidate)
@@ -59,46 +46,33 @@ const StakeholderPage = ({
     console.log(receipt);
   };
 
+  const delegateHandler = () => {
+    delegate(selectedGuardian);
+    setTimeout(() => {
+      setDialogState(false);
+    }, 100);
+  };
+
+  const selectGuardian = address => {
+    setSelectedGuardian(address);
+    setDialogState(true);
+  };
+
   return (
-    <div className={classes.container}>
-      <Typography variant="h6" color="textPrimary" noWrap>
-        Here you can delegate your vote to somebody else
-      </Typography>
-      <FormControl>
-        <RadioGroup onChange={(_, val) => setCandidate(val)}>
-          {Object.keys(guardians) &&
-            Object.keys(guardians).map(address => (
-              <FormControlLabel
-                key={address}
-                value={address}
-                control={<Radio data-testid={`guardian-${address}-radio`} />}
-                label={
-                  <Link
-                    data-testid={`guardian-${address}-label`}
-                    href={guardians[address].url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    color="secondary"
-                    variant="body1"
-                  >
-                    {guardians[address].name}
-                  </Link>
-                }
-              />
-            ))}
-        </RadioGroup>
-        <Button
-          disabled={!candidate}
-          data-testid={`delegate-button`}
-          onClick={delegate}
-          variant="outlined"
-          color="secondary"
-        >
-          Delegate
-        </Button>
-      </FormControl>
-    </div>
+    <>
+      <Explanations />
+      <GuardiansList guardians={guardians} onSelect={selectGuardian} />
+      <GuardianDialog
+        dialogState={dialogState}
+        guardian={Object.assign(
+          { address: selectGuardian },
+          guardians[selectedGuardian]
+        )}
+        onClose={() => setDialogState(false)}
+        onDelegate={delegateHandler}
+      />
+    </>
   );
 };
 
-export default withStyles(styles)(StakeholderPage);
+export default StakeholderPage;
