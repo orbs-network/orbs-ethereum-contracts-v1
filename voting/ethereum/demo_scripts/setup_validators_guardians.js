@@ -1,6 +1,7 @@
 var Guardians = artifacts.require("./OrbsGuardians.sol");
 var Validators = artifacts.require("./OrbsValidators.sol");
 var ValidatorsRegistry = artifacts.require("./OrbsValidatorsRegistry.sol");
+var Voting = artifacts.require("./OrbsVoting.sol");
 
 let uniqueValuesNonce = 0;
 
@@ -21,6 +22,7 @@ module.exports = async function(done) {
         console.log(`Guardian:            ${guardiansContract.address}`);
         console.log(`Validators:          ${validatorsContract.address}`);
         console.log(`Validators Registry: ${validatorsRegistryContract.address}`);
+        console.log(`Voting:              ${(await Voting.deployed()).address}`);
         console.log("\n");
 
         await registerValidator(validatorsContract, validatorsRegistryContract, accounts[1], accounts[0]);
