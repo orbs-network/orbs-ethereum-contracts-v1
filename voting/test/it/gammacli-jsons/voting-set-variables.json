@@ -1,0 +1,30 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "setVariables_unsafe",
+    "Arguments": [
+        {
+            "Type": "uint64",
+            "Value": "10000"
+        },
+        {
+            "Type": "uint64",
+            "Value": "3"
+        },
+        {
+            "Type": "uint64",
+            "Value": "500"
+        },
+        {
+            "Type": "uint64",
+            "Value": "200"
+        },
+        {
+            "Type": "uint32",
+            "Value": "5"
+        },
+        {
+            "Type": "uint32",
+            "Value": "3"
+        }
+    ]
+}

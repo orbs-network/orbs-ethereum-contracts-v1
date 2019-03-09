@@ -10,21 +10,23 @@ import (
 	"strings"
 )
 
-func AdapterForTruffleGanache(config *Config) EthereumAdapter {
+func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapter {
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ganache",
 		startBlock:  0,
+		stakeFactor: stakeFactor,
 	}
 }
 
-func AdapterForTruffleRopsten(config *Config) EthereumAdapter {
+func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapter {
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ropsten",
 		startBlock:  400000,
+		stakeFactor: stakeFactor,
 	}
 }
 
@@ -33,6 +35,7 @@ type truffleAdapter struct {
 	projectPath string
 	network     string
 	startBlock  int
+	stakeFactor uint64
 }
 
 func (ta *truffleAdapter) GetStartOfHistoryBlock() int {
@@ -78,7 +81,7 @@ func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes 
 	response := make([]int, len(out.Balances))
 	for i, v := range out.Balances {
 		n, _ := strconv.ParseUint(v, 16, 32)
-		response[i] = fromEthereumToken(n)
+		response[i] = ta.fromEthereumToken(n)
 	}
 	return response
 }
@@ -86,7 +89,7 @@ func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes 
 func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
 	ethStakes := make([]uint64, len(stakes))
 	for i, v := range stakes {
-		ethStakes[i] = toEthereumToken(v) + 10*STAKE_TOKEN_DELEGATE_VALUE
+		ethStakes[i] = ta.toEthereumToken(v) + 10*STAKE_TOKEN_DELEGATE_VALUE
 	}
 	out, _ := json.Marshal(ethStakes)
 
@@ -101,7 +104,7 @@ func (ta *truffleAdapter) Transfer(ethereumErc20Address string, from int, to int
 	if amount == 0 {
 		tokens = STAKE_TOKEN_DELEGATE_VALUE
 	} else {
-		tokens = toEthereumToken(amount)
+		tokens = ta.toEthereumToken(amount)
 	}
 	ta.run("exec ./truffle-scripts/transfer.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
@@ -176,6 +179,10 @@ func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, 
 	)
 }
 
+func (ta *truffleAdapter) Mine(blocks int) {
+	ta.run("exec ./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocks))
+}
+
 func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	args += " --network " + ta.network
 	if ta.debug {
@@ -202,4 +209,12 @@ func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	// remove first line of output (Using network...)
 	index := bytes.IndexRune(out, '\n')
 	return out[index:]
+}
+
+func (ta *truffleAdapter) fromEthereumToken(tokenValue uint64) int {
+	return int(tokenValue / ta.stakeFactor)
+}
+
+func (ta *truffleAdapter) toEthereumToken(testValue int) uint64 {
+	return uint64(testValue) * ta.stakeFactor
 }

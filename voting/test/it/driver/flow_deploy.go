@@ -9,7 +9,6 @@ import (
 func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
 
 	require.NoError(t, config.Validate(true))
-	//require.NotEmpty(t, config.UserAccountOnEthereum, "UserAccountOnEthereum in configuration is empty, did you forget to update it?")
 
 	deployingEthereumErc20 := config.EthereumErc20Address == ""
 	if deployingEthereumErc20 {

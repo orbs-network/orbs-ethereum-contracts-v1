@@ -205,7 +205,6 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 
 		// assert
 		m.VerifyMocks()
-		// TODO noam type address
 		require.EqualValues(t, agentAddr[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr[:])))
 		require.EqualValues(t, BlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr[:])))
 		require.EqualValues(t, txIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr[:])))
@@ -405,7 +404,6 @@ func (f *harness) setupEthereumState(m Mockery) {
 	for _, d := range f.delegators {
 		mockStakeInEthereum(m, f.electionBlock, d.address, d.stake)
 	}
-
 }
 
 func (f *harness) setupOrbsState() {
@@ -415,6 +413,10 @@ func (f *harness) setupOrbsState() {
 }
 
 func newHarness() *harness {
+	ETHEREUM_STAKE_FACTOR = big.NewInt(int64(10000))
+	VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = 3
+	VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = 500
+	ELECTION_PERIOD_LENGTH_IN_BLOCKS = 200
 	return &harness{nextGuardianAddress: 0xa0, nextDelegatorAddress: 0xb0, nextValidatorAddress: 0x01}
 }
 
@@ -469,10 +471,12 @@ func mockValidatorsInEthereum(m Mockery, blockNumber uint64, addresses [][20]byt
 }
 
 func mockStakeInEthereum(m Mockery, BlockNumber uint64, address [20]byte, stake int) {
+	stakeValue := big.NewInt(int64(stake))
+	stakeValue = stakeValue.Mul(stakeValue, ETHEREUM_STAKE_FACTOR)
 	m.MockEthereumCallMethodAtBlock(BlockNumber, getTokenAddr(), getTokenAbi(), "balanceOf", func(out interface{}) {
 		i, ok := out.(**big.Int)
 		if ok {
-			*i = big.NewInt(int64(stake))
+			*i = stakeValue
 		} else {
 			panic(fmt.Sprintf("wrong something %s", out))
 		}
@@ -782,6 +786,7 @@ func TestOrbsVotingContract_processVote_guardiansCastVotes(t *testing.T) {
 			{"simple one guardian", map[[20]byte]uint64{v1: 320, v2: 320}, map[[20]byte]uint64{a0: 20}},
 			{"simple two guardian", map[[20]byte]uint64{v1: 320, v2: 320, v3: 700, v4: 700, v5: 700}, map[[20]byte]uint64{a0: 20, a1: 100}},
 			{"simple three guardian", map[[20]byte]uint64{v1: 1330, v2: 320, v3: 1710, v4: 700, v5: 1710}, map[[20]byte]uint64{a0: 20, a1: 100, a2: 10}},
+			{"simple second guardian no delegates", map[[20]byte]uint64{v1: 320, v2: 320}, map[[20]byte]uint64{a0: 20, {0xa4}: 50}},
 		}
 		for i := range tests {
 			cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
@@ -810,7 +815,55 @@ func TestOrbsVotingContract_processVote_guardiansCastVotes_VotesPerToken(t *test
 		_setCandidates(a0[:], a0Vote)
 		candidatesVotes := _guardiansCastVotes(guardianStakes, relationship, delegatorStakes)
 		for _, vote := range candidatesVotes {
-			require.EqualValues(t, 1100, vote)
+			require.EqualValues(t, 1100*VOTES_PER_TOKEN/len(a0Vote), vote)
+		}
+	})
+}
+
+func TestOrbsVotingContract_processVote_filterValidCandidateValidators(t *testing.T) {
+	v1, v2, v3, v4, v5 := [20]byte{0xc1}, [20]byte{0xc2}, [20]byte{0xc3}, [20]byte{0xc4}, [20]byte{0xc5}
+
+	tests := []struct {
+		name     string
+		expect   candidateArray
+		original map[[20]byte]uint64
+		valid    [][20]byte
+	}{
+		{"simple", candidateArray{&candidateVote{v1, 320}, &candidateVote{v2, 200}}, map[[20]byte]uint64{v1: 320, v2: 200, v3: 400}, [][20]byte{v1, v2}},
+		{"large", candidateArray{&candidateVote{v1, 320}, &candidateVote{v5, 600}, &candidateVote{v2, 200}}, map[[20]byte]uint64{v4: 400, v5: 600, v1: 320, v2: 200, v3: 400}, [][20]byte{v5, v1, v2}},
+		{"empty valid", candidateArray{}, map[[20]byte]uint64{v1: 320, v2: 320, v3: 320}, [][20]byte{}},
+		{"empty original", candidateArray{}, map[[20]byte]uint64{}, [][20]byte{v1, v2}},
+	}
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		for i := range tests {
+			cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
+			validCandidates := _filterValidCandidateValidators(cTest.original, cTest.valid)
+			require.Equal(t, len(cTest.expect), len(validCandidates))
+			require.ElementsMatch(t, cTest.expect, validCandidates)
+		}
+	})
+}
+
+func TestOrbsVotingContract_processVote_getTopElectedValidators(t *testing.T) {
+	v1, v2, v3, v4, v5, v6 := [20]byte{0xc1}, [20]byte{0xc2}, [20]byte{0xc3}, [20]byte{0xc4}, [20]byte{0xc5}, [20]byte{0xc6}
+
+	tests := []struct {
+		name     string
+		expect   [][20]byte
+		original candidateArray
+	}{
+		{"too small", [][20]byte{v1, v2}, candidateArray{&candidateVote{v1, 320}, &candidateVote{v2, 200}}},
+		{"too small keep order", [][20]byte{v5, v1, v2}, candidateArray{&candidateVote{v5, 120}, &candidateVote{v1, 320}, &candidateVote{v2, 200}}},
+		{"regular", [][20]byte{v3, v5, v6, v1, v2}, candidateArray{&candidateVote{v1, 320}, &candidateVote{v2, 200}, &candidateVote{v5, 600}, &candidateVote{v4, 20}, &candidateVote{v3, 700}, &candidateVote{v6, 500}}},
+	}
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		for i := range tests {
+			cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
+			validCandidates := _getTopElectedValidators(cTest.original)
+			require.Equal(t, len(cTest.expect), len(validCandidates))
+			require.EqualValues(t, cTest.expect, validCandidates)
 		}
 	})
 }

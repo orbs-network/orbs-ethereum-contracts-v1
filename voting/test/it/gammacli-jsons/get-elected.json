@@ -1,10 +1,6 @@
 {
     "ContractName": "orbs_config",
-    "MethodName": "getElectedNodesByHeight",
+    "MethodName": "getElectionResults",
     "Arguments": [
-        {
-            "Type": "uint64",
-            "Value": "0"
-        }
     ]
 }
