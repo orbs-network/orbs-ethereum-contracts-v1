@@ -58,8 +58,24 @@ contract('OrbsGuardians', accounts => {
         it('should reject non EOAs', async () => {
             await driver.deployGuardians();
 
+            const name = "name";
+            const url = "url";
+
             const GuardianRegisteringContract = artifacts.require('GuardianRegisteringContract');
-            await assertReject(GuardianRegisteringContract.new(driver.OrbsGuardians.address, "name", "url", {value: GUARDIAN_REG_DEPOSIT}), "expected registration from contract constructor to fail");
+            await assertReject(GuardianRegisteringContract.new(
+                driver.OrbsGuardians.address,
+                name,
+                url,
+                {value: GUARDIAN_REG_DEPOSIT}
+            ), "expected registration from contract constructor to fail");
+
+            const eoaGuardianAddr = accounts[1];
+            await assertResolve(driver.OrbsGuardians.register(
+                name,
+                url,
+                {from:eoaGuardianAddr, value: GUARDIAN_REG_DEPOSIT}
+            ), "expected registration to succeed when sent from EOA");
+            assert(await driver.OrbsGuardians.isGuardian(eoaGuardianAddr))
         });
 
         it('override existing records', async () => {
