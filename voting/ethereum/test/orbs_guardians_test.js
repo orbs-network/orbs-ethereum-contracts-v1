@@ -10,6 +10,18 @@ contract('OrbsGuardians', accounts => {
         driver = new Driver();
     });
 
+    describe('is not payable', () => {
+        it('rejects payments', async () => {
+            await driver.deployGuardians();
+            await assertReject(web3.eth.sendTransaction({
+                to: driver.OrbsGuardians.address,
+                from: accounts[0],
+                value: 1
+            }), "expected payment to fail");
+            assert(await web3.eth.getBalance(accounts[0]) >= 1, "expected main account to have wei");
+        });
+    });
+
     describe('when calling the register() function', () => {
         it('should reflect registration in calls to: getGuardianData(), isGuardian(), getGuardians()', async () => {
             await driver.deployGuardians();
@@ -136,6 +148,5 @@ contract('OrbsGuardians', accounts => {
             const noneLeft = await driver.OrbsGuardians.getGuardians(0, 10);
             assert.deepEqual(noneLeft, [], "expected an empty list after everyone left");
         });
-
     });
 });

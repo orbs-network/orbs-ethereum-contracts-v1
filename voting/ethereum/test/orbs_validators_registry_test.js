@@ -9,6 +9,19 @@ contract('OrbsValidatorsRegistry', accounts => {
         driver = new Driver();
     });
 
+
+    describe('is not payable', () => {
+        it('rejects payments', async () => {
+            await driver.deployRegistry();
+            await assertReject(web3.eth.sendTransaction({
+                to: driver.OrbsRegistry.address,
+                from: accounts[0],
+                value: 1
+            }), "expected payment to fail");
+            assert(await web3.eth.getBalance(accounts[0]) >= 1, "expected main account to have wei");
+        });
+    });
+
     describe('when calling the isValidator() function', () => {
         it('should return true iff previously registered', async () => {
             await driver.deployRegistry();
