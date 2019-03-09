@@ -22,7 +22,11 @@ contract OrbsGuardians is IOrbsGuardians {
     address[] public guardians;
     mapping(address => GuardianData) public guardiansData;
 
-    function register(string memory name, string memory website) public {
+    function register(string memory name, string memory website)
+        public
+        payable
+    {
+        require(tx.origin == msg.sender, "Only EOA may register as Guardian");
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
 

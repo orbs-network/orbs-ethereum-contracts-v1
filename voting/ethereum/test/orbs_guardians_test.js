@@ -2,6 +2,7 @@
 const {Driver} = require('./driver');
 const {assertResolve, assertReject} = require('./assertExtensions');
 
+const GUARDIAN_REG_DEPOSIT = web3.utils.toWei('1', 'ether');
 
 contract('OrbsGuardians', accounts => {
     let driver;
@@ -52,6 +53,13 @@ contract('OrbsGuardians', accounts => {
 
             await assertReject(driver.OrbsGuardians.register("some name", "", {from: accounts[1]}), "expected empty website to fail registration");
             await assertReject(driver.OrbsGuardians.register("some name", undefined, {from: accounts[1]}), "expected undefined website to fail registration");
+        });
+
+        it('should reject non EOAs', async () => {
+            await driver.deployGuardians();
+
+            const GuardianRegisteringContract = artifacts.require('GuardianRegisteringContract');
+            await assertReject(GuardianRegisteringContract.new(driver.OrbsGuardians.address, "name", "url", {value: GUARDIAN_REG_DEPOSIT}), "expected registration from contract constructor to fail");
         });
 
         it('override existing records', async () => {
