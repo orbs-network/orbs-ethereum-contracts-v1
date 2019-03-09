@@ -6,8 +6,8 @@ let uniqueValuesNonce = 0;
 
 const GUARDIAN_REG_DEPOSIT = web3.utils.toWei('1', 'ether');
 
-const MIN_BALANCE_FOR_FEES = web3.utils.toWei("0.1", "ether");
-const MIN_BALANCE_FOR_DEPOSIT = web3.utils.toWei("1.1", "ether");
+const MIN_BALANCE_FOR_FEES = web3.utils.toWei("0.5", "ether");
+const MIN_BALANCE_FOR_DEPOSIT = web3.utils.toWei("1.5", "ether");
 
 module.exports = async function(done) {
     try {
@@ -85,11 +85,13 @@ function numToAddress(num) {
 async function verifyBalance(targetAccount, minBalance, bankAccount) {
     const initial = await web3.eth.getBalance(targetAccount);
     if (web3.utils.toBN(initial).gte(web3.utils.toBN(minBalance))) {
-        console.log(`verified balance for ${targetAccount} is at least ${minBalance}`);
+        console.log(`verified balance for ${targetAccount} is at least ${minBalance} (${initial})`);
         return;
     }
 
     const diff = web3.utils.toBN(minBalance).sub(web3.utils.toBN(initial)).toString();
-    console.log(`insufficient balance for ${targetAccount} transferring: ${minBalance}`);
+    console.log(`insufficient balance for ${targetAccount} transferring: ${diff}...`);
     await web3.eth.sendTransaction({to:targetAccount, from:bankAccount, value:diff});
+    console.log(`new balance: ${await web3.eth.getBalance(targetAccount)}`);
+
 }
