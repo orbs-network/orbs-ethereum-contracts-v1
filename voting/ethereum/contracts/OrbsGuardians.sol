@@ -29,17 +29,18 @@ contract OrbsGuardians is IOrbsGuardians {
         payable
     {
         require(tx.origin == msg.sender, "Only EOA may register as Guardian");
-        require(msg.value == REGISTRATION_DEPOSIT, "Please provide 1 Ether registration deposit");
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
 
         bool adding = !isGuardian(msg.sender);
         uint index;
         if (adding) {
+            require(msg.value == REGISTRATION_DEPOSIT, "Please provide 1 Ether registration deposit");
             index = guardians.length;
             guardians.push(msg.sender);
             emit GuardianAdded(msg.sender);
         } else {
+            require(msg.value == 0, "Guardian is already registered, no need for a second deposit");
             index = guardiansData[msg.sender].index;
             emit GuardianModified(msg.sender);
         }

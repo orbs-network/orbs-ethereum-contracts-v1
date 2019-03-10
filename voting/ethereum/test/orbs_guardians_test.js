@@ -154,17 +154,25 @@ contract('OrbsGuardians', accounts => {
             assert(await driver.OrbsGuardians.isGuardian(eoaGuardianAddr))
         });
 
-        it('override existing records', async () => {
+        it('override existing records, with no additional deposit', async () => {
             await driver.deployGuardians();
 
             await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: GUARDIAN_REG_DEPOSIT});
-            await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1], value: GUARDIAN_REG_DEPOSIT});
+            await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
 
             const retrievedData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
             assert.equal(retrievedData.name, "other name", "expected name to be overridden");
             assert.equal(retrievedData.website, "other website", "expected website to be overridden");
         });
 
+        it('fails to override existing records, if a second deposit is sent', async () => {
+            await driver.deployGuardians();
+
+            const depositOptions = {from: accounts[1], value: GUARDIAN_REG_DEPOSIT};
+            await driver.OrbsGuardians.register("some name", "some website", depositOptions);
+            const p = driver.OrbsGuardians.register("other name", "other website", depositOptions);
+            await assertReject(p,"expected a second deposit to be rejected");
+        });
     });
 
     describe('when calling the getGuardianData() function', () => {
