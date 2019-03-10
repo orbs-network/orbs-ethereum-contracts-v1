@@ -44,7 +44,7 @@ func (gamma *gammaCliAdapter) BindVotingContractToEthereum(orbsVotingContractNam
 	gamma.run("send-tx ./gammacli-jsons/voting-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
 }
 
-func (gamma *gammaCliAdapter) SetFirstElectionBlockHeight(orbsVotingContractName string, blockHeight int) {
+func (gamma *gammaCliAdapter) SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
 	gamma.run("send-tx ./gammacli-jsons/voting-set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
 }
 

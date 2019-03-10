@@ -2,7 +2,7 @@ package driver
 
 type OrbsAdapter interface {
 	DeployContract(orbsVotingContractName string, orbsConfigContractName string)
-	SetFirstElectionBlockHeight(orbsVotingContractName string, blockHeight int)
+	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)
 
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
 	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
@@ -34,6 +34,8 @@ type EthereumAdapter interface {
 	DeployVotingContract() (ethereumVotingAddress string)
 	Delegate(ethereumVotingAddress string, from int, to int)
 	Vote(ethereumVotingAddress string, activistInded int, to [3]int)
+
+	WaitForFinality()
 }
 
 type NodeScriptAdapter interface {

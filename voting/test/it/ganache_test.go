@@ -3,6 +3,7 @@ package it
 import (
 	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
 	"testing"
+	"time"
 )
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
@@ -42,6 +43,10 @@ func TestFullFlowOnGanache(t *testing.T) {
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
+
+	ethereum.WaitForFinality()
+
+	time.Sleep(1 * time.Second)
 	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
 	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
 }

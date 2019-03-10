@@ -14,7 +14,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	currentBlock := ethereum.GetCurrentBlock()
 
 	logStage("Set election date ...")
-	orbs.SetFirstElectionBlockHeight(getOrbsVotingContractName(), currentBlock+1)
+	orbs.SetFirstElectionBlockNumber(getOrbsVotingContractName(), currentBlock+1)
 	logStageDone("Election date in ethereum block number = %d", currentBlock+1)
 
 	logStage("Running script to find Delegate Transfer Events ...")

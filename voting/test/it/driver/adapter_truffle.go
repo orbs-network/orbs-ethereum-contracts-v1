@@ -176,6 +176,10 @@ func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, 
 	)
 }
 
+func (ta *truffleAdapter) WaitForFinality() {
+	ta.run("exec ./truffle-scripts/makeFinal.js")
+}
+
 func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	args += " --network " + ta.network
 	if ta.debug {
