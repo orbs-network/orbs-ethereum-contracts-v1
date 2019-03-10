@@ -29,7 +29,6 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     )
         public
     {
-        require(tx.origin == msg.sender, "Only EOA may register as Validator");
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
         require(isIPV4(ipAddress), "Please pass an address of up to 4 bytes");

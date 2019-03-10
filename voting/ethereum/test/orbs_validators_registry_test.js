@@ -95,33 +95,6 @@ contract('OrbsValidatorsRegistry', accounts => {
             await assertResolve(driver.OrbsRegistry.register(name, ip, url, orbsAddr));
         });
 
-        it('should reject non EOAs', async () => {
-            await driver.deployRegistry();
-
-            const ValidatorRegisteringContract = artifacts.require('ValidatorRegisteringContract');
-            const name = "name";
-            const ip = "0xFF00FF00";
-            const url = "url";
-            const orbsAddr = accounts[0];
-            await assertReject(ValidatorRegisteringContract.new(
-                driver.OrbsRegistry.address,
-                name,
-                ip,
-                url,
-                orbsAddr
-            ), "expected registration from contract constructor to fail");
-
-            const eoaValidatorAddr = accounts[1];
-            await assertResolve(driver.OrbsRegistry.register(
-                name,
-                ip,
-                url,
-                orbsAddr,
-                {from:eoaValidatorAddr}
-            ), "expected registration to succeed when sent from EOA");
-            assert(await driver.OrbsRegistry.isValidator(eoaValidatorAddr))
-        });
-
         it('should reject duplicate entries', async () => {
             await driver.deployRegistry();
 
