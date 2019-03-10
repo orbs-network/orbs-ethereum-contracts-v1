@@ -12,10 +12,10 @@ var activistsAccounts = []int{4, 6, 10}
 var validatorAccounts = []int{20, 21, 22, 23, 24}
 var configGanache = &driver.Config{
 	DebugLogs:                    true,                                                                // shows detailed responses for every command
-	EthereumErc20Address:         "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959",                        // update after deploy with the resulting value
-	EthereumValidatorsAddress:    "0xDa7AD27C7969985968494303F41051144dc92B36",                        // update after deploy with the resulting value
-	EthereumValidatorsRegAddress: "0x643f862a5825b05cd04E284524EeF49C35E45FBC",                        // update after deploy with the resulting value
-	EthereumVotingAddress:        "0x201e10E4Fa7f232F93c387928d3e453030e59166",                        // update after deploy with the resulting value
+	EthereumErc20Address:         "",                                                                  // update after deploy with the resulting value
+	EthereumValidatorsAddress:    "",                                                                  // update after deploy with the resulting value
+	EthereumValidatorsRegAddress: "",                                                                  // update after deploy with the resulting value
+	EthereumVotingAddress:        "",                                                                  // update after deploy with the resulting value
 	UserAccountOnOrbs:            "user1",                                                             // one of the IDs in orbs-test-keys.json
 	StakeHoldersNumber:           stakeHoldersNumber,                                                  // upto 20
 	StakeHolderValues:            []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 0, 0, 50, 0, 10000}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
@@ -42,8 +42,8 @@ func TestFullFlowOnGanache(t *testing.T) {
 	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
 	//orbs.SetFirstElectionBlockNumber("OrbsVoting", 1342)
 
-	//driver.RunDeployFlow(t, configGanache, orbs, ethereum)
-	//driver.RunRecordFlow(t, configGanache, orbs, ethereum)
+	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
+	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
 	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
 	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
 }
