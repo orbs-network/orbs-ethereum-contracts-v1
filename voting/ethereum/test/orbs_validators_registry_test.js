@@ -62,17 +62,22 @@ contract('OrbsValidatorsRegistry', accounts => {
             it('should return the entry', async () => {
                 await driver.deployRegistry();
 
-                await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
-                let result = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+                const regRes1 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+                const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
 
-                assert.equal(result.name, name);
-                assert.equal(result.ipAddress, ip);
-                assert.equal(result.website, url);
-                assert.equal(result.orbsAddress, orbsAddr);
-                assert.equal(result.name, result[0]);
-                assert.equal(result.ipAddress, result[1]);
-                assert.equal(result.website, result[2]);
-                assert.equal(result.orbsAddress, orbsAddr);
+                const blockNumber = regRes1.receipt.blockNumber;
+                assert.equal(valData.name, name);
+                assert.equal(valData.ipAddress, ip);
+                assert.equal(valData.website, url);
+                assert.equal(valData.orbsAddress, orbsAddr);
+                assert.equal(valData.registeredOnBlock.toNumber(), blockNumber);
+                assert.equal(valData.updatedOnBlock.toNumber(), blockNumber);
+                assert.equal(valData.name, valData[0]);
+                assert.equal(valData.ipAddress, valData[1]);
+                assert.equal(valData.website, valData[2]);
+                assert.equal(valData.orbsAddress, valData[3]);
+                assert.equal(valData.registeredOnBlock.toNumber(), valData[4].toNumber());
+                assert.equal(valData.updatedOnBlock.toNumber(), valData[5].toNumber());
             });
         });
 
@@ -119,6 +124,32 @@ contract('OrbsValidatorsRegistry', accounts => {
 
             await assertReject(driver.OrbsRegistry.register(name, "0x0102030400000000000001", url, orbsAddr));
             await assertResolve(driver.OrbsRegistry.register(name, "0x0102030400000000000000", url, orbsAddr));
+        });
+
+        describe('twice for the same validator', () => {
+            it('should replace values and update updatedOnBlock', async () => {
+                await driver.deployRegistry();
+
+                const regRes1 = await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
+                const regRes2 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+                const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+
+                const registeredOnBlock = regRes1.receipt.blockNumber;
+                const updatedOnBlock = regRes2.receipt.blockNumber;
+                assert.notEqual(registeredOnBlock, updatedOnBlock, "expected registration and updating to occur in different blocks");
+                assert.equal(valData.name, name);
+                assert.equal(valData.ipAddress, ip);
+                assert.equal(valData.website, url);
+                assert.equal(valData.orbsAddress, orbsAddr);
+                assert.equal(valData.registeredOnBlock.toNumber(), registeredOnBlock);
+                assert.equal(valData.updatedOnBlock.toNumber(), updatedOnBlock);
+                assert.equal(valData.name, valData[0]);
+                assert.equal(valData.ipAddress, valData[1]);
+                assert.equal(valData.website, valData[2]);
+                assert.equal(valData.orbsAddress, valData[3]);
+                assert.equal(valData.registeredOnBlock.toNumber(), valData[4].toNumber());
+                assert.equal(valData.updatedOnBlock.toNumber(), valData[5].toNumber());
+            });
         });
     });
 
