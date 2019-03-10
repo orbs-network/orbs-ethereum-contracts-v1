@@ -7,22 +7,22 @@ import (
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
-	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/service"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 	"math/big"
 	"sort"
 )
 
-var PUBLIC = sdk.Export(getTokenAddr, getTokenAbi, getVotingAddr, getVotingAbi, getValidatorsAddr, getValidatorsAbi, getOrbsConfigContract,
+var PUBLIC = sdk.Export(getTokenAddr, getTokenAbi, getVotingAddr, getVotingAbi, getValidatorsAddr, getValidatorsAbi,
 	setTokenAddr, setVotingAddr, setValidatorsAddr, /* TODO v1 security run once after deploy */
-	setVariables_unsafe, // TODO v1 noam unsafe
+	setFirstElectionBlockNumber,
+	unsafetests_setVariables, unsafetests_setElectedValidators, // TODO v1 noam unsafe
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
 	processVoting,
-	setFirstElectionBlockNumber)
-var SYSTEM = sdk.Export(_init, setTokenAbi, setVotingAbi, setValidatorsAbi, setOrbsValidatorsConfigContract)
+	getElectionResults, getElectionResultsByBlockNumber, getElectionResultsByIndex, getElectionResultsBlockNumberByIndex, getNumberOfElections,
+)
+var SYSTEM = sdk.Export(_init, setTokenAbi, setVotingAbi, setValidatorsAbi)
 
 // defaults other contracts
-const defaultOrbsValidatorsConfigContract = "OrbsValidatorsConfig"
 const defaultTokenAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
 const defaultTokenAddr = "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959"
 const defaultVotingAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
@@ -35,9 +35,9 @@ var DELEGATION_NAME = "Delegate"
 var DELEGATION_BY_TRANSFER_NAME = "Transfer"
 var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(7)
 var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
-var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(600)
-var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(50000)
-var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(20000)
+var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(480)
+var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(40320)
+var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(17280)
 var VOTES_PER_TOKEN = 5
 var ELECTED_VALIDATORS = 5
 
@@ -48,11 +48,10 @@ func _init() {
 	setVotingAddr(defaultVotingAddr)
 	setValidatorsAbi(defaultValidatorsAbi)
 	setValidatorsAddr(defaultValidatorsAddr)
-	setOrbsValidatorsConfigContract(defaultOrbsValidatorsConfigContract)
 }
 
 // TODO v1 noam unsafe function
-func setVariables_unsafe(stakeFactor uint64, voteMirrorPeriod uint64, voteValidPeriod uint64, electionPeriod uint64, votesPerToke uint32, electedValidators uint32) {
+func unsafetests_setVariables(stakeFactor uint64, voteMirrorPeriod uint64, voteValidPeriod uint64, electionPeriod uint64, votesPerToke uint32, electedValidators uint32) {
 	ETHEREUM_STAKE_FACTOR = big.NewInt(int64(stakeFactor))
 	VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = voteMirrorPeriod
 	VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = voteValidPeriod
@@ -276,20 +275,12 @@ func processVoting() uint64 {
 
 	electedValidators := _processVotingStateMachine()
 	if electedValidators != nil {
-		_updateElected(electedValidators)
+		_setElectionResults(electedValidators, _getElectionBlockNumber())
 		_setElectionBlockNumber(safeuint64.Add(_getElectionBlockNumber(), ELECTION_PERIOD_LENGTH_IN_BLOCKS))
 		return 1
 	} else {
 		return 0
 	}
-}
-
-func _updateElected(elected [][20]byte) {
-	electedForSave := make([]byte, 0, len(elected)*20)
-	for i := range elected {
-		electedForSave = append(electedForSave, elected[i][:]...)
-	}
-	service.CallMethod(getOrbsConfigContract(), "updateElectionResults", electedForSave, _getElectionBlockNumber())
 }
 
 func _processVotingStateMachine() [][20]byte {
@@ -567,23 +558,99 @@ func (s candidateArray) Less(i, j int) bool {
 }
 
 /*****
+ * Election results
+ */
+func getElectionResults() []byte {
+	index := getNumberOfElections()
+	return getElectionResultsByIndex(index)
+}
+
+func getElectionResultsByBlockNumber(blockNumber uint64) []byte {
+	numberOfElections := getNumberOfElections()
+	for i := numberOfElections; i > 0; i-- {
+		if getElectionResultsBlockNumberByIndex(i) < blockNumber {
+			return getElectionResultsByIndex(i)
+		}
+	}
+	return _getDefaultElectionResults()
+}
+
+func _setElectionResults(elected [][20]byte, blockNumber uint64) {
+	electedForSave := _concatElectedAddresses(elected)
+	index := getNumberOfElections()
+	if getElectionResultsBlockNumberByIndex(index) > blockNumber {
+		panic(fmt.Sprintf("Election results rejected as new election happend at block %d which is older than last election %d",
+			blockNumber, getElectionResultsBlockNumberByIndex(index)))
+	}
+	index++
+	_setElectionResultsBlockNumberAtIndex(index, blockNumber)
+	_setElectionResultsAtIndex(index, electedForSave)
+	_setNumberOfElections(index)
+}
+
+func unsafetests_setElectedValidators(joinedAddresses []byte) {
+	index := getNumberOfElections()
+	_setElectionResultsAtIndex(index, joinedAddresses)
+}
+
+func _concatElectedAddresses(elected [][20]byte) []byte {
+	electedForSave := make([]byte, 0, len(elected)*20)
+	for i := range elected {
+		electedForSave = append(electedForSave, elected[i][:]...)
+	}
+	return electedForSave
+}
+
+func _getDefaultElectionResults() []byte {
+	defElected := [20]byte{0x10} // TODO v1 get defaults
+	return defElected[:]
+}
+
+func _formatElectionsNumber() []byte {
+	return []byte("_CURRENT_ELECTION_INDEX_KEY_")
+}
+
+func getNumberOfElections() uint32 {
+	return state.ReadUint32(_formatElectionsNumber())
+}
+
+func _setNumberOfElections(index uint32) {
+	state.WriteUint32(_formatElectionsNumber(), index)
+}
+
+func _formatElectionsBlockNumber(index uint32) []byte {
+	return []byte(fmt.Sprintf("Elections_%d_BlockNumber", index))
+}
+
+func getElectionResultsBlockNumberByIndex(index uint32) uint64 {
+	return state.ReadUint64(_formatElectionsBlockNumber(index))
+}
+
+func _setElectionResultsBlockNumberAtIndex(index uint32, blockNumber uint64) {
+	state.WriteUint64(_formatElectionsBlockNumber(index), blockNumber)
+}
+
+func _formatElectionValidator(index uint32) []byte {
+	return []byte(fmt.Sprintf("Elections_%d_Validators", index))
+}
+
+func getElectionResultsByIndex(index uint32) []byte {
+	return state.ReadBytes(_formatElectionValidator(index))
+}
+
+func _setElectionResultsAtIndex(index uint32, elected []byte) {
+	state.WriteBytes(_formatElectionValidator(index), elected)
+}
+
+/*****
  * Connections to other contracts - TODO v1 is this temp
  */
-var ORBS_CONFIG_CONTRACT_KEY = []byte("_TOKEN_CONTRACT_KEY_")
 var TOKEN_ETH_ADDR_KEY = []byte("_TOKEN_ETH_ADDR_KEY_")
 var TOKEN_ABI_KEY = []byte("_TOKEN_ABI_KEY_")
 var VOTING_ETH_ADDR_KEY = []byte("_VOTING_ETH_ADDR_KEY_")
 var VOTING_ABI_KEY = []byte("_VOTING_ABI_KEY_")
 var VALIDATORS_ETH_ADDR_KEY = []byte("_VALIDATORS_ETH_ADDR_KEY_")
 var VALIDATORS_ABI_KEY = []byte("_VALIDATORS_ABI_KEY_")
-
-func getOrbsConfigContract() string {
-	return state.ReadString(ORBS_CONFIG_CONTRACT_KEY)
-}
-
-func setOrbsValidatorsConfigContract(name string) { // upgrade
-	state.WriteString(ORBS_CONFIG_CONTRACT_KEY, name)
-}
 
 func getTokenAddr() string {
 	return state.ReadString(TOKEN_ETH_ADDR_KEY)

@@ -5,36 +5,33 @@ const votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
 const startBlock = process.env.START_BLOCK_ON_ETHEREUM;
 const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
 const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
-
-async function getVoteEvents(tokenContract) {
+async function getAllPastDelegateEvents(tokenContract) {
     let options = {
         fromBlock: startBlock,
         toBlock: endBlock
     };
 
-    let mapActivistToVote = {};
-    let votes = [];
+    let mapOfTransfers = {};
+    let listOfTransfers = [];
     try {
-        let events = await tokenContract.getPastEvents('Vote', options);
+        let events = await tokenContract.getPastEvents('Delegate', options);
         for (let i = events.length-1; i >= 0;i--) {
             let event = events[i];
-            //console.log(event);
-            let activistAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);//event.returnValues['0'];
-            let currentActivistIndex = mapActivistToVote[activistAddress];
-            if (typeof currentActivistIndex === 'number' && isObjectNewerThanTx(votes[currentActivistIndex], event) ) {
+            let delegatorAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);
+            let currentDelegateIndex = mapOfTransfers[delegatorAddress];
+            if (typeof currentDelegateIndex === 'number' && isObjectNewerThanTx(listOfTransfers[currentDelegateIndex], event) ) {
                 continue;
             }
-            let obj = generateVoteObject(event.blockNumber, event.transactionIndex, event.transactionHash, activistAddress, getCandidates(event), event.event);
+            let obj = generateDelegateObject(event.blockNumber, event.transactionIndex, event.transactionHash, delegatorAddress, getAddressFromTopic(event, TOPIC_TO_ADDR), event.event);
 
-            if(typeof currentActivistIndex === 'number') {
-                votes[currentActivistIndex] = obj;
+            if(typeof currentDelegateIndex === 'number') {
+                listOfTransfers[currentDelegateIndex] = obj;
             } else {
-                mapActivistToVote[activistAddress] = votes.length;
-                votes.push(obj);
+                mapOfTransfers[delegatorAddress] = listOfTransfers.length;
+                listOfTransfers.push(obj);
             }
         }
-
-        return votes;
+        return listOfTransfers;
     } catch (error) {
         console.log(error);
         return [];
@@ -42,13 +39,10 @@ async function getVoteEvents(tokenContract) {
 }
 
 const TOPIC_FROM_ADDR = 1;
+const TOPIC_TO_ADDR = 2;
 function getAddressFromTopic(event, i) {
     let topic = event.raw.topics[i];
     return '0x' + topic.substring(26)
-}
-
-function getCandidates(event) {
-    return event.returnValues.nodes;
 }
 
 function isObjectNewerThanTx(latestDelegate, event) {
@@ -56,19 +50,14 @@ function isObjectNewerThanTx(latestDelegate, event) {
         (latestDelegate.block > event.blockNumber && latestDelegate.transactionIndex > event.transactionIndex)
 }
 
-function generateVoteObject(block, transactionIndex, txHash, activistAddress, candidateAddresses, method) {
+function generateDelegateObject(block, transactionIndex, txHash, delegatorAddress, delegateeAddress, method) {
     return {
-        block, transactionIndex, txHash, activistAddress, candidateAddresses, method
+        block, transactionIndex, txHash, delegatorAddress, delegateeAddress, method
     }
 }
 
-async function main() {
+module.exports = async function () {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let contract = await new web3.eth.Contract(VOTING_ABI, votingContractAddress);
-     return await getVoteEvents(contract);
-}
-
-main()
-    .then(results => {
-        console.log(JSON.stringify(results, null, 2));
-    }).catch(console.error);
+    return await getAllPastDelegateEvents(contract);
+};

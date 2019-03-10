@@ -1,6 +1,6 @@
 {
     "ContractName": "orbs_voting",
-    "MethodName": "setVariables_unsafe",
+    "MethodName": "unsafetests_setVariables",
     "Arguments": [
         {
             "Type": "uint64",

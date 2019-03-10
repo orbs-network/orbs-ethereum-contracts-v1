@@ -8,22 +8,13 @@ import (
 func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
 
 	require.NoError(t, config.Validate(false))
+	na := NodeAdater(config)
 
 	logStage("Running processing ...")
 	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + 2
-	steps := 0
-	isDone := false
+	na.Process(getOrbsVotingContractName(), maxSteps, orbs.GetOrbsEnvironment())
 
-	for !isDone && steps < maxSteps {
-		isDone = orbs.RunVotingProcess(getOrbsVotingContractName())
-		steps++
-	}
-	logStageDone("RunVotingProcess called %d times", steps)
-
-	require.True(t, steps < maxSteps, "should be n steps")
-
-	logStage("Running processing ...")
-	winners := orbs.GetElectedNodes(getOrbsValidatorsConfigContractName())
+	winners := orbs.GetElectedNodes(getOrbsVotingContractName())
 	logStageDone("And the %d winners are .... %v", len(winners), winners)
 
 	logSummary("Process Phase all done.")

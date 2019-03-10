@@ -11,7 +11,7 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 	currBlockNumber := uint64(10000)
 	currElected := []byte{0x01}
 	newBlockNumber := uint64(20000)
-	newElected := []byte{0x02}
+	newElected := [][20]byte{{0x02}}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
@@ -20,12 +20,12 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 		_setNumberOfElections(currIndex)
 
 		// call
-		updateElectionResults(newElected, newBlockNumber)
+		_setElectionResults(newElected, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, currIndex+1, getNumberOfElections())
 		require.EqualValues(t, newBlockNumber, getElectionResultsBlockNumberByIndex(currIndex+1))
-		require.EqualValues(t, newElected, getElectionResultsByIndex(currIndex+1))
+		require.EqualValues(t, _concatElectedAddresses(newElected), getElectionResultsByIndex(currIndex+1))
 		require.EqualValues(t, currBlockNumber, getElectionResultsBlockNumberByIndex(currIndex))
 		require.EqualValues(t, currElected, getElectionResultsByIndex(currIndex))
 	})
@@ -33,18 +33,18 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 
 func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 	newBlockNumber := uint64(20000)
-	newElected := []byte{0x02}
+	newElected := [][20]byte{{0x02}}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 
 		// call
-		updateElectionResults(newElected, newBlockNumber)
+		_setElectionResults(newElected, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, 1, getNumberOfElections())
 		require.EqualValues(t, newBlockNumber, getElectionResultsBlockNumberByIndex(1))
-		require.EqualValues(t, newElected, getElectionResultsByIndex(1))
+		require.EqualValues(t, _concatElectedAddresses(newElected), getElectionResultsByIndex(1))
 	})
 }
 
@@ -53,7 +53,7 @@ func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *t
 	currBlockNumber := uint64(10000)
 	currElected := []byte{0x01}
 	newBlockNumber := uint64(500)
-	newElected := []byte{0x02}
+	newElected := [][20]byte{{0x02}}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
@@ -63,7 +63,7 @@ func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *t
 
 		// call
 		require.Panics(t, func() {
-			updateElectionResults(newElected, newBlockNumber)
+			_setElectionResults(newElected, newBlockNumber)
 		}, "should panic because newer blocknumber is in past")
 	})
 }
