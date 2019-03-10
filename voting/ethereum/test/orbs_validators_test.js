@@ -9,6 +9,18 @@ contract('OrbsValidators', accounts => {
         driver = new Driver();
     });
 
+    describe('is not payable', () => {
+        it('rejects payments', async () => {
+            await driver.deployValidators(100);
+            await assertReject(web3.eth.sendTransaction({
+                to: driver.OrbsValidators.address,
+                from: accounts[0],
+                value: 1
+            }), "expected payment to fail");
+            assert(await web3.eth.getBalance(accounts[0]) >= 1, "expected main account to have wei");
+        });
+    });
+
     describe('when calling the addValidator() function', () => {
         it('should add the member to the list and emit event', async () => {
             await driver.deployValidators(100);

@@ -38,17 +38,7 @@ func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
 	return b.Bytes(), err
 }
 
-const STAKE_TOKEN_FACTOR = uint64(100000) // TODO V1 use correct translation
-//const STAKE_TOKEN_FACTOR = uint64(1000000000000000000)
 const STAKE_TOKEN_DELEGATE_VALUE = uint64(7)
-
-func fromEthereumToken(tokenValue uint64) int {
-	return int(tokenValue / STAKE_TOKEN_FACTOR)
-}
-
-func toEthereumToken(testValue int) uint64 {
-	return uint64(testValue) * STAKE_TOKEN_FACTOR
-}
 
 func getOrbsVotingContractName() string {
 	return "OrbsVoting"

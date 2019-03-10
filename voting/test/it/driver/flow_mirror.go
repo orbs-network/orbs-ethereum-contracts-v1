@@ -2,7 +2,6 @@ package driver
 
 import (
 	"github.com/stretchr/testify/require"
-	"strings"
 	"testing"
 )
 
@@ -26,12 +25,6 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	logStage("Mirroring %d Delegate Transfer Events ...", len(delegateByTransferEvents))
 	for _, dt := range delegateByTransferEvents {
 		orbs.MirrorDelegateByTransfer(getOrbsVotingContractName(), dt.TxHash)
-		// check it was set in state
-		addr, blockNumber, txIndex, method := orbs.GetDelegateData(getOrbsVotingContractName(), dt.DelegatorAddress)
-		require.EqualValues(t, dt.DelegateeAddress, addr)
-		require.EqualValues(t, dt.Block, blockNumber)
-		require.EqualValues(t, dt.TransactionIndex, txIndex)
-		require.EqualValues(t, dt.Method, method)
 	}
 	logStageDone("Mirroring Delegate Transfer")
 
@@ -44,12 +37,6 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	logStage("Mirroring %d Delegate Events ...", len(delegateEvents))
 	for _, dt := range delegateEvents {
 		orbs.MirrorDelegate(getOrbsVotingContractName(), dt.TxHash)
-		// Checking state after delegation mirror
-		addr, blockNumber, txIndex, method := orbs.GetDelegateData(getOrbsVotingContractName(), dt.DelegatorAddress)
-		require.EqualValues(t, dt.DelegateeAddress, addr)
-		require.EqualValues(t, dt.Block, blockNumber)
-		require.EqualValues(t, dt.TransactionIndex, txIndex)
-		require.EqualValues(t, dt.Method, method)
 	}
 	logStageDone("Mirroring Delegate")
 
@@ -63,23 +50,10 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	for _, vt := range votingEvents {
 		orbs.MirrorVote(getOrbsVotingContractName(), vt.TxHash)
 	}
-	// Checking state after vote mirror
-	for _, vt := range votingEvents {
-		addresses, blockNumber, txIndex := orbs.GetVoteData(getOrbsVotingContractName(), vt.ActivistAddress)
-		candidatesStr := "0x"
-		for _, s := range vt.getAddresses() {
-			candidatesStr += s[2:]
-		}
-		require.EqualValues(t, strings.ToLower(candidatesStr), strings.ToLower(addresses))
-		require.EqualValues(t, vt.Block, blockNumber)
-		require.EqualValues(t, vt.TransactionIndex, txIndex)
-	}
 	logStageDone("Mirroring Voting")
 
 	logStage("Advance 10 ethereum blocks ...")
-	for i := 0; i < 10; i++ {
-		ethereum.Transfer(config.EthereumErc20Address, 14, 13, 1)
-	}
+	ethereum.Mine(orbs.GetMirrorVotingPeriod() + 5)
 	logStageDone("Advance done")
 
 	logSummary("Mirror Phase all done.\n\n")

@@ -33,5 +33,6 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStageDone("Voted")
 	}
 
+	ethereum.Mine(5) // just to have a bit of time pass before setting election/mirroring
 	logSummary("Recording Phase all done.\n\n")
 }

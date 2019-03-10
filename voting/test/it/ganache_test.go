@@ -31,12 +31,11 @@ var configGanache = &driver.Config{
 // 1. make sure ganache is running locally on port 7545
 // 2. change account setting to generate 25 accounts
 // 3. make sure gamma server is running with `gamma-cli start-local`
-// tODO noam todo v1 rename to latest naming scheme of all named objects
 
 func TestFullFlowOnGanache(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliLocal(configGanache)
-	ethereum := driver.AdapterForTruffleGanache(configGanache)
+	ethereum := driver.AdapterForTruffleGanache(configGanache, orbs.GetStakeFactor())
 
 	// Temp deploy of orbs contracts
 	orbs.DeployContract("OrbsVoting", "OrbsValidatorsConfig")
@@ -68,7 +67,6 @@ func generateTransfers(stakeHolderNumber int, activists []int) []*driver.Transfe
 		{8, 6, 0},  // delegate // change mind
 		{5, 9, 10}, // regular transfer
 	}
-
 }
 
 func generateDelegates(stakeHolderNumber int, activists []int) []*driver.DelegateEvent {
@@ -86,5 +84,4 @@ func generateVotes(activists []int, validatorAccounts []int) []*driver.VoteEvent
 		{4, [3]int{24, 21, 22}},  // revote
 		{15, [3]int{24, 21, 22}}, // not an activist
 	}
-
 }

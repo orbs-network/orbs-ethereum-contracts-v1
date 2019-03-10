@@ -9,6 +9,19 @@ contract('OrbsValidatorsRegistry', accounts => {
         driver = new Driver();
     });
 
+
+    describe('is not payable', () => {
+        it('rejects payments', async () => {
+            await driver.deployRegistry();
+            await assertReject(web3.eth.sendTransaction({
+                to: driver.OrbsRegistry.address,
+                from: accounts[0],
+                value: 1
+            }), "expected payment to fail");
+            assert(await web3.eth.getBalance(accounts[0]) >= 1, "expected main account to have wei");
+        });
+    });
+
     describe('when calling the isValidator() function', () => {
         it('should return true iff previously registered', async () => {
             await driver.deployRegistry();
@@ -53,11 +66,11 @@ contract('OrbsValidatorsRegistry', accounts => {
                 let result = await driver.OrbsRegistry.getValidatorData(accounts[1]);
 
                 assert.equal(result.name, name);
-                assert.equal(result.ipvAddress, ip);
+                assert.equal(result.ipAddress, ip);
                 assert.equal(result.website, url);
                 assert.equal(result.orbsAddress, orbsAddr);
                 assert.equal(result.name, result[0]);
-                assert.equal(result.ipvAddress, result[1]);
+                assert.equal(result.ipAddress, result[1]);
                 assert.equal(result.website, result[2]);
                 assert.equal(result.orbsAddress, orbsAddr);
             });
@@ -82,6 +95,33 @@ contract('OrbsValidatorsRegistry', accounts => {
             await assertResolve(driver.OrbsRegistry.register(name, ip, url, orbsAddr));
         });
 
+        it('should reject non EOAs', async () => {
+            await driver.deployRegistry();
+
+            const ValidatorRegisteringContract = artifacts.require('ValidatorRegisteringContract');
+            const name = "name";
+            const ip = "0xFF00FF00";
+            const url = "url";
+            const orbsAddr = accounts[0];
+            await assertReject(ValidatorRegisteringContract.new(
+                driver.OrbsRegistry.address,
+                name,
+                ip,
+                url,
+                orbsAddr
+            ), "expected registration from contract constructor to fail");
+
+            const eoaValidatorAddr = accounts[1];
+            await assertResolve(driver.OrbsRegistry.register(
+                name,
+                ip,
+                url,
+                orbsAddr,
+                {from:eoaValidatorAddr}
+            ), "expected registration to succeed when sent from EOA");
+            assert(await driver.OrbsRegistry.isValidator(eoaValidatorAddr))
+        });
+
         it('should reject duplicate entries', async () => {
             await driver.deployRegistry();
 
@@ -95,10 +135,10 @@ contract('OrbsValidatorsRegistry', accounts => {
             await assertResolve(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr2, {from: accounts[1]}), 'expected default account to succeed in setting value set #2');
             await assertResolve(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr2, {from: accounts[1]}), 'expected setting the same values twice to succeed (duplicate values for same account)');
 
-            await assertReject(driver.OrbsRegistry.register(name, ip2, url2, orbsAddr2, {from: accounts[1]}), "expected setting another's name to fail");
-            await assertReject(driver.OrbsRegistry.register(name2, ip, url2, orbsAddr2, {from: accounts[1]}), "expected setting another's ip to fail");
-            await assertReject(driver.OrbsRegistry.register(name2, ip2, url, orbsAddr2, {from: accounts[1]}), "expected setting another's url to fail");
-            await assertReject(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr, {from: accounts[1]}), "expected setting another's orbsAddress to fail");
+            await assertReject(driver.OrbsRegistry.register(name, ip2, url2, orbsAddr2, {from: accounts[1]}), "expected setting duplicate name to fail");
+            await assertReject(driver.OrbsRegistry.register(name2, ip2, url, orbsAddr2, {from: accounts[1]}), "expected setting duplicate url to fail");
+            await assertReject(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr, {from: accounts[1]}), "expected setting duplicate orbsAddress to fail");
+            await assertResolve(driver.OrbsRegistry.register(name2, ip, url2, orbsAddr2, {from: accounts[1]}), "expected setting duplicate ip to succeed");
         });
 
         it('should reject an ip address longer than 4 bytes', async () => {
