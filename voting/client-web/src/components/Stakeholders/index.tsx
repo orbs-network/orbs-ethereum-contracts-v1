@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import GuardiansList from './list';
-import Explanations from './explanations';
 import GuardianDialog from './dialog';
+import Explanations from './explanations';
+import Typography from '@material-ui/core/Typography';
 
 const StakeholderPage = ({
   guardiansContract,
@@ -61,6 +63,13 @@ const StakeholderPage = ({
   return (
     <>
       <Explanations />
+
+      <Link to="/guardian/new">
+        <Typography variant="subtitle1" color="textSecondary">
+          Join as a Guardian
+        </Typography>
+      </Link>
+
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
       <GuardianDialog
         dialogState={dialogState}
