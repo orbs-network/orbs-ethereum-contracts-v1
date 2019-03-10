@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography, FormControl, TextField, Button } from '@material-ui/core';
@@ -12,15 +13,31 @@ const styles = () => ({
   }
 });
 
-const NewGuardian = ({ classes, metamaskService, guardiansContract }) => {
+const NewValidator = ({
+  classes,
+  metamaskService,
+  validatorsRegistryContract
+}) => {
+  const web3 = new Web3(ethereum as any);
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
+  const [orbsAddress, setOrbsAddress] = useState('');
 
-  const isAddDisabled = () => !(name.length > 0 && website.length > 0);
+  const isAddDisabled = () =>
+    [name, website, ipAddress, orbsAddress].some(attr => !attr.length);
 
-  const addGuardian = async () => {
+  const ipAddressToHex = (address: string) => {
+    return web3.utils.toHex(address.split('.').join(''));
+  };
+
+  const addValidator = async () => {
     const from = await metamaskService.enable();
-    guardiansContract.methods.register(name, website).send({ from });
+    const ipHex = ipAddressToHex(ipAddress);
+    const receipt = await validatorsRegistryContract.methods
+      .register(name, ipHex, website, orbsAddress)
+      .send({ from });
+    console.log(receipt);
   };
 
   return (
@@ -51,11 +68,27 @@ const NewGuardian = ({ classes, metamaskService, guardiansContract }) => {
           margin="normal"
           variant="standard"
         />
+        <TextField
+          required
+          placeholder="Your IP Address"
+          value={ipAddress}
+          onChange={ev => setIpAddress(ev.target.value)}
+          margin="normal"
+          variant="standard"
+        />
+        <TextField
+          required
+          placeholder="Your Orbs Address"
+          value={orbsAddress}
+          onChange={ev => setOrbsAddress(ev.target.value)}
+          margin="normal"
+          variant="standard"
+        />
         <Button
           className={classes.add}
           variant="outlined"
           color="secondary"
-          onClick={addGuardian}
+          onClick={addValidator}
           disabled={isAddDisabled()}
         >
           Add
@@ -65,4 +98,4 @@ const NewGuardian = ({ classes, metamaskService, guardiansContract }) => {
   );
 };
 
-export default withStyles(styles)(NewGuardian);
+export default withStyles(styles)(NewValidator);

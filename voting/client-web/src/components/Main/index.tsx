@@ -1,6 +1,7 @@
 import React from 'react';
 import Home from '../Home';
 import NewGuardian from '../NewGuardian';
+import NewValidator from '../NewValidator';
 import GuardianPage from '../Guardrians';
 import StakeholderPage from '../Stakeholders';
 import { Route, RouteProps } from 'react-router-dom';
@@ -60,6 +61,17 @@ const Main = ({
             {...props}
             metamaskService={metamaskService}
             guardiansContract={guardiansContract}
+          />
+        )}
+      />
+      <Route
+        exact
+        path="/validator/new"
+        component={(props: RouteProps) => (
+          <NewValidator
+            {...props}
+            metamaskService={metamaskService}
+            validatorsRegistryContract={validatorsRegistryContract}
           />
         )}
       />
