@@ -62,22 +62,32 @@ contract('OrbsValidatorsRegistry', accounts => {
             it('should return the entry', async () => {
                 await driver.deployRegistry();
 
-                const regRes1 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+                await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
                 const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
 
-                const blockNumber = regRes1.receipt.blockNumber;
                 assert.equal(valData.name, name);
                 assert.equal(valData.ipAddress, ip);
                 assert.equal(valData.website, url);
                 assert.equal(valData.orbsAddress, orbsAddr);
-                assert.equal(valData.registeredOnBlock.toNumber(), blockNumber);
-                assert.equal(valData.updatedOnBlock.toNumber(), blockNumber);
                 assert.equal(valData.name, valData[0]);
                 assert.equal(valData.ipAddress, valData[1]);
                 assert.equal(valData.website, valData[2]);
                 assert.equal(valData.orbsAddress, valData[3]);
-                assert.equal(valData.registeredOnBlock.toNumber(), valData[4].toNumber());
-                assert.equal(valData.updatedOnBlock.toNumber(), valData[5].toNumber());
+            });
+        });
+
+        describe('and then getRegistrationBlockHeight() is called', () => {
+            it('should return the correct the registration block height', async () => {
+                await driver.deployRegistry();
+
+                const regRes = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+                const regBlk = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
+
+                const blockNumber = regRes.receipt.blockNumber;
+                assert.equal(regBlk.registeredOn.toNumber(), blockNumber);
+                assert.equal(regBlk.lastUpdatedOn.toNumber(), blockNumber);
+                assert.equal(regBlk.registeredOn.toNumber(), regBlk[0].toNumber());
+                assert.equal(regBlk.lastUpdatedOn.toNumber(), regBlk[1].toNumber());
             });
         });
 
@@ -133,22 +143,24 @@ contract('OrbsValidatorsRegistry', accounts => {
                 const regRes1 = await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
                 const regRes2 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
                 const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+                const regBlck = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
 
-                const registeredOnBlock = regRes1.receipt.blockNumber;
-                const updatedOnBlock = regRes2.receipt.blockNumber;
-                assert.notEqual(registeredOnBlock, updatedOnBlock, "expected registration and updating to occur in different blocks");
                 assert.equal(valData.name, name);
                 assert.equal(valData.ipAddress, ip);
                 assert.equal(valData.website, url);
                 assert.equal(valData.orbsAddress, orbsAddr);
-                assert.equal(valData.registeredOnBlock.toNumber(), registeredOnBlock);
-                assert.equal(valData.updatedOnBlock.toNumber(), updatedOnBlock);
                 assert.equal(valData.name, valData[0]);
                 assert.equal(valData.ipAddress, valData[1]);
                 assert.equal(valData.website, valData[2]);
                 assert.equal(valData.orbsAddress, valData[3]);
-                assert.equal(valData.registeredOnBlock.toNumber(), valData[4].toNumber());
-                assert.equal(valData.updatedOnBlock.toNumber(), valData[5].toNumber());
+
+                const registrationHeight = regRes1.receipt.blockNumber;
+                const updateHeight = regRes2.receipt.blockNumber;
+                assert(registrationHeight < updateHeight, "expected registration block heigt to be less than updating block height");
+                assert.equal(regBlck.registeredOn.toNumber(), registrationHeight);
+                assert.equal(regBlck.lastUpdatedOn.toNumber(), updateHeight);
+                assert.equal(regBlck.registeredOn.toNumber(), regBlck[0].toNumber());
+                assert.equal(regBlck.lastUpdatedOn.toNumber(), regBlck[1].toNumber());
             });
         });
     });
