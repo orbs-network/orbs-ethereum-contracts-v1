@@ -23,7 +23,7 @@ contract OrbsVoting is IOrbsVoting {
     constructor(uint maxVoteOutNodes_) public {
         voteCounter = 0;
         delegationCounter = 0;
-    maxVoteOutNodes = maxVoteOutNodes_;
+        maxVoteOutNodes = maxVoteOutNodes_;
     }
 
     function voteOut(address[] memory nodes) public {
