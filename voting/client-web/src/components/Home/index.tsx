@@ -15,8 +15,8 @@ const Home = ({ classes }) => {
         </Typography>
       </header>
       <section className={classes.columns}>
-        {content.map(passage => (
-          <article className={classes.column}>
+        {content.map((passage, idx) => (
+          <article key={idx} className={classes.column}>
             <div className={classes.columnText}>
               <Typography variant="h6" color="textPrimary">
                 {passage.text}

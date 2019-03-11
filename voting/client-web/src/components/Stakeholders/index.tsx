@@ -5,11 +5,7 @@ import GuardianDialog from './dialog';
 import Explanations from './explanations';
 import Typography from '@material-ui/core/Typography';
 
-const StakeholderPage = ({
-  guardiansContract,
-  votingContract,
-  metamaskService
-}) => {
+const StakeholderPage = ({ apiService }) => {
   const [guardians, setGuardians] = useState({} as {
     [address: string]: { name: string; url: string };
   });
@@ -17,14 +13,9 @@ const StakeholderPage = ({
   const [dialogState, setDialogState] = useState(false);
 
   const fetchGuardians = async () => {
-    const from = await metamaskService.enable();
-    const addresses = await guardiansContract.methods
-      .getGuardians(0, 100)
-      .call({ from });
+    const addresses = await apiService.getGuardians();
     const details = await Promise.all(
-      addresses.map(address =>
-        guardiansContract.methods.getGuardianData(address).call({ from })
-      )
+      addresses.map(address => apiService.getGuardianData(address))
     );
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
@@ -41,10 +32,7 @@ const StakeholderPage = ({
   }, []);
 
   const delegate = async candidate => {
-    const from = await metamaskService.enable();
-    const receipt = await votingContract.methods
-      .delegate(candidate)
-      .send({ from });
+    const receipt = await apiService.delegate(candidate);
     console.log(receipt);
   };
 

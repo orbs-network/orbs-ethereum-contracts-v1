@@ -1,13 +1,10 @@
-import Web3 from 'web3';
 import * as OrbsContractsInfo from '../contracts-info';
 import votingAbiJson from '../contracts/OrbsVoting.json';
 import guardiansAbiJson from '../contracts/OrbsGuardians.json';
 import validatorsAbiJson from '../contracts/OrbsValidators.json';
 import validatorsRegistryAbiJson from '../contracts/OrbsValidatorsRegistry.json';
 
-const web3 = new Web3(ethereum as any);
-
-export const validatorsContractFactory = () => {
+export const validatorsContractFactory = web3 => {
   return new web3.eth.Contract(
     validatorsAbiJson.abi as any,
     window['__OrbsContractsInfo__']
@@ -16,7 +13,7 @@ export const validatorsContractFactory = () => {
   );
 };
 
-export const validatorsRegistryContractFactory = () => {
+export const validatorsRegistryContractFactory = web3 => {
   return new web3.eth.Contract(
     validatorsRegistryAbiJson.abi as any,
     window['__OrbsContractsInfo__']
@@ -25,7 +22,7 @@ export const validatorsRegistryContractFactory = () => {
   );
 };
 
-export const guardiansContractFactory = () => {
+export const guardiansContractFactory = web3 => {
   return new web3.eth.Contract(
     guardiansAbiJson.abi as any,
     window['__OrbsContractsInfo__']
@@ -34,7 +31,7 @@ export const guardiansContractFactory = () => {
   );
 };
 
-export const votingContractFactory = () => {
+export const votingContractFactory = web3 => {
   return new web3.eth.Contract(
     votingAbiJson.abi as any,
     window['__OrbsContractsInfo__']

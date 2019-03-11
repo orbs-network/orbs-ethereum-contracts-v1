@@ -1,26 +1,17 @@
+import styles from './styles';
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography, FormControl, TextField, Button } from '@material-ui/core';
 
-const styles = () => ({
-  add: {
-    marginTop: 20,
-    width: 80
-  },
-  form: {
-    width: 400
-  }
-});
-
-const NewGuardian = ({ classes, metamaskService, guardiansContract }) => {
+const NewGuardian = ({ classes, apiService }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
 
   const isAddDisabled = () => !(name.length > 0 && website.length > 0);
 
   const addGuardian = async () => {
-    const from = await metamaskService.enable();
-    guardiansContract.methods.register(name, website).send({ from });
+    const receipt = await apiService.registerGuardian(name, website);
+    console.log(receipt);
   };
 
   return (

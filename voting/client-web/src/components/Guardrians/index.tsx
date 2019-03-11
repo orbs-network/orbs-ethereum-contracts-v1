@@ -6,37 +6,20 @@ import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
+import styles from './styles';
 
-const styles = () => ({
-  voteButton: {
-    textAlign: 'center' as any,
-    marginTop: 30
-  }
-});
-
-const GuardianPage = ({
-  validatorsContract,
-  validatorsRegistryContract,
-  votingContract,
-  metamaskService,
-  classes
-}) => {
+const GuardianPage = ({ classes, apiService }) => {
   const [validators, setValidators] = useState({} as {
     [address: string]: { checked: boolean; name: string; url: string };
   });
 
   const fetchValidators = async () => {
-    const from = await metamaskService.enable();
-    let validatorsInState = await validatorsContract.methods
-      .getValidators()
-      .call({ from });
+    const from = await apiService.getCurrentAddress();
+
+    const validatorsInState = await apiService.getValidators();
 
     const validatorsInfo = await Promise.all(
-      validatorsInState.map(address =>
-        validatorsRegistryContract.methods
-          .getValidatorData(address)
-          .call({ from })
-      )
+      validatorsInState.map(address => apiService.getValidatorData(address))
     );
 
     const validatorsInStorage = get(from);
@@ -61,21 +44,12 @@ const GuardianPage = ({
     setValidators(resultValidators);
   };
 
-  const isVoteDisabled = () => {
-    const stagedValidators = Object.keys(validators).filter(
-      address => validators[address].checked
-    );
-    return stagedValidators.length === 0;
-  };
-
   const commitVote = async () => {
-    const from = await metamaskService.enable();
+    const from = await apiService.getCurrentAddress();
     const stagedValidators = Object.keys(validators).filter(
       address => validators[address].checked
     );
-    const receipt = await votingContract.methods
-      .vote(stagedValidators)
-      .send({ from });
+    const receipt = await apiService.voteOut(stagedValidators);
     save(from, stagedValidators);
     console.log(receipt);
   };
@@ -107,9 +81,8 @@ const GuardianPage = ({
           onClick={commitVote}
           variant="outlined"
           color="secondary"
-          disabled={isVoteDisabled()}
         >
-          Vote
+          Vote Out
         </Button>
       </div>
     </>
