@@ -1,8 +1,10 @@
 import ValidatorsList from './list';
+import { Link } from 'react-router-dom';
 import Explanations from './explanations';
 import Button from '@material-ui/core/Button';
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
 
 const styles = () => ({
@@ -37,7 +39,7 @@ const GuardianPage = ({
       )
     );
 
-    const validatorsInStorage = get();
+    const validatorsInStorage = get(from);
 
     const resultValidators = validatorsInState.reduce(
       (acc, currAddress, idx) => {
@@ -74,7 +76,7 @@ const GuardianPage = ({
     const receipt = await votingContract.methods
       .vote(stagedValidators)
       .send({ from });
-    save(stagedValidators);
+    save(from, stagedValidators);
     console.log(receipt);
   };
 
@@ -90,12 +92,18 @@ const GuardianPage = ({
   return (
     <>
       <Explanations />
+      <Link to="/validator/new">
+        <Typography variant="subtitle1" color="textSecondary">
+          Join as a Validator
+        </Typography>
+      </Link>
       <ValidatorsList
         validators={validators}
         onToggle={address => toggleCheck(address)}
       />
       <div className={classes.voteButton}>
         <Button
+          data-testid="vote-button"
           onClick={commitVote}
           variant="outlined"
           color="secondary"
