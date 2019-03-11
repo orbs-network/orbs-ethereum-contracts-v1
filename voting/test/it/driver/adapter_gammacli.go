@@ -16,7 +16,6 @@ func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
 		voteMirrorPeriod:          3,
 		voteValidPeriod:           500,
 		electionPeriod:            200,
-		votesPerToken:             5,
 		numberOfElectedValidators: 3,
 	}
 }
@@ -29,7 +28,6 @@ func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
 		voteMirrorPeriod:          3,
 		voteValidPeriod:           500,
 		electionPeriod:            200,
-		votesPerToken:             5,
 		numberOfElectedValidators: 3,
 	}
 }
@@ -41,7 +39,6 @@ type gammaCliAdapter struct {
 	voteMirrorPeriod          uint64
 	voteValidPeriod           uint64
 	electionPeriod            uint64
-	votesPerToken             int
 	numberOfElectedValidators int
 }
 
@@ -55,8 +52,7 @@ func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string
 		" -arg2 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
 		" -arg3 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
 		" -arg4 " + fmt.Sprintf("%d", gamma.electionPeriod) +
-		" -arg5 " + fmt.Sprintf("%d", gamma.votesPerToken) +
-		" -arg6 " + fmt.Sprintf("%d", gamma.numberOfElectedValidators))
+		" -arg5 " + fmt.Sprintf("%d", gamma.numberOfElectedValidators))
 }
 
 func (gamma *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {

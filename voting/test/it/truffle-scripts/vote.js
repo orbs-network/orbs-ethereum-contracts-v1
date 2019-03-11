@@ -23,7 +23,7 @@ module.exports = async function(done) {
     let candidateIndexes = JSON.parse(candiatesStr);
     let candidates = candidateIndexes.map(elem => accounts[elem]);
     console.log(`from ${accounts[activistAccount]}(ind: ${activistAccount}) to ${candidates}(ind: ${candiatesStr})`);
-    await votingInstance.vote(candidates, {from: accounts[activistAccount]}).on("transactionHash", hash => {
+    await votingInstance.voteOut(candidates, {from: accounts[activistAccount]}).on("transactionHash", hash => {
       console.error("TxHash: " + hash);
     });
 

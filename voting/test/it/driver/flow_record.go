@@ -13,12 +13,12 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	for i := 0; i < len(config.Transfers); i++ {
 		ethereum.Transfer(config.EthereumErc20Address, config.Transfers[i].FromIndex, config.Transfers[i].ToIndex, config.Transfers[i].Amount)
-		config.StakeHolderValues[config.Transfers[i].FromIndex] -= config.Transfers[i].Amount
-		config.StakeHolderValues[config.Transfers[i].ToIndex] += config.Transfers[i].Amount
+		config.DelegatorStakeValues[config.Transfers[i].FromIndex] -= config.Transfers[i].Amount
+		config.DelegatorStakeValues[config.Transfers[i].ToIndex] += config.Transfers[i].Amount
 	}
-	balances := ethereum.GetStakes(config.EthereumErc20Address, config.StakeHoldersNumber)
-	require.Len(t, balances, len(config.StakeHolderValues))
-	require.EqualValues(t, config.StakeHolderValues, balances)
+	balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
+	require.Len(t, balances, len(config.DelegatorStakeValues))
+	require.EqualValues(t, config.DelegatorStakeValues, balances)
 	logStageDone("Stakes on Ethereum after transfers = %v", balances)
 
 	for i := 0; i < len(config.Delegates); i++ {
