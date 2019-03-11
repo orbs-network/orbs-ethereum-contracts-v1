@@ -39,7 +39,7 @@ const GuardianPage = ({
       )
     );
 
-    const validatorsInStorage = get();
+    const validatorsInStorage = get(from);
 
     const resultValidators = validatorsInState.reduce(
       (acc, currAddress, idx) => {
@@ -76,7 +76,7 @@ const GuardianPage = ({
     const receipt = await votingContract.methods
       .vote(stagedValidators)
       .send({ from });
-    save(stagedValidators);
+    save(from, stagedValidators);
     console.log(receipt);
   };
 
@@ -103,6 +103,7 @@ const GuardianPage = ({
       />
       <div className={classes.voteButton}>
         <Button
+          data-testid="vote-button"
           onClick={commitVote}
           variant="outlined"
           color="secondary"

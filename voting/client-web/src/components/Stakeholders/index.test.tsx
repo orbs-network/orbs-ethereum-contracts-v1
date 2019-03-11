@@ -2,7 +2,7 @@ import { StakeholdersDriver } from './driver';
 import { generateGuardiansData } from './fixtures';
 import { waitForElement, cleanup } from 'react-testing-library';
 
-describe('Stakeholders components', () => {
+describe('Stakeholders Page', () => {
   let guardiansData, driver: StakeholdersDriver;
 
   beforeEach(() => {
