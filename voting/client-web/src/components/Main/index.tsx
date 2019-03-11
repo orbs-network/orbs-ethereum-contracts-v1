@@ -6,24 +6,9 @@ import GuardianPage from '../Guardrians';
 import StakeholderPage from '../Stakeholders';
 import { Route, RouteProps } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import styles from './style';
 
-const styles = theme => ({
-  content: {
-    flexGrow: 1,
-    padding: `${theme.spacing.unit * 5}px`,
-    width: '100%'
-  },
-  toolbar: theme.mixins.toolbar
-});
-
-const Main = ({
-  votingContract,
-  metamaskService,
-  guardiansContract,
-  validatorsContract,
-  validatorsRegistryContract,
-  classes
-}) => {
+const Main = ({ apiService, classes }) => {
   return (
     <main className={classes.content}>
       <div className={classes.toolbar} />
@@ -32,47 +17,28 @@ const Main = ({
         exact
         path="/delegator"
         component={(props: RouteProps) => (
-          <StakeholderPage
-            {...props}
-            votingContract={votingContract}
-            metamaskService={metamaskService}
-            guardiansContract={guardiansContract}
-          />
+          <StakeholderPage {...props} apiService={apiService} />
         )}
       />
       <Route
         exact
         path="/guardian"
         component={(props: RouteProps) => (
-          <GuardianPage
-            {...props}
-            validatorsContract={validatorsContract}
-            validatorsRegistryContract={validatorsRegistryContract}
-            votingContract={votingContract}
-            metamaskService={metamaskService}
-          />
+          <GuardianPage {...props} apiService={apiService} />
         )}
       />
       <Route
         exact
         path="/guardian/new"
         component={(props: RouteProps) => (
-          <NewGuardian
-            {...props}
-            metamaskService={metamaskService}
-            guardiansContract={guardiansContract}
-          />
+          <NewGuardian {...props} apiService={apiService} />
         )}
       />
       <Route
         exact
         path="/validator/new"
         component={(props: RouteProps) => (
-          <NewValidator
-            {...props}
-            metamaskService={metamaskService}
-            validatorsRegistryContract={validatorsRegistryContract}
-          />
+          <NewValidator {...props} apiService={apiService} />
         )}
       />
     </main>

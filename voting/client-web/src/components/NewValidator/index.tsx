@@ -1,24 +1,9 @@
-import Web3 from 'web3';
+import styles from './styles';
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography, FormControl, TextField, Button } from '@material-ui/core';
 
-const styles = () => ({
-  add: {
-    marginTop: 20,
-    width: 80
-  },
-  form: {
-    width: 400
-  }
-});
-
-const NewValidator = ({
-  classes,
-  metamaskService,
-  validatorsRegistryContract
-}) => {
-  const web3 = new Web3(ethereum as any);
+const NewValidator = ({ classes, apiService }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
   const [ipAddress, setIpAddress] = useState('');
@@ -27,16 +12,13 @@ const NewValidator = ({
   const isAddDisabled = () =>
     [name, website, ipAddress, orbsAddress].some(attr => !attr.length);
 
-  const ipAddressToHex = (address: string) => {
-    return web3.utils.toHex(address.split('.').join(''));
-  };
-
   const addValidator = async () => {
-    const from = await metamaskService.enable();
-    const ipHex = ipAddressToHex(ipAddress);
-    const receipt = await validatorsRegistryContract.methods
-      .register(name, ipHex, website, orbsAddress)
-      .send({ from });
+    const receipt = await apiService.registerValidator(
+      name,
+      ipAddress,
+      website,
+      orbsAddress
+    );
     console.log(receipt);
   };
 

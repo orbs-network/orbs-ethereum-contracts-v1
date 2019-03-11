@@ -12,7 +12,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         string website;
         address orbsAddress;
         uint registeredOnBlock;
-        uint updatedOnBlock;
+        uint lastUpdatedOnBlock;
     }
 
     uint public constant VERSION = 1;
@@ -98,9 +98,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             string memory name,
             bytes memory ipAddress,
             string memory website,
-            address orbsAddress,
-            uint registeredOnBlock,
-            uint updatedOnBlock
+            address orbsAddress
         )
     {
         require(isValidator(validator), "Unlisted Validator");
@@ -110,9 +108,21 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             entry.name,
             entry.ipAddress,
             entry.website,
-            entry.orbsAddress,
+            entry.orbsAddress
+        );
+    }
+
+    function getRegistrationBlockHeight(address validator)
+        external
+        view
+        returns (uint registeredOn, uint lastUpdatedOn)
+    {
+        require(isValidator(validator), "Unlisted Validator");
+
+        ValidatorData storage entry = validatorsData[validator];
+        return (
             entry.registeredOnBlock,
-            entry.updatedOnBlock
+            entry.lastUpdatedOnBlock
         );
     }
 

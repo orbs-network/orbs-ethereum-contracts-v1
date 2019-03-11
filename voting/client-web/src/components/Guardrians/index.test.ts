@@ -6,14 +6,14 @@ describe('Guardians Page', () => {
   let driver: GuardiansPageDriver, validatorsData;
 
   beforeEach(() => {
-    driver = new GuardiansPageDriver();
     validatorsData = generateValidatorsData();
+    driver = new GuardiansPageDriver(validatorsData);
   });
 
   afterEach(cleanup);
 
   it('should render the list', async () => {
-    const { getByTestId } = driver.renderWithData(validatorsData);
+    const { getByTestId } = driver.render();
     const validatorsList = getByTestId('validators-list');
     await waitForElement(() => validatorsList.children.length);
 
@@ -33,11 +33,4 @@ describe('Guardians Page', () => {
       );
     });
   });
-
-  it('should have voted disabled if nothing is selected', () => {
-    const { getByTestId } = driver.renderWithData(validatorsData);
-    expect(getByTestId('vote-button')).toBeDisabled();
-  });
-
-  it('should have previous votes selected', () => {});
 });

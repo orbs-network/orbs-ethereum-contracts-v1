@@ -2,65 +2,18 @@ import React from 'react';
 import GuardiansPage from './index';
 import { render } from 'react-testing-library';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { IApiStrategy } from '../../api/interface';
+import { ApiStrategyStub } from '../../api/stub';
 
 export default class GuardiansDriver {
-  withValidatorsContract(data) {
-    return {
-      methods: {
-        getValidators() {
-          return {
-            call() {
-              return Object.keys(data);
-            }
-          };
-        }
-      }
-    };
+  apiService: IApiStrategy;
+  constructor(data) {
+    this.apiService = new ApiStrategyStub({}, data);
   }
-  withValidatorsRegistryContract(data) {
-    return {
-      methods: {
-        getValidatorData(address) {
-          return {
-            call() {
-              return data[address];
-            }
-          };
-        }
-      }
-    };
-  }
-  withVotingContract() {
-    return {
-      methods: {
-        vote(validators) {
-          return {
-            send() {
-              console.log(`Voted for ${validators}`);
-              return true;
-            }
-          };
-        }
-      }
-    };
-  }
-  withMetamaskService() {
-    return {
-      enable() {
-        return 'some-fake-address';
-      }
-    };
-  }
-  renderWithData(data) {
-    const props = {
-      validatorsContract: this.withValidatorsContract(data),
-      validatorsRegistryContract: this.withValidatorsRegistryContract(data),
-      votingContract: this.withVotingContract(),
-      metamaskService: this.withMetamaskService()
-    };
+  render() {
     return render(
       <Router>
-        <GuardiansPage {...props} />
+        <GuardiansPage apiService={this.apiService} />
       </Router>
     );
   }
