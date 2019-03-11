@@ -10,6 +10,8 @@ contract OrbsGuardians is IOrbsGuardians {
         string name;
         string website;
         uint index;
+        uint registeredOnBlock;
+        uint lastUpdatedOnBlock;
     }
 
     // The version of the current federation smart contract.
@@ -33,19 +35,22 @@ contract OrbsGuardians is IOrbsGuardians {
         require(bytes(website).length > 0, "Please provide a valid website");
 
         bool adding = !isGuardian(msg.sender);
+        uint registeredOnBlock;
         uint index;
         if (adding) {
             require(msg.value == REGISTRATION_DEPOSIT, "Please provide 1 Ether registration deposit");
             index = guardians.length;
+            registeredOnBlock = block.number;
             guardians.push(msg.sender);
             emit GuardianAdded(msg.sender);
         } else {
             require(msg.value == 0, "Guardian is already registered, no need for a second deposit");
+            registeredOnBlock = guardiansData[msg.sender].registeredOnBlock;
             index = guardiansData[msg.sender].index;
             emit GuardianModified(msg.sender);
         }
 
-        guardiansData[msg.sender] = GuardianData(name, website, index);
+        guardiansData[msg.sender] = GuardianData(name, website, index, registeredOnBlock, block.number);
     }
 
     function leave() public {
@@ -101,5 +106,19 @@ contract OrbsGuardians is IOrbsGuardians {
     {
         require(isGuardian(guardian), "Please provide a listed Guardian");
         return (guardiansData[guardian].name, guardiansData[guardian].website);
+    }
+
+    function getRegistrationBlockHeight(address guardian)
+        external
+        view
+        returns (uint registeredOn, uint lastUpdatedOn)
+    {
+        require(isGuardian(guardian), "Please provide a listed Guardian");
+
+        GuardianData storage entry = guardiansData[guardian];
+        return (
+            entry.registeredOnBlock,
+            entry.lastUpdatedOnBlock
+        );
     }
 }

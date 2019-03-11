@@ -140,11 +140,10 @@ contract('OrbsValidatorsRegistry', accounts => {
             it('should replace values and update updatedOnBlock', async () => {
                 await driver.deployRegistry();
 
-                const regRes1 = await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
-                const regRes2 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
-                const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
-                const regBlck = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
+                await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
+                await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
 
+                const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
                 assert.equal(valData.name, name);
                 assert.equal(valData.ipAddress, ip);
                 assert.equal(valData.website, url);
@@ -154,9 +153,18 @@ contract('OrbsValidatorsRegistry', accounts => {
                 assert.equal(valData.website, valData[2]);
                 assert.equal(valData.orbsAddress, valData[3]);
 
+            });
+
+            it('returns correct block heights after a successful override', async () => {
+                await driver.deployRegistry();
+
+                const regRes1 = await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
+                const regRes2 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+                
+                const regBlck = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
                 const registrationHeight = regRes1.receipt.blockNumber;
                 const updateHeight = regRes2.receipt.blockNumber;
-                assert(registrationHeight < updateHeight, "expected registration block heigt to be less than updating block height");
+                assert(registrationHeight < updateHeight, "expected registration block height to be less than updating block height");
                 assert.equal(regBlck.registeredOn.toNumber(), registrationHeight);
                 assert.equal(regBlck.lastUpdatedOn.toNumber(), updateHeight);
                 assert.equal(regBlck.registeredOn.toNumber(), regBlck[0].toNumber());
