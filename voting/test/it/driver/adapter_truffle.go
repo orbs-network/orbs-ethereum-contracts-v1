@@ -15,6 +15,7 @@ func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapte
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ganache",
+		networkUrl:  "http://127.0.0.1:7545",
 		startBlock:  0,
 		stakeFactor: stakeFactor,
 	}
@@ -25,6 +26,7 @@ func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapte
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ropsten",
+		networkUrl:  "http://127.0.0.1:7545",
 		startBlock:  400000,
 		stakeFactor: stakeFactor,
 	}
@@ -34,6 +36,7 @@ type truffleAdapter struct {
 	debug       bool
 	projectPath string
 	network     string
+	networkUrl  string
 	startBlock  int
 	stakeFactor uint64
 }
@@ -217,4 +220,12 @@ func (ta *truffleAdapter) fromEthereumToken(tokenValue uint64) int {
 
 func (ta *truffleAdapter) toEthereumToken(testValue int) uint64 {
 	return uint64(testValue) * ta.stakeFactor
+}
+
+func (ta *truffleAdapter) GetConnectionUrl() string {
+	ethereumUrl, result := os.LookupEnv("GANACHE_HOST")
+	if result == false {
+		return ta.networkUrl
+	}
+	return ethereumUrl
 }

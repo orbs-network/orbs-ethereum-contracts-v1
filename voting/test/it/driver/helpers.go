@@ -43,7 +43,3 @@ const STAKE_TOKEN_DELEGATE_VALUE = uint64(7)
 func getOrbsVotingContractName() string {
 	return "OrbsVoting"
 }
-
-func getOrbsValidatorsConfigContractName() string {
-	return "OrbsValidatorsConfig"
-}

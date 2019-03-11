@@ -4,7 +4,7 @@ const networkConnectionUrl = process.env.NETWORK_URL_ON_ETHEREUM;
 const votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
 const startBlock = process.env.START_BLOCK_ON_ETHEREUM;
 const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
-const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"vote_counter","type":"uint256"}],"name":"Vote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegation_counter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
+const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getLastVote","outputs":[{"name":"nodes","type":"address[]"},{"name":"blockHeight","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
 
 async function getVoteEvents(tokenContract) {
     let options = {
@@ -15,10 +15,9 @@ async function getVoteEvents(tokenContract) {
     let mapActivistToVote = {};
     let votes = [];
     try {
-        let events = await tokenContract.getPastEvents('Vote', options);
+        let events = await tokenContract.getPastEvents('VoteOut', options);
         for (let i = events.length-1; i >= 0;i--) {
             let event = events[i];
-            //console.log(event);
             let activistAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);//event.returnValues['0'];
             let currentActivistIndex = mapActivistToVote[activistAddress];
             if (typeof currentActivistIndex === 'number' && isObjectNewerThanTx(votes[currentActivistIndex], event) ) {
@@ -62,13 +61,8 @@ function generateVoteObject(block, transactionIndex, txHash, activistAddress, ca
     }
 }
 
-async function main() {
+module.exports = async function () {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let contract = await new web3.eth.Contract(VOTING_ABI, votingContractAddress);
-     return await getVoteEvents(contract);
-}
-
-main()
-    .then(results => {
-        console.log(JSON.stringify(results, null, 2));
-    }).catch(console.error);
+    return await getVoteEvents(contract);
+};

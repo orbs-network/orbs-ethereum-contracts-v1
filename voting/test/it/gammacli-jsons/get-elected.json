@@ -1,5 +1,5 @@
 {
-    "ContractName": "orbs_config",
+    "ContractName": "orbs_voting",
     "MethodName": "getElectionResults",
     "Arguments": [
     ]

@@ -16,7 +16,6 @@ async function getAllPastTransferEvents(tokenContract) {
     let listOfTransfers = [];
     try {
         let events = await tokenContract.getPastEvents('Transfer', options);
-//        console.log(events.length);
         for (let i = events.length-1; i >= 0;i--) {
             let event = events[i];
              if (isTransferADelegateAction(event)) { // its the right amount
@@ -65,15 +64,9 @@ function generateDelegateObject(block, transactionIndex, txHash, delegatorAddres
     }
 }
 
-//module.exports = async function() {
-async function main() {
+module.exports = async function () {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let tokenContract = await new web3.eth.Contract(TOKEN_ABI, erc20ContractAddress);
 
     return getAllPastTransferEvents(tokenContract);
-}
-
-main()
-    .then(results => {
-        console.log(JSON.stringify(results, null, 2));
-    }).catch(console.error);
+};
