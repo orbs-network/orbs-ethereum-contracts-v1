@@ -4,8 +4,9 @@ type OrbsAdapter interface {
 	DeployContract(orbsVotingContractName string)
 	SetContractConstants(orbsVotingContractName string)
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
-	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
-	BindVotingContractToEthereum(orbsVotingContractName string, ethereumAsbAddress string)
+	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string)
+	BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
+	BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string)
 	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)
 
 	GetElectedNodes(orbsVotingContractName string) []string
@@ -31,6 +32,8 @@ type EthereumAdapter interface {
 	DeployVotingContract() (ethereumVotingAddress string)
 	Delegate(ethereumVotingAddress string, from int, to int)
 	Vote(ethereumVotingAddress string, activistInded int, to [3]int)
+
+	DeployGuardiansContract() (ethereumGuardiansAddress string)
 
 	Mine(blocks int)
 	GetConnectionUrl() string

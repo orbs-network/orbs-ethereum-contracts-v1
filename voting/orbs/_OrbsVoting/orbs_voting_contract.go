@@ -5,29 +5,22 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1"
+	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/env"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 	"math/big"
 )
 
-var PUBLIC = sdk.Export(getTokenAddr, getTokenAbi, getVotingAddr, getVotingAbi, getValidatorsAddr, getValidatorsAbi,
-	setTokenAddr, setVotingAddr, setValidatorsAddr, /* TODO v1 security run once after deploy */
-	setFirstElectionBlockNumber,
-	unsafetests_setVariables, unsafetests_setElectedValidators, // TODO v1 noam unsafe
+var PUBLIC = sdk.Export(getTokenAddr, getTokenAbi, getGuardiansAddr, getGuardiansAbi, getVotingAddr, getVotingAbi, getValidatorsAddr, getValidatorsAbi,
+	unsafetests_setTokenAddr, unsafetests_setGuardiansAddr, unsafetests_setVotingAddr, unsafetests_setValidatorsAddr, // TODO v1 noam unsafe
+	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber, // TODO v1 noam unsafe
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
 	processVoting,
-	getElectionResults, getElectionResultsByBlockNumber, getElectionResultsByIndex, getElectionResultsBlockNumberByIndex, getNumberOfElections,
+	getElectionResults, getElectionResultsByBlockNumber, getElectionResultsByBlockHeight,
+	getElectionResultsByIndex, getElectionResultsBlockNumberByIndex, getElectionResultsBlockHeightByIndex, getNumberOfElections,
 )
-var SYSTEM = sdk.Export(_init, setTokenAbi, setVotingAbi, setValidatorsAbi)
-
-// defaults other contracts
-const defaultTokenAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
-const defaultTokenAddr = "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959"
-const defaultVotingAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getLastVote","outputs":[{"name":"nodes","type":"address[]"},{"name":"blockHeight","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
-const defaultVotingAddr = "0xf572dd7e283671535AF6b6F81E8a0E0772062C5b"
-const defaultValidatorsAbi = `[{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorRemoved","type":"event"},{"constant":false,"inputs":[{"name":"validator","type":"address"}],"name":"addValidator","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"validator","type":"address"}],"name":"remove","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"isValidator","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getValidators","outputs":[{"name":"","type":"bytes20[]"}],"payable":false,"stateMutability":"view","type":"function"}]`
-const defaultValidatorsAddr = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
+var SYSTEM = sdk.Export(_init)
 
 // parameters
 var DELEGATION_NAME = "Delegate"
@@ -38,20 +31,20 @@ var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
 var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(480)
 var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(40320)
 var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(17280)
+var FIRST_ELECTION_BLOCK = uint64(7519801)
 var MAX_CANDIDATE_VOTES = 3
 var MAX_ELECTED_VALIDATORS = 22
 var VOTE_OUT_WEIGHT_PERCENT = uint64(70)
+var TRANSITION_PERIOD_LENGTH_IN_BLOCKS = uint64(1)
 
 func _init() {
-	setTokenAbi(defaultTokenAbi)
-	setTokenAddr(defaultTokenAddr)
-	setVotingAbi(defaultVotingAbi)
-	setVotingAddr(defaultVotingAddr)
-	setValidatorsAbi(defaultValidatorsAbi)
-	setValidatorsAddr(defaultValidatorsAddr)
+	_setElectionBlockNumber(FIRST_ELECTION_BLOCK)
 }
 
 // TODO v1 noam unsafe function
+/***
+ * unsafetests functions
+ */
 func unsafetests_setVariables(stakeFactor uint64, voteMirrorPeriod uint64, voteValidPeriod uint64, electionPeriod uint64, electedValidators uint32) {
 	ETHEREUM_STAKE_FACTOR = big.NewInt(int64(stakeFactor))
 	VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = voteMirrorPeriod
@@ -60,6 +53,34 @@ func unsafetests_setVariables(stakeFactor uint64, voteMirrorPeriod uint64, voteV
 	MAX_ELECTED_VALIDATORS = int(electedValidators)
 }
 
+func unsafetests_setElectedValidators(joinedAddresses []byte) {
+	index := getNumberOfElections()
+	_setElectionResultsAtIndex(index, joinedAddresses)
+}
+
+func unsafetests_setElectedBlockNumber(blockNumber uint64) {
+	_setElectionBlockNumber(blockNumber)
+}
+
+func unsafetests_setTokenAddr(addr string) { // upgrade
+	ETHEREUM_TOKEN_ADDR = addr
+}
+
+func unsafetests_setVotingAddr(addr string) { // upgrade
+	ETHEREUM_VOTING_ADDR = addr
+}
+
+func unsafetests_setValidatorsAddr(addr string) { // upgrade
+	ETHEREUM_VALIDATORS_ADDR = addr
+}
+
+func unsafetests_setGuardiansAddr(addr string) { // upgrade
+	ETHEREUM_GUARDIANS_ADDR = addr
+}
+
+/***
+ * mirroring : transfer, delegate
+ */
 type Transfer struct {
 	From  [20]byte
 	To    [20]byte
@@ -176,6 +197,9 @@ func _formatDelegatorStakeKey(delegator []byte) []byte {
 	return []byte(fmt.Sprintf("Delegator_%s_Stake", hex.EncodeToString(delegator)))
 }
 
+/***
+ * mirroring : transfer, delegate
+ */
 type VoteOut struct {
 	Voter [20]byte
 	Nodes [][20]byte
@@ -294,6 +318,9 @@ func _setValidValidatorAtIndex(index int, guardian []byte) {
 	state.WriteBytes(_formatValidValidaorIterator(index), guardian)
 }
 
+/***
+ * processing
+ */
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {
@@ -533,29 +560,6 @@ func _setVotingProcessItem(i int) {
 	state.WriteUint32(VOTING_PROCESS_ITEM_KEY, uint32(i))
 }
 
-/*****
- * timings
- */
-var ELECTION_BLOCK_NUMBER = []byte("Election_Block_Number")
-
-func _getElectionBlockNumber() uint64 {
-	return state.ReadUint64(ELECTION_BLOCK_NUMBER)
-}
-
-func _setElectionBlockNumber(BlockNumber uint64) {
-	state.WriteUint64(ELECTION_BLOCK_NUMBER, BlockNumber)
-}
-
-func setFirstElectionBlockNumber(BlockNumber uint64) {
-	if _getElectionBlockNumber() == 0 {
-		state.WriteUint64(ELECTION_BLOCK_NUMBER, BlockNumber)
-	}
-}
-
-func _isAfterElectionMirroring(BlockNumber uint64) bool {
-	return BlockNumber > _getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
-}
-
 /***
  * Helpers
  */
@@ -563,6 +567,10 @@ func _addressSliceToArray(a []byte) [20]byte {
 	var array [20]byte
 	copy(array[:], a)
 	return array
+}
+
+func _isAfterElectionMirroring(BlockNumber uint64) bool {
+	return BlockNumber > _getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
 }
 
 /*****
@@ -583,6 +591,16 @@ func getElectionResultsByBlockNumber(blockNumber uint64) []byte {
 	return _getDefaultElectionResults()
 }
 
+func getElectionResultsByBlockHeight(blockHeight uint64) []byte {
+	numberOfElections := getNumberOfElections()
+	for i := numberOfElections; i > 0; i-- {
+		if getElectionResultsBlockHeightByIndex(i) < blockHeight {
+			return getElectionResultsByIndex(i)
+		}
+	}
+	return _getDefaultElectionResults()
+}
+
 func _setElectionResults(elected [][20]byte, blockNumber uint64) {
 	electedForSave := _concatElectedAddresses(elected)
 	index := getNumberOfElections()
@@ -592,13 +610,9 @@ func _setElectionResults(elected [][20]byte, blockNumber uint64) {
 	}
 	index++
 	_setElectionResultsBlockNumberAtIndex(index, blockNumber)
+	_setElectionResultsBlockHeightAtIndex(index, env.GetBlockHeight()+TRANSITION_PERIOD_LENGTH_IN_BLOCKS)
 	_setElectionResultsAtIndex(index, electedForSave)
 	_setNumberOfElections(index)
-}
-
-func unsafetests_setElectedValidators(joinedAddresses []byte) {
-	index := getNumberOfElections()
-	_setElectionResultsAtIndex(index, joinedAddresses)
 }
 
 func _concatElectedAddresses(elected [][20]byte) []byte {
@@ -638,6 +652,18 @@ func _setElectionResultsBlockNumberAtIndex(index uint32, blockNumber uint64) {
 	state.WriteUint64(_formatElectionsBlockNumber(index), blockNumber)
 }
 
+func _formatElectionsBlockHeight(index uint32) []byte {
+	return []byte(fmt.Sprintf("Elections_%d_BlockHeight", index))
+}
+
+func getElectionResultsBlockHeightByIndex(index uint32) uint64 {
+	return state.ReadUint64(_formatElectionsBlockHeight(index))
+}
+
+func _setElectionResultsBlockHeightAtIndex(index uint32, blockHeight uint64) {
+	state.WriteUint64(_formatElectionsBlockHeight(index), blockHeight)
+}
+
 func _formatElectionValidator(index uint32) []byte {
 	return []byte(fmt.Sprintf("Elections_%d_Validators", index))
 }
@@ -650,60 +676,52 @@ func _setElectionResultsAtIndex(index uint32, elected []byte) {
 	state.WriteBytes(_formatElectionValidator(index), elected)
 }
 
+var ELECTION_BLOCK_NUMBER = []byte("Election_Block_Number")
+
+func _getElectionBlockNumber() uint64 {
+	return state.ReadUint64(ELECTION_BLOCK_NUMBER)
+}
+
+func _setElectionBlockNumber(BlockNumber uint64) {
+	state.WriteUint64(ELECTION_BLOCK_NUMBER, BlockNumber)
+}
+
 /*****
  * Connections to other contracts - TODO v1 is this temp
  */
-var TOKEN_ETH_ADDR_KEY = []byte("_TOKEN_ETH_ADDR_KEY_")
-var TOKEN_ABI_KEY = []byte("_TOKEN_ABI_KEY_")
-var VOTING_ETH_ADDR_KEY = []byte("_VOTING_ETH_ADDR_KEY_")
-var VOTING_ABI_KEY = []byte("_VOTING_ABI_KEY_")
-var VALIDATORS_ETH_ADDR_KEY = []byte("_VALIDATORS_ETH_ADDR_KEY_")
-var VALIDATORS_ABI_KEY = []byte("_VALIDATORS_ABI_KEY_")
+var ETHEREUM_TOKEN_ADDR = "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959"
+var ETHEREUM_VOTING_ADDR = "0xf572dd7e283671535AF6b6F81E8a0E0772062C5b"
+var ETHEREUM_VALIDATORS_ADDR = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
+var ETHEREUM_GUARDIANS_ADDR = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
 
 func getTokenAddr() string {
-	return state.ReadString(TOKEN_ETH_ADDR_KEY)
-}
-
-func setTokenAddr(addr string) { // upgrade
-	state.WriteString(TOKEN_ETH_ADDR_KEY, addr)
+	return ETHEREUM_TOKEN_ADDR
 }
 
 func getTokenAbi() string {
-	return state.ReadString(TOKEN_ABI_KEY)
+	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }
 
-func setTokenAbi(abi string) { // upgrade
-	state.WriteString(TOKEN_ABI_KEY, abi)
+func getGuardiansAddr() string {
+	return ETHEREUM_GUARDIANS_ADDR
+}
+
+func getGuardiansAbi() string {
+	return `[{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"register","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"isGuardian","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getGuardianData","outputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getRegistrationBlockHeight","outputs":[{"name":"registeredOn","type":"uint256"},{"name":"lastUpdatedOn","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"offset","type":"uint256"},{"name":"limit","type":"uint256"}],"name":"getGuardians","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }
 
 func getVotingAddr() string {
-	return state.ReadString(VOTING_ETH_ADDR_KEY)
-}
-
-func setVotingAddr(addr string) { // upgrade
-	state.WriteString(VOTING_ETH_ADDR_KEY, addr)
+	return ETHEREUM_VOTING_ADDR
 }
 
 func getVotingAbi() string {
-	return state.ReadString(VOTING_ABI_KEY)
-}
-
-func setVotingAbi(abi string) { // upgrade
-	state.WriteString(VOTING_ABI_KEY, abi)
+	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getLastVote","outputs":[{"name":"nodes","type":"address[]"},{"name":"blockHeight","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }
 
 func getValidatorsAddr() string {
-	return state.ReadString(VALIDATORS_ETH_ADDR_KEY)
-}
-
-func setValidatorsAddr(addr string) { // upgrade
-	state.WriteString(VALIDATORS_ETH_ADDR_KEY, addr)
+	return ETHEREUM_VALIDATORS_ADDR
 }
 
 func getValidatorsAbi() string {
-	return state.ReadString(VALIDATORS_ABI_KEY)
-}
-
-func setValidatorsAbi(abi string) { // upgrade
-	state.WriteString(VALIDATORS_ABI_KEY, abi)
+	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorRemoved","type":"event"},{"constant":false,"inputs":[{"name":"validator","type":"address"}],"name":"addValidator","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"validator","type":"address"}],"name":"remove","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"isValidator","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getValidators","outputs":[{"name":"","type":"bytes20[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getApprovalBockHeight","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }

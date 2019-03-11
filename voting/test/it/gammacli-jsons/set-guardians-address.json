@@ -1,6 +1,6 @@
 {
     "ContractName": "orbs_voting",
-    "MethodName": "setTokenAddr",
+    "MethodName": "unsafetests_setTokenAddr",
     "Arguments": [
         {
             "Type": "string",

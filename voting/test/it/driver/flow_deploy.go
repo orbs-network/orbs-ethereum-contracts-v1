@@ -20,12 +20,12 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStageDone("Ethereum ERC20 Address=%s", config.EthereumErc20Address)
 	}
 
-	//logStage("Setting Delegators' Ethereum staked account ...")
-	//ethereum.SetStakes(config.EthereumErc20Address, config.DelegatorStakeValues)
-	//balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
-	//require.Len(t, balances, len(config.DelegatorStakeValues))
-	//require.EqualValues(t, config.DelegatorStakeValues, balances)
-	//logStageDone("Stakes on Ethereum = %v", balances)
+	logStage("Setting Delegators' Ethereum staked account ...")
+	ethereum.SetStakes(config.EthereumErc20Address, config.DelegatorStakeValues)
+	balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
+	require.Len(t, balances, len(config.DelegatorStakeValues))
+	require.EqualValues(t, config.DelegatorStakeValues, balances)
+	logStageDone("Stakes on Ethereum = %v", balances)
 
 	deployingEthereumVoting := config.EthereumVotingAddress == ""
 	if deployingEthereumVoting {
@@ -54,10 +54,27 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStageDone("Ethereum Validators Address=%s", config.EthereumValidatorsAddress)
 	}
 
+	deployingEthereumGuardians := config.EthereumGuardiansAddress == ""
+	if deployingEthereumGuardians {
+		logStage("Deploying Ethereum Guardians contracts ...")
+		config.EthereumGuardiansAddress = ethereum.DeployGuardiansContract()
+		logStageDone("Ethereum Guardians contract Address=%s", config.EthereumGuardiansAddress)
+
+		//logStage("Setting Ethereum Guardians accounts ...")
+		//ethereum.SetValidators(config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress, config.ValidatorsAccounts)
+		//validators := ethereum.GetValidators(config.EthereumValidatorsAddress)
+		//require.Len(t, validators, len(config.ValidatorsAccounts))
+		//logStageDone("Set Guardians to be %v", validators)
+	} else {
+		logStage("Using existing Ethereum Guardians contract...")
+		logStageDone("Ethereum Guardians Address=%s", config.EthereumGuardiansAddress)
+	}
+
 	logStage("Binding Ethereum contracts to Orbs ...")
 	orbs.BindERC20ContractToEthereum(getOrbsVotingContractName(), config.EthereumErc20Address)
 	orbs.BindVotingContractToEthereum(getOrbsVotingContractName(), config.EthereumVotingAddress)
 	orbs.BindValidatorsContractToEthereum(getOrbsVotingContractName(), config.EthereumValidatorsAddress)
+	orbs.BindGuardiansContractToEthereum(getOrbsVotingContractName(), config.EthereumGuardiansAddress)
 	logStageDone("Bound")
 
 	var erc20Txt, votingTxt, validatorTxt string

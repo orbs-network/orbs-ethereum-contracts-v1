@@ -69,6 +69,18 @@ func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
 	return out.Address
 }
 
+func (ta *truffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress string) {
+	bytes := ta.run("exec ./truffle-scripts/deployGuardians.js")
+	out := struct {
+		Address string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out.Address
+}
+
 func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) []int {
 	bytes := ta.run("exec ./truffle-scripts/getStakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,

@@ -37,6 +37,10 @@ func runNaiveCalulations(config *Config) []int {
 		relationship[delegate.FromIndex] = delegate.ToIndex
 	}
 
+	for key, value := range relationship {
+		fmt.Printf("Delegator %d to agent %d\n", key, value)
+	}
+
 	guardianVote := make(map[int]int)
 
 	// run twice
@@ -53,12 +57,19 @@ func runNaiveCalulations(config *Config) []int {
 		}
 	}
 
+	for i, stake := range config.DelegatorStakeValues {
+		fmt.Printf("stake %d is %d\n", i, stake)
+	}
+
 	totalVotes := 0
 	for _, guardian := range config.GuardiansAccounts {
 		guardianVote[guardian] = config.DelegatorStakeValues[guardian]
 		totalVotes += config.DelegatorStakeValues[guardian]
 	}
 	voteThreshhold := totalVotes * 7 / 10
+	for key, value := range guardianVote {
+		fmt.Printf("Guardiand %d all vote %d\n", key, value)
+	}
 	fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
 
 	guardianToCandidate := make(map[int][3]int)

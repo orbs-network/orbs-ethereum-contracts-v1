@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -47,7 +46,7 @@ func (gamma *gammaCliAdapter) DeployContract(orbsVotingContractName string) {
 }
 
 func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string) {
-	gamma.run("send-tx ./gammacli-jsons/voting-set-variables.json -signer user1 -name " + orbsVotingContractName +
+	gamma.run("send-tx ./gammacli-jsons/set-variables.json -signer user1 -name " + orbsVotingContractName +
 		" -arg1 " + fmt.Sprintf("%d", gamma.stakeFactor) +
 		" -arg2 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
 		" -arg3 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
@@ -56,36 +55,23 @@ func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string
 }
 
 func (gamma *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
-	gamma.run("send-tx ./gammacli-jsons/token-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumErc20Address)
+	gamma.run("send-tx ./gammacli-jsons/set-token-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumErc20Address)
 }
 
 func (gamma *gammaCliAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
-	gamma.run("send-tx ./gammacli-jsons/validators-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
+	gamma.run("send-tx ./gammacli-jsons/set-validators-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
 }
 
 func (gamma *gammaCliAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
-	gamma.run("send-tx ./gammacli-jsons/voting-set-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
+	gamma.run("send-tx ./gammacli-jsons/set-voting-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
+}
+
+func (gamma *gammaCliAdapter) BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string) {
+	gamma.run("send-tx ./gammacli-jsons/set-guardians-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumGuardiansAddress)
 }
 
 func (gamma *gammaCliAdapter) SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
-	gamma.run("send-tx ./gammacli-jsons/voting-set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
-}
-
-func (gamma *gammaCliAdapter) GetDelegateData(orbsVotingContractName string, delegator string) (addr string, blockNumber uint64, txIndex uint32, method string) {
-	bytes := gamma.run("run-query ./gammacli-jsons/get-delegate-data.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + delegator)
-	out := struct {
-		OutputArguments []*struct {
-			Value string
-		}
-	}{}
-	err := json.Unmarshal(bytes, &out)
-	if err != nil {
-		panic(err.Error() + "\n" + string(bytes))
-	}
-	blockNumber, _ = strconv.ParseUint(out.OutputArguments[1].Value, 10, 32)
-	txIndex64, _ := strconv.ParseUint(out.OutputArguments[2].Value, 10, 32)
-
-	return out.OutputArguments[0].Value, blockNumber, uint32(txIndex64), out.OutputArguments[3].Value
+	gamma.run("send-tx ./gammacli-jsons/set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
 }
 
 func (gamma *gammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []string {
