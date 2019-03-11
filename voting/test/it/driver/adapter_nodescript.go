@@ -10,7 +10,7 @@ import (
 func NodeAdater(config *Config) *nodeAdapter {
 	return &nodeAdapter{
 		debug:       config.DebugLogs,
-		projectPath: ".",
+		projectPath: "../../processor/",
 	}
 }
 
@@ -20,7 +20,7 @@ type nodeAdapter struct {
 }
 
 func (na *nodeAdapter) Process(orbsVotingContractName string, maxNumberOfTries int, gammaEnv string) {
-	na.run("../../processor/process.js",
+	na.run("process.js",
 		"ORBS_VOTING_CONTRACT_NAME="+orbsVotingContractName,
 		"MAXIMUM_NUMBER_OF_TRIES="+fmt.Sprintf("%d", maxNumberOfTries),
 		"VERBOUSE=true",
@@ -29,7 +29,7 @@ func (na *nodeAdapter) Process(orbsVotingContractName string, maxNumberOfTries i
 }
 
 func (na *nodeAdapter) Mirror(orbsVotingContractName string, ethereumErc20Address string, ethereumVotingAddress string, startBlock int, endBlock int, ethereumUrl string, gammaEnv string) {
-	na.run("../../processor/mirror.js",
+	na.run("mirror.js",
 		"ORBS_VOTING_CONTRACT_NAME="+orbsVotingContractName,
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
