@@ -19,6 +19,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     IOrbsValidatorsRegistry public registry;
 
     address[] public approvedValidators;
+    mapping(address => uint) approvalBlockHeight;
 
     constructor(address registry_, uint validatorLimit_) public {
         require(registry_ != address(0), "Registry contract address 0");
@@ -40,6 +41,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         require(!isApproved(validator), "Address must not be already a member");
 
         approvedValidators.push(validator);
+        approvalBlockHeight[validator] = block.number;
         emit ValidatorAdded(validator);
     }
 
@@ -50,6 +52,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
                 approvedValidators[i] = approvedValidators[approvedLength - 1];
                 delete approvedValidators[i];
                 approvedValidators.length--;
+                delete approvalBlockHeight[validator];
 
                 emit ValidatorRemoved(validator);
                 return;
@@ -75,6 +78,14 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
             }
         }
         return validators;
+    }
+
+    function getApprovalBockHeight(address validator)
+        external
+        view
+        returns (uint)
+    {
+        return approvalBlockHeight[validator];
     }
 
     function getNetworkTopology()

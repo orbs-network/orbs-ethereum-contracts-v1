@@ -56,7 +56,21 @@ contract('OrbsValidators', accounts => {
             await driver.deployValidators(100);
             await assertReject(driver.OrbsValidators.addValidator(numToAddress(22234), {from: accounts[1]}));
         });
+    });
 
+    describe('when calling getAdditionBlockHeight() function', () => {
+        it('returns the block height when the validator was last added, or 0 if never added', async () => {
+            await driver.deployValidatorsWithRegistry(100);
+
+            const zeroBlockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
+            assert.equal(zeroBlockHeight, 0, "expected addition block height to be 0 before addition");
+
+            const additionResult = await driver.OrbsValidators.addValidator(accounts[0]);
+            const additionBlockHeight = additionResult.receipt.blockNumber;
+
+            const blockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
+            assert.equal(blockHeight, additionBlockHeight, "expected addition block height to reflect the block height of addition tx");
+        });
     });
 
     describe('when calling the getValidators() function', () => {
@@ -98,13 +112,13 @@ contract('OrbsValidators', accounts => {
             await driver.addValidatorWithData(accounts[1]); // add validator and set data
             assert.isOk(await driver.OrbsValidators.isValidator(accounts[1]));
 
-            await assertReject(driver.OrbsValidators.remove({from: accounts[1]}), "expected failure when called by non owner");
-            let r1 = await driver.OrbsValidators.remove(accounts[1]); // owner tx
+            await assertReject(driver.OrbsValidators.remove(accounts[1], {from: accounts[1]}), "expected failure when called by non owner");
+            const r1 = await driver.OrbsValidators.remove(accounts[1]); // owner tx
             assert.equal(r1.logs[0].event, "ValidatorRemoved");
             assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[1]));
 
             await assertResolve(driver.OrbsValidators.addValidator(accounts[2])); // add validator but don't set data
-            let r2 = await driver.OrbsValidators.remove(accounts[2]);
+            const r2 = await driver.OrbsValidators.remove(accounts[2]);
             assert.equal(r2.logs[0].event, "ValidatorRemoved");
 
             await assertReject(driver.OrbsValidators.remove(accounts[7]), "expected failure when called with unknown validator");
@@ -115,8 +129,18 @@ contract('OrbsValidators', accounts => {
 
             await driver.OrbsValidators.addValidator(accounts[0]);
 
-            let r = await driver.OrbsValidators.remove(accounts[0]);
+            const r = await driver.OrbsValidators.remove(accounts[0]);
             assert.equal(r.logs[0].event, "ValidatorRemoved");
+        });
+
+        it('clears addition block height', async () => {
+            await driver.deployValidatorsWithRegistry(100);
+
+            await driver.OrbsValidators.addValidator(accounts[0]);
+
+            await driver.OrbsValidators.remove(accounts[0]);
+            const blockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
+            assert.equal(blockHeight, 0, "expected addition block height to be cleared after removal");
         });
     });
 
