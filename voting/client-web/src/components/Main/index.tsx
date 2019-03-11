@@ -1,5 +1,7 @@
 import React from 'react';
 import Home from '../Home';
+import NewGuardian from '../NewGuardian';
+import NewValidator from '../NewValidator';
 import GuardianPage from '../Guardrians';
 import StakeholderPage from '../Stakeholders';
 import { Route, RouteProps } from 'react-router-dom';
@@ -27,6 +29,7 @@ const Main = ({
       <div className={classes.toolbar} />
       <Route exact path="/" component={Home} />
       <Route
+        exact
         path="/delegator"
         component={(props: RouteProps) => (
           <StakeholderPage
@@ -38,6 +41,7 @@ const Main = ({
         )}
       />
       <Route
+        exact
         path="/guardian"
         component={(props: RouteProps) => (
           <GuardianPage
@@ -46,6 +50,28 @@ const Main = ({
             validatorsRegistryContract={validatorsRegistryContract}
             votingContract={votingContract}
             metamaskService={metamaskService}
+          />
+        )}
+      />
+      <Route
+        exact
+        path="/guardian/new"
+        component={(props: RouteProps) => (
+          <NewGuardian
+            {...props}
+            metamaskService={metamaskService}
+            guardiansContract={guardiansContract}
+          />
+        )}
+      />
+      <Route
+        exact
+        path="/validator/new"
+        component={(props: RouteProps) => (
+          <NewValidator
+            {...props}
+            metamaskService={metamaskService}
+            validatorsRegistryContract={validatorsRegistryContract}
           />
         )}
       />

@@ -20,7 +20,9 @@ interface IOrbsValidatorsRegistry {
             string memory name,
             bytes memory ipAddress,
             string memory website,
-            address orbsAddress
+            address orbsAddress,
+            uint registeredOnBlock,
+            uint updatedOnBlock
         );
     function isValidator(address validator) external view returns (bool);
     function getOrbsAddress(address validator)

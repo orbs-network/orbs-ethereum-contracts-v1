@@ -40,6 +40,20 @@
       "type": "function"
     },
     {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "validator",
+          "type": "address"
+        }
+      ],
+      "name": "remove",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "constant": true,
       "inputs": [
         {
@@ -77,16 +91,16 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsValidators {\n    event ValidatorAdded(address indexed validator);\n    event ValidatorRemoved(address indexed validator);\n\n    function addValidator(address validator) external;\n    function isValidator(address validator) external view returns (bool);\n    function getValidators() external view returns (bytes20[] memory);\n}\n",
+  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsValidators {\n    event ValidatorAdded(address indexed validator);\n    event ValidatorRemoved(address indexed validator);\n\n    function addValidator(address validator) external;\n    function remove(address validator) external;\n    function isValidator(address validator) external view returns (bool);\n    function getValidators() external view returns (bytes20[] memory);\n}\n",
   "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidators.sol",
   "ast": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidators.sol",
     "exportedSymbols": {
       "IOrbsValidators": [
-        79
+        84
       ]
     },
-    "id": 80,
+    "id": 85,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -105,9 +119,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 79,
+        "id": 84,
         "linearizedBaseContracts": [
-          79
+          84
         ],
         "name": "IOrbsValidators",
         "nodeType": "ContractDefinition",
@@ -247,7 +261,7 @@
               "parameters": [],
               "src": "215:0:2"
             },
-            "scope": 79,
+            "scope": 84,
             "src": "166:50:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -256,11 +270,11 @@
           {
             "body": null,
             "documentation": null,
-            "id": 72,
+            "id": 70,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
-            "name": "isValidator",
+            "name": "remove",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 68,
@@ -271,8 +285,8 @@
                   "id": 67,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "242:17:2",
+                  "scope": 70,
+                  "src": "237:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -283,7 +297,7 @@
                     "id": 66,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "242:7:2",
+                    "src": "237:7:2",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -294,19 +308,74 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "241:19:2"
+              "src": "236:19:2"
             },
             "returnParameters": {
-              "id": 71,
+              "id": 69,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "264:0:2"
+            },
+            "scope": 84,
+            "src": "221:44:2",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 77,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isValidator",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 73,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 70,
+                  "id": 72,
+                  "name": "validator",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "291:17:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 71,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "291:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "290:19:2"
+            },
+            "returnParameters": {
+              "id": 76,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 75,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "284:4:2",
+                  "scope": 77,
+                  "src": "333:4:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -314,10 +383,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 69,
+                    "id": 74,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "284:4:2",
+                    "src": "333:4:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -327,10 +396,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "283:6:2"
+              "src": "332:6:2"
             },
-            "scope": 79,
-            "src": "221:69:2",
+            "scope": 84,
+            "src": "270:69:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -338,29 +407,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 78,
+            "id": 83,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getValidators",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 73,
+              "id": 78,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "317:2:2"
+              "src": "366:2:2"
             },
             "returnParameters": {
-              "id": 77,
+              "id": 82,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 76,
+                  "id": 81,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 78,
-                  "src": "343:16:2",
+                  "scope": 83,
+                  "src": "392:16:2",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -369,19 +438,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 74,
+                      "id": 79,
                       "name": "bytes20",
                       "nodeType": "ElementaryTypeName",
-                      "src": "343:7:2",
+                      "src": "392:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes20",
                         "typeString": "bytes20"
                       }
                     },
-                    "id": 75,
+                    "id": 80,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "343:9:2",
+                    "src": "392:9:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes20_$dyn_storage_ptr",
                       "typeString": "bytes20[]"
@@ -391,29 +460,29 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "342:18:2"
+              "src": "391:18:2"
             },
-            "scope": 79,
-            "src": "295:66:2",
+            "scope": 84,
+            "src": "344:66:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 80,
-        "src": "25:338:2"
+        "scope": 85,
+        "src": "25:387:2"
       }
     ],
-    "src": "0:364:2"
+    "src": "0:413:2"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidators.sol",
     "exportedSymbols": {
       "IOrbsValidators": [
-        79
+        84
       ]
     },
-    "id": 80,
+    "id": 85,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -432,9 +501,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 79,
+        "id": 84,
         "linearizedBaseContracts": [
-          79
+          84
         ],
         "name": "IOrbsValidators",
         "nodeType": "ContractDefinition",
@@ -574,7 +643,7 @@
               "parameters": [],
               "src": "215:0:2"
             },
-            "scope": 79,
+            "scope": 84,
             "src": "166:50:2",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -583,11 +652,11 @@
           {
             "body": null,
             "documentation": null,
-            "id": 72,
+            "id": 70,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
-            "name": "isValidator",
+            "name": "remove",
             "nodeType": "FunctionDefinition",
             "parameters": {
               "id": 68,
@@ -598,8 +667,8 @@
                   "id": 67,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "242:17:2",
+                  "scope": 70,
+                  "src": "237:17:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -610,7 +679,7 @@
                     "id": 66,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "242:7:2",
+                    "src": "237:7:2",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -621,19 +690,74 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "241:19:2"
+              "src": "236:19:2"
             },
             "returnParameters": {
-              "id": 71,
+              "id": 69,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "264:0:2"
+            },
+            "scope": 84,
+            "src": "221:44:2",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 77,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isValidator",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 73,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 70,
+                  "id": 72,
+                  "name": "validator",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "291:17:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 71,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "291:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "290:19:2"
+            },
+            "returnParameters": {
+              "id": 76,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 75,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "284:4:2",
+                  "scope": 77,
+                  "src": "333:4:2",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -641,10 +765,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 69,
+                    "id": 74,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "284:4:2",
+                    "src": "333:4:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -654,10 +778,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "283:6:2"
+              "src": "332:6:2"
             },
-            "scope": 79,
-            "src": "221:69:2",
+            "scope": 84,
+            "src": "270:69:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -665,29 +789,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 78,
+            "id": 83,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getValidators",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 73,
+              "id": 78,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "317:2:2"
+              "src": "366:2:2"
             },
             "returnParameters": {
-              "id": 77,
+              "id": 82,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 76,
+                  "id": 81,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 78,
-                  "src": "343:16:2",
+                  "scope": 83,
+                  "src": "392:16:2",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -696,19 +820,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 74,
+                      "id": 79,
                       "name": "bytes20",
                       "nodeType": "ElementaryTypeName",
-                      "src": "343:7:2",
+                      "src": "392:7:2",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes20",
                         "typeString": "bytes20"
                       }
                     },
-                    "id": 75,
+                    "id": 80,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "343:9:2",
+                    "src": "392:9:2",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes20_$dyn_storage_ptr",
                       "typeString": "bytes20[]"
@@ -718,28 +842,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "342:18:2"
+              "src": "391:18:2"
             },
-            "scope": 79,
-            "src": "295:66:2",
+            "scope": 84,
+            "src": "344:66:2",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 80,
-        "src": "25:338:2"
+        "scope": 85,
+        "src": "25:387:2"
       }
     ],
-    "src": "0:364:2"
+    "src": "0:413:2"
   },
   "compiler": {
     "name": "solc",
     "version": "0.5.3+commit.10d17f24.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.1",
-  "updatedAt": "2019-03-05T15:01:55.483Z",
+  "schemaVersion": "3.0.2",
+  "updatedAt": "2019-03-10T23:32:34.195Z",
   "devdoc": {
     "methods": {}
   },

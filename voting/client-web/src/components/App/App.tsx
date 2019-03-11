@@ -1,7 +1,6 @@
 import './App.css';
 import Main from '../Main';
 import Header from '../Header';
-import Sidebar from '../Sidebar';
 import React, { Component } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter as Router } from 'react-router-dom';

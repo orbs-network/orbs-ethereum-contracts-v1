@@ -15,6 +15,8 @@ contract OrbsGuardians is IOrbsGuardians {
     // The version of the current federation smart contract.
     uint public constant VERSION = 1;
 
+    uint public constant REGISTRATION_DEPOSIT = 1 ether;
+
     event GuardianAdded(address indexed validator);
     event GuardianLeft(address indexed validator);
     event GuardianModified(address indexed validator);
@@ -22,17 +24,23 @@ contract OrbsGuardians is IOrbsGuardians {
     address[] public guardians;
     mapping(address => GuardianData) public guardiansData;
 
-    function register(string memory name, string memory website) public {
+    function register(string memory name, string memory website)
+        public
+        payable
+    {
+        require(tx.origin == msg.sender, "Only EOA may register as Guardian");
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
 
         bool adding = !isGuardian(msg.sender);
         uint index;
         if (adding) {
+            require(msg.value == REGISTRATION_DEPOSIT, "Please provide 1 Ether registration deposit");
             index = guardians.length;
             guardians.push(msg.sender);
             emit GuardianAdded(msg.sender);
         } else {
+            require(msg.value == 0, "Guardian is already registered, no need for a second deposit");
             index = guardiansData[msg.sender].index;
             emit GuardianModified(msg.sender);
         }
@@ -52,6 +60,8 @@ contract OrbsGuardians is IOrbsGuardians {
 
         delete guardiansData[msg.sender];
         guardians.length--;
+
+        msg.sender.transfer(REGISTRATION_DEPOSIT);
 
         emit GuardianLeft(msg.sender);
     }

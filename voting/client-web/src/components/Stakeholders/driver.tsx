@@ -1,6 +1,7 @@
 import React from 'react';
 import Stakeholders from './index';
 import { render } from 'react-testing-library';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 export class StakeholdersDriver {
   withMetamaskService() {
@@ -53,6 +54,10 @@ export class StakeholdersDriver {
     return this.renderWithProps(props);
   }
   renderWithProps(props) {
-    return render(<Stakeholders {...props} />);
+    return render(
+      <Router>
+        <Stakeholders {...props} />
+      </Router>
+    );
   }
 }

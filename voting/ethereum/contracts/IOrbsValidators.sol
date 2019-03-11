@@ -6,6 +6,7 @@ interface IOrbsValidators {
     event ValidatorRemoved(address indexed validator);
 
     function addValidator(address validator) external;
+    function remove(address validator) external;
     function isValidator(address validator) external view returns (bool);
     function getValidators() external view returns (bytes20[] memory);
 }

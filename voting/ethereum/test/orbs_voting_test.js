@@ -5,44 +5,69 @@ const {assertResolve, assertReject} = require('./assertExtensions');
 contract('Voting', accounts => {
     let driver;
 
+    const suspiciousNodes = [accounts[1], accounts[2], accounts[3]];
     beforeEach(() => {
         driver = new Driver();
     });
 
-    describe('when calling the vote() function', () => {
-        it('should emit one Vote event', async () => {
+    describe('is not payable', () => {
+        it('rejects payments', async () => {
+            await driver.deployVoting();
+            await assertReject(web3.eth.sendTransaction({
+                to: driver.OrbsVoting.address,
+                from: accounts[0],
+                value: 1
+            }), "expected payment to fail");
+            assert(await web3.eth.getBalance(accounts[0]) >= 1, "expected main account to have wei");
+        });
+    });
+
+    describe('when calling the voteOut() function', () => {
+        it('should emit one VoteOut event', async () => {
             await driver.deployVoting();
 
-            let receipt = await driver.OrbsVoting.vote(accounts);
+            const receipt = await driver.OrbsVoting.voteOut(suspiciousNodes);
 
-            let e = receipt.logs[0];
-            assert.equal(e.event, "Vote");
+            const e = receipt.logs[0];
+            assert.equal(e.event, "VoteOut");
             assert.equal(e.args.voter, accounts[0]);
             assert.equal(e.args.voteCounter, 1);
-            assert.deepEqual(e.args.nodes, accounts.map(a => a.toLowerCase()));
+            assert.deepEqual(e.args.nodes, suspiciousNodes.map(a => a.toLowerCase()));
         });
 
-        it('should increment vote_counter', async () => {
+        it('should increment voteCounter', async () => {
             await driver.deployVoting();
 
-            let receipt1 = await driver.OrbsVoting.vote(accounts);
-            let receipt2 = await driver.OrbsVoting.vote(accounts);
+            let receipt1 = await driver.OrbsVoting.voteOut(suspiciousNodes);
+            let receipt2 = await driver.OrbsVoting.voteOut(suspiciousNodes);
 
             let getCounter = receipt => receipt.logs[0].args.voteCounter.toNumber();
 
             assert.deepEqual(getCounter(receipt1) + 1, getCounter(receipt2))
         });
 
-        it('should reject calls with empty array', async () => {
+        it('should allow voting no one out', async () => {
             await driver.deployVoting();
 
-            await assertReject(driver.OrbsVoting.vote([]));
+            let receipt = await assertResolve(driver.OrbsVoting.voteOut([]), "voting no one out should succeed");
+
+            const e = receipt.logs[0];
+            assert.equal(e.event, "VoteOut");
+            assert.equal(e.args.voter, accounts[0]);
+            assert.equal(e.args.voteCounter, 1);
+            assert.deepEqual(e.args.nodes, []);
+        });
+
+        it('should disallow voting for too many nodes', async () => {
+            await driver.deployVoting(suspiciousNodes.length - 1);
+
+            await assertReject(driver.OrbsVoting.voteOut(suspiciousNodes), "voting for too many nodes should fail");
         });
 
         it('should reject calls with 0 address', async () => {
             await driver.deployVoting();
 
-            await assertReject(driver.OrbsVoting.vote([numToAddress(1), numToAddress(0)]));
+            await assertReject(driver.OrbsVoting.voteOut([numToAddress(1), numToAddress(0)]));
         });
 
         it('should consume gas consistently regardless of voting history', async () => {
@@ -64,7 +89,7 @@ contract('Voting', accounts => {
             assert.equal(e.args.delegationCounter, 1);
         });
 
-        it('should increment delegation_counter', async () => {
+        it('should increment delegationCounter', async () => {
             await driver.deployVoting();
             let to = numToAddress(1);
 
@@ -84,7 +109,7 @@ contract('Voting', accounts => {
             const firstVote = [numToAddress(6), numToAddress(7)];
             const secondVote = [numToAddress(8), numToAddress(9)];
 
-            const firstVoteBlockHeight = await driver.OrbsVoting.vote(firstVote).then(r => r.receipt.blockNumber);
+            const firstVoteBlockHeight = await driver.OrbsVoting.voteOut(firstVote).then(r => r.receipt.blockNumber);
             const reportedFirstVote = await driver.OrbsVoting.getLastVote(accounts[0]);
 
             assert.deepEqual(reportedFirstVote[0], firstVote);
@@ -93,7 +118,7 @@ contract('Voting', accounts => {
             assert.deepEqual(reportedFirstVote[0], reportedFirstVote.nodes, "expected first item in tuple to be nodes");
             assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockHeight.toNumber(), "expected second item in tuple to be block height");
 
-            const secondVoteBlockHeight = await driver.OrbsVoting.vote(secondVote).then(r => r.receipt.blockNumber);
+            const secondVoteBlockHeight = await driver.OrbsVoting.voteOut(secondVote).then(r => r.receipt.blockNumber);
             const reportedSecondVote = await driver.OrbsVoting.getLastVote(accounts[0]);
 
             assert.deepEqual(reportedSecondVote[0], secondVote);
