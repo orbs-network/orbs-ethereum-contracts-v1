@@ -12,12 +12,17 @@ import theme from './theme';
 import styles from './style';
 import MetamaskStrategy from '../../api/metamask';
 import { IApiStrategy } from '../../api/interface';
+import { RemoteStrategy } from '../../api/remote';
 
 class App extends Component<WithStyles> {
-  communicationStrategy: IApiStrategy;
+  apiService: IApiStrategy;
   constructor(props) {
     super(props);
-    this.communicationStrategy = new MetamaskStrategy();
+    if (window['ethereum']) {
+      this.apiService = new MetamaskStrategy();
+    } else {
+      this.apiService = new RemoteStrategy();
+    }
   }
   render() {
     const { classes } = this.props;
@@ -27,7 +32,7 @@ class App extends Component<WithStyles> {
           <CssBaseline />
           <div className={classes.root}>
             <Header />
-            <Main apiService={this.communicationStrategy} />
+            <Main apiService={this.apiService} />
           </div>
         </MuiThemeProvider>
       </Router>

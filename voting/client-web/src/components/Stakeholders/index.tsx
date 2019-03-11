@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import GuardiansList from './list';
 import GuardianDialog from './dialog';
+import { Link } from 'react-router-dom';
 import Explanations from './explanations';
+import { Strategies } from '../../api/interface';
 import Typography from '@material-ui/core/Typography';
 
 const StakeholderPage = ({ apiService }) => {
@@ -48,18 +49,25 @@ const StakeholderPage = ({ apiService }) => {
     setDialogState(true);
   };
 
+  const hasMetamask = () => {
+    return apiService.type === Strategies.metamask;
+  };
+
   return (
     <>
       <Explanations />
 
-      <Link to="/guardian/new">
-        <Typography variant="subtitle1" color="textSecondary">
-          Join as a Guardian
-        </Typography>
-      </Link>
+      {hasMetamask() && (
+        <Link to="/guardian/new">
+          <Typography variant="subtitle1" color="textSecondary">
+            Join as a Guardian
+          </Typography>
+        </Link>
+      )}
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
       <GuardianDialog
+        readOnly={!hasMetamask()}
         dialogState={dialogState}
         guardian={Object.assign(
           { address: selectGuardian },

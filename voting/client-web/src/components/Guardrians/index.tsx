@@ -1,12 +1,44 @@
+import styles from './styles';
 import ValidatorsList from './list';
 import { Link } from 'react-router-dom';
 import Explanations from './explanations';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Strategies } from '../../api/interface';
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
-import styles from './styles';
+
+const DisabledVoteButton = () => {
+  return (
+    <Tooltip title="Install Metamask extension to have access to voting capabilities">
+      <div>
+        <Button
+          data-testid="vote-button"
+          variant="outlined"
+          color="secondary"
+          disabled={true}
+        >
+          Vote Out
+        </Button>
+      </div>
+    </Tooltip>
+  );
+};
+
+const VoteButton = ({ onVote }) => {
+  return (
+    <Button
+      data-testid="vote-button"
+      onClick={onVote}
+      variant="outlined"
+      color="secondary"
+    >
+      Vote Out
+    </Button>
+  );
+};
 
 const GuardianPage = ({ classes, apiService }) => {
   const [validators, setValidators] = useState({} as {
@@ -14,15 +46,11 @@ const GuardianPage = ({ classes, apiService }) => {
   });
 
   const fetchValidators = async () => {
-    const from = await apiService.getCurrentAddress();
-
     const validatorsInState = await apiService.getValidators();
 
     const validatorsInfo = await Promise.all(
       validatorsInState.map(address => apiService.getValidatorData(address))
     );
-
-    const validatorsInStorage = get(from);
 
     const resultValidators = validatorsInState.reduce(
       (acc, currAddress, idx) => {
@@ -36,11 +64,17 @@ const GuardianPage = ({ classes, apiService }) => {
       {}
     );
 
-    validatorsInStorage.forEach(address => {
-      if (resultValidators[address] !== undefined) {
-        resultValidators[address].checked = true;
-      }
-    });
+    if (hasMetamask()) {
+      const from = await apiService.getCurrentAddress();
+      const validatorsInStorage = get(from);
+
+      validatorsInStorage.forEach(address => {
+        if (resultValidators[address] !== undefined) {
+          resultValidators[address].checked = true;
+        }
+      });
+    }
+
     setValidators(resultValidators);
   };
 
@@ -59,6 +93,10 @@ const GuardianPage = ({ classes, apiService }) => {
     setValidators(Object.assign({}, validators));
   };
 
+  const hasMetamask = () => {
+    return apiService.type === Strategies.metamask;
+  };
+
   useEffect(() => {
     fetchValidators();
   }, []);
@@ -66,24 +104,24 @@ const GuardianPage = ({ classes, apiService }) => {
   return (
     <>
       <Explanations />
-      <Link to="/validator/new">
-        <Typography variant="subtitle1" color="textSecondary">
-          Join as a Validator
-        </Typography>
-      </Link>
+      {hasMetamask() && (
+        <Link to="/validator/new">
+          <Typography variant="subtitle1" color="textSecondary">
+            Join as a Validator
+          </Typography>
+        </Link>
+      )}
       <ValidatorsList
+        readOnly={!hasMetamask()}
         validators={validators}
         onToggle={address => toggleCheck(address)}
       />
       <div className={classes.voteButton}>
-        <Button
-          data-testid="vote-button"
-          onClick={commitVote}
-          variant="outlined"
-          color="secondary"
-        >
-          Vote Out
-        </Button>
+        {hasMetamask() ? (
+          <VoteButton onVote={commitVote} />
+        ) : (
+          <DisabledVoteButton />
+        )}
       </div>
     </>
   );

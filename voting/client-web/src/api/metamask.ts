@@ -6,7 +6,7 @@ import {
   validatorsRegistryContractFactory
 } from '../services/contracts';
 import MetamaskService from '../services/metamask';
-import { IApiStrategy } from './interface';
+import { IApiStrategy, Strategies } from './interface';
 
 export default class MetamaskStrategy implements IApiStrategy {
   private web3: Web3;
@@ -15,6 +15,8 @@ export default class MetamaskStrategy implements IApiStrategy {
   private guardiansContract;
   private votingContract;
   private metamaskService;
+
+  type = Strategies.metamask;
 
   constructor() {
     this.web3 = new Web3(ethereum as any);
