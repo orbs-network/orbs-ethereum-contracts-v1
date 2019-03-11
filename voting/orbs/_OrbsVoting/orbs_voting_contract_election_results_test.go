@@ -15,19 +15,19 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setElectionResultsBlockNumberAtIndex(currIndex, currBlockNumber)
-		_setElectionResultsAtIndex(currIndex, currElected)
+		_setElectedValidatorsBlockNumberAtIndex(currIndex, currBlockNumber)
+		_setElectedValidatorsAtIndex(currIndex, currElected)
 		_setNumberOfElections(currIndex)
 
 		// call
-		_setElectionResults(newElected, newBlockNumber)
+		_setElectedValidators(newElected, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, currIndex+1, getNumberOfElections())
-		require.EqualValues(t, newBlockNumber, getElectionResultsBlockNumberByIndex(currIndex+1))
-		require.EqualValues(t, _concatElectedAddresses(newElected), getElectionResultsByIndex(currIndex+1))
-		require.EqualValues(t, currBlockNumber, getElectionResultsBlockNumberByIndex(currIndex))
-		require.EqualValues(t, currElected, getElectionResultsByIndex(currIndex))
+		require.EqualValues(t, newBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex+1))
+		require.EqualValues(t, _concatElectedAddresses(newElected), getElectedValidatorsByIndex(currIndex+1))
+		require.EqualValues(t, currBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex))
+		require.EqualValues(t, currElected, getElectedValidatorsByIndex(currIndex))
 	})
 }
 
@@ -39,12 +39,12 @@ func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 		_init()
 
 		// call
-		_setElectionResults(newElected, newBlockNumber)
+		_setElectedValidators(newElected, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, 1, getNumberOfElections())
-		require.EqualValues(t, newBlockNumber, getElectionResultsBlockNumberByIndex(1))
-		require.EqualValues(t, _concatElectedAddresses(newElected), getElectionResultsByIndex(1))
+		require.EqualValues(t, newBlockNumber, getElectedValidatorsBlockNumberByIndex(1))
+		require.EqualValues(t, _concatElectedAddresses(newElected), getElectedValidatorsByIndex(1))
 	})
 }
 
@@ -57,13 +57,13 @@ func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *t
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setElectionResultsBlockNumberAtIndex(currIndex, currBlockNumber)
-		_setElectionResultsAtIndex(currIndex, currElected)
+		_setElectedValidatorsBlockNumberAtIndex(currIndex, currBlockNumber)
+		_setElectedValidatorsAtIndex(currIndex, currElected)
 		_setNumberOfElections(currIndex)
 
 		// call
 		require.Panics(t, func() {
-			_setElectionResults(newElected, newBlockNumber)
+			_setElectedValidators(newElected, newBlockNumber)
 		}, "should panic because newer blocknumber is in past")
 	})
 }
@@ -78,19 +78,19 @@ func TestOrbsElectionResultsContract_getElectionResultsByBlockNumber_getSeveralV
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setElectionResultsBlockNumberAtIndex(1, blockNumber1)
-		_setElectionResultsAtIndex(1, elected1)
-		_setElectionResultsBlockNumberAtIndex(2, blockNumber2)
-		_setElectionResultsAtIndex(2, elected2)
-		_setElectionResultsBlockNumberAtIndex(3, blockNumber3)
-		_setElectionResultsAtIndex(3, elected3)
+		_setElectedValidatorsBlockNumberAtIndex(1, blockNumber1)
+		_setElectedValidatorsAtIndex(1, elected1)
+		_setElectedValidatorsBlockNumberAtIndex(2, blockNumber2)
+		_setElectedValidatorsAtIndex(2, elected2)
+		_setElectedValidatorsBlockNumberAtIndex(3, blockNumber3)
+		_setElectedValidatorsAtIndex(3, elected3)
 		_setNumberOfElections(3)
 
 		// call
-		foundElected1 := getElectionResultsByBlockNumber(blockNumber1 + 1)
-		foundElected2 := getElectionResultsByBlockNumber(blockNumber2 + 5000)
-		foundElected3 := getElectionResultsByBlockNumber(blockNumber3 + 1000000)
-		foundElected0 := getElectionResultsByBlockNumber(5)
+		foundElected1 := getElectedValidatorsByBlockNumber(blockNumber1 + 1)
+		foundElected2 := getElectedValidatorsByBlockNumber(blockNumber2 + 5000)
+		foundElected3 := getElectedValidatorsByBlockNumber(blockNumber3 + 1000000)
+		foundElected0 := getElectedValidatorsByBlockNumber(5)
 
 		// assert
 		require.EqualValues(t, elected1, foundElected1)

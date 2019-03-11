@@ -163,7 +163,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, DELEGATION_NAME, BlockNumber, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, DELEGATION_NAME, BlockNumber, txIndex, func(out interface{}) {
 			v := out.(*Delegate)
 			v.Delegator = delegatorAddr
 			v.To = agentAddr
@@ -193,7 +193,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getTokenAddr(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, BlockNumber, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getTokenEthereumContractAddress(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, BlockNumber, txIndex, func(out interface{}) {
 			v := out.(*Transfer)
 			v.From = delegatorAddr
 			v.To = agentAddr
@@ -221,7 +221,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer_WrongValue(t *testing.T) 
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getTokenAddr(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, 100, 10, func(out interface{}) {
+		m.MockEthereumLog(getTokenEthereumContractAddress(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, 100, 10, func(out interface{}) {
 			v := out.(*Transfer)
 			v.Value = value
 		})
@@ -245,7 +245,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = activistAddr
 			v.Nodes = candidateAddrs
@@ -278,7 +278,7 @@ func TestOrbsVotingContract_mirrorVote_NoCandidates(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = activistAddr
 			v.Nodes = candidateAddrs
@@ -311,7 +311,7 @@ func TestOrbsVotingContract_mirrorVote_TooManyCandidates(t *testing.T) {
 		setTimingInMirror(m)
 
 		// prepare
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = activistAddr
 			v.Nodes = candidateAddrs
@@ -334,7 +334,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockNumber(t *testi
 
 		// prepare
 		state.WriteUint64(_formatGuardianBlockNumberKey(activistAddr[:]), 101)
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, VOTE_OUT_NAME, 100, 10, func(out interface{}) {
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, 100, 10, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = activistAddr
 			v.Nodes = candidateAddrs
@@ -358,7 +358,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 		// prepare
 		state.WriteUint64(_formatGuardianBlockNumberKey(activistAddr[:]), 100)
 		state.WriteUint64(_formatGuardianBlockTxIndexKey(activistAddr[:]), 50)
-		m.MockEthereumLog(getVotingAddr(), getVotingAbi(), txHex, VOTE_OUT_NAME, 100, 10, func(out interface{}) {
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, 100, 10, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = activistAddr
 			v.Nodes = candidateAddrs
@@ -513,7 +513,7 @@ func (f *harness) addValidator() [20]byte {
 }
 
 func mockValidatorsInEthereum(m Mockery, blockNumber uint64, addresses [][20]byte) {
-	m.MockEthereumCallMethodAtBlock(blockNumber, getValidatorsAddr(), getValidatorsAbi(), "getValidators", func(out interface{}) {
+	m.MockEthereumCallMethodAtBlock(blockNumber, getValidatorsEthereumContractAddress(), getValidatorsAbi(), "getValidators", func(out interface{}) {
 		ethAddresses, ok := out.(*[][20]byte)
 		if ok {
 			*ethAddresses = addresses
@@ -526,7 +526,7 @@ func mockValidatorsInEthereum(m Mockery, blockNumber uint64, addresses [][20]byt
 func mockStakeInEthereum(m Mockery, BlockNumber uint64, address [20]byte, stake int) {
 	stakeValue := big.NewInt(int64(stake))
 	stakeValue = stakeValue.Mul(stakeValue, ETHEREUM_STAKE_FACTOR)
-	m.MockEthereumCallMethodAtBlock(BlockNumber, getTokenAddr(), getTokenAbi(), "balanceOf", func(out interface{}) {
+	m.MockEthereumCallMethodAtBlock(BlockNumber, getTokenEthereumContractAddress(), getTokenAbi(), "balanceOf", func(out interface{}) {
 		i, ok := out.(**big.Int)
 		if ok {
 			*i = stakeValue

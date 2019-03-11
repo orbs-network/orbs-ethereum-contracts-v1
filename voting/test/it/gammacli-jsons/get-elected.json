@@ -1,6 +1,6 @@
 {
     "ContractName": "orbs_voting",
-    "MethodName": "getElectionResults",
+    "MethodName": "getElectedValidators",
     "Arguments": [
     ]
 }

@@ -12,13 +12,13 @@ import (
 	"math/big"
 )
 
-var PUBLIC = sdk.Export(getTokenAddr, getTokenAbi, getGuardiansAddr, getGuardiansAbi, getVotingAddr, getVotingAbi, getValidatorsAddr, getValidatorsAbi,
+var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress,
 	unsafetests_setTokenAddr, unsafetests_setGuardiansAddr, unsafetests_setVotingAddr, unsafetests_setValidatorsAddr, // TODO v1 noam unsafe
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber, // TODO v1 noam unsafe
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
 	processVoting,
-	getElectionResults, getElectionResultsByBlockNumber, getElectionResultsByBlockHeight,
-	getElectionResultsByIndex, getElectionResultsBlockNumberByIndex, getElectionResultsBlockHeightByIndex, getNumberOfElections,
+	getElectedValidators, getElectedValidatorsByBlockNumber, getElectedValidatorsByBlockHeight,
+	getElectedValidatorsByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex, getNumberOfElections,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -55,7 +55,7 @@ func unsafetests_setVariables(stakeFactor uint64, voteMirrorPeriod uint64, voteV
 
 func unsafetests_setElectedValidators(joinedAddresses []byte) {
 	index := getNumberOfElections()
-	_setElectionResultsAtIndex(index, joinedAddresses)
+	_setElectedValidatorsAtIndex(index, joinedAddresses)
 }
 
 func unsafetests_setElectedBlockNumber(blockNumber uint64) {
@@ -90,7 +90,7 @@ type Transfer struct {
 func mirrorDelegationByTransfer(hexEncodedEthTxHash string) {
 	_mirrorPeriodValidator()
 	e := &Transfer{}
-	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getTokenAddr(), getTokenAbi(), hexEncodedEthTxHash, DELEGATION_BY_TRANSFER_NAME, e)
+	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getTokenEthereumContractAddress(), getTokenAbi(), hexEncodedEthTxHash, DELEGATION_BY_TRANSFER_NAME, e)
 
 	if DELEGATION_BY_TRANSFER_VALUE.Cmp(e.Value) != 0 {
 		panic(fmt.Errorf("mirrorDelegateByTransfer from %v to %v failed since %d is wrong delegation value", e.From, e.To, e.Value.Uint64()))
@@ -107,7 +107,7 @@ type Delegate struct {
 func mirrorDelegation(hexEncodedEthTxHash string) {
 	_mirrorPeriodValidator()
 	e := &Delegate{}
-	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, DELEGATION_NAME, e)
+	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingEthereumContractAddress(), getVotingAbi(), hexEncodedEthTxHash, DELEGATION_NAME, e)
 
 	_mirrorDelegationData(e.Delegator[:], e.To[:], eventBlockNumber, eventBlockTxIndex, DELEGATION_NAME)
 }
@@ -208,7 +208,7 @@ type VoteOut struct {
 func mirrorVote(hexEncodedEthTxHash string) {
 	_mirrorPeriodValidator()
 	e := &VoteOut{}
-	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingAddr(), getVotingAbi(), hexEncodedEthTxHash, VOTE_OUT_NAME, e)
+	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingEthereumContractAddress(), getVotingAbi(), hexEncodedEthTxHash, VOTE_OUT_NAME, e)
 	if len(e.Nodes) > MAX_CANDIDATE_VOTES {
 		panic(fmt.Errorf("voteOut of guardian %v to %v failed since voted to too many (%d) candidate",
 			e.Voter, e.Nodes, len(e.Nodes)))
@@ -329,7 +329,7 @@ func processVoting() uint64 {
 
 	electedValidators := _processVotingStateMachine()
 	if electedValidators != nil {
-		_setElectionResults(electedValidators, _getElectionBlockNumber())
+		_setElectedValidators(electedValidators, _getElectionBlockNumber())
 		_setElectionBlockNumber(safeuint64.Add(_getElectionBlockNumber(), ELECTION_PERIOD_LENGTH_IN_BLOCKS))
 		return 1
 	} else {
@@ -362,7 +362,7 @@ func _processVotingStateMachine() [][20]byte {
 
 func _readValidValidatorsFromEthereumToState() {
 	var validValidators [][20]byte
-	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsAddr(), getValidatorsAbi(), "getValidators", &validValidators)
+	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsEthereumContractAddress(), getValidatorsAbi(), "getValidators", &validValidators)
 
 	_setNumberOfValidValidaors(len(validValidators))
 	for i := 0; i < len(validValidators); i++ {
@@ -416,7 +416,7 @@ func _collectOneDelegatorStakeFromEthereum(i int) {
 
 func _getDelegatorStakeAtElection(ethAddr [20]byte) uint64 {
 	stake := new(*big.Int)
-	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getTokenAddr(), getTokenAbi(), "balanceOf", stake, ethAddr)
+	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getTokenEthereumContractAddress(), getTokenAbi(), "balanceOf", stake, ethAddr)
 	return ((*stake).Div(*stake, ETHEREUM_STAKE_FACTOR)).Uint64()
 }
 
@@ -576,42 +576,43 @@ func _isAfterElectionMirroring(BlockNumber uint64) bool {
 /*****
  * Election results
  */
-func getElectionResults() []byte {
+func getElectedValidators() []byte {
 	index := getNumberOfElections()
-	return getElectionResultsByIndex(index)
+	return getElectedValidatorsByIndex(index)
 }
 
-func getElectionResultsByBlockNumber(blockNumber uint64) []byte {
+func getElectedValidatorsByBlockNumber(blockNumber uint64) []byte {
 	numberOfElections := getNumberOfElections()
 	for i := numberOfElections; i > 0; i-- {
-		if getElectionResultsBlockNumberByIndex(i) < blockNumber {
-			return getElectionResultsByIndex(i)
+		if getElectedValidatorsBlockNumberByIndex(i) < blockNumber {
+			return getElectedValidatorsByIndex(i)
 		}
 	}
 	return _getDefaultElectionResults()
 }
 
-func getElectionResultsByBlockHeight(blockHeight uint64) []byte {
+func getElectedValidatorsByBlockHeight(blockHeight uint64) []byte {
 	numberOfElections := getNumberOfElections()
 	for i := numberOfElections; i > 0; i-- {
-		if getElectionResultsBlockHeightByIndex(i) < blockHeight {
-			return getElectionResultsByIndex(i)
+		if getElectedValidatorsBlockHeightByIndex(i) < blockHeight {
+			return getElectedValidatorsByIndex(i)
 		}
 	}
 	return _getDefaultElectionResults()
 }
 
-func _setElectionResults(elected [][20]byte, blockNumber uint64) {
+func _setElectedValidators(elected [][20]byte) {
+	electionBlockNumber := _getElectionBlockNumber()
 	electedForSave := _concatElectedAddresses(elected)
 	index := getNumberOfElections()
-	if getElectionResultsBlockNumberByIndex(index) > blockNumber {
+	if getElectedValidatorsBlockNumberByIndex(index) > electionBlockNumber {
 		panic(fmt.Sprintf("Election results rejected as new election happend at block %d which is older than last election %d",
-			blockNumber, getElectionResultsBlockNumberByIndex(index)))
+			electionBlockNumber, getElectedValidatorsBlockNumberByIndex(index)))
 	}
 	index++
-	_setElectionResultsBlockNumberAtIndex(index, blockNumber)
-	_setElectionResultsBlockHeightAtIndex(index, env.GetBlockHeight()+TRANSITION_PERIOD_LENGTH_IN_BLOCKS)
-	_setElectionResultsAtIndex(index, electedForSave)
+	_setElectedValidatorsBlockNumberAtIndex(index, electionBlockNumber)
+	_setElectedValidatorsBlockHeightAtIndex(index, env.GetBlockHeight()+TRANSITION_PERIOD_LENGTH_IN_BLOCKS)
+	_setElectedValidatorsAtIndex(index, electedForSave)
 	_setNumberOfElections(index)
 }
 
@@ -640,39 +641,39 @@ func _setNumberOfElections(index uint32) {
 	state.WriteUint32(_formatElectionsNumber(), index)
 }
 
-func _formatElectionsBlockNumber(index uint32) []byte {
-	return []byte(fmt.Sprintf("Elections_%d_BlockNumber", index))
+func _formatElectionBlockNumber(index uint32) []byte {
+	return []byte(fmt.Sprintf("Election_%d_BlockNumber", index))
 }
 
-func getElectionResultsBlockNumberByIndex(index uint32) uint64 {
-	return state.ReadUint64(_formatElectionsBlockNumber(index))
+func getElectedValidatorsBlockNumberByIndex(index uint32) uint64 {
+	return state.ReadUint64(_formatElectionBlockNumber(index))
 }
 
-func _setElectionResultsBlockNumberAtIndex(index uint32, blockNumber uint64) {
-	state.WriteUint64(_formatElectionsBlockNumber(index), blockNumber)
+func _setElectedValidatorsBlockNumberAtIndex(index uint32, blockNumber uint64) {
+	state.WriteUint64(_formatElectionBlockNumber(index), blockNumber)
 }
 
-func _formatElectionsBlockHeight(index uint32) []byte {
-	return []byte(fmt.Sprintf("Elections_%d_BlockHeight", index))
+func _formatElectionBlockHeight(index uint32) []byte {
+	return []byte(fmt.Sprintf("Election_%d_BlockHeight", index))
 }
 
-func getElectionResultsBlockHeightByIndex(index uint32) uint64 {
-	return state.ReadUint64(_formatElectionsBlockHeight(index))
+func getElectedValidatorsBlockHeightByIndex(index uint32) uint64 {
+	return state.ReadUint64(_formatElectionBlockHeight(index))
 }
 
-func _setElectionResultsBlockHeightAtIndex(index uint32, blockHeight uint64) {
-	state.WriteUint64(_formatElectionsBlockHeight(index), blockHeight)
+func _setElectedValidatorsBlockHeightAtIndex(index uint32, blockHeight uint64) {
+	state.WriteUint64(_formatElectionBlockHeight(index), blockHeight)
 }
 
 func _formatElectionValidator(index uint32) []byte {
-	return []byte(fmt.Sprintf("Elections_%d_Validators", index))
+	return []byte(fmt.Sprintf("Election_%d_Validators", index))
 }
 
-func getElectionResultsByIndex(index uint32) []byte {
+func getElectedValidatorsByIndex(index uint32) []byte {
 	return state.ReadBytes(_formatElectionValidator(index))
 }
 
-func _setElectionResultsAtIndex(index uint32, elected []byte) {
+func _setElectedValidatorsAtIndex(index uint32, elected []byte) {
 	state.WriteBytes(_formatElectionValidator(index), elected)
 }
 
@@ -687,14 +688,14 @@ func _setElectionBlockNumber(BlockNumber uint64) {
 }
 
 /*****
- * Connections to other contracts - TODO v1 is this temp
+ * Connections to other contracts
  */
 var ETHEREUM_TOKEN_ADDR = "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959"
 var ETHEREUM_VOTING_ADDR = "0xf572dd7e283671535AF6b6F81E8a0E0772062C5b"
 var ETHEREUM_VALIDATORS_ADDR = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
 var ETHEREUM_GUARDIANS_ADDR = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
 
-func getTokenAddr() string {
+func getTokenEthereumContractAddress() string {
 	return ETHEREUM_TOKEN_ADDR
 }
 
@@ -702,7 +703,7 @@ func getTokenAbi() string {
 	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }
 
-func getGuardiansAddr() string {
+func getGuardiansEthereumContractAddress() string {
 	return ETHEREUM_GUARDIANS_ADDR
 }
 
@@ -710,7 +711,7 @@ func getGuardiansAbi() string {
 	return `[{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"register","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"isGuardian","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getGuardianData","outputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getRegistrationBlockHeight","outputs":[{"name":"registeredOn","type":"uint256"},{"name":"lastUpdatedOn","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"offset","type":"uint256"},{"name":"limit","type":"uint256"}],"name":"getGuardians","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }
 
-func getVotingAddr() string {
+func getVotingEthereumContractAddress() string {
 	return ETHEREUM_VOTING_ADDR
 }
 
@@ -718,7 +719,7 @@ func getVotingAbi() string {
 	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"nodes","type":"bytes20[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"constant":false,"inputs":[{"name":"nodes","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getLastVote","outputs":[{"name":"nodes","type":"address[]"},{"name":"blockHeight","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }
 
-func getValidatorsAddr() string {
+func getValidatorsEthereumContractAddress() string {
 	return ETHEREUM_VALIDATORS_ADDR
 }
 
