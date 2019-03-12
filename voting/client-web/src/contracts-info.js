@@ -1,9 +1,8 @@
 module.exports = {
-  Migrations: { address: '0x3eE967f8D5256E4F70E03F1F83b9Fa973921d7c9' },
-  OrbsGuardians: { address: '0xb6Ec92be0613865C50768c1215b69E2B0349a9B3' },
-  OrbsValidators: { address: '0xEEDe973a042965E771a73990B3eea83658C6621C' },
+  OrbsGuardians: { address: '0x3eEAca6307B56Ff085229b2329BEE6c3c009061F' },
+  OrbsValidators: { address: '0xe96E5b2798C9fC2FEF1FB92E4d44Cc8c491194CF' },
   OrbsValidatorsRegistry: {
-    address: '0x78f7bcA825b4f60d5D02FF09b0152c93BF01d4Ac'
+    address: '0x7AC1Ff5469c3099012CF885e686280257dF2E0c0'
   },
-  OrbsVoting: { address: '0x9269DEA158B232d2fd65F6a46Fa54FeA6BEF2a36' }
+  OrbsVoting: { address: '0x1d230A72130E7a09204d3017d9BBF13552BDDe0b' }
 };
