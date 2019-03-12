@@ -1,0 +1,29 @@
+{
+  "name": "orbs-voting-api-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "./scripts/copy-contracts.sh",
+    "start": "node index.js",
+    "lint": "prettier --single-quote --write '**/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orbs-network/orbs-ethereum-contracts.git"
+  },
+  "author": "Sergey Bolshchikov <sergey@orbs.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/orbs-network/orbs-ethereum-contracts/issues"
+  },
+  "homepage": "https://github.com/orbs-network/orbs-ethereum-contracts#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "4.16.4",
+    "web3": "1.0.0-beta.48"
+  },
+  "devDependencies": {
+    "prettier": "^1.16.4"
+  }
+}

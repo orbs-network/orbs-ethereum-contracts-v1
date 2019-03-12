@@ -1,0 +1,2 @@
+# Orbs Voting Proxy Server
+> The purpose of this server is to be a proxy for the [voting UI](https://orbs-network.github.io/voting/) in case user doesn't have Metamask extension. It allows to view the application in the read-only mode by querying this server.
