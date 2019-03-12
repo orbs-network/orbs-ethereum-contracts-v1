@@ -18,6 +18,7 @@ var guardiansAccountsRopsten = []int{4, 6, 10, 11}
 var validatorAccountsRopsten = []int{20, 21, 22, 23, 24}
 var configRopsten = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
+	OrbsVotingContractName:       "OrbsVoting_1",                                                  // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
@@ -45,8 +46,8 @@ func TestFullFlowOnRopsten(t *testing.T) {
 	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	// Temp deploy of orbs contracts
-	orbs.DeployContract("OrbsVoting")
-	orbs.SetContractConstants("OrbsVoting")
+	orbs.DeployContract(configRopsten.OrbsVotingContractName)
+	orbs.SetContractConstants(configRopsten.OrbsVotingContractName)
 	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
 	//orbs.SetFirstElectionBlockNumber("OrbsVoting", 1342)
 

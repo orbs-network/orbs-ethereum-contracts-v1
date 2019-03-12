@@ -13,11 +13,11 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	currentBlock := ethereum.GetCurrentBlock()
 
 	logStage("Set election date ...")
-	orbs.SetFirstElectionBlockNumber(getOrbsVotingContractName(), currentBlock+1)
+	orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, currentBlock+1)
 	logStageDone("Election date in ethereum block number = %d", currentBlock+1)
 
 	logStage("Running mirror script  ...")
-	na.Mirror(getOrbsVotingContractName(), config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock,
+	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock,
 		ethereum.GetConnectionUrl(), orbs.GetOrbsEnvironment())
 	logStageDone("Delegate mirroring")
 
@@ -29,7 +29,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//
 	//logStage("Mirroring %d Delegate Transfer Events ...", len(delegateByTransferEvents))
 	//for _, dt := range delegateByTransferEvents {
-	//	orbs.MirrorDelegateByTransfer(getOrbsVotingContractName(), dt.TxHash)
+	//	orbs.MirrorDelegateByTransfer(config.OrbsVotingContractName, dt.TxHash)
 	//}
 	//logStageDone("Mirroring Delegate Transfer")
 	//
@@ -41,7 +41,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//
 	//logStage("Mirroring %d Delegate Events ...", len(delegateEvents))
 	//for _, dt := range delegateEvents {
-	//	orbs.MirrorDelegate(getOrbsVotingContractName(), dt.TxHash)
+	//	orbs.MirrorDelegate(config.OrbsVotingContractName, dt.TxHash)
 	//}
 	//logStageDone("Mirroring Delegate")
 	//
@@ -53,7 +53,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//
 	//logStage("Mirroring %d Voting Events ...", len(votingEvents))
 	//for _, vt := range votingEvents {
-	//	orbs.MirrorVote(getOrbsVotingContractName(), vt.TxHash)
+	//	orbs.MirrorVote(config.OrbsVotingContractName, vt.TxHash)
 	//}
 	//logStageDone("Mirroring Voting")
 

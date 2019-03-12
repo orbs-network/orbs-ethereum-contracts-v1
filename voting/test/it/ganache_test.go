@@ -12,6 +12,7 @@ var guardiansAccounts = []int{4, 6, 10, 11}
 var validatorAccounts = []int{20, 21, 22, 23, 24}
 var configGanache = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
+	OrbsVotingContractName:       "OrbsVoting",                                                    // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
@@ -40,8 +41,8 @@ func TestFullFlowOnGanache(t *testing.T) {
 	ethereum := driver.AdapterForTruffleGanache(configGanache, orbs.GetStakeFactor())
 
 	// Temp deploy of orbs contracts
-	orbs.DeployContract("OrbsVoting")
-	orbs.SetContractConstants("OrbsVoting")
+	orbs.DeployContract(configGanache.OrbsVotingContractName)
+	orbs.SetContractConstants(configGanache.OrbsVotingContractName)
 	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
 	//orbs.SetFirstElectionBlockNumber("OrbsVoting", 1342)
 

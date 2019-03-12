@@ -22,6 +22,7 @@ type Config struct {
 	Transfers                    []*TransferEvent
 	Delegates                    []*DelegateEvent
 	Votes                        []*VoteEvent
+	OrbsVotingContractName		 string
 }
 
 func (config *Config) Validate(isDeploy bool) error {

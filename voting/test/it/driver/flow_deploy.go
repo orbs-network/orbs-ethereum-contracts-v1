@@ -69,11 +69,11 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 
 	logStage("Binding Ethereum contracts to Orbs ...")
-	orbs.BindERC20ContractToEthereum(getOrbsVotingContractName(), config.EthereumErc20Address)
-	orbs.BindVotingContractToEthereum(getOrbsVotingContractName(), config.EthereumVotingAddress)
-	orbs.BindValidatorsContractToEthereum(getOrbsVotingContractName(), config.EthereumValidatorsAddress)
-	orbs.BindValidatorsRegistryContractToEthereum(getOrbsVotingContractName(), config.EthereumValidatorsRegAddress)
-	orbs.BindGuardiansContractToEthereum(getOrbsVotingContractName(), config.EthereumGuardiansAddress)
+	orbs.BindERC20ContractToEthereum(config.OrbsVotingContractName, config.EthereumErc20Address)
+	orbs.BindVotingContractToEthereum(config.OrbsVotingContractName, config.EthereumVotingAddress)
+	orbs.BindValidatorsContractToEthereum(config.OrbsVotingContractName, config.EthereumValidatorsAddress)
+	orbs.BindValidatorsRegistryContractToEthereum(config.OrbsVotingContractName, config.EthereumValidatorsRegAddress)
+	orbs.BindGuardiansContractToEthereum(config.OrbsVotingContractName, config.EthereumGuardiansAddress)
 	logStageDone("Bound")
 
 	var erc20Txt, votingTxt, validatorTxt string
