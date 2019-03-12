@@ -58,7 +58,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//logStageDone("Mirroring Voting")
 
 	logStage("Advance 10 ethereum blocks ...")
-	ethereum.Mine(orbs.GetMirrorVotingPeriod() + 5)
+	ethereum.Mine(orbs.GetMirrorVotingPeriod() + 7)
 	logStageDone("Advance done")
 
 	logSummary("Mirror Phase all done.\n\n")
