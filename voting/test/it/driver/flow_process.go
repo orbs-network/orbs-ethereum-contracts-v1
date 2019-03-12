@@ -12,8 +12,8 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	require.NoError(t, config.Validate(false))
 	na := NodeAdater(config)
 
-	ethereum.Mine(5)
 	time.Sleep(10 * time.Second)
+	ethereum.Mine(5)
 
 	logStage("Running processing ...")
 	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
