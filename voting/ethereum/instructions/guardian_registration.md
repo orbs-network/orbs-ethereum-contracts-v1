@@ -1,14 +1,14 @@
 ## Guardian Registration
 In order to participate in the voting, a Guardians must first enroll. 
-An Orbs Guardian is identified and delegated to by its Ethereum address. 
+An Orbs Guardian is identified and delegated to by her Ethereum address. 
 
-This document walks you through the registration process of Validator and Guardian accounts using the MyCrypto desktop wallet application.
+This document walks you through the registration process of Guardians using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
 
 ### A Guardian registration requires to following data:
 - Name and website URL of the enrolling Guardian
 
-Note: A Guardian may update its registration data at any time or leave the registry.
+Note: A Guardian may update her registration data at any time or leave the registry.
 
 
 ### Registration pre-requirements
@@ -29,7 +29,7 @@ box labeled *Contract Address*.
 in the test box labeled *ABI / JSON Interface*. 
 ![](../instructions/enroll_guardian_2.png)
 1. Click *Access*.
-* If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
+   * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
 1. Select `register` in the drop down list *Read / Write Contract*
 ![](../instructions/enroll_guardian_3.png)
 The function parameters for the `register` call will appear in the form.
