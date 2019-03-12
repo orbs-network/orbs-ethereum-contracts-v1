@@ -23,6 +23,7 @@ type Config struct {
 	Delegates                    []*DelegateEvent
 	Votes                        []*VoteEvent
 	OrbsVotingContractName		 string
+	FirstElectionBlockNumber	 int // zero to automatically determine after mirroring completes. positive value to enforce static value
 }
 
 func (config *Config) Validate(isDeploy bool) error {

@@ -25,3 +25,5 @@ Voting/test/it/package-lock.json
 
 **/node_modules/
 # **/build/
+
+nohup.out

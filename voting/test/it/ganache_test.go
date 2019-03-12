@@ -28,6 +28,7 @@ var configGanache = &driver.Config{
 	Transfers:                    generateTransfers(delegatorsNumber, guardiansAccounts),
 	Delegates:                    generateDelegates(delegatorsNumber, guardiansAccounts),
 	Votes:                        generateVotes(guardiansAccounts, validatorAccounts),
+	FirstElectionBlockNumber:     0, // zero to automatically determine after mirroring completes. positive value to enforce static value
 }
 
 // before starting:
@@ -44,7 +45,9 @@ func TestFullFlowOnGanache(t *testing.T) {
 	orbs.DeployContract(configGanache.OrbsVotingContractName)
 	orbs.SetContractConstants(configGanache.OrbsVotingContractName)
 	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
-	//orbs.SetFirstElectionBlockNumber("OrbsVoting", 1342)
+	if configGanache.FirstElectionBlockNumber > 0 {
+		orbs.SetFirstElectionBlockNumber(configGanache.OrbsVotingContractName, configGanache.FirstElectionBlockNumber)
+	}
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)

@@ -12,9 +12,14 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	currentBlock := ethereum.GetCurrentBlock()
 
-	logStage("Set election date ...")
-	orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, currentBlock+1)
-	logStageDone("Election date in ethereum block number = %d", currentBlock+1)
+	if config.FirstElectionBlockNumber == 0 {
+		logStage("Set election date ...")
+		orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, currentBlock+1)
+		logStageDone("Election date in ethereum block number = %d", currentBlock+1)
+	} else {
+		logStage("Election starts at block number %d", config.FirstElectionBlockNumber)
+	}
+
 
 	logStage("Running mirror script  ...")
 	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock,

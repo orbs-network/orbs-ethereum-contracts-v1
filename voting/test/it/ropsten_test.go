@@ -33,6 +33,7 @@ var configRopsten = &driver.Config{
 	Transfers:                    generateTransfersRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
 	Delegates:                    generateDelegatesRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
 	Votes:                        generateVotesRopsten(guardiansAccountsRopsten, validatorAccountsRopsten),
+	FirstElectionBlockNumber:     1, // zero to automatically determine after mirroring completes. positive value to enforce static value
 }
 
 // before starting:
@@ -40,21 +41,20 @@ var configRopsten = &driver.Config{
 // 2. change account setting to generate 25 accounts
 // 3. make sure gamma server is running with `gamma-cli start-local`
 
-func TestFullFlowOnRopsten(t *testing.T) {
+func TestDeployOnRopsten(t *testing.T) {
 
-	orbs := driver.AdapterForGammaCliLocal(configRopsten)
-	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
+	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	// Temp deploy of orbs contracts
 	orbs.DeployContract(configRopsten.OrbsVotingContractName)
 	orbs.SetContractConstants(configRopsten.OrbsVotingContractName)
 	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
-	//orbs.SetFirstElectionBlockNumber("OrbsVoting", 1342)
-
+	if configRopsten.FirstElectionBlockNumber > 0 {
+		orbs.SetFirstElectionBlockNumber(configRopsten.OrbsVotingContractName, configRopsten.FirstElectionBlockNumber)
+	}
 	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
-	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
-	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
-	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
 }
 
 // value 0 -> delegate.

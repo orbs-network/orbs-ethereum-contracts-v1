@@ -9,36 +9,37 @@ import (
 
 func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
 	return &gammaCliAdapter{
-		debug:                     config.DebugLogs,
-		env:                       "experimental", // use "local" for the stable local gamma-cli ... or for client tests
-		stakeFactor:               10000,
-		voteMirrorPeriod:          3,
-		voteValidPeriod:           500,
-		electionPeriod:            200,
-		numberOfElectedValidators: 3,
+		debug:                config.DebugLogs,
+		env:                  "experimental", // use "local" for the stable local gamma-cli ... or for client tests
+		stakeFactor:          10000,
+		voteMirrorPeriod:     3,
+		voteValidPeriod:      500,
+		electionPeriod:       200,
+		maxElectedValidators: 5,
 	}
 }
 
 func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
 	return &gammaCliAdapter{
 		debug:                     config.DebugLogs,
-		env:                       "testnet",
-		stakeFactor:               10000,
-		voteMirrorPeriod:          3,
-		voteValidPeriod:           500,
-		electionPeriod:            200,
-		numberOfElectedValidators: 3,
+		env:                       "experimental",
+		//env:                       "testnet",
+		stakeFactor:          10000,
+		voteMirrorPeriod:     10,
+		voteValidPeriod:      500,
+		electionPeriod:       200,
+		maxElectedValidators: 5,
 	}
 }
 
 type gammaCliAdapter struct {
-	debug                     bool
-	env                       string
-	stakeFactor               uint64
-	voteMirrorPeriod          uint64
-	voteValidPeriod           uint64
-	electionPeriod            uint64
-	numberOfElectedValidators int
+	debug                bool
+	env                  string
+	stakeFactor          uint64
+	voteMirrorPeriod     uint64
+	voteValidPeriod      uint64
+	electionPeriod       uint64
+	maxElectedValidators int
 }
 
 func (gamma *gammaCliAdapter) DeployContract(orbsVotingContractName string) {
@@ -51,7 +52,7 @@ func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string
 		" -arg2 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
 		" -arg3 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
 		" -arg4 " + fmt.Sprintf("%d", gamma.electionPeriod) +
-		" -arg5 " + fmt.Sprintf("%d", gamma.numberOfElectedValidators))
+		" -arg5 " + fmt.Sprintf("%d", gamma.maxElectedValidators))
 }
 
 func (gamma *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
