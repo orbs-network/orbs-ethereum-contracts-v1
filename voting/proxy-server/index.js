@@ -9,8 +9,8 @@ const port = process.env.PORT || 5678;
 const app = express();
 
 const web3 = new Web3(
-  new Web3.providers.WebsocketProvider(
-    'wss://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141'
+  new Web3.providers.HttpProvider(
+    'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141'
   )
 );
 
