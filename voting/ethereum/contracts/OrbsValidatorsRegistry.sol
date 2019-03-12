@@ -11,6 +11,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         bytes ipAddress;
         string website;
         address orbsAddress;
+        uint registeredOnBlock;
+        uint lastUpdatedOnBlock;
     }
 
     uint public constant VERSION = 1;
@@ -29,7 +31,6 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     )
         public
     {
-        require(tx.origin == msg.sender, "Only EOA may register as Validator");
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
         require(isIPV4(ipAddress), "Please pass an address of up to 4 bytes");
@@ -58,11 +59,20 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         lookupUrl[urlHash] = msg.sender;
         lookupOrbsAddr[orbsAddress] = msg.sender;
 
+        uint registeredOnBlock;
+        if (validatorsData[msg.sender].registeredOnBlock != 0) {
+            registeredOnBlock = validatorsData[msg.sender].registeredOnBlock;
+        } else {
+            registeredOnBlock = block.number;
+        }
+
         validatorsData[msg.sender] = ValidatorData(
             name,
             ipAddress,
             website,
-            orbsAddress
+            orbsAddress,
+            registeredOnBlock,
+            block.number
         );
         emit ValidatorRegistered(msg.sender);
     }
@@ -93,11 +103,26 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(isValidator(validator), "Unlisted Validator");
 
+        ValidatorData storage entry = validatorsData[validator];
         return (
-            validatorsData[validator].name,
-            validatorsData[validator].ipAddress,
-            validatorsData[validator].website,
-            validatorsData[validator].orbsAddress
+            entry.name,
+            entry.ipAddress,
+            entry.website,
+            entry.orbsAddress
+        );
+    }
+
+    function getRegistrationBlockHeight(address validator)
+        external
+        view
+        returns (uint registeredOn, uint lastUpdatedOn)
+    {
+        require(isValidator(validator), "Unlisted Validator");
+
+        ValidatorData storage entry = validatorsData[validator];
+        return (
+            entry.registeredOnBlock,
+            entry.lastUpdatedOnBlock
         );
     }
 

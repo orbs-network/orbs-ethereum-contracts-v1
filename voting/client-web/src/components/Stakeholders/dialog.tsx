@@ -7,10 +7,47 @@ import DialogActions from '@material-ui/core/DialogActions';
 import { withStyles } from '@material-ui/core/styles';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const styles = () => ({});
 
-const GuardianDialog = ({ dialogState, guardian, onClose, onDelegate }) => {
+const DelegateButton = ({ onDelegate }) => {
+  return (
+    <Button
+      data-testid={`delegate-button`}
+      onClick={onDelegate}
+      variant="outlined"
+      color="secondary"
+    >
+      Delegate
+    </Button>
+  );
+};
+
+const DisabledDelegateButton = () => {
+  return (
+    <Tooltip title="Install Metamask extension to have access to voting capabilities">
+      <div>
+        <Button
+          data-testid="delegate-button"
+          variant="outlined"
+          color="secondary"
+          disabled={true}
+        >
+          Delegate
+        </Button>
+      </div>
+    </Tooltip>
+  );
+};
+
+const GuardianDialog = ({
+  readOnly,
+  dialogState,
+  guardian,
+  onClose,
+  onDelegate
+}) => {
   return (
     <Dialog open={dialogState} onClose={onClose}>
       <DialogTitle>
@@ -39,14 +76,11 @@ const GuardianDialog = ({ dialogState, guardian, onClose, onDelegate }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button
-          data-testid={`delegate-button`}
-          onClick={onDelegate}
-          variant="outlined"
-          color="secondary"
-        >
-          Delegate
-        </Button>
+        {readOnly ? (
+          <DisabledDelegateButton />
+        ) : (
+          <DelegateButton onDelegate={onDelegate} />
+        )}
       </DialogActions>
     </Dialog>
   );

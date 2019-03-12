@@ -1,22 +1,19 @@
 package driver
 
 type OrbsAdapter interface {
-	DeployContract(orbsVotingContractName string, orbsConfigContractName string)
+	DeployContract(orbsVotingContractName string)
 	SetContractConstants(orbsVotingContractName string)
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
-	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
-	BindVotingContractToEthereum(orbsVotingContractName string, ethereumAsbAddress string)
+	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string)
+	BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
+	BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string)
 	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)
 
-	MirrorDelegateByTransfer(orbsVotingContractName string, transferTransactionHash string)
-	MirrorDelegate(orbsVotingContractName string, transferTransactionHash string)
-	MirrorVote(orbsVotingContractName string, transferTransactionHash string)
-
-	RunVotingProcess(orbsVotingContractName string) bool
-	GetElectedNodes(orbsConfigContractName string) []string
+	GetElectedNodes(orbsVotingContractName string) []string
 
 	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int
+	GetOrbsEnvironment() string
 }
 
 type EthereumAdapter interface {
@@ -36,12 +33,14 @@ type EthereumAdapter interface {
 	Delegate(ethereumVotingAddress string, from int, to int)
 	Vote(ethereumVotingAddress string, activistInded int, to [3]int)
 
+	DeployGuardiansContract() (ethereumGuardiansAddress string)
+
 	WaitForFinality()
 	Mine(blocks int)
+	GetConnectionUrl() string
 }
 
 type NodeScriptAdapter interface {
-	FindDelegateByTransferEvents(ethereumVotingAddress string, startBlock int, endBlock int) []delegateByTransferData
-	FindDelegateEvents(ethereumVotingAddress string, startBlock int, endBlock int) []delegateData
-	FindVoteEvents(ethereumVotingAddress string, startBlock int, endBlock int) []voteData
+	Mirror(orbsVotingContractName string, gammaEnv string)
+	Process(orbsVotingContractName string, ethereumErc20Address string, ethereumVotingAddress string, startBlock int, endBlock int, ethereumUrl string, gammaEnv string)
 }

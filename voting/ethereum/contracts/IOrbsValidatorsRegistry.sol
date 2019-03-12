@@ -22,6 +22,10 @@ interface IOrbsValidatorsRegistry {
             string memory website,
             address orbsAddress
         );
+    function getRegistrationBlockHeight(address validator)
+        external
+        view
+        returns (uint registeredOn, uint lastUpdatedOn);
     function isValidator(address validator) external view returns (bool);
     function getOrbsAddress(address validator)
         external

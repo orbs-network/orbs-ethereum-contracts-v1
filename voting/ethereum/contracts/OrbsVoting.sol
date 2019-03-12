@@ -10,16 +10,24 @@ contract OrbsVoting is IOrbsVoting {
         address[] nodes;
     }
 
-    uint voteCounter = 0;
-    uint delegationCounter = 0;
-
-    mapping(address => VotingRecord[]) votingRecords;
-
     // The version of the current federation smart contract.
     uint public constant VERSION = 1;
 
-    function vote(address[] memory nodes) public {
-        require(nodes.length > 0, "Must provide non empty list");
+    uint voteCounter;
+    uint delegationCounter;
+    uint public maxVoteOutNodes;
+
+    mapping(address => VotingRecord) mostRecentVotes;
+
+
+    constructor(uint maxVoteOutNodes_) public {
+        voteCounter = 0;
+        delegationCounter = 0;
+        maxVoteOutNodes = maxVoteOutNodes_;
+    }
+
+    function voteOut(address[] memory nodes) public {
+        require(nodes.length <= maxVoteOutNodes, "Nodes list is over the allowed length");
 
         uint nodesLength = nodes.length;
         bytes20[] memory addressesAsBytes20 = new bytes20[](nodesLength);
@@ -30,9 +38,9 @@ contract OrbsVoting is IOrbsVoting {
 
         voteCounter++;
 
-        votingRecords[msg.sender].push(VotingRecord(block.number, nodes));
+        mostRecentVotes[msg.sender] = VotingRecord(block.number, nodes);
 
-        emit Vote(msg.sender, addressesAsBytes20, voteCounter);
+        emit VoteOut(msg.sender, addressesAsBytes20, voteCounter);
     }
 
     function delegate(address to) public {
@@ -45,11 +53,9 @@ contract OrbsVoting is IOrbsVoting {
         view
         returns (address[] memory nodes, uint blockHeight)
     {
-        VotingRecord[] storage votings = votingRecords[guardian];
+        VotingRecord storage lastVote = mostRecentVotes[guardian];
 
-        require(votings.length > 0, "Guardian never voted");
-
-        VotingRecord storage lastVote = votings[votings.length - 1];
+        require(lastVote.blockHeight > 0, "Guardian never voted");
 
         blockHeight = lastVote.blockHeight;
         nodes = lastVote.nodes;

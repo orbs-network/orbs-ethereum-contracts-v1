@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './styles';
 import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import content from './content';
 
@@ -15,8 +15,8 @@ const Home = ({ classes }) => {
         </Typography>
       </header>
       <section className={classes.columns}>
-        {content.map(passage => (
-          <article className={classes.column}>
+        {content.map((passage, idx) => (
+          <article key={idx} className={classes.column}>
             <div className={classes.columnText}>
               <Typography variant="h6" color="textPrimary">
                 {passage.text}
