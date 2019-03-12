@@ -13,6 +13,7 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 	currElected := []byte{0x01}
 	newBlockNumber := uint64(20000)
 	newElected := [][20]byte{{0x02}}
+	newElectedOrbs := [][20]byte{{0xb2}}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
@@ -21,6 +22,7 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 		_setElectedValidatorsAtIndex(currIndex, currElected)
 		_setNumberOfElections(currIndex)
 		_setElectionBlockNumber(newBlockNumber)
+		_setValidValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
 		_setElectedValidators(newElected)
@@ -28,7 +30,7 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 		// assert
 		require.EqualValues(t, currIndex+1, getNumberOfElections())
 		require.EqualValues(t, newBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex+1))
-		require.EqualValues(t, _concatElectedAddresses(newElected), getElectedValidatorsByIndex(currIndex+1))
+		require.EqualValues(t, _translateElectedAddressesToOrbsAddressesAndConcat(newElected), getElectedValidatorsByIndex(currIndex+1))
 		require.EqualValues(t, currBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex))
 		require.EqualValues(t, currentBlockHeight, getElectedValidatorsBlockHeightByIndex(currIndex))
 		require.EqualValues(t, currElected, getElectedValidatorsByIndex(currIndex))
@@ -38,10 +40,12 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 	newBlockNumber := uint64(20000)
 	newElected := [][20]byte{{0x02}}
+	newElectedOrbs := [][20]byte{{0xb2}}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 		_setElectionBlockNumber(newBlockNumber)
+		_setValidValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
 		_setElectedValidators(newElected)
@@ -49,7 +53,7 @@ func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 		// assert
 		require.EqualValues(t, 1, getNumberOfElections())
 		require.EqualValues(t, newBlockNumber, getElectedValidatorsBlockNumberByIndex(1))
-		require.EqualValues(t, _concatElectedAddresses(newElected), getElectedValidatorsByIndex(1))
+		require.EqualValues(t, _translateElectedAddressesToOrbsAddressesAndConcat(newElected), getElectedValidatorsByIndex(1))
 	})
 }
 

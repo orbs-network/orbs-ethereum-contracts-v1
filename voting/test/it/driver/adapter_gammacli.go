@@ -62,6 +62,10 @@ func (gamma *gammaCliAdapter) BindValidatorsContractToEthereum(orbsVotingContrac
 	gamma.run("send-tx ./gammacli-jsons/set-validators-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
 }
 
+func (gamma *gammaCliAdapter) BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string) {
+	gamma.run("send-tx ./gammacli-jsons/set-validators-registry-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsRegistryAddress)
+}
+
 func (gamma *gammaCliAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-voting-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
 }
@@ -103,7 +107,7 @@ func (gamma *gammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAdd
 		}
 		joinedAddresses += address
 	}
-	if (len(joinedAddresses)-2) % 40 != 0 {
+	if (len(joinedAddresses)-2)%40 != 0 {
 		panic(fmt.Sprintf("joined addresses is not a multiply of 20 bytes: %s", joinedAddresses))
 	}
 

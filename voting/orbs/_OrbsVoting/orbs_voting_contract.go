@@ -12,9 +12,9 @@ import (
 	"math/big"
 )
 
-var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress,
+var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
 	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
-	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress,
+	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress, unsafetests_setValidatorsRegistryEthereumContractAddress,
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber, // TODO v1 noam unsafe
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
 	processVoting,
@@ -63,19 +63,23 @@ func unsafetests_setElectedBlockNumber(blockNumber uint64) {
 	_setElectionBlockNumber(blockNumber)
 }
 
-func unsafetests_setTokenEthereumContractAddress(addr string) { // upgrade
+func unsafetests_setTokenEthereumContractAddress(addr string) {
 	ETHEREUM_TOKEN_ADDR = addr
 }
 
-func unsafetests_setVotingEthereumContractAddress(addr string) { // upgrade
+func unsafetests_setVotingEthereumContractAddress(addr string) {
 	ETHEREUM_VOTING_ADDR = addr
 }
 
-func unsafetests_setValidatorsEthereumContractAddress(addr string) { // upgrade
+func unsafetests_setValidatorsEthereumContractAddress(addr string) {
 	ETHEREUM_VALIDATORS_ADDR = addr
 }
 
-func unsafetests_setGuardiansEthereumContractAddress(addr string) { // upgrade
+func unsafetests_setValidatorsRegistryEthereumContractAddress(addr string) {
+	ETHEREUM_VALIDATORS_REGISTRY_ADDR = addr
+}
+
+func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 	ETHEREUM_GUARDIANS_ADDR = addr
 }
 
@@ -317,12 +321,36 @@ func _formatValidValidaorIterator(num int) []byte {
 	return []byte(fmt.Sprintf("Valid_Validator_Address_%d", num))
 }
 
-func _getValidValidatorAtIndex(index int) [20]byte {
+func _getValidValidatorEthereumAddressAtIndex(index int) [20]byte {
 	return _addressSliceToArray(state.ReadBytes(_formatValidValidaorIterator(index)))
 }
 
-func _setValidValidatorAtIndex(index int, guardian []byte) {
+func _setValidValidatorEthereumAddressAtIndex(index int, guardian []byte) {
 	state.WriteBytes(_formatValidValidaorIterator(index), guardian)
+}
+
+func _formatValidValidatorOrbsAddressKey(validator []byte) []byte {
+	return []byte(fmt.Sprintf("Valid_Validator_%s_Orbs", hex.EncodeToString(validator)))
+}
+
+func _formatValidValidatorStakeKey(validator []byte) []byte {
+	return []byte(fmt.Sprintf("Valid_Validator_%s_Stake", hex.EncodeToString(validator)))
+}
+
+func _getValidValidatorOrbsAddress(validator []byte) [20]byte {
+	return _addressSliceToArray(state.ReadBytes(_formatValidValidatorOrbsAddressKey(validator)))
+}
+
+func _setValidValidatorOrbsAddress(validator []byte, orbsAddress []byte) {
+	state.WriteBytes(_formatValidValidatorOrbsAddressKey(validator), orbsAddress)
+}
+
+func _getValidValidatorStake(validator []byte) uint64 {
+	return state.ReadUint64(_formatValidValidatorStakeKey(validator))
+}
+
+func _setValidValidatorStake(validator []byte, stake uint64) {
+	state.WriteUint64(_formatValidValidatorStakeKey(validator), stake)
 }
 
 /***
@@ -348,9 +376,14 @@ func _processVotingStateMachine() [][20]byte {
 	processState := _getVotingProcessState()
 	if processState == "" {
 		_readValidValidatorsFromEthereumToState()
-		_nextProcessVotingState(VOTING_PROCESS_STATE_GUARDIANSS)
+		_nextProcessVotingState(VOTING_PROCESS_STATE_VALIDATORS)
 		return nil
-	} else if processState == VOTING_PROCESS_STATE_GUARDIANSS {
+	} else if processState == VOTING_PROCESS_STATE_VALIDATORS {
+		if _collectNextValidatorDataFromEthereum() {
+			_nextProcessVotingState(VOTING_PROCESS_STATE_GUARDIANS)
+		}
+		return nil
+	} else if processState == VOTING_PROCESS_STATE_GUARDIANS {
 		_collectNextGuardianStakeFromEthereum()
 		return nil
 	} else if processState == VOTING_PROCESS_STATE_DELEGATORS {
@@ -378,9 +411,29 @@ func _readValidValidatorsFromEthereumToState() {
 
 	_setNumberOfValidValidaors(len(validValidators))
 	for i := 0; i < len(validValidators); i++ {
-		_setValidValidatorAtIndex(i, validValidators[i][:])
+		_setValidValidatorEthereumAddressAtIndex(i, validValidators[i][:])
 		fmt.Printf("elections %10d: from ethereum valid validator number %d :  %x\n", _getElectionBlockNumber(), i, validValidators[i])
 	}
+}
+
+func _collectNextValidatorDataFromEthereum() (isDone bool) {
+	nextIndex := _getVotingProcessItem()
+	_collectOneValidatorDataFromEthereum(nextIndex)
+	nextIndex++
+	_setVotingProcessItem(nextIndex)
+	return nextIndex >= _getNumberOfGurdians()
+}
+
+func _collectOneValidatorDataFromEthereum(i int) {
+	validator := _getValidValidatorEthereumAddressAtIndex(i)
+
+	var orbsAddress [20]byte
+	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsRegistryEthereumContractAddress(), getValidatorsRegistryAbi(), "getOrbsAddress", &orbsAddress, validator)
+	//stake := _getDelegatorStakeAtElection(validator)
+
+	//_setValidValidatorStake(validator[:], stake)
+	_setValidValidatorOrbsAddress(validator[:], orbsAddress[:])
+	fmt.Printf("elections %10d: from ethereum Validator %x, stake %d orbsAddress %x\n", _getElectionBlockNumber(), validator, 0 /*stake*/, validator)
 }
 
 func _collectNextGuardianStakeFromEthereum() {
@@ -544,15 +597,16 @@ func _getValidValidators() (validValidtors [][20]byte) {
 	numOfValidators := _getNumberOfValidValidaors()
 	validValidtors = make([][20]byte, numOfValidators)
 	for i := 0; i < numOfValidators; i++ {
-		validValidtors[i] = _getValidValidatorAtIndex(i)
+		validValidtors[i] = _getValidValidatorEthereumAddressAtIndex(i)
 	}
 	return
 }
 
 var VOTING_PROCESS_STATE_KEY = []byte("Voting_Process_State")
 
+const VOTING_PROCESS_STATE_VALIDATORS = "validators"
 const VOTING_PROCESS_STATE_DELEGATORS = "delegators"
-const VOTING_PROCESS_STATE_GUARDIANSS = "guardians"
+const VOTING_PROCESS_STATE_GUARDIANS = "guardians"
 const VOTING_PROCESS_STATE_CALCULATIONS = "calculations"
 const VOTING_PROCESS_STATE_CLEANUP = "cleanUp"
 
@@ -617,23 +671,24 @@ func getElectedValidatorsByBlockHeight(blockHeight uint64) []byte {
 
 func _setElectedValidators(elected [][20]byte) {
 	electionBlockNumber := _getElectionBlockNumber()
-	electedForSave := _concatElectedAddresses(elected)
 	index := getNumberOfElections()
 	if getElectedValidatorsBlockNumberByIndex(index) > electionBlockNumber {
 		panic(fmt.Sprintf("Election results rejected as new election happend at block %d which is older than last election %d",
 			electionBlockNumber, getElectedValidatorsBlockNumberByIndex(index)))
 	}
 	index++
+	electedForSave := _translateElectedAddressesToOrbsAddressesAndConcat(elected)
 	_setElectedValidatorsBlockNumberAtIndex(index, electionBlockNumber)
 	_setElectedValidatorsBlockHeightAtIndex(index, env.GetBlockHeight()+TRANSITION_PERIOD_LENGTH_IN_BLOCKS)
 	_setElectedValidatorsAtIndex(index, electedForSave)
 	_setNumberOfElections(index)
 }
 
-func _concatElectedAddresses(elected [][20]byte) []byte {
+func _translateElectedAddressesToOrbsAddressesAndConcat(elected [][20]byte) []byte {
 	electedForSave := make([]byte, 0, len(elected)*20)
 	for i := range elected {
-		electedForSave = append(electedForSave, elected[i][:]...)
+		electedOrbsAddress := _getValidValidatorOrbsAddress(elected[i][:])
+		electedForSave = append(electedForSave, electedOrbsAddress[:]...)
 	}
 	return electedForSave
 }
@@ -705,9 +760,10 @@ func _setElectionBlockNumber(BlockNumber uint64) {
  * Connections to other contracts
  */
 var ETHEREUM_TOKEN_ADDR = "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959"
-var ETHEREUM_VOTING_ADDR = "0xf572dd7e283671535AF6b6F81E8a0E0772062C5b"
-var ETHEREUM_VALIDATORS_ADDR = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
-var ETHEREUM_GUARDIANS_ADDR = "0x77E15A13775e89584Cd7E8D5955dA98B6e1adFc4"
+var ETHEREUM_VOTING_ADDR = "0x45f398EEEff94528321F468192653147e72B5b41"
+var ETHEREUM_VALIDATORS_ADDR = "0x5Be109EC9BFAaC93719167FF66D8Bf22Acd9B3dC"
+var ETHEREUM_GUARDIANS_ADDR = "0x93B4af9efa46B3F5185B20C20BF313e4ab73318e"
+var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0x78227F99Bb86652689B0790144Bbe60176020c61"
 
 func getTokenEthereumContractAddress() string {
 	return ETHEREUM_TOKEN_ADDR
@@ -739,4 +795,12 @@ func getValidatorsEthereumContractAddress() string {
 
 func getValidatorsAbi() string {
 	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorRemoved","type":"event"},{"constant":false,"inputs":[{"name":"validator","type":"address"}],"name":"addValidator","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"validator","type":"address"}],"name":"remove","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"isValidator","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getValidators","outputs":[{"name":"","type":"bytes20[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getApprovalBockHeight","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
+}
+
+func getValidatorsRegistryEthereumContractAddress() string {
+	return ETHEREUM_VALIDATORS_REGISTRY_ADDR
+}
+
+func getValidatorsRegistryAbi() string {
+	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorLeft","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorRegistered","type":"event"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"address"}],"name":"register","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getValidatorData","outputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getRegistrationBlockHeight","outputs":[{"name":"registeredOn","type":"uint256"},{"name":"lastUpdatedOn","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"isValidator","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getOrbsAddress","outputs":[{"name":"orbsAddress","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }

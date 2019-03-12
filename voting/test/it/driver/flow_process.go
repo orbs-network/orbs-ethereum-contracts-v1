@@ -12,7 +12,7 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	na := NodeAdater(config)
 
 	logStage("Running processing ...")
-	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + 2
+	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
 	na.Process(getOrbsVotingContractName(), maxSteps, orbs.GetOrbsEnvironment())
 
 	winners := orbs.GetElectedNodes(getOrbsVotingContractName())
