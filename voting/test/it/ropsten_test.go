@@ -17,13 +17,13 @@ var delegatorsNumberRopsten = 15
 var guardiansAccountsRopsten = []int{4, 6, 10, 11}
 var validatorAccountsRopsten = []int{20, 21, 22, 23, 24}
 var configRopsten = &driver.Config{
-	DebugLogs:                    true,                                                            // shows detailed responses for every command
-	OrbsVotingContractName:       "OrbsVoting_1",                                                  // name of the orbs contract
-	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
-	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
-	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
-	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
-	EthereumGuardiansAddress:     "",                                                              // update after deploy with the resulting value
+	DebugLogs:                    true,           // shows detailed responses for every command
+	OrbsVotingContractName:       "OrbsVoting_1", // name of the orbs contract
+	EthereumErc20Address:         "0x403eDD0b50C605F9cDfD397bF68Bcec31799A218",
+	EthereumVotingAddress:        "0x746E0B9EEDFAa4957f004B56A604a743fFE1c9D7",
+	EthereumValidatorsAddress:    "0x4B9C4cceb1C1d598787eEF504DC0B008f57900Bf",
+	EthereumValidatorsRegAddress: "0x349A49bA370f454704fe79ad232667ba71671Fa0",
+	EthereumGuardiansAddress:     "0x650Fa410caE516f3317Ce7Ed1860926a93F7BE01",
 	UserAccountOnOrbs:            "user1",                                                         // one of the IDs in orbs-test-keys.json
 	DelegatorsNumber:             delegatorsNumberRopsten,                                         // upto 20
 	DelegatorStakeValues:         []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 50, 0, 0, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
