@@ -11,6 +11,8 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	logStage("Doing %d Transfers ", len(config.Transfers))
 
+	ethereum.TopUpEther(collectTransactingAccounts(config))
+
 	for i := 0; i < len(config.Transfers); i++ {
 		ethereum.Transfer(config.EthereumErc20Address, config.Transfers[i].FromIndex, config.Transfers[i].ToIndex, config.Transfers[i].Amount)
 		config.DelegatorStakeValues[config.Transfers[i].FromIndex] -= config.Transfers[i].Amount
@@ -23,7 +25,7 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	for i := 0; i < len(config.Delegates); i++ {
 		logStage("Delegation %d : Ethereum user account %d delegates to Ethereum user account %d...", i, config.Delegates[i].FromIndex, config.Delegates[i].ToIndex)
-		ethereum.Delegate(config.EthereumVotingAddress, config.Transfers[i].FromIndex, config.Transfers[i].ToIndex)
+		ethereum.Delegate(config.EthereumVotingAddress, config.Delegates[i].FromIndex, config.Delegates[i].ToIndex)
 		logStageDone("Delegated")
 	}
 
@@ -33,6 +35,23 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStageDone("Voted")
 	}
 
-	ethereum.Mine(5) // just to have a bit of time pass before setting election/mirroring
 	logSummary("Recording Phase all done.\n\n")
+}
+
+func collectTransactingAccounts(config *Config) []int {
+	accountMap := map[int]bool{}
+	for i := 0; i < len(config.Transfers); i++ {
+		accountMap[config.Transfers[i].FromIndex] = true
+	}
+	for i := 0; i < len(config.Delegates); i++ {
+		accountMap[config.Delegates[i].FromIndex] = true
+	}
+	for i := 0; i < len(config.Votes); i++ {
+		accountMap[config.Votes[i].ActivistIndex] = true
+	}
+	accountsArr := make([]int, 0, len(accountMap))
+	for account := range accountMap {
+		accountsArr = append(accountsArr, account)
+	}
+	return accountsArr
 }

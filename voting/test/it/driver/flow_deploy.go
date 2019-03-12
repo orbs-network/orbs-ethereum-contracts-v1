@@ -38,6 +38,7 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 
 	deployingEthereumValidators := config.EthereumValidatorsAddress == ""
+	deployingEthereumValidatorsReg := config.EthereumValidatorsRegAddress == ""
 	if deployingEthereumValidators {
 		logStage("Deploying Ethereum Validators contracts ...")
 		config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress = ethereum.DeployValidatorsContract()
@@ -76,19 +77,26 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	orbs.BindGuardiansContractToEthereum(config.OrbsVotingContractName, config.EthereumGuardiansAddress)
 	logStageDone("Bound")
 
-	var erc20Txt, votingTxt, validatorTxt string
+	var erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt string
 	if deployingEthereumErc20 {
-		erc20Txt = fmt.Sprintf("EthereumErc20Address: %s\n", config.EthereumErc20Address)
+		erc20Txt = fmt.Sprintf(`EthereumErc20Address: "%s",` + "\n", config.EthereumErc20Address)
+		
 	}
 	if deployingEthereumVoting {
-		votingTxt = fmt.Sprintf("EthereumVotingAddress: %s\n", config.EthereumVotingAddress)
+		votingTxt = fmt.Sprintf(`EthereumVotingAddress: "%s",` + "\n", config.EthereumVotingAddress)
+	}
+	if deployingEthereumValidatorsReg {
+		validatorRegTxt = fmt.Sprintf(`EthereumValidatorsRegAddress: "%s",` + "\n", config.EthereumValidatorsRegAddress)
+	}
+	if deployingEthereumGuardians {
+		guardianTxt = fmt.Sprintf(`EthereumGuardiansAddress: "%s",` + "\n", config.EthereumGuardiansAddress)
 	}
 	if deployingEthereumValidators {
-		validatorTxt = fmt.Sprintf("EthereumValidatorsAddress: %s\n", config.EthereumValidatorsAddress)
+		validatorTxt = fmt.Sprintf(`EthereumValidatorsAddress: "%s",` + "\n", config.EthereumValidatorsAddress)
 	}
 
 	if erc20Txt != "" || votingTxt != "" || validatorTxt != "" {
-		logSummary("IMPORTANT! Please update the test configuration with this value:\n%s%s%s\nDeploy Phase all done.\n\n", erc20Txt, votingTxt, validatorTxt)
+		logSummary("IMPORTANT! Please update the test configuration with this value:\n%s%s%s%s%s\nDeploy Phase all done.\n\n", erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
 	} else {
 		logSummary("Deploy Phase all done.\n\n")
 	}

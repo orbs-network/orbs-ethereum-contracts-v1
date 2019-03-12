@@ -5,6 +5,7 @@ const guardianAccountIndexesOnEthereum = process.env.GUARDIAN_ACCOUNT_INDEXES_ON
 
 const GUARDIAN_REG_DEPOSIT = web3.utils.toWei('1', 'ether');
 const MIN_BALANCE_DEPOSIT = web3.utils.toWei("1.5", "ether");
+
 const MIN_BALANCE_FEES = web3.utils.toWei("0.5", "ether");
 
 module.exports = async function(done) {
@@ -26,13 +27,13 @@ module.exports = async function(done) {
 
     let txs = guardians.map(async (address, i) => {
       if (await guardiansInstance.isGuardian(address) === false) { // not a registered guardian
-        return helpers.verifyBalance(web3, address, MIN_BALANCE_DEPOSIT, accounts[0]).then(() => {
+        return helpers.verifyEtherBalance(web3, address, MIN_BALANCE_DEPOSIT, accounts[0]).then(() => {
           return guardiansInstance.register(`guardianName${i}`, `https://www.guardian${i}.com`, {from: address, value: GUARDIAN_REG_DEPOSIT}).on("transactionHash", hash => {
             console.error("TxHash: " + hash);
           });
         });
       } else { // already sent a deposit - just override the values
-        return helpers.verifyBalance(web3, address, MIN_BALANCE_FEES, accounts[0]).then(() => {
+        return helpers.verifyEtherBalance(web3, address, MIN_BALANCE_FEES, accounts[0]).then(() => {
           return guardiansInstance.register(`guardianName${i}`, `https://www.guardian${i}.com`, {from: address}).on("transactionHash", hash => {
             console.error("TxHash: " + hash);
           });

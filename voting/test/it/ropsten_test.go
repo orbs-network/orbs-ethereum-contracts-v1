@@ -20,9 +20,10 @@ var configRopsten = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
 	OrbsVotingContractName:       "OrbsVoting_1",                                                  // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
+	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
-	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
+	EthereumGuardiansAddress:     "",                                                              // update after deploy with the resulting value
 	UserAccountOnOrbs:            "user1",                                                         // one of the IDs in orbs-test-keys.json
 	DelegatorsNumber:             delegatorsNumberRopsten,                                         // upto 20
 	DelegatorStakeValues:         []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 50, 0, 0, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
@@ -51,10 +52,17 @@ func TestDeployOnRopsten(t *testing.T) {
 	orbs.DeployContract(configRopsten.OrbsVotingContractName)
 	orbs.SetContractConstants(configRopsten.OrbsVotingContractName)
 	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
-	if configRopsten.FirstElectionBlockNumber > 0 {
-		orbs.SetFirstElectionBlockNumber(configRopsten.OrbsVotingContractName, configRopsten.FirstElectionBlockNumber)
-	}
+
 	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
+}
+
+func TestRecordOnRopsten(t *testing.T) {
+
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
+	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+
+	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
 }
 
 // value 0 -> delegate.

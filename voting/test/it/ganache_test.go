@@ -14,9 +14,9 @@ var configGanache = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
 	OrbsVotingContractName:       "OrbsVoting",                                                    // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
+	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
-	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumGuardiansAddress:     "",                                                              // update after deploy with the resulting value
 	UserAccountOnOrbs:            "user1",                                                         // one of the IDs in orbs-test-keys.json
 	DelegatorsNumber:             delegatorsNumber,                                                // upto 20

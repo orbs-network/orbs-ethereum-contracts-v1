@@ -144,6 +144,13 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []stri
 	return out.Validators
 }
 
+func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
+	accountIndexesJson, _ := json.Marshal(accountIndexes)
+	ta.run("exec ./truffle-scripts/setValidators.js",
+		"ACCOUNT_INDEXES_ON_ETHEREUM=" + string(accountIndexesJson),
+	)
+}
+
 func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {
 	validatorsJson, _ := json.Marshal(validators)
 	orbsAddressesJson, _ := json.Marshal(orbsAddresses)

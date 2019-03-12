@@ -1,6 +1,5 @@
 const helpers = require('./helpers');
-const MIN_BALANCE_FEES = web3.utils.toWei("0.5", "ether");
-
+const MIN_BALANCE_FEES = web3.utils.toWei("0.4", "ether");
 
 const validatorsContractAddress = process.env.VALIDATORS_CONTRACT_ADDRESS;
 const validatorsRegistryContractAddress = process.env.VALIDATORS_REGISTRY_CONTRACT_ADDRESS;
@@ -41,8 +40,10 @@ module.exports = async function (done) {
         let orbsAddresses = JSON.parse(validatorOrbsAddresses);
 
         let txs = validators.map(address => {
-            return validatorsInstance.addValidator(address).on("transactionHash", hash => {
-                console.error("TxHash (OrbsValidators registration): " + hash);
+            return helpers.verifyEtherBalance(web3, address, MIN_BALANCE_FEES, accounts[0]).then(() => {
+                return validatorsInstance.addValidator(address).on("transactionHash", hash => {
+                    console.error("TxHash (OrbsValidators registration): " + hash);
+                });
             });
         });
 
@@ -53,7 +54,7 @@ module.exports = async function (done) {
 
 
         txs = validators.map((address, i) => {
-            return helpers.verifyBalance(web3, address, MIN_BALANCE_FEES, accounts[0]).then(() => {
+            return helpers.verifyEtherBalance(web3, address, MIN_BALANCE_FEES, accounts[0]).then(() => {
                 return validatorsRegInstance.register(`Validator ${i}`, ips[i], `https://www.validator${i}.com`, orbsAddresses[i], {from: address})
                     .on("transactionHash", hash => {
                         console.error("TxHash (OrbsValidatorsRegistry registration): " + hash);
