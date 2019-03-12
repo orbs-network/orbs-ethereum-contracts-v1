@@ -51,7 +51,6 @@ func TestDeployOnRopsten(t *testing.T) {
 	// Temp deploy of orbs contracts
 	orbs.DeployContract(configRopsten.OrbsVotingContractName)
 	orbs.SetContractConstants(configRopsten.OrbsVotingContractName)
-	//ethereum.WaitForBlock(orbs.GetMirrorVotingPeriod()+5)
 
 	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
 }

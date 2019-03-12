@@ -28,12 +28,17 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	sleepFor := orbs.GetFinalityTimeComponent()
 	fmt.Printf("%v > Due to finality time component, sleeping for %v\n", time.Now().Format("15:04:05"), sleepFor)
 	time.Sleep(sleepFor)
+
+	ethereum.WaitForBlock(ethereum.GetCurrentBlock() + 1) // force a new block to be closed - expecting it's timestamp to be beyond finality time component (based on our local clock)
 	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
 
-	logStage("Running mirror script  ...")
+	logStage("Running mirror script...")
 	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), config.FirstElectionBlockNumber,
 		ethereum.GetConnectionUrl(), orbs.GetOrbsEnvironment())
-	logStageDone("Delegate mirroring")
+
+	require.True(t, ethereum.GetCurrentBlock() < config.FirstElectionBlockNumber + orbs.GetMirrorVotingPeriod(), "Mirroring did not complete within mirroring grace period. consider increasing adapter.voteMirrorPeriod")
+
+	logStageDone("Running mirror script")
 
 	logSummary("Mirror Phase all done.\n\n")
 }
