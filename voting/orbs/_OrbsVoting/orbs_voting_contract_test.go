@@ -648,7 +648,7 @@ func TestOrbsVotingContract_processVote_validValidatorsFromEthereumToState(t *te
 		m.VerifyMocks()
 		require.EqualValues(t, len(validators), _getNumberOfValidValidaors())
 		for i := 0; i < _getNumberOfValidValidaors(); i++ {
-			require.EqualValues(t, validators[i], _getValidValidatorAtIndex(i))
+			require.EqualValues(t, validators[i], _getValidValidatorEthereumAddressAtIndex(i))
 		}
 		require.EqualValues(t, len(validators), len(stateValidators))
 		for i := 0; i < len(validators); i++ {
@@ -1002,10 +1002,10 @@ func TestOrbsVotingContract_processVote_processValidatorsSelection(t *testing.T)
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 		_setNumberOfValidValidaors(4)
-		_setValidValidatorAtIndex(0, v1[:])
-		_setValidValidatorAtIndex(1, v2[:])
-		_setValidValidatorAtIndex(2, v3[:])
-		_setValidValidatorAtIndex(3, v4[:])
+		_setValidValidatorEthereumAddressAtIndex(0, v1[:])
+		_setValidValidatorEthereumAddressAtIndex(1, v2[:])
+		_setValidValidatorEthereumAddressAtIndex(2, v3[:])
+		_setValidValidatorEthereumAddressAtIndex(3, v4[:])
 
 		for i := range tests {
 			cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
