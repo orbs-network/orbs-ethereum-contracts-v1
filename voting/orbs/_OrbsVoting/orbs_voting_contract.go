@@ -359,7 +359,7 @@ func _setValidValidatorStake(validator []byte, stake uint64) {
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Sprintf("mirror period (%d) for election (%d) did not end, cannot start processing", currentBlock, _getElectionBlockNumber()))
+		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", _getElectionBlockNumber(), _getElectionBlockNumber() + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS, currentBlock))
 	}
 
 	electedValidators := _processVotingStateMachine()
@@ -452,7 +452,7 @@ func _collectOneGuardianStakeFromEthereum(i int) {
 	guardian := _getGuardianAtIndex(i)
 	stake := uint64(0)
 	voteBlockNumber := state.ReadUint64(_formatGuardianBlockNumberKey(guardian[:]))
-	if voteBlockNumber != 0 && voteBlockNumber > safeuint64.Sub(_getElectionBlockNumber(), VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) {
+	if voteBlockNumber != 0 && safeuint64.Add(voteBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) > _getElectionBlockNumber() {
 		isGuardian := false
 		ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getGuardiansEthereumContractAddress(), getGuardiansAbi(), "isGuardian", &isGuardian, guardian)
 		if isGuardian {
@@ -501,7 +501,7 @@ func _collectGuardiansStake() (guardianStakes map[[20]byte]uint64) {
 	for i := 0; i < numOfGuardians; i++ {
 		guardian := _getGuardianAtIndex(i)
 		voteBlockNumber := state.ReadUint64(_formatGuardianBlockNumberKey(guardian[:]))
-		if voteBlockNumber != 0 && voteBlockNumber > safeuint64.Sub(_getElectionBlockNumber(), VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) {
+		if voteBlockNumber != 0 && safeuint64.Add(voteBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) > _getElectionBlockNumber() {
 			stake := state.ReadUint64(_formatGuardianStakeKey(guardian[:]))
 			guardianStakes[guardian] = stake
 			fmt.Printf("elections %10d: guardian %x , stake %d\n", _getElectionBlockNumber(), guardian, stake)
@@ -638,7 +638,7 @@ func _addressSliceToArray(a []byte) [20]byte {
 }
 
 func _isAfterElectionMirroring(BlockNumber uint64) bool {
-	return BlockNumber > _getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
+	return BlockNumber > safeuint64.Add(_getElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 /*****

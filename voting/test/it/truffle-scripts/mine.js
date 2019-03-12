@@ -30,6 +30,8 @@ module.exports = async function(done) {
         let afterBlock = await web3.eth.getBlock("latest");
         console.log(`stared at block ${beforeBlock.number}, now ${afterBlock.number} (mined ${afterBlock.number-beforeBlock.number})`);
 
+        done();
+
     } catch (e) {
         console.log(e);
         done(e);

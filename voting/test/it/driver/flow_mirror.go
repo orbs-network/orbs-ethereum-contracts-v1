@@ -22,7 +22,9 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, config.FirstElectionBlockNumber)
 	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
 
-	waitForFinality(config, orbs, ethereum)
+	logStage("Waiting for finality...")
+	waitForFinality(config.FirstElectionBlockNumber, orbs, ethereum)
+	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
 
 	logStage("Running mirror script...")
 	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), config.FirstElectionBlockNumber,
@@ -35,16 +37,13 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	logSummary("Mirror Phase all done.\n\n")
 }
 
-func waitForFinality(config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
-	logStage("Waiting for finality...")
-	targetBlockHeight := config.FirstElectionBlockNumber + orbs.GetFinalityBlocksComponent()
+func waitForFinality(blockNumber int, orbs OrbsAdapter, ethereum EthereumAdapter) {
+	targetBlockHeight := blockNumber + orbs.GetFinalityBlocksComponent() + 1
 	ethereum.WaitForBlock(targetBlockHeight)
 	sleepFor := orbs.GetFinalityTimeComponent()
 	fmt.Printf("%v > Due to finality time component, sleeping for %v\n", time.Now().Format("15:04:05"), sleepFor)
 	time.Sleep(sleepFor)
-	ethereum.WaitForBlock(ethereum.GetCurrentBlock() + 1)
-	// force a new block to be closed - expecting it's timestamp to be beyond finality time component (based on our local clock)
-	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
+	ethereum.WaitForBlock(ethereum.GetCurrentBlock() + 1) // force a new block to be closed - expecting it's timestamp to be beyond finality time component (based on our local clock)
 }
 
 func oldManualMirroringFlow_commentedOut() {

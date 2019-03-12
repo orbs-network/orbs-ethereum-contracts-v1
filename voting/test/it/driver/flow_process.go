@@ -13,10 +13,8 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 
 	logStage("Wait for mirror period to end...")
 	beginProcessingAtBlock := config.FirstElectionBlockNumber + orbs.GetMirrorVotingPeriod() + 1
-	ethereum.WaitForBlock(beginProcessingAtBlock)
+	waitForFinality(beginProcessingAtBlock, orbs, ethereum)
 	logStageDone("Wait for mirror period to end")
-
-	waitForFinality(config, orbs, ethereum)
 
 	logStage("Running processing...")
 	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
