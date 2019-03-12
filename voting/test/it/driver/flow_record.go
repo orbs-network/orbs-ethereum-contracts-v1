@@ -35,6 +35,11 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStageDone("Voted")
 	}
 
+	if config.FirstElectionBlockNumber != 0 {
+		currentBlock := ethereum.GetCurrentBlock()
+		require.True(t, currentBlock < config.FirstElectionBlockNumber, "Recorded activity will not be included in the current election period")
+	}
+
 	logSummary("Recording Phase all done.\n\n")
 }
 

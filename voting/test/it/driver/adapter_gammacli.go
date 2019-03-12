@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
@@ -16,6 +17,8 @@ func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
 		voteValidPeriod:      500,
 		electionPeriod:       200,
 		maxElectedValidators: 5,
+		finalityBlocksComponent: 1,
+		finalityTimeComponent: 10 * time.Second,
 	}
 }
 
@@ -29,6 +32,8 @@ func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
 		voteValidPeriod:      500,
 		electionPeriod:       200,
 		maxElectedValidators: 5,
+		finalityBlocksComponent: 1, // testnet: 10
+		finalityTimeComponent: 10 * time.Second, // testnet: 2 * time.Minute + 20 * time.Second,
 	}
 }
 
@@ -40,6 +45,8 @@ type gammaCliAdapter struct {
 	voteValidPeriod      uint64
 	electionPeriod       uint64
 	maxElectedValidators int
+	finalityBlocksComponent int
+	finalityTimeComponent time.Duration
 }
 
 func (gamma *gammaCliAdapter) DeployContract(orbsVotingContractName string) {
@@ -137,6 +144,14 @@ func (gamma *gammaCliAdapter) GetCurrentSystemBlockSigners() []string {
 		panic(err.Error() + "\n" + string(bytes))
 	}
 	return out2.ProofSigners
+}
+
+func (gamma *gammaCliAdapter) GetFinalityBlocksComponent() int {
+	return gamma.finalityBlocksComponent
+}
+
+func (gamma *gammaCliAdapter) GetFinalityTimeComponent() time.Duration {
+	return gamma.finalityTimeComponent
 }
 
 func (gamma *gammaCliAdapter) run(args string, env ...string) []byte {

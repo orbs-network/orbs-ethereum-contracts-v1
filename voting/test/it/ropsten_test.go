@@ -19,11 +19,11 @@ var validatorAccountsRopsten = []int{20, 21, 22, 23, 24}
 var configRopsten = &driver.Config{
 	DebugLogs:                    true,           // shows detailed responses for every command
 	OrbsVotingContractName:       "OrbsVoting_1", // name of the orbs contract
-	EthereumErc20Address:         "0x403eDD0b50C605F9cDfD397bF68Bcec31799A218",
-	EthereumVotingAddress:        "0x746E0B9EEDFAa4957f004B56A604a743fFE1c9D7",
-	EthereumValidatorsAddress:    "0x4B9C4cceb1C1d598787eEF504DC0B008f57900Bf",
-	EthereumValidatorsRegAddress: "0x349A49bA370f454704fe79ad232667ba71671Fa0",
-	EthereumGuardiansAddress:     "0x650Fa410caE516f3317Ce7Ed1860926a93F7BE01",
+	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
+	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
+	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
+	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
+	EthereumGuardiansAddress:     "",                                                              // update after deploy with the resulting value
 	UserAccountOnOrbs:            "user1",                                                         // one of the IDs in orbs-test-keys.json
 	DelegatorsNumber:             delegatorsNumberRopsten,                                         // upto 20
 	DelegatorStakeValues:         []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 50, 0, 0, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
@@ -34,7 +34,7 @@ var configRopsten = &driver.Config{
 	Transfers:                    generateTransfersRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
 	Delegates:                    generateDelegatesRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
 	Votes:                        generateVotesRopsten(guardiansAccountsRopsten, validatorAccountsRopsten),
-	FirstElectionBlockNumber:     1, // zero to automatically determine after mirroring completes. positive value to enforce static value
+	FirstElectionBlockNumber:     0, // zero to automatically determine after mirroring completes. positive value to enforce static value // TODO replace with the anticipated block number for end of recording phase
 }
 
 // before starting:
@@ -51,7 +51,7 @@ func TestDeployOnRopsten(t *testing.T) {
 	// Temp deploy of orbs contracts
 	orbs.DeployContract(configRopsten.OrbsVotingContractName)
 	orbs.SetContractConstants(configRopsten.OrbsVotingContractName)
-	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
+	//ethereum.WaitForBlock(orbs.GetMirrorVotingPeriod()+5)
 
 	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
 }
@@ -63,6 +63,15 @@ func TestRecordOnRopsten(t *testing.T) {
 	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
+}
+
+func TestMirrorOnRopsten(t *testing.T) {
+
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
+	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+
+	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
 }
 
 // value 0 -> delegate.

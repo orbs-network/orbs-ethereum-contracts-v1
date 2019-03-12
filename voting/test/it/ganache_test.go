@@ -44,7 +44,7 @@ func TestFullFlowOnGanache(t *testing.T) {
 	// Temp deploy of orbs contracts
 	orbs.DeployContract(configGanache.OrbsVotingContractName)
 	orbs.SetContractConstants(configGanache.OrbsVotingContractName)
-	//ethereum.Mine(orbs.GetMirrorVotingPeriod()+5)
+	//ethereum.WaitForBlock(orbs.GetMirrorVotingPeriod()+5)
 	if configGanache.FirstElectionBlockNumber > 0 {
 		orbs.SetFirstElectionBlockNumber(configGanache.OrbsVotingContractName, configGanache.FirstElectionBlockNumber)
 	}

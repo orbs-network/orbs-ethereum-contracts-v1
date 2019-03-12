@@ -1,5 +1,7 @@
 package driver
 
+import "time"
+
 type OrbsAdapter interface {
 	DeployContract(orbsVotingContractName string)
 	SetContractConstants(orbsVotingContractName string)
@@ -17,6 +19,8 @@ type OrbsAdapter interface {
 	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int
 	GetOrbsEnvironment() string
+	GetFinalityBlocksComponent() int
+	GetFinalityTimeComponent() time.Duration
 }
 
 type EthereumAdapter interface {
@@ -40,7 +44,7 @@ type EthereumAdapter interface {
 	DeployGuardiansContract() (ethereumGuardiansAddress string)
 	SetGuardians(ethereumGuardiansAddress string, guardians []int)
 
-	Mine(blocks int)
+	WaitForBlock(blockNumber int)
 	GetConnectionUrl() string
 }
 

@@ -1,8 +1,10 @@
 package driver
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"time"
 )
 
 func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
@@ -13,20 +15,30 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	currentBlock := ethereum.GetCurrentBlock()
 
 	if config.FirstElectionBlockNumber == 0 {
-		logStage("Set election date ...")
-		orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, currentBlock+1)
-		logStageDone("Election date in ethereum block number = %d", currentBlock+1)
-	} else {
-		orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, config.FirstElectionBlockNumber)
-		logStage("Election starts at block number %d", config.FirstElectionBlockNumber)
+		config.FirstElectionBlockNumber = currentBlock + 1
 	}
 
+	logStage("Set election date...")
+	orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, config.FirstElectionBlockNumber)
+	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
+
+	logStage("Waiting for finality...")
+	targetBlockHeight := config.FirstElectionBlockNumber + orbs.GetFinalityBlocksComponent()
+	ethereum.WaitForBlock(targetBlockHeight)
+	sleepFor := orbs.GetFinalityTimeComponent()
+	fmt.Printf("%v > Due to finality time component, sleeping for %v\n", time.Now().Format("15:04:05"), sleepFor)
+	time.Sleep(sleepFor)
+	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
 
 	logStage("Running mirror script  ...")
-	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock,
+	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), config.FirstElectionBlockNumber,
 		ethereum.GetConnectionUrl(), orbs.GetOrbsEnvironment())
 	logStageDone("Delegate mirroring")
 
+	logSummary("Mirror Phase all done.\n\n")
+}
+
+func oldManualMirroringFlow_commentedOut() {
 	//logStage("Running script to find Delegate Transfer Events ...")
 	//delegateByTransferEvents := na.FindDelegateByTransferEvents(config.EthereumErc20Address, ethereum.GetStartOfHistoryBlock(), currentBlock)
 	//// TODO v1 calculate how many delegate transfer, which to/from -- issue i hold index and not address ??
@@ -62,11 +74,4 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//	orbs.MirrorVote(config.OrbsVotingContractName, vt.TxHash)
 	//}
 	//logStageDone("Mirroring Voting")
-
-	logStage("Advance 10 ethereum blocks ...")
-	ethereum.Mine(orbs.GetMirrorVotingPeriod() + 5)
-	logStageDone("Advance done")
-
-	logSummary("Mirror Phase all done.\n\n")
-
 }
