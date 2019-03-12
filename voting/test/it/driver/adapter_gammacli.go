@@ -95,6 +95,21 @@ func (gamma *gammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []s
 	return respose
 }
 
+func (gamma *gammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAddresses []string) {
+	joinedAddresses := "0x"
+	for _, address := range electedValidatorAddresses {
+		if strings.HasPrefix(address, "0x") {
+			address = address[2:]
+		}
+		joinedAddresses += address
+	}
+	if (len(joinedAddresses)-2) % 40 != 0 {
+		panic(fmt.Sprintf("joined addresses is not a multiply of 20 bytes: %s", joinedAddresses))
+	}
+
+	gamma.run("send-tx ./gammacli-jsons/forward-results-to-system.json -signer user1 -arg1 " + joinedAddresses)
+}
+
 func (gamma *gammaCliAdapter) run(args string, env ...string) []byte {
 	args += " -env " + gamma.env
 	if gamma.debug {

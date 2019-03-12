@@ -1,0 +1,10 @@
+{
+  "ContractName": "_Elections",
+  "MethodName": "unsafetests_setElectedValidators",
+  "Arguments": [
+    {
+      "Type": "bytes",
+      "Value": "0x111111111111111111111111111111111111111122222222222222222222222222222222222222223333333333333333333333333333333333333333"
+    }
+  ]
+}
