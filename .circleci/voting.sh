@@ -18,7 +18,11 @@ docker exec voting_voting_1 bash ./entrypoint.sh
 EXITCODE=$?
 echo "====================== Voting tests finished with exit code: $EXITCODE  ======================"
 
+mkdir _out
+
+docker-compose -f docker/compose/voting/docker-compose.yml logs > _out/docker.log
+
 echo "Shutting down test environment.."
-#docker-compose -f docker/compose/voting/docker-compose.yml down -v
+docker-compose -f docker/compose/voting/docker-compose.yml down -v
 
 exit $EXITCODE
