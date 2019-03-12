@@ -10,6 +10,8 @@ type OrbsAdapter interface {
 	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)
 
 	GetElectedNodes(orbsVotingContractName string) []string
+	ForwardElectionResultsToSystem(electedValidatorAddresses []string)
+	GetCurrentSystemBlockSigners() []string
 
 	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int
