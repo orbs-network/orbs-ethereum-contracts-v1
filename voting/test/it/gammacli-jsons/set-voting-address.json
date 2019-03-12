@@ -1,6 +1,6 @@
 {
     "ContractName": "orbs_voting",
-    "MethodName": "setValidatorsAddr",
+    "MethodName": "unsafetests_setVotingEthereumContractAddress",
     "Arguments": [
         {
             "Type": "string",

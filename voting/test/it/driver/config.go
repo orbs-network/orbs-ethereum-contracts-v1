@@ -10,6 +10,7 @@ type Config struct {
 	EthereumValidatorsAddress    string
 	EthereumValidatorsRegAddress string
 	EthereumVotingAddress        string
+	EthereumGuardiansAddress     string
 	UserAccountOnOrbs            string
 	DelegatorsNumber             int
 	DelegatorStakeValues         []int
@@ -36,6 +37,9 @@ func (config *Config) Validate(isDeploy bool) error {
 		}
 		if config.EthereumVotingAddress == "" {
 			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "EthereumVotingAddress")
+		}
+		if config.EthereumGuardiansAddress == "" {
+			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "EthereumGuardiansAddress")
 		}
 	}
 	if config.UserAccountOnOrbs == "" {

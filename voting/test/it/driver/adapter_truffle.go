@@ -182,6 +182,26 @@ func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, 
 	)
 }
 
+func (ta *truffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress string) {
+	bytes := ta.run("exec ./truffle-scripts/deployGuardians.js")
+	out := struct {
+		Address string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out.Address
+}
+
+func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardians []int) {
+	out, _ := json.Marshal(guardians)
+	ta.run("exec ./truffle-scripts/setGuardians.js",
+		"GUARDIANS_CONTRACT_ADDRESS="+ethereumGuardiansAddress,
+		"GUARDIAN_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+	)
+}
+
 func (ta *truffleAdapter) Mine(blocks int) {
 	ta.run("exec ./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocks))
 }

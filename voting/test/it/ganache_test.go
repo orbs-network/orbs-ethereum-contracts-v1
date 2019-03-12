@@ -16,6 +16,7 @@ var configGanache = &driver.Config{
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
 	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
+	EthereumGuardiansAddress:     "",                                                              // update after deploy with the resulting value
 	UserAccountOnOrbs:            "user1",                                                         // one of the IDs in orbs-test-keys.json
 	DelegatorsNumber:             delegatorsNumber,                                                // upto 20
 	DelegatorStakeValues:         []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 50, 0, 0, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent

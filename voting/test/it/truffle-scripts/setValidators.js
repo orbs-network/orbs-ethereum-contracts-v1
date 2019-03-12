@@ -41,6 +41,10 @@ module.exports = async function(done) {
     });
 
     await Promise.all(txs);
+
+    let indexToAddressMap = validatorIndexes.map(i => {return {Index: i, Address: accounts[i]};});
+    console.log(JSON.stringify(indexToAddressMap, null, 2));
+
     done();
 
   } catch (e) {

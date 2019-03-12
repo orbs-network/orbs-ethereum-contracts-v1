@@ -1,6 +1,6 @@
 {
     "ContractName": "orbs_voting",
-    "MethodName": "setFirstElectionBlockNumber",
+    "MethodName": "unsafetests_setElectedBlockNumber",
     "Arguments": [
         {
             "Type": "uint64",
