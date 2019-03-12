@@ -25,7 +25,7 @@ Note: A Guardian may update her registration data at any time or leave the regis
 ![](../instructions/enroll_guardian_1.png)
 1. Enter the `OrbsGuardians` contract address. For Ropsten testnet the address may be found [here][1]. Paste the address in the text 
 box labeled *Contract Address*.
-1. Extract the contract ABI from the Etherscan *code* tab and paste it 
+1. Extract the contract ABI from the Etherscan *code* [tab][1] and paste it 
 in the test box labeled *ABI / JSON Interface*. 
 ![](../instructions/enroll_guardian_2.png)
 1. Click *Access*.
