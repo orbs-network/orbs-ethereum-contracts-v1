@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"time"
 )
 
 func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
@@ -11,11 +12,19 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	require.NoError(t, config.Validate(false))
 	na := NodeAdater(config)
 
+	ethereum.Mine(5)
+	time.Sleep(10 * time.Second)
+
 	logStage("Running processing ...")
 	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
 	na.Process(getOrbsVotingContractName(), maxSteps, orbs.GetOrbsEnvironment())
 
 	winners := orbs.GetElectedNodes(getOrbsVotingContractName())
+
+	require.Conditionf(t, func() bool {
+		return len(winners) >= 4
+	}, "expecting at least 4 winners but got %d", len(winners))
+
 	logStageDone("And the %d winners are .... %v", len(winners), winners)
 
 	runNaiveCalulations(config)
