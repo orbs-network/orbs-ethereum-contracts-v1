@@ -144,12 +144,16 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []stri
 	return out.Validators
 }
 
-func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int) {
-	out, _ := json.Marshal(validators)
+func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {
+	validatorsJson, _ := json.Marshal(validators)
+	orbsAddressesJson, _ := json.Marshal(orbsAddresses)
+	orbsIpsJson, _ := json.Marshal(orbsIps)
 	ta.run("exec ./truffle-scripts/setValidators.js",
 		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
 		"VALIDATORS_REGISTRY_CONTRACT_ADDRESS="+ethereumValidatorsRegAddress,
-		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(validatorsJson),
+		"VALIDATOR_ORBS_ADDRESSES="+string(orbsAddressesJson),
+		"VALIDATOR_ORBS_IPS="+string(orbsIpsJson),
 	)
 }
 

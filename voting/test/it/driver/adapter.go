@@ -30,7 +30,7 @@ type EthereumAdapter interface {
 
 	DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string)
 	GetValidators(ethereumValidatorsAddress string) []string
-	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int)
+	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string)
 
 	DeployVotingContract() (ethereumVotingAddress string)
 	Delegate(ethereumVotingAddress string, from int, to int)

@@ -16,6 +16,8 @@ type Config struct {
 	DelegatorStakeValues         []int
 	GuardiansAccounts            []int
 	ValidatorsAccounts           []int
+	ValidatorsOrbsAddresses      []string
+	ValidatorsOrbsIps            []string
 	SetupOverEthereumBlock       int
 	Transfers                    []*TransferEvent
 	Delegates                    []*DelegateEvent
