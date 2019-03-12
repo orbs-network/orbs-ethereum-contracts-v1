@@ -27,8 +27,8 @@ var configRopsten = &driver.Config{
 	DelegatorStakeValues:         []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 50, 0, 0, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
 	GuardiansAccounts:            guardiansAccounts,                                               // indexes of activists up to 20
 	ValidatorsAccounts:           validatorAccounts,                                               // user index 20 ... if you have more than 5 add more Ropsten accounts
-	ValidatorsOrbsAddresses:      []string{driver.IntToAddr(1), driver.IntToAddr(2), driver.IntToAddr(3), driver.IntToAddr(4), driver.IntToAddr(5)},
-	ValidatorsOrbsIps:            []string{driver.IpToHexaBytes("1.1.1.1"), driver.IpToHexaBytes("1.1.1.2"), driver.IpToHexaBytes("1.1.1.3"), driver.IpToHexaBytes("1.1.1.4"), driver.IpToHexaBytes("1.1.1.5")},
+	ValidatorsOrbsAddresses:      []string{"0xf2915f50D9946a34Da51f746E85fD8A935Bea465", "0xbb92862fc7DC3bdA21294DB7b6c6628d9B65D49F", "0x38593d40b7F13f9CbF71e615dF4d51bb49947f86", "0x32489dF19c68E1881219F37e7AcabD9C05d405C4", "0xfE176d83686b87408988eeEb9835E282FF12fbFf"},
+	ValidatorsOrbsIps:            []string{driver.IpToHexaBytes("18.219.51.57"), driver.IpToHexaBytes("54.193.117.100"), driver.IpToHexaBytes("34.210.94.85"), driver.IpToHexaBytes("63.35.108.49"), driver.IpToHexaBytes("18.196.28.98")},
 	Transfers:                    generateTransfersRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
 	Delegates:                    generateDelegatesRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
 	Votes:                        generateVotesRopsten(guardiansAccountsRopsten, validatorAccountsRopsten),
