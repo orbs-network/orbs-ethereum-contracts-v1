@@ -28,7 +28,7 @@ In order to register a Validator with OrbsValidatorsRegistry contract follow the
 2. Navigate to *Contracts*, under the *Interact* tab.
 ![](../instructions/enroll_validator_1.png)
 1. Enter the `OrbsValidatorsRegistry` contract address. For Ropsten testnet the address may be found [here][2]. Paste the address in the text box labeled *Contract Address*.
-1. Extract the contract ABI from the Etherscan *code* tab and paste it in the test box labeled *ABI / JSON Interface*. 
+1. Extract the Contract ABI from the Etherscan *code* [tab][2] and paste it in the test box labeled *ABI / JSON Interface*. 
 ![](../instructions/enroll_validator_2.png)
 1. Click *Access*.
 * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
