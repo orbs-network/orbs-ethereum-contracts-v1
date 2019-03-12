@@ -13,7 +13,7 @@ func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
 		debug:                config.DebugLogs,
 		env:                  "experimental", // use "local" for the stable local gamma-cli ... or for client tests
 		stakeFactor:          10000,
-		voteMirrorPeriod:     3,
+		voteMirrorPeriod:     10,
 		voteValidPeriod:      500,
 		electionPeriod:       200,
 		maxElectedValidators: 5,

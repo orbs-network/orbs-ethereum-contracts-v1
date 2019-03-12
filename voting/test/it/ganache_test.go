@@ -44,10 +44,6 @@ func TestFullFlowOnGanache(t *testing.T) {
 	// Temp deploy of orbs contracts
 	orbs.DeployContract(configGanache.OrbsVotingContractName)
 	orbs.SetContractConstants(configGanache.OrbsVotingContractName)
-	//ethereum.WaitForBlock(orbs.GetMirrorVotingPeriod()+5)
-	if configGanache.FirstElectionBlockNumber > 0 {
-		orbs.SetFirstElectionBlockNumber(configGanache.OrbsVotingContractName, configGanache.FirstElectionBlockNumber)
-	}
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
