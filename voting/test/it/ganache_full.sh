@@ -9,3 +9,5 @@ cp ../../build/ethereum/*.json ./build/contracts
 gamma-cli start-local -wait -env experimental
 
 go test . -run TestFullFlowOnGanache -v -count 1
+
+# gamma-cli stop-local
