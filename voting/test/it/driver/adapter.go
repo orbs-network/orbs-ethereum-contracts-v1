@@ -34,6 +34,7 @@ type EthereumAdapter interface {
 	Vote(ethereumVotingAddress string, activistInded int, to [3]int)
 
 	DeployGuardiansContract() (ethereumGuardiansAddress string)
+	SetGuardians(ethereumGuardiansAddress string, guardians []int)
 
 	Mine(blocks int)
 	GetConnectionUrl() string
