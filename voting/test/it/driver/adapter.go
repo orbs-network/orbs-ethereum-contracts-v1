@@ -5,6 +5,7 @@ type OrbsAdapter interface {
 	SetContractConstants(orbsVotingContractName string)
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
 	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string)
+	BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string)
 	BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
 	BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string)
 	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)

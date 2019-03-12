@@ -33,16 +33,17 @@ module.exports = async function(done) {
 
     const validatorsRegInstance = await artifacts.require('IOrbsValidatorsRegistry').at(validatorsRegistryContractAddress);
 
-    let i = 0;
-    txs = validators.map(address => {
-      i++;
+    let indexToAddressMap = [];
+    txs = validatorIndexes.map(i => {
+      let address = accounts[i];
+      let orbsAddress = accounts[i]; // TODO v1 fix me
+      indexToAddressMap.push({Index: i, Address: address, OrbsAddress: orbsAddress});
       return validatorsRegInstance.register(`name${i}`, `0x${(i + "00000000").slice(0, 8)}`, `https://www.validator${i}.com`, address,  {from: address})
           .on("transactionHash", hash => {console.error("TxHash: " + hash);});
     });
 
     await Promise.all(txs);
 
-    let indexToAddressMap = validatorIndexes.map(i => {return {Index: i, Address: accounts[i]};});
     console.log(JSON.stringify(indexToAddressMap, null, 2));
 
     done();

@@ -62,9 +62,6 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 		logStage("Setting Ethereum Guardians accounts ...")
 		ethereum.SetGuardians(config.EthereumGuardiansAddress, config.GuardiansAccounts)
-		//validators := ethereum.GetValidators(config.EthereumValidatorsAddress)
-		//require.Len(t, validators, len(config.ValidatorsAccounts))
-		//logStageDone("Set Guardians to be %v", validators)
 		logStageDone("Set Guardians done")
 	} else {
 		logStage("Using existing Ethereum Guardians contract...")
@@ -75,6 +72,7 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	orbs.BindERC20ContractToEthereum(getOrbsVotingContractName(), config.EthereumErc20Address)
 	orbs.BindVotingContractToEthereum(getOrbsVotingContractName(), config.EthereumVotingAddress)
 	orbs.BindValidatorsContractToEthereum(getOrbsVotingContractName(), config.EthereumValidatorsAddress)
+	orbs.BindValidatorsRegistryContractToEthereum(getOrbsVotingContractName(), config.EthereumValidatorsRegAddress)
 	orbs.BindGuardiansContractToEthereum(getOrbsVotingContractName(), config.EthereumGuardiansAddress)
 	logStageDone("Bound")
 
