@@ -57,8 +57,8 @@ func IpToHexaBytes(ip string) string {
 	}
 	e1, _ := strconv.Atoi(elements[0])
 	e2, _ := strconv.Atoi(elements[1])
-	e3, _ := strconv.Atoi(elements[3])
-	e4, _ := strconv.Atoi(elements[4])
+	e3, _ := strconv.Atoi(elements[2])
+	e4, _ := strconv.Atoi(elements[3])
 
 	return fmt.Sprintf("0x%02x%02x%02x%02x", e1, e2, e3, e4)
 }

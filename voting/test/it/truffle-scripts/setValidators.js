@@ -1,6 +1,9 @@
 const validatorsContractAddress = process.env.VALIDATORS_CONTRACT_ADDRESS;
 const validatorsRegistryContractAddress = process.env.VALIDATORS_REGISTRY_CONTRACT_ADDRESS;
 const validatorAccountOnEthereumIndexes = process.env.VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM;
+const validatorOrbsAddresses = process.env.VALIDATOR_ORBS_ADDRESSES;
+const validatorOrbsIps = process.env.VALIDATOR_ORBS_IPS;
+
 
 module.exports = async function(done) {
   try {
@@ -17,11 +20,21 @@ module.exports = async function(done) {
       throw("missing env variable VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM");
     }
 
+    if (!validatorOrbsAddresses) {
+      throw("missing env variable VALIDATOR_ORBS_ADDRESSES");
+    }
+
+    if (!validatorOrbsIps) {
+      throw("missing env variable VALIDATOR_ORBS_IPS");
+    }
+
     const validatorsInstance = await artifacts.require('IOrbsValidators').at(validatorsContractAddress);
 
     let accounts = await web3.eth.getAccounts();
     let validatorIndexes = JSON.parse(validatorAccountOnEthereumIndexes);
     let validators = validatorIndexes.map(elem => accounts[elem]);
+    let ips = JSON.parse(validatorOrbsIps);
+    let orbsAddresses = JSON.parse(validatorOrbsAddresses);
 
     let txs = validators.map(address => {
       return validatorsInstance.addValidator(address).on("transactionHash", hash => {
@@ -33,10 +46,8 @@ module.exports = async function(done) {
 
     const validatorsRegInstance = await artifacts.require('IOrbsValidatorsRegistry').at(validatorsRegistryContractAddress);
 
-    let i = 0;
-    txs = validators.map(address => {
-      i++;
-      return validatorsRegInstance.register(`name${i}`, `0x${(i + "00000000").slice(0, 8)}`, `https://www.validator${i}.com`, address,  {from: address})
+    txs = validators.map((address, i) => {
+      return validatorsRegInstance.register(`Validator ${i}`, ips[i], `https://www.validator${i}.com`, orbsAddresses[i],  {from: address})
           .on("transactionHash", hash => {console.error("TxHash: " + hash);});
     });
 
