@@ -1,12 +1,12 @@
 ## Guardian Registration
-In order to participate in the voting, a Guardians must first enroll. 
+In order to participate in the voting, a Guardian must first register. 
 An Orbs Guardian is identified and delegated to by her Ethereum address. 
 
 This document walks you through the registration process of Guardians using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
 
 ### A Guardian registration requires to following data:
-- Name and website URL of the enrolling Guardian
+- Name and website URL of the Guardian
 
 Note: A Guardian may update her registration data at any time or leave the registry.
 
@@ -15,10 +15,10 @@ Note: A Guardian may update her registration data at any time or leave the regis
  - MyCrypto desktop app (or another equivalent wallet software)
  - A wallet setup with your Guardian's Ethereum account keys with a positive Ether balance for fees
  - ABI and contract address available on Etherscan. For example, on Ropsten testnet the contract may be found [here][1] 
- - 1 Ether deposit required to enroll a Guardian
+ - 1 Ether deposit required to resgister as a Guardian
  - Registration data
 
-### Enrollment steps
+### Registration steps
 
 1. **Verify you are on the correct network** ([Choosing the relevant Ethereum Network](./choosing_the_network.md))
 2. Navigate to *Contracts*, under the *Interact* tab.
