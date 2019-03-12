@@ -329,7 +329,7 @@ func processVoting() uint64 {
 
 	electedValidators := _processVotingStateMachine()
 	if electedValidators != nil {
-		_setElectedValidators(electedValidators, _getElectionBlockNumber())
+		_setElectedValidators(electedValidators)
 		_setElectionBlockNumber(safeuint64.Add(_getElectionBlockNumber(), ELECTION_PERIOD_LENGTH_IN_BLOCKS))
 		return 1
 	} else {

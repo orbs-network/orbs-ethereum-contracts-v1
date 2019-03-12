@@ -6,6 +6,7 @@ docker build -t orbs:voting -f docker/images/voting/Dockerfile .
 
 echo "Starting up test environment.."
 docker-compose -f docker/compose/voting/docker-compose.yml down -v
+docker-compose -f docker/compose/voting/docker-compose.yml pull
 docker-compose -f docker/compose/voting/docker-compose.yml up -d
 docker exec voting_gamma_1 sudo echo "ganache host.docker.internal" > /etc/hosts
 
