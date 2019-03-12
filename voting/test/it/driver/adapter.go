@@ -11,6 +11,7 @@ type OrbsAdapter interface {
 
 	GetElectedNodes(orbsVotingContractName string) []string
 	ForwardElectionResultsToSystem(electedValidatorAddresses []string)
+	GetCurrentSystemBlockSigners() []string
 
 	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int

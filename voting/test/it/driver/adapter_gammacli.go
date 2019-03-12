@@ -110,6 +110,30 @@ func (gamma *gammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAdd
 	gamma.run("send-tx ./gammacli-jsons/forward-results-to-system.json -signer user1 -arg1 " + joinedAddresses)
 }
 
+func (gamma *gammaCliAdapter) GetCurrentSystemBlockSigners() []string {
+	bytes := gamma.run("send-tx ./gammacli-jsons/generic-transaction.json -signer user1")
+	out := struct {
+		TxId string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	if len(out.TxId) == 0 {
+		panic("could not get the TxId after sending a generic transaction")
+	}
+
+	bytes = gamma.run("tx-proof " + out.TxId)
+	out2 := struct {
+		ProofSigners []string
+	}{}
+	err = json.Unmarshal(bytes, &out2)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out2.ProofSigners
+}
+
 func (gamma *gammaCliAdapter) run(args string, env ...string) []byte {
 	args += " -env " + gamma.env
 	if gamma.debug {
