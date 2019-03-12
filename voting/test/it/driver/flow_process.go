@@ -11,12 +11,26 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	require.NoError(t, config.Validate(false))
 	na := NodeAdater(config)
 
-	logStage("Running processing ...")
+	logStage("Wait for mirror period to end...")
+	beginProcessingAtBlock := config.FirstElectionBlockNumber + orbs.GetMirrorVotingPeriod() + 1
+	ethereum.WaitForBlock(beginProcessingAtBlock)
+	logStageDone("Wait for mirror period to end")
+
+	waitForFinality(config, orbs, ethereum)
+
+	logStage("Running processing...")
 	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
 	na.Process(config.OrbsVotingContractName, maxSteps, orbs.GetOrbsEnvironment())
+	logStageDone("Running processing")
 
+	logStage("Getting winners processing...")
 	winners := orbs.GetElectedNodes(config.OrbsVotingContractName)
-	logStageDone("And the %d winners are .... %v", len(winners), winners)
+	logStageDone("And the %d winners are.... %v", len(winners), winners)
+
+	logStage("Forwarding results to system...")
+	orbs.ForwardElectionResultsToSystem(winners)
+	signers := orbs.GetCurrentSystemBlockSigners()
+	logStageDone("And the %d signers are.... %v", len(signers), signers)
 
 	runNaiveCalulations(config)
 

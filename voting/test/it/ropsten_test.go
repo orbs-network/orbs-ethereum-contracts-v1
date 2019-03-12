@@ -64,13 +64,14 @@ func TestRecordOnRopsten(t *testing.T) {
 	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
 }
 
-func TestMirrorOnRopsten(t *testing.T) {
+func TestMirrorAndProcessOnRopsten(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
 	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
 	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
+	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
 }
 
 // value 0 -> delegate.
