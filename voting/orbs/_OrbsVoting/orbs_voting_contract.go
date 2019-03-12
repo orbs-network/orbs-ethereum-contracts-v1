@@ -409,7 +409,7 @@ func _readValidValidatorsFromEthereumToState() {
 	var validValidators [][20]byte
 	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsEthereumContractAddress(), getValidatorsAbi(), "getValidators", &validValidators)
 
-	_setNumberOfValidValidaors(len(validValidators))
+	_setNumberOfValidValidaors(len(validValidators) + 1) // TODO V1 noam - explain beautify
 	for i := 0; i < len(validValidators); i++ {
 		_setValidValidatorEthereumAddressAtIndex(i, validValidators[i][:])
 		fmt.Printf("elections %10d: from ethereum valid validator number %d :  %x\n", _getElectionBlockNumber(), i, validValidators[i])
@@ -429,11 +429,11 @@ func _collectOneValidatorDataFromEthereum(i int) {
 
 	var orbsAddress [20]byte
 	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsRegistryEthereumContractAddress(), getValidatorsRegistryAbi(), "getOrbsAddress", &orbsAddress, validator)
-	//stake := _getDelegatorStakeAtElection(validator)
+	stake := _getDelegatorStakeAtElection(validator)
 
-	//_setValidValidatorStake(validator[:], stake)
+	_setValidValidatorStake(validator[:], stake)
 	_setValidValidatorOrbsAddress(validator[:], orbsAddress[:])
-	fmt.Printf("elections %10d: from ethereum Validator %x, stake %d orbsAddress %x\n", _getElectionBlockNumber(), validator, 0 /*stake*/, validator)
+	fmt.Printf("elections %10d: from ethereum Validator %x, stake %d orbsAddress %x\n", _getElectionBlockNumber(), validator, stake, orbsAddress)
 }
 
 func _collectNextGuardianStakeFromEthereum() {
@@ -688,6 +688,7 @@ func _translateElectedAddressesToOrbsAddressesAndConcat(elected [][20]byte) []by
 	electedForSave := make([]byte, 0, len(elected)*20)
 	for i := range elected {
 		electedOrbsAddress := _getValidValidatorOrbsAddress(elected[i][:])
+		fmt.Printf("elections %10d: translate %x to %x\n", _getElectionBlockNumber(), elected[i][:], electedOrbsAddress)
 		electedForSave = append(electedForSave, electedOrbsAddress[:]...)
 	}
 	return electedForSave
@@ -759,11 +760,11 @@ func _setElectionBlockNumber(BlockNumber uint64) {
 /*****
  * Connections to other contracts
  */
-var ETHEREUM_TOKEN_ADDR = "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959"
-var ETHEREUM_VOTING_ADDR = "0x45f398EEEff94528321F468192653147e72B5b41"
-var ETHEREUM_VALIDATORS_ADDR = "0x5Be109EC9BFAaC93719167FF66D8Bf22Acd9B3dC"
-var ETHEREUM_GUARDIANS_ADDR = "0x93B4af9efa46B3F5185B20C20BF313e4ab73318e"
-var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0x78227F99Bb86652689B0790144Bbe60176020c61"
+var ETHEREUM_TOKEN_ADDR = "0x8B307dBE4d3Da299209021B02fCFDe02Ed88c891"
+var ETHEREUM_VOTING_ADDR = "0x563ec4774e6402c38488f161656be81f9Ad10Eb0"
+var ETHEREUM_VALIDATORS_ADDR = "0x5C93e532e604125B52b70F11384883b7492B7401"
+var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0x86F802d17f3932e80eEf249F745b09D2F93c09f0"
+var ETHEREUM_GUARDIANS_ADDR = "0x662Bc4FA6566aEFA55fb717f2540dA40f2DF536b"
 
 func getTokenEthereumContractAddress() string {
 	return ETHEREUM_TOKEN_ADDR
