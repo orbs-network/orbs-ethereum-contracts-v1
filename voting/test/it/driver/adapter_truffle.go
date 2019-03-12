@@ -69,18 +69,6 @@ func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
 	return out.Address
 }
 
-func (ta *truffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress string) {
-	bytes := ta.run("exec ./truffle-scripts/deployGuardians.js")
-	out := struct {
-		Address string
-	}{}
-	err := json.Unmarshal(bytes, &out)
-	if err != nil {
-		panic(err.Error() + "\n" + string(bytes))
-	}
-	return out.Address
-}
-
 func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) []int {
 	bytes := ta.run("exec ./truffle-scripts/getStakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
@@ -156,12 +144,16 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []stri
 	return out.Validators
 }
 
-func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int) {
-	out, _ := json.Marshal(validators)
+func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {
+	validatorsJson, _ := json.Marshal(validators)
+	orbsAddressesJson, _ := json.Marshal(orbsAddresses)
+	orbsIpsJson, _ := json.Marshal(orbsIps)
 	ta.run("exec ./truffle-scripts/setValidators.js",
 		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
 		"VALIDATORS_REGISTRY_CONTRACT_ADDRESS="+ethereumValidatorsRegAddress,
-		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(validatorsJson),
+		"VALIDATOR_ORBS_ADDRESSES="+string(orbsAddressesJson),
+		"VALIDATOR_ORBS_IPS="+string(orbsIpsJson),
 	)
 }
 
@@ -191,6 +183,26 @@ func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, 
 		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
 		"ACTIVIST_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", activistIndex),
 		"CANDIDATE_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+	)
+}
+
+func (ta *truffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress string) {
+	bytes := ta.run("exec ./truffle-scripts/deployGuardians.js")
+	out := struct {
+		Address string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out.Address
+}
+
+func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardians []int) {
+	out, _ := json.Marshal(guardians)
+	ta.run("exec ./truffle-scripts/setGuardians.js",
+		"GUARDIANS_CONTRACT_ADDRESS="+ethereumGuardiansAddress,
+		"GUARDIAN_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
 	)
 }
 

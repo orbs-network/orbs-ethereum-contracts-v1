@@ -13,7 +13,8 @@ import (
 )
 
 var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress,
-	unsafetests_setTokenAddr, unsafetests_setGuardiansAddr, unsafetests_setVotingAddr, unsafetests_setValidatorsAddr, // TODO v1 noam unsafe
+	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
+	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress,
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber, // TODO v1 noam unsafe
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
 	processVoting,
@@ -62,19 +63,19 @@ func unsafetests_setElectedBlockNumber(blockNumber uint64) {
 	_setElectionBlockNumber(blockNumber)
 }
 
-func unsafetests_setTokenAddr(addr string) { // upgrade
+func unsafetests_setTokenEthereumContractAddress(addr string) { // upgrade
 	ETHEREUM_TOKEN_ADDR = addr
 }
 
-func unsafetests_setVotingAddr(addr string) { // upgrade
+func unsafetests_setVotingEthereumContractAddress(addr string) { // upgrade
 	ETHEREUM_VOTING_ADDR = addr
 }
 
-func unsafetests_setValidatorsAddr(addr string) { // upgrade
+func unsafetests_setValidatorsEthereumContractAddress(addr string) { // upgrade
 	ETHEREUM_VALIDATORS_ADDR = addr
 }
 
-func unsafetests_setGuardiansAddr(addr string) { // upgrade
+func unsafetests_setGuardiansEthereumContractAddress(addr string) { // upgrade
 	ETHEREUM_GUARDIANS_ADDR = addr
 }
 
@@ -213,6 +214,12 @@ func mirrorVote(hexEncodedEthTxHash string) {
 		panic(fmt.Errorf("voteOut of guardian %v to %v failed since voted to too many (%d) candidate",
 			e.Voter, e.Nodes, len(e.Nodes)))
 	}
+	isGuardian := false
+	ethereum.CallMethodAtBlock(eventBlockNumber, getGuardiansEthereumContractAddress(), getGuardiansAbi(), "isGuardian", &isGuardian, e.Voter)
+	if !isGuardian {
+		panic(fmt.Errorf("voteOut of guardian %v to %v failed since it is not a guardian at blockNumber %d",
+			e.Voter, e.Nodes, eventBlockNumber))
+	}
 
 	electionBlockNumber := _getElectionBlockNumber()
 	if eventBlockNumber > electionBlockNumber {
@@ -341,8 +348,7 @@ func _processVotingStateMachine() [][20]byte {
 	processState := _getVotingProcessState()
 	if processState == "" {
 		_readValidValidatorsFromEthereumToState()
-		_setVotingProcessState(VOTING_PROCESS_STATE_GUARDIANSS)
-		fmt.Printf("elections %10d: moving to state %s\n", _getElectionBlockNumber(), VOTING_PROCESS_STATE_GUARDIANSS)
+		_nextProcessVotingState(VOTING_PROCESS_STATE_GUARDIANSS)
 		return nil
 	} else if processState == VOTING_PROCESS_STATE_GUARDIANSS {
 		_collectNextGuardianStakeFromEthereum()
@@ -360,6 +366,12 @@ func _processVotingStateMachine() [][20]byte {
 	return nil
 }
 
+func _nextProcessVotingState(stage string) {
+	_setVotingProcessItem(0)
+	_setVotingProcessState(stage)
+	fmt.Printf("elections %10d: moving to state %s\n", _getElectionBlockNumber(), stage)
+}
+
 func _readValidValidatorsFromEthereumToState() {
 	var validValidators [][20]byte
 	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsEthereumContractAddress(), getValidatorsAbi(), "getValidators", &validValidators)
@@ -375,10 +387,9 @@ func _collectNextGuardianStakeFromEthereum() {
 	nextIndex := _getVotingProcessItem()
 	_collectOneGuardianStakeFromEthereum(nextIndex)
 	nextIndex++
+	// TODO NOAM
 	if nextIndex >= _getNumberOfGurdians() {
-		_setVotingProcessItem(0)
-		_setVotingProcessState(VOTING_PROCESS_STATE_DELEGATORS)
-		fmt.Printf("elections %10d: moving to state %s\n", _getElectionBlockNumber(), VOTING_PROCESS_STATE_DELEGATORS)
+		_nextProcessVotingState(VOTING_PROCESS_STATE_DELEGATORS)
 	} else {
 		_setVotingProcessItem(nextIndex)
 	}
@@ -386,12 +397,17 @@ func _collectNextGuardianStakeFromEthereum() {
 
 func _collectOneGuardianStakeFromEthereum(i int) {
 	guardian := _getGuardianAtIndex(i)
+	stake := uint64(0)
 	voteBlockNumber := state.ReadUint64(_formatGuardianBlockNumberKey(guardian[:]))
 	if voteBlockNumber != 0 && voteBlockNumber > safeuint64.Sub(_getElectionBlockNumber(), VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) {
-		stake := _getDelegatorStakeAtElection(guardian)
-		state.WriteUint64(_formatGuardianStakeKey(guardian[:]), stake)
-		fmt.Printf("elections %10d: from ethereum guardian %x, stake %d\n", _getElectionBlockNumber(), guardian, stake)
+		isGuardian := false
+		ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getGuardiansEthereumContractAddress(), getGuardiansAbi(), "isGuardian", &isGuardian, guardian)
+		if isGuardian {
+			stake = _getDelegatorStakeAtElection(guardian)
+		}
 	}
+	state.WriteUint64(_formatGuardianStakeKey(guardian[:]), stake)
+	fmt.Printf("elections %10d: from ethereum guardian %x, stake %d\n", _getElectionBlockNumber(), guardian, stake)
 }
 
 func _collectNextDelegatorStakeFromEthereum() {
@@ -399,9 +415,7 @@ func _collectNextDelegatorStakeFromEthereum() {
 	_collectOneDelegatorStakeFromEthereum(nextIndex)
 	nextIndex++
 	if nextIndex >= _getNumberOfDelegators() {
-		_setVotingProcessItem(0)
-		_setVotingProcessState(VOTING_PROCESS_STATE_CALCULATIONS)
-		fmt.Printf("elections %10d: moving to state %s\n", _getElectionBlockNumber(), VOTING_PROCESS_STATE_CALCULATIONS)
+		_nextProcessVotingState(VOTING_PROCESS_STATE_CALCULATIONS)
 	} else {
 		_setVotingProcessItem(nextIndex)
 	}
@@ -693,7 +707,7 @@ func _setElectionBlockNumber(BlockNumber uint64) {
 var ETHEREUM_TOKEN_ADDR = "0x5B31Ea29271Cc0De13E17b67a8f94Dd0b8F4B959"
 var ETHEREUM_VOTING_ADDR = "0xf572dd7e283671535AF6b6F81E8a0E0772062C5b"
 var ETHEREUM_VALIDATORS_ADDR = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
-var ETHEREUM_GUARDIANS_ADDR = "0xb2FbE7373b059BE34BDFdF8cC6606869F4c69a95"
+var ETHEREUM_GUARDIANS_ADDR = "0x77E15A13775e89584Cd7E8D5955dA98B6e1adFc4"
 
 func getTokenEthereumContractAddress() string {
 	return ETHEREUM_TOKEN_ADDR

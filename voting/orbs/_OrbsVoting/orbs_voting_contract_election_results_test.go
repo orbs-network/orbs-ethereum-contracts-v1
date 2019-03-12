@@ -9,6 +9,7 @@ import (
 func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 	currIndex := uint32(2)
 	currBlockNumber := uint64(10000)
+	currentBlockHeight := uint64(1000)
 	currElected := []byte{0x01}
 	newBlockNumber := uint64(20000)
 	newElected := [][20]byte{{0x02}}
@@ -16,17 +17,20 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 		_setElectedValidatorsBlockNumberAtIndex(currIndex, currBlockNumber)
+		_setElectedValidatorsBlockHeightAtIndex(currIndex, currentBlockHeight)
 		_setElectedValidatorsAtIndex(currIndex, currElected)
 		_setNumberOfElections(currIndex)
+		_setElectionBlockNumber(newBlockNumber)
 
 		// call
-		_setElectedValidators(newElected, newBlockNumber)
+		_setElectedValidators(newElected)
 
 		// assert
 		require.EqualValues(t, currIndex+1, getNumberOfElections())
 		require.EqualValues(t, newBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex+1))
 		require.EqualValues(t, _concatElectedAddresses(newElected), getElectedValidatorsByIndex(currIndex+1))
 		require.EqualValues(t, currBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex))
+		require.EqualValues(t, currentBlockHeight, getElectedValidatorsBlockHeightByIndex(currIndex))
 		require.EqualValues(t, currElected, getElectedValidatorsByIndex(currIndex))
 	})
 }
@@ -37,9 +41,10 @@ func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setElectionBlockNumber(newBlockNumber)
 
 		// call
-		_setElectedValidators(newElected, newBlockNumber)
+		_setElectedValidators(newElected)
 
 		// assert
 		require.EqualValues(t, 1, getNumberOfElections())
@@ -57,13 +62,14 @@ func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *t
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setElectionBlockNumber(newBlockNumber)
 		_setElectedValidatorsBlockNumberAtIndex(currIndex, currBlockNumber)
 		_setElectedValidatorsAtIndex(currIndex, currElected)
 		_setNumberOfElections(currIndex)
 
 		// call
 		require.Panics(t, func() {
-			_setElectedValidators(newElected, newBlockNumber)
+			_setElectedValidators(newElected)
 		}, "should panic because newer blocknumber is in past")
 	})
 }

@@ -10,6 +10,8 @@ type OrbsAdapter interface {
 	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)
 
 	GetElectedNodes(orbsVotingContractName string) []string
+	ForwardElectionResultsToSystem(electedValidatorAddresses []string)
+	GetCurrentSystemBlockSigners() []string
 
 	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int
@@ -27,13 +29,14 @@ type EthereumAdapter interface {
 
 	DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string)
 	GetValidators(ethereumValidatorsAddress string) []string
-	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int)
+	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string)
 
 	DeployVotingContract() (ethereumVotingAddress string)
 	Delegate(ethereumVotingAddress string, from int, to int)
 	Vote(ethereumVotingAddress string, activistInded int, to [3]int)
 
 	DeployGuardiansContract() (ethereumGuardiansAddress string)
+	SetGuardians(ethereumGuardiansAddress string, guardians []int)
 
 	WaitForFinality()
 	Mine(blocks int)
