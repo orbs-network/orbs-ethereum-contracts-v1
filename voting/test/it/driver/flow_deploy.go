@@ -51,8 +51,8 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		require.Len(t, validators, len(config.ValidatorsAccounts))
 		logStageDone("Set Validators to be %v", validators)
 	} else {
-		logStage("Using existing Ethereum Validators contract...")
-		logStageDone("Ethereum Validators Address=%s", config.EthereumValidatorsAddress)
+		logStage("Using existing Ethereum Validators & Validator Registry contracts ...")
+		logStageDone("Ethereum Validators Address=%s\nEthereum Validators Registry Address=%s", config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress)
 	}
 
 	deployingEthereumGuardians := config.EthereumGuardiansAddress == ""
@@ -79,23 +79,22 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	var erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt string
 	if deployingEthereumErc20 {
-		erc20Txt = fmt.Sprintf(`EthereumErc20Address: "%s",` + "\n", config.EthereumErc20Address)
-		
+		erc20Txt = fmt.Sprintf(`EthereumErc20Address: "%s",`+"\n", config.EthereumErc20Address)
 	}
 	if deployingEthereumVoting {
-		votingTxt = fmt.Sprintf(`EthereumVotingAddress: "%s",` + "\n", config.EthereumVotingAddress)
-	}
-	if deployingEthereumValidatorsReg {
-		validatorRegTxt = fmt.Sprintf(`EthereumValidatorsRegAddress: "%s",` + "\n", config.EthereumValidatorsRegAddress)
+		votingTxt = fmt.Sprintf(`EthereumVotingAddress: "%s",`+"\n", config.EthereumVotingAddress)
 	}
 	if deployingEthereumGuardians {
-		guardianTxt = fmt.Sprintf(`EthereumGuardiansAddress: "%s",` + "\n", config.EthereumGuardiansAddress)
+		guardianTxt = fmt.Sprintf(`EthereumGuardiansAddress: "%s",`+"\n", config.EthereumGuardiansAddress)
 	}
 	if deployingEthereumValidators {
-		validatorTxt = fmt.Sprintf(`EthereumValidatorsAddress: "%s",` + "\n", config.EthereumValidatorsAddress)
+		validatorTxt = fmt.Sprintf(`EthereumValidatorsAddress: "%s",`+"\n", config.EthereumValidatorsAddress)
+	}
+	if deployingEthereumValidatorsReg {
+		validatorRegTxt = fmt.Sprintf(`EthereumValidatorsRegAddress: "%s",`+"\n", config.EthereumValidatorsRegAddress)
 	}
 
-	if erc20Txt != "" || votingTxt != "" || validatorTxt != "" {
+	if erc20Txt != "" || votingTxt != "" || validatorTxt != "" || validatorRegTxt != "" || guardianTxt != "" {
 		logSummary("IMPORTANT! Please update the test configuration with this value:\n%s%s%s%s%s\nDeploy Phase all done.\n\n", erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
 	} else {
 		logSummary("Deploy Phase all done.\n\n")
