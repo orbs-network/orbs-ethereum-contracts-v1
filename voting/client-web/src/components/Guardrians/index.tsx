@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Explanations from './explanations';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
-import { Strategies } from '../../api/interface';
+import { Mode } from '../../api/interface';
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -94,7 +94,7 @@ const GuardianPage = ({ classes, apiService }) => {
   };
 
   const hasMetamask = () => {
-    return apiService.type === Strategies.metamask;
+    return apiService.mode === Mode.ReadWrite;
   };
 
   useEffect(() => {

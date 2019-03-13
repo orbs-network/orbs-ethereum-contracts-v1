@@ -10,7 +10,7 @@ const NewGuardian = ({ classes, apiService }) => {
   const isAddDisabled = () => !(name.length > 0 && website.length > 0);
 
   const addGuardian = async () => {
-    const receipt = await apiService.registerGuardian(name, website);
+    const receipt = await apiService.registerGuardian({ name, website });
     console.log(receipt);
   };
 

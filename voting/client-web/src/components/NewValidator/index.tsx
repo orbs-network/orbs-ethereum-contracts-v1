@@ -13,12 +13,12 @@ const NewValidator = ({ classes, apiService }) => {
     [name, website, ipAddress, orbsAddress].some(attr => !attr.length);
 
   const addValidator = async () => {
-    const receipt = await apiService.registerValidator(
+    const receipt = await apiService.registerValidator({
       name,
       ipAddress,
       website,
       orbsAddress
-    );
+    });
     console.log(receipt);
   };
 
