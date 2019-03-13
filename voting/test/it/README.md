@@ -7,7 +7,7 @@
 * Install gamma-cli: `brew install orbs-network/devtools/gamma-cli`
 * Install project by running in terminal: `npm install` 
 * For Ropsten: 
-    * Make sure ROPSTEN_SECRET and ROPSTEN_INFURA_URL are set
+    * Make sure ROPSTEN_SECRET and ROPSTEN_URL are set
 * Run:
 ```
 > mkdir -p build/contracts && cp ../../build/ethereum/* build/contracts/
