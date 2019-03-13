@@ -560,6 +560,8 @@ func newHarness() *harness {
 	VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = 3
 	VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = 500
 	ELECTION_PERIOD_LENGTH_IN_BLOCKS = 200
+	MIN_ELECTED_VALIDATORS = 3
+	MAX_ELECTED_VALIDATORS = 10
 	return &harness{nextGuardianAddress: 0xa1, nextDelegatorAddress: 0xb1, nextValidatorAddress: 0xd1, nextValidatorOrbsAddress: 0xe1}
 }
 

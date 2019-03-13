@@ -28,7 +28,7 @@ type EthereumAdapter interface {
 	GetCurrentBlock() int
 
 	DeployERC20Contract() (ethereumErc20Address string)
-	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes []int)
+	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes map[int]int)
 	SetStakes(ethereumErc20Address string, stakes []int)
 	Transfer(ethereumErc20Address string, from int, to int, amount int)
 	TopUpEther(accountIndexes []int)

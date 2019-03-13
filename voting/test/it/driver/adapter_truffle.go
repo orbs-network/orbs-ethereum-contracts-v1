@@ -77,24 +77,35 @@ func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
 	return out.Address
 }
 
-func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) []int {
+type accountStake struct {
+	Index   int
+	Balance string
+}
+
+func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) map[int]int {
 	bytes := ta.run("exec ./truffle-scripts/getStakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"NUMBER_OF_STAKEHOLDERS_ETHEREUM="+fmt.Sprintf("%d", numberOfStakes),
 	)
 	out := struct {
-		Balances []string
+		Balances []accountStake
 	}{}
 	err := json.Unmarshal(bytes, &out)
 	if err != nil {
 		panic(err.Error() + "\n" + string(bytes))
 	}
-	response := make([]int, len(out.Balances))
-	for i, v := range out.Balances {
-		n, _ := strconv.ParseUint(v, 16, 32)
-		response[i] = ta.fromEthereumToken(n)
+	stakesData := make(map[int]int)
+	for _, stake := range out.Balances {
+		n, _ := strconv.ParseUint(stake.Balance, 16, 32)
+		stakesData[stake.Index] = ta.fromEthereumToken(n)
 	}
-	return response
+	return stakesData
+	//response := make([]int, len(out.Balances))
+	//for i, v := range out.Balances {
+	//	n, _ := strconv.ParseUint(v, 16, 32)
+	//	response[i] = ta.fromEthereumToken(n)
+	//}
+	//return response
 }
 
 func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {

@@ -20,7 +20,9 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 	balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
 	require.Len(t, balances, len(config.DelegatorStakeValues))
-	require.EqualValues(t, config.DelegatorStakeValues, balances)
+	for i, conifgBalance := range config.DelegatorStakeValues {
+		require.EqualValues(t, conifgBalance, balances[i])
+	}
 	logStageDone("Stakes on Ethereum after transfers = %v", balances)
 
 	for i := 0; i < len(config.Delegates); i++ {
@@ -30,8 +32,8 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 
 	for i := 0; i < len(config.Votes); i++ {
-		logStage("Vote %d : Ethereum guardian account %d votes for %v ...", i, config.Votes[i].ActivistIndex, config.Votes[i].Candidates)
-		ethereum.Vote(config.EthereumVotingAddress, config.Votes[i].ActivistIndex, config.Votes[i].Candidates)
+		logStage("Vote %d : Ethereum guardian account %d votes for %v ...", i, config.Votes[i].GuardianIndex, config.Votes[i].Candidates)
+		ethereum.Vote(config.EthereumVotingAddress, config.Votes[i].GuardianIndex, config.Votes[i].Candidates)
 		logStageDone("Voted")
 	}
 
@@ -52,7 +54,7 @@ func collectTransactingAccounts(config *Config) []int {
 		accountMap[config.Delegates[i].FromIndex] = true
 	}
 	for i := 0; i < len(config.Votes); i++ {
-		accountMap[config.Votes[i].ActivistIndex] = true
+		accountMap[config.Votes[i].GuardianIndex] = true
 	}
 	accountsArr := make([]int, 0, len(accountMap))
 	for account := range accountMap {

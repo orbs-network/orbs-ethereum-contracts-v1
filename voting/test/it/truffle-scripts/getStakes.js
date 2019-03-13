@@ -18,14 +18,14 @@ module.exports = async function(done) {
     let accounts = await web3.eth.getAccounts();
     let txs = [];
     for (let i = 0;i < numberOfStakeHolders;i++) {
-      txs.push(instance.balanceOf(accounts[i]));
+      txs.push(instance.balanceOf(accounts[i]).then(balance => {
+        return { Index: i, Balance: balance };
+      }));
     }
 
     let balances = await Promise.all(txs);
 
-    console.log(JSON.stringify({
-      Balances: balances
-    }, null, 2));
+    console.log(JSON.stringify({ balances }, null, 2));
 
     done();
 
