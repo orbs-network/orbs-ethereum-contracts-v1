@@ -21,7 +21,9 @@ jobs:
       - checkout
       - run: cd voting/ethereum && ./test.sh
       - store_artifacts:
-          path: _out
+          path: voting/ethereum/_out
+      - store_test_results:
+          path: voting/ethereum/test-results
 
   voting-e2e:
     machine: true
