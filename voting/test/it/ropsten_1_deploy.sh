@@ -7,11 +7,11 @@ fi
 cp ../../build/ethereum/*.json ./build/contracts
 
 
-gamma-cli stop-local
-killall Ganache
+#gamma-cli stop-local
+#killall Ganache
 
-nohup /Applications/Ganache.app/Contents/MacOS/Ganache&
-gamma-cli start-local -wait -env experimental
+#nohup /Applications/Ganache.app/Contents/MacOS/Ganache&
+#gamma-cli start-local -wait -env experimental
 
 go test . -run TestDeployOnRopsten -v -count 1
 
