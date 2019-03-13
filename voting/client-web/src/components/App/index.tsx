@@ -14,6 +14,7 @@ import ReadOnlyBanner from '../ReadOnlyBanner';
 import { RemoteStrategy } from '../../api/remote';
 import { MetamaskStrategy } from '../../api/metamask';
 import { IApiStrategy, Strategies } from '../../api/interface';
+import { OrbsApi } from '../../api/orbs';
 
 class App extends Component<WithStyles> {
   apiService: IApiStrategy;
@@ -24,6 +25,7 @@ class App extends Component<WithStyles> {
     } else {
       this.apiService = new RemoteStrategy();
     }
+    this.apiService.orbs = new OrbsApi();
   }
   render() {
     const { classes } = this.props;

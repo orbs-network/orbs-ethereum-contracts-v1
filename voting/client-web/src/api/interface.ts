@@ -1,3 +1,5 @@
+import { OrbsApi } from './orbs';
+
 type address = string;
 type url = string;
 
@@ -22,4 +24,5 @@ export interface IApiStrategy {
     website: url,
     orbsAddress: address
   ): Promise<{}>;
+  orbs?: OrbsApi;
 }
