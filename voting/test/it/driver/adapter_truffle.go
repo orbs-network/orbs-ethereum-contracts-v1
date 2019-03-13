@@ -157,7 +157,7 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []stri
 func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
 	accountIndexesJson, _ := json.Marshal(accountIndexes)
 	ta.run("exec ./truffle-scripts/topUpEther.js",
-		"ACCOUNT_INDEXES_ON_ETHEREUM=" + string(accountIndexesJson),
+		"ACCOUNT_INDEXES_ON_ETHEREUM="+string(accountIndexesJson),
 	)
 }
 
@@ -194,7 +194,7 @@ func (ta *truffleAdapter) Delegate(ethereumVotingAddress string, from int, to in
 	)
 }
 
-func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, candidates [3]int) {
+func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, candidates []int) {
 	out, _ := json.Marshal(candidates)
 	ta.run("exec ./truffle-scripts/vote.js",
 		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
@@ -239,11 +239,15 @@ func (ta *truffleAdapter) WaitForBlock(blockNumber int) {
 		}
 	} else { // busy wait until block number is reached
 		fmt.Printf("Waiting for block %d...\n", blockNumber)
-		for cb:= ta.GetCurrentBlock(); cb < blockNumber; cb = ta.GetCurrentBlock() {
+		for cb := ta.GetCurrentBlock(); cb < blockNumber; cb = ta.GetCurrentBlock() {
 			fmt.Printf("	current block is %d\n", cb)
 			time.Sleep(1 * time.Second)
 		}
 	}
+}
+
+func (ta *truffleAdapter) WaitForFinality() {
+	ta.run("exec ./truffle-scripts/makeFinal.js")
 }
 
 func (ta *truffleAdapter) run(args string, env ...string) []byte {

@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:11
 
 # Create app directory
 WORKDIR /usr/src/voting-proxy-server

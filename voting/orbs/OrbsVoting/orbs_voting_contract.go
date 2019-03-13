@@ -84,7 +84,7 @@ func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 }
 
 /***
- * mirroring : transfer, delegate
+ * Mirror : transfer, delegate
  */
 type Transfer struct {
 	From  [20]byte
@@ -156,6 +156,9 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint
 	state.WriteString(_formatDelegatorMethod(delegator), eventName)
 }
 
+/***
+ * Delegators - Data struct
+ */
 var DELEGATOR_COUNT = []byte("Delegator_Address_Count")
 
 func _getNumberOfDelegators() int {
@@ -203,7 +206,7 @@ func _formatDelegatorStakeKey(delegator []byte) []byte {
 }
 
 /***
- * mirroring : transfer, delegate
+ * Mirror vote
  */
 type VoteOut struct {
 	Voter [20]byte
@@ -250,6 +253,9 @@ func mirrorVote(hexEncodedEthTxHash string) {
 	state.WriteUint32(_formatGuardianBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
 }
 
+/***
+ * Guardians - Data struct
+ */
 var GUARDIAN_COUNT = []byte("Guardian_Address_Count")
 
 func _getNumberOfGurdians() int {
@@ -307,6 +313,28 @@ func _formatGuardianStakeKey(guardian []byte) []byte {
 	return []byte(fmt.Sprintf("Guardian_%s_Stake", hex.EncodeToString(guardian)))
 }
 
+/***
+ * Valid Validators
+ */
+func _setValidValidators(validValidators [][20]byte) {
+	_setNumberOfValidValidaors(len(validValidators))
+	for i := 0; i < len(validValidators); i++ {
+		_setValidValidatorEthereumAddressAtIndex(i, validValidators[i][:])
+	}
+}
+
+func _getValidValidators() (validValidtors [][20]byte) {
+	numOfValidators := _getNumberOfValidValidaors()
+	validValidtors = make([][20]byte, numOfValidators)
+	for i := 0; i < numOfValidators; i++ {
+		validValidtors[i] = _getValidValidatorEthereumAddressAtIndex(i)
+	}
+	return
+}
+
+/***
+ * Valid Validators - data struct
+ */
 var VALID_VALIDAORS_COUNT = []byte("Valid_Validators_Count")
 
 func _getNumberOfValidValidaors() int {
@@ -359,7 +387,7 @@ func _setValidValidatorStake(validator []byte, stake uint64) {
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", _getElectionBlockNumber(), _getElectionBlockNumber() + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS, currentBlock))
+		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", _getElectionBlockNumber(), _getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS, currentBlock))
 	}
 
 	electedValidators := _processVotingStateMachine()
@@ -384,10 +412,14 @@ func _processVotingStateMachine() [][20]byte {
 		}
 		return nil
 	} else if processState == VOTING_PROCESS_STATE_GUARDIANS {
-		_collectNextGuardianStakeFromEthereum()
+		if _collectNextGuardianStakeFromEthereum() {
+			_nextProcessVotingState(VOTING_PROCESS_STATE_DELEGATORS)
+		}
 		return nil
 	} else if processState == VOTING_PROCESS_STATE_DELEGATORS {
-		_collectNextDelegatorStakeFromEthereum()
+		if _collectNextDelegatorStakeFromEthereum() {
+			_nextProcessVotingState(VOTING_PROCESS_STATE_CALCULATIONS)
+		}
 		return nil
 	} else if processState == VOTING_PROCESS_STATE_CALCULATIONS {
 		candidateVotes, totalVotes := _calculateVotes()
@@ -395,7 +427,6 @@ func _processVotingStateMachine() [][20]byte {
 		_setVotingProcessState("")
 		return elected
 	}
-	// TODO v1 noam cleanup stage
 	return nil
 }
 
@@ -409,11 +440,7 @@ func _readValidValidatorsFromEthereumToState() {
 	var validValidators [][20]byte
 	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsEthereumContractAddress(), getValidatorsAbi(), "getValidators", &validValidators)
 
-	_setNumberOfValidValidaors(len(validValidators) + 1) // TODO V1 noam - explain beautify
-	for i := 0; i < len(validValidators); i++ {
-		_setValidValidatorEthereumAddressAtIndex(i, validValidators[i][:])
-		fmt.Printf("elections %10d: from ethereum valid validator number %d :  %x\n", _getElectionBlockNumber(), i, validValidators[i])
-	}
+	_setValidValidators(validValidators)
 }
 
 func _collectNextValidatorDataFromEthereum() (isDone bool) {
@@ -421,31 +448,28 @@ func _collectNextValidatorDataFromEthereum() (isDone bool) {
 	_collectOneValidatorDataFromEthereum(nextIndex)
 	nextIndex++
 	_setVotingProcessItem(nextIndex)
-	return nextIndex >= _getNumberOfGurdians()
+	return nextIndex >= _getNumberOfValidValidaors()
 }
 
 func _collectOneValidatorDataFromEthereum(i int) {
 	validator := _getValidValidatorEthereumAddressAtIndex(i)
+	fmt.Printf("elections %10d: %d is %x\n", _getElectionBlockNumber(), i, validator)
 
 	var orbsAddress [20]byte
 	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsRegistryEthereumContractAddress(), getValidatorsRegistryAbi(), "getOrbsAddress", &orbsAddress, validator)
-	stake := _getDelegatorStakeAtElection(validator)
+	stake := _getStakeAtElection(validator)
 
 	_setValidValidatorStake(validator[:], stake)
 	_setValidValidatorOrbsAddress(validator[:], orbsAddress[:])
 	fmt.Printf("elections %10d: from ethereum Validator %x, stake %d orbsAddress %x\n", _getElectionBlockNumber(), validator, stake, orbsAddress)
 }
 
-func _collectNextGuardianStakeFromEthereum() {
+func _collectNextGuardianStakeFromEthereum() bool {
 	nextIndex := _getVotingProcessItem()
 	_collectOneGuardianStakeFromEthereum(nextIndex)
 	nextIndex++
-	// TODO NOAM
-	if nextIndex >= _getNumberOfGurdians() {
-		_nextProcessVotingState(VOTING_PROCESS_STATE_DELEGATORS)
-	} else {
-		_setVotingProcessItem(nextIndex)
-	}
+	_setVotingProcessItem(nextIndex)
+	return nextIndex >= _getNumberOfGurdians()
 }
 
 func _collectOneGuardianStakeFromEthereum(i int) {
@@ -456,32 +480,29 @@ func _collectOneGuardianStakeFromEthereum(i int) {
 		isGuardian := false
 		ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getGuardiansEthereumContractAddress(), getGuardiansAbi(), "isGuardian", &isGuardian, guardian)
 		if isGuardian {
-			stake = _getDelegatorStakeAtElection(guardian)
+			stake = _getStakeAtElection(guardian)
 		}
 	}
 	state.WriteUint64(_formatGuardianStakeKey(guardian[:]), stake)
 	fmt.Printf("elections %10d: from ethereum guardian %x, stake %d\n", _getElectionBlockNumber(), guardian, stake)
 }
 
-func _collectNextDelegatorStakeFromEthereum() {
+func _collectNextDelegatorStakeFromEthereum() bool {
 	nextIndex := _getVotingProcessItem()
 	_collectOneDelegatorStakeFromEthereum(nextIndex)
 	nextIndex++
-	if nextIndex >= _getNumberOfDelegators() {
-		_nextProcessVotingState(VOTING_PROCESS_STATE_CALCULATIONS)
-	} else {
-		_setVotingProcessItem(nextIndex)
-	}
+	_setVotingProcessItem(nextIndex)
+	return nextIndex >= _getNumberOfDelegators()
 }
 
 func _collectOneDelegatorStakeFromEthereum(i int) {
 	delegator := _getDelegatorAtIndex(i)
-	stake := _getDelegatorStakeAtElection(delegator)
+	stake := _getStakeAtElection(delegator)
 	state.WriteUint64(_formatDelegatorStakeKey(delegator[:]), stake)
 	fmt.Printf("elections %10d: from ethereum delegator %x , stake %d\n", _getElectionBlockNumber(), delegator, stake)
 }
 
-func _getDelegatorStakeAtElection(ethAddr [20]byte) uint64 {
+func _getStakeAtElection(ethAddr [20]byte) uint64 {
 	stake := new(*big.Int)
 	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getTokenEthereumContractAddress(), getTokenAbi(), "balanceOf", stake, ethAddr)
 	return ((*stake).Div(*stake, ETHEREUM_STAKE_FACTOR)).Uint64()
@@ -591,15 +612,6 @@ func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes 
 		}
 	}
 	return winners
-}
-
-func _getValidValidators() (validValidtors [][20]byte) {
-	numOfValidators := _getNumberOfValidValidaors()
-	validValidtors = make([][20]byte, numOfValidators)
-	for i := 0; i < numOfValidators; i++ {
-		validValidtors[i] = _getValidValidatorEthereumAddressAtIndex(i)
-	}
-	return
 }
 
 var VOTING_PROCESS_STATE_KEY = []byte("Voting_Process_State")
@@ -758,13 +770,13 @@ func _setElectionBlockNumber(BlockNumber uint64) {
 }
 
 /*****
- * Connections to other contracts
+ * Connections to Ethereum contracts
  */
-var ETHEREUM_TOKEN_ADDR = "0x8B307dBE4d3Da299209021B02fCFDe02Ed88c891"
-var ETHEREUM_VOTING_ADDR = "0x563ec4774e6402c38488f161656be81f9Ad10Eb0"
-var ETHEREUM_VALIDATORS_ADDR = "0x5C93e532e604125B52b70F11384883b7492B7401"
-var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0x86F802d17f3932e80eEf249F745b09D2F93c09f0"
-var ETHEREUM_GUARDIANS_ADDR = "0x662Bc4FA6566aEFA55fb717f2540dA40f2DF536b"
+var ETHEREUM_TOKEN_ADDR = "0x9ebeE932c50d342E9b7eF53BB9011dc88d087EA5"
+var ETHEREUM_VOTING_ADDR = "0xed4EDddE2E3C2a44c92Ef6a1ae9Ca507916AA614"
+var ETHEREUM_VALIDATORS_ADDR = "0x6a8fA3Af98Db5FBe30d41d73510Ee5499254199f"
+var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0xB2d154c83581751404bDb063D17E7A79D9A55C07"
+var ETHEREUM_GUARDIANS_ADDR = "0x71FB398f1959Fd75D5862A37B3315A6D761569BA"
 
 func getTokenEthereumContractAddress() string {
 	return ETHEREUM_TOKEN_ADDR

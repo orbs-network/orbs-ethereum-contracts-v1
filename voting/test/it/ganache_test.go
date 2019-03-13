@@ -47,6 +47,7 @@ func TestFullFlowOnGanache(t *testing.T) {
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
+
 	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
 	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
 }
@@ -82,11 +83,11 @@ func generateDelegates(stakeHolderNumber int, activists []int) []*driver.Delegat
 // test calcs don't handle guardian that is a delegate or delegate that is guardian
 func generateVotes(activists []int, validatorAccounts []int) []*driver.VoteEvent {
 	return []*driver.VoteEvent{
-		{4, [3]int{20, 22}},
-		{10, [3]int{22, 23, 24}},
-		{6, [3]int{22}},
-		{4, [3]int{21}}, // revote
-		{11, [3]int{}},
+		{4, []int{20, 22}},
+		{10, []int{22, 23, 24}},
+		{6, []int{22}},
+		{4, []int{21}}, // revote
+		{11, []int{}},
 		//{15, [3]int{24, 21, 22}}, // not an guardian // TODO v1 noam
 	}
 }

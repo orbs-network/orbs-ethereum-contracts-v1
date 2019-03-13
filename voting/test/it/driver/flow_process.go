@@ -25,6 +25,8 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	winners := orbs.GetElectedNodes(config.OrbsVotingContractName)
 	logStageDone("And the %d winners are.... %v", len(winners), winners)
 
+	runNaiveCalculations(config)
+
 	require.Conditionf(t, func() bool {
 		return len(winners) >= 4
 	}, "expecting at least 4 winners but got %d", len(winners))
@@ -34,13 +36,19 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	signers := orbs.GetCurrentSystemBlockSigners()
 	logStageDone("And the %d signers are.... %v", len(signers), signers)
 
-	runNaiveCalulations(config)
-
 	logSummary("Process Phase all done.")
 
+	if config.DebugLogs {
+		erc20Txt := fmt.Sprintf(`EthereumErc20Address: "%s",`+"\n", config.EthereumErc20Address)
+		votingTxt := fmt.Sprintf(`EthereumVotingAddress: "%s",`+"\n", config.EthereumVotingAddress)
+		guardianTxt := fmt.Sprintf(`EthereumGuardiansAddress: "%s",`+"\n", config.EthereumGuardiansAddress)
+		validatorTxt := fmt.Sprintf(`EthereumValidatorsAddress: "%s",`+"\n", config.EthereumValidatorsAddress)
+		validatorRegTxt := fmt.Sprintf(`EthereumValidatorsRegAddress: "%s",`+"\n", config.EthereumValidatorsRegAddress)
+		logSummary("If you want to rerun without re-deploy on ethereum please update the test configuration with these value:\n%s%s%s%s%s\nDeploy Phase all done.\n\n", erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
+	}
 }
 
-func runNaiveCalulations(config *Config) []int {
+func runNaiveCalculations(config *Config) []int {
 	relationship := make(map[int]int)
 
 	for _, transfer := range config.Transfers {
@@ -56,8 +64,6 @@ func runNaiveCalulations(config *Config) []int {
 	for key, value := range relationship {
 		fmt.Printf("Delegator %d to agent %d\n", key, value)
 	}
-
-	guardianVote := make(map[int]int)
 
 	// run twice
 	for from, to := range relationship {
@@ -77,6 +83,7 @@ func runNaiveCalulations(config *Config) []int {
 		fmt.Printf("stake %d is %d\n", i, stake)
 	}
 
+	guardianVote := make(map[int]int)
 	totalVotes := 0
 	for _, guardian := range config.GuardiansAccounts {
 		guardianVote[guardian] = config.DelegatorStakeValues[guardian]
@@ -88,7 +95,7 @@ func runNaiveCalulations(config *Config) []int {
 	}
 	fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
 
-	guardianToCandidate := make(map[int][3]int)
+	guardianToCandidate := make(map[int][]int)
 	for _, vote := range config.Votes {
 		guardianToCandidate[vote.ActivistIndex] = vote.Candidates
 	}
@@ -101,13 +108,13 @@ func runNaiveCalulations(config *Config) []int {
 	}
 
 	elected := make([]int, 0)
-	for candidate, vote := range candidateVote {
-		fmt.Printf("candidate %d , got %d votes\n", candidate, vote)
-		if vote < voteThreshhold {
-			elected = append(elected, candidate)
-			fmt.Printf("candidate %d , elected\n", candidate)
+	for _, validValidator := range config.ValidatorsAccounts {
+		vote, ok := candidateVote[validValidator]
+		if !ok || vote < voteThreshhold {
+			elected = append(elected, validValidator)
+			fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
 		} else {
-			fmt.Printf("candidate %d , voted out\n", candidate)
+			fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
 		}
 	}
 	return elected

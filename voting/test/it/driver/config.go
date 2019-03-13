@@ -22,8 +22,8 @@ type Config struct {
 	Transfers                    []*TransferEvent
 	Delegates                    []*DelegateEvent
 	Votes                        []*VoteEvent
-	OrbsVotingContractName		 string
-	FirstElectionBlockNumber	 int // zero to automatically determine after mirroring completes. positive value to enforce static value
+	OrbsVotingContractName       string
+	FirstElectionBlockNumber     int // zero to automatically determine after mirroring completes. positive value to enforce static value
 }
 
 func (config *Config) Validate(isDeploy bool) error {
@@ -79,5 +79,5 @@ type TransferEvent struct {
 
 type VoteEvent struct {
 	ActivistIndex int
-	Candidates    [3]int
+	Candidates    []int
 }
