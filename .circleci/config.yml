@@ -11,7 +11,6 @@ jobs:
       - image: circleci/golang:1.11.4
     steps:
       - checkout
-      - run: cd voting/orbs
       - run: go get ./...
       - run: go test .
 
@@ -20,9 +19,8 @@ jobs:
       - image: circleci/node:11.2.0
     steps:
       - checkout
-      - run: cd voting/ethereum
-      - run: npm install
-      - run: npm test
+      - run: npm --prefix voting/ethereum install
+      - run: npm --prefix voting/ethereum test
 
   voting-e2e:
     machine: true
