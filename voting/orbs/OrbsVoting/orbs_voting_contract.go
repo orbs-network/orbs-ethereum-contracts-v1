@@ -359,7 +359,7 @@ func _setValidValidatorStake(validator []byte, stake uint64) {
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", _getElectionBlockNumber(), _getElectionBlockNumber() + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS, currentBlock))
+		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", _getElectionBlockNumber(), _getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS, currentBlock))
 	}
 
 	electedValidators := _processVotingStateMachine()
