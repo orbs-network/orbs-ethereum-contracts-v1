@@ -11,8 +11,11 @@ jobs:
       - image: circleci/golang:1.11.4
     steps:
       - checkout
-      - run: go get ./...
-      - run: go test .
+      - run: cd voting/orbs && ./test.sh
+      - store_artifacts:
+          path: voting/orbs/_out
+      - store_test_results:
+          path: voting/orbs/_reports
 
   voting-solidity-tests:
     docker:
@@ -23,7 +26,7 @@ jobs:
       - store_artifacts:
           path: voting/ethereum/_out
       - store_test_results:
-          path: voting/ethereum/test-results
+          path: voting/ethereum/_reports
 
   voting-e2e:
     machine: true
