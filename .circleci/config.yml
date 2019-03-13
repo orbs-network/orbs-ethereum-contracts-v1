@@ -28,6 +28,14 @@ jobs:
       - store_test_results:
           path: voting/ethereum/_reports
 
+  voting-client-tests:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - run: cd voting/client-web && npm install && npm run test:ci
+      - store_test_results:
+          path: voting/client-web/_reports
+
   voting-e2e:
     machine: true
     steps:
@@ -41,9 +49,10 @@ workflows:
   version: 2
   voting:
     jobs:
-      - voting-orbs-tests
-      - voting-e2e
       - voting-solidity-tests
+      - voting-orbs-tests
+      - voting-client-tests
+      - voting-e2e
   asb:
     jobs:
       - asb-e2e
