@@ -58,6 +58,13 @@ func (ta *truffleAdapter) GetCurrentBlock() int {
 	return out.CurrentBlock
 }
 
+func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
+	accountIndexesJson, _ := json.Marshal(accountIndexes)
+	ta.run("exec ./truffle-scripts/topUpEther.js",
+		"ACCOUNT_INDEXES_ON_ETHEREUM="+string(accountIndexesJson),
+	)
+}
+
 func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
 	bytes := ta.run("exec ./truffle-scripts/deployERC20.js")
 	out := struct {
@@ -131,25 +138,25 @@ func (ta *truffleAdapter) DeployValidatorsContract() (ethereumValidatorsAddress 
 	return out.ValidatorsAddress, out.ValidatorsRegistryAddress
 }
 
-func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []string {
+type validatorData struct {
+	Index       int
+	Address     string
+	OrbsAddress string
+}
+
+func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) []validatorData {
 	bytes := ta.run("exec ./truffle-scripts/getValidators.js",
 		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
+		"VALIDATORS_REGISTRY_CONTRACT_ADDRESS="+ethereumValidatorsRegAddress,
 	)
 	out := struct {
-		Validators []string
+		Validators []validatorData
 	}{}
 	err := json.Unmarshal(bytes, &out)
 	if err != nil {
 		panic(err.Error() + "\n" + string(bytes))
 	}
 	return out.Validators
-}
-
-func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
-	accountIndexesJson, _ := json.Marshal(accountIndexes)
-	ta.run("exec ./truffle-scripts/topUpEther.js",
-		"ACCOUNT_INDEXES_ON_ETHEREUM="+string(accountIndexesJson),
-	)
 }
 
 func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {

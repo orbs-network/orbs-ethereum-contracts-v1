@@ -47,7 +47,7 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 		logStage("Setting Ethereum Validators accounts ...")
 		ethereum.SetValidators(config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress, config.ValidatorsAccounts, config.ValidatorsOrbsAddresses, config.ValidatorsOrbsIps)
-		validators := ethereum.GetValidators(config.EthereumValidatorsAddress)
+		validators := ethereum.GetValidators(config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress)
 		require.Len(t, validators, len(config.ValidatorsAccounts))
 		logStageDone("Set Validators to be %v", validators)
 	} else {

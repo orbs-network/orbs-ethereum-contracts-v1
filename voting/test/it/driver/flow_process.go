@@ -3,6 +3,7 @@ package driver
 import (
 	"fmt"
 	"github.com/stretchr/testify/require"
+	"strings"
 	"testing"
 )
 
@@ -25,7 +26,10 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	winners := orbs.GetElectedNodes(config.OrbsVotingContractName)
 	logStageDone("And the %d winners are.... %v", len(winners), winners)
 
-	runNaiveCalculations(config)
+	logStage("Getting winners from internal calculation...")
+	independantWinners := independantCaluculateGetWinners(config, ethereum)
+	require.ElementsMatch(t, independantWinners, winners)
+	logStageDone("Got same results !")
 
 	require.Conditionf(t, func() bool {
 		return len(winners) >= 4
@@ -48,6 +52,21 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	}
 }
 
+func independantCaluculateGetWinners(config *Config, ethereum EthereumAdapter) []string {
+	validatorsData := ethereum.GetValidators(config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress)
+	winnerIndexes := runNaiveCalculations(config)
+	winnersOrbsAddresses := make([]string, 0, len(winnerIndexes))
+	for _, winnerIndex := range winnerIndexes {
+		for _, validatorData := range validatorsData {
+			if validatorData.Index == winnerIndex {
+				winnersOrbsAddresses = append(winnersOrbsAddresses, strings.ToLower(validatorData.OrbsAddress))
+				break
+			}
+		}
+	}
+	return winnersOrbsAddresses
+}
+
 func runNaiveCalculations(config *Config) []int {
 	relationship := make(map[int]int)
 
@@ -61,9 +80,13 @@ func runNaiveCalculations(config *Config) []int {
 		relationship[delegate.FromIndex] = delegate.ToIndex
 	}
 
-	for key, value := range relationship {
-		fmt.Printf("Delegator %d to agent %d\n", key, value)
-	}
+	//for key, value := range relationship {
+	//	fmt.Printf("Delegator %d to agent %d : stake %d \n", key, value, config.DelegatorStakeValues[key])
+	//}
+	//
+	//for i, stake := range config.DelegatorStakeValues {
+	//	fmt.Printf("before stake %d is %d\n", i, stake)
+	//}
 
 	// run twice
 	for from, to := range relationship {
@@ -79,9 +102,9 @@ func runNaiveCalculations(config *Config) []int {
 		}
 	}
 
-	for i, stake := range config.DelegatorStakeValues {
-		fmt.Printf("stake %d is %d\n", i, stake)
-	}
+	//for i, stake := range config.DelegatorStakeValues {
+	//	fmt.Printf("after stake %d is %d\n", i, stake)
+	//}
 
 	guardianVote := make(map[int]int)
 	totalVotes := 0
@@ -90,10 +113,10 @@ func runNaiveCalculations(config *Config) []int {
 		totalVotes += config.DelegatorStakeValues[guardian]
 	}
 	voteThreshhold := totalVotes * 7 / 10
-	for key, value := range guardianVote {
-		fmt.Printf("Guardiand %d all vote %d\n", key, value)
-	}
-	fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
+	//for key, value := range guardianVote {
+	//	fmt.Printf("Guardiand %d all vote %d\n", key, value)
+	//}
+	//fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
 
 	guardianToCandidate := make(map[int][]int)
 	for _, vote := range config.Votes {
@@ -112,9 +135,9 @@ func runNaiveCalculations(config *Config) []int {
 		vote, ok := candidateVote[validValidator]
 		if !ok || vote < voteThreshhold {
 			elected = append(elected, validValidator)
-			fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
+			//fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
 		} else {
-			fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
+			//fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
 		}
 	}
 	return elected
