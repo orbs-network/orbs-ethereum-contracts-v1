@@ -19,9 +19,9 @@
       ]
     },
     "integrative": {
-      "VirtualChain": 1005,
+      "VirtualChain": 1006,
       "Endpoints": [
-        "http://18.219.51.57/vchains/1005"
+        "http://18.219.51.57/vchains/1006"
       ]
     }
   }
