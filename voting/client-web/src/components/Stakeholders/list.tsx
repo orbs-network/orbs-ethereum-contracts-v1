@@ -17,6 +17,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
           <TableCell>Name</TableCell>
           <TableCell>Address</TableCell>
           <TableCell>Website</TableCell>
+          <TableCell>Balance</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="guardians-list">
@@ -49,6 +50,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
                 {guardians[address].url}
               </Link>
             </TableCell>
+            <TableCell>{guardians[address].balance}</TableCell>
           </TableRow>
         ))}
       </TableBody>

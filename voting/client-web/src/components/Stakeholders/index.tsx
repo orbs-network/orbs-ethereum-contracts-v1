@@ -22,7 +22,8 @@ const StakeholderPage = ({ apiService }) => {
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
         name: details[idx]['name'],
-        url: details[idx]['website']
+        url: details[idx]['website'],
+        balance: details[idx]['balance']
       };
       return acc;
     }, {});
