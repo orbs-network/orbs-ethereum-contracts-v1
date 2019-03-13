@@ -15,7 +15,7 @@ jobs:
       - store_artifacts:
           path: voting/orbs/_out
       - store_test_results:
-          path: voting/orbs/_reports
+          path: voting/orbs/_out
 
   voting-solidity-tests:
     docker:
