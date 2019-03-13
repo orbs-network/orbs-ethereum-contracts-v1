@@ -19,8 +19,9 @@ jobs:
       - image: circleci/node:11.2.0
     steps:
       - checkout
-      - run: npm --prefix voting/ethereum install
-      - run: npm --prefix voting/ethereum test
+      - run: cd voting/ethereum && ./test.sh
+      - store_artifacts:
+          path: _out
 
   voting-e2e:
     machine: true
