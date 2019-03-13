@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "./scripts/copy-contracts.sh",
     "start": "node index.js",
     "lint": "prettier --single-quote --write '**/*.js'",
-    "copy-contracts": "./scripts/copy-contracts.sh"
+    "contracts:prod": "./scripts/copy-contracts.sh"
   },
   "repository": {
     "type": "git",
