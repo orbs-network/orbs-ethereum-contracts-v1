@@ -448,7 +448,7 @@ func _collectNextValidatorDataFromEthereum() (isDone bool) {
 	_collectOneValidatorDataFromEthereum(nextIndex)
 	nextIndex++
 	_setVotingProcessItem(nextIndex)
-	return nextIndex >= _getNumberOfGurdians()
+	return nextIndex >= _getNumberOfValidValidaors()
 }
 
 func _collectOneValidatorDataFromEthereum(i int) {
@@ -772,11 +772,11 @@ func _setElectionBlockNumber(BlockNumber uint64) {
 /*****
  * Connections to Ethereum contracts
  */
-var ETHEREUM_TOKEN_ADDR = "0x8B307dBE4d3Da299209021B02fCFDe02Ed88c891"
-var ETHEREUM_VOTING_ADDR = "0x563ec4774e6402c38488f161656be81f9Ad10Eb0"
-var ETHEREUM_VALIDATORS_ADDR = "0x5C93e532e604125B52b70F11384883b7492B7401"
-var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0x86F802d17f3932e80eEf249F745b09D2F93c09f0"
-var ETHEREUM_GUARDIANS_ADDR = "0x662Bc4FA6566aEFA55fb717f2540dA40f2DF536b"
+var ETHEREUM_TOKEN_ADDR = "0x9ebeE932c50d342E9b7eF53BB9011dc88d087EA5"
+var ETHEREUM_VOTING_ADDR = "0xed4EDddE2E3C2a44c92Ef6a1ae9Ca507916AA614"
+var ETHEREUM_VALIDATORS_ADDR = "0x6a8fA3Af98Db5FBe30d41d73510Ee5499254199f"
+var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0xB2d154c83581751404bDb063D17E7A79D9A55C07"
+var ETHEREUM_GUARDIANS_ADDR = "0x71FB398f1959Fd75D5862A37B3315A6D761569BA"
 
 func getTokenEthereumContractAddress() string {
 	return ETHEREUM_TOKEN_ADDR

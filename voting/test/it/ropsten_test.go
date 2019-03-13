@@ -17,8 +17,8 @@ var delegatorsNumberRopsten = 15
 var guardiansAccountsRopsten = []int{4, 6, 10, 11}
 var validatorAccountsRopsten = []int{20, 21, 22, 23, 24}
 var configRopsten = &driver.Config{
-	DebugLogs:                    true,           // shows detailed responses for every command
-	OrbsVotingContractName:       "OrbsVoting_1", // name of the orbs contract
+	DebugLogs:                    true,                                                            // shows detailed responses for every command
+	OrbsVotingContractName:       "OrbsVoting_1",                                                  // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
 	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
@@ -105,11 +105,11 @@ func generateDelegatesRopsten(stakeHolderNumber int, activists []int) []*driver.
 // test calcs don't handle guardian that is a delegate or delegate that is guardian
 func generateVotesRopsten(activists []int, validatorAccounts []int) []*driver.VoteEvent {
 	return []*driver.VoteEvent{
-		{4, [3]int{20, 22}},
-		{10, [3]int{22, 23, 24}},
-		{6, [3]int{22}},
-		{4, [3]int{21}}, // revote
-		{11, [3]int{}},
+		{4, []int{20, 22}},
+		{10, []int{22, 23, 24}},
+		{6, []int{22}},
+		{4, []int{21}}, // revote
+		{11, []int{}},
 		//{15, [3]int{24, 21, 22}}, // not an guardian // TODO v1 noam
 	}
 }

@@ -39,7 +39,7 @@ type EthereumAdapter interface {
 
 	DeployVotingContract() (ethereumVotingAddress string)
 	Delegate(ethereumVotingAddress string, from int, to int)
-	Vote(ethereumVotingAddress string, activistInded int, to [3]int)
+	Vote(ethereumVotingAddress string, activistInded int, to []int)
 
 	DeployGuardiansContract() (ethereumGuardiansAddress string)
 	SetGuardians(ethereumGuardiansAddress string, guardians []int)
