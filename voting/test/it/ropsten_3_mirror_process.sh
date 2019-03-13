@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-go test . -run TestMirrorAndProcessOnRopsten -v -count 1 -timeout 30m
+go test . -run TestMirrorAndProcessOnRopsten -v -count 1 -timeout 0
 

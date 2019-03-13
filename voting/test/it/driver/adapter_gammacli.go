@@ -27,12 +27,12 @@ func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
 		debug:                     config.DebugLogs,
 		env:                       "integrative",
 		stakeFactor:          10000,
-		voteMirrorPeriod:     10,
+		voteMirrorPeriod:     15,
 		voteValidPeriod:      500,
 		electionPeriod:       200,
 		maxElectedValidators: 5,
-		finalityBlocksComponent: 5,
-		finalityTimeComponent: 2 * time.Minute + 20 * time.Second,
+		finalityBlocksComponent: 1,
+		finalityTimeComponent: 2 * time.Minute + 5 * time.Second,
 	}
 }
 

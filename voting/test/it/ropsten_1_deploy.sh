@@ -13,5 +13,5 @@ cp ../../build/ethereum/*.json ./build/contracts
 #nohup /Applications/Ganache.app/Contents/MacOS/Ganache&
 #gamma-cli start-local -wait -env experimental
 
-go test . -run TestDeployOnRopsten -v -count 1 -timeout 30m
+go test . -run TestDeployOnRopsten -v -count 1 -timeout 0
 
