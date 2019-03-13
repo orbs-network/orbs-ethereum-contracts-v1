@@ -1,12 +1,30 @@
 version: 2
 jobs:
-  asb:
+  asb-e2e:
     machine: true
     steps:
       - checkout
       - run: ./.circleci/main.sh
 
-  voting:
+  voting-orbs-tests:
+    docker:
+      - image: circleci/golang:1.11.4
+    working_directory: ./voting/orbs
+    steps:
+      - checkout
+      - run: go get ./...
+      - run: go test .
+
+  voting-solidity-tests:
+    docker:
+      - image: circleci/node:11.2.0
+    working_directory: ./voting/ethereum
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm test
+
+  voting-e2e:
     machine: true
     steps:
       - checkout
@@ -14,9 +32,15 @@ jobs:
       - store_artifacts:
           path: _out
           destination: test-output
+
 workflows:
   version: 2
-  commit:
+  voting:
     jobs:
-      - asb
-      - voting
+      - vorting-orbs-tests
+      - voting-e2e
+      - voting-solidity-tests
+  asb:
+    jobs:
+      - asb-e2e
+
