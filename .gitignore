@@ -19,8 +19,14 @@ Federation/Unified.sol
 TestingERC20/build
 
 Voting/ethereum/build/
+Voting/mirror_process/package-lock.json
 Voting/test/it/build/
 Voting/test/it/package-lock.json
 
 **/node_modules/
 # **/build/
+
+nohup.out
+
+_out
+_reports

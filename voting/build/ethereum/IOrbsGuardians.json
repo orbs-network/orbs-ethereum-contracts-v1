@@ -74,6 +74,29 @@
       "constant": true,
       "inputs": [
         {
+          "name": "guardian",
+          "type": "address"
+        }
+      ],
+      "name": "getRegistrationBlockHeight",
+      "outputs": [
+        {
+          "name": "registeredOn",
+          "type": "uint256"
+        },
+        {
+          "name": "lastUpdatedOn",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
           "name": "offset",
           "type": "uint256"
         },
@@ -98,16 +121,16 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsGuardians {\n    function register(string calldata name, string calldata website)\n        external\n        payable;\n    function leave() external;\n    function isGuardian(address guardian) external view returns (bool);\n    function getGuardianData(address validator)\n        external\n        view\n        returns (string memory name, string memory website);\n    function getGuardians(uint offset, uint limit)\n        external\n        view\n        returns (address[] memory);\n}\n",
+  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsGuardians {\n    function register(string calldata name, string calldata website)\n        external\n        payable;\n    function leave() external;\n    function isGuardian(address guardian) external view returns (bool);\n    function getGuardianData(address validator)\n        external\n        view\n        returns (string memory name, string memory website);\n    function getRegistrationBlockHeight(address guardian)\n        external\n        view\n        returns (uint registeredOn, uint lastUpdatedOn);\n    function getGuardians(uint offset, uint limit)\n        external\n        view\n        returns (address[] memory);\n}\n",
   "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsGuardians.sol",
   "ast": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsGuardians.sol",
     "exportedSymbols": {
       "IOrbsGuardians": [
-        38
+        47
       ]
     },
-    "id": 39,
+    "id": 48,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -126,9 +149,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 38,
+        "id": 47,
         "linearizedBaseContracts": [
-          38
+          47
         ],
         "name": "IOrbsGuardians",
         "nodeType": "ContractDefinition",
@@ -207,7 +230,7 @@
               "parameters": [],
               "src": "153:0:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "56:98:0",
             "stateMutability": "payable",
             "superFunction": null,
@@ -234,7 +257,7 @@
               "parameters": [],
               "src": "184:0:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "159:26:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -316,7 +339,7 @@
               ],
               "src": "250:6:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "190:67:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -424,7 +447,7 @@
               ],
               "src": "352:43:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "262:134:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -433,23 +456,57 @@
           {
             "body": null,
             "documentation": null,
-            "id": 37,
+            "id": 36,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
-            "name": "getGuardians",
+            "name": "getRegistrationBlockHeight",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 32,
+              "id": 30,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
                   "id": 29,
-                  "name": "offset",
+                  "name": "guardian",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "423:11:0",
+                  "scope": 36,
+                  "src": "437:16:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 28,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "437:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "436:18:0"
+            },
+            "returnParameters": {
+              "id": 35,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 32,
+                  "name": "registeredOn",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "502:17:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -457,10 +514,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 28,
+                    "id": 31,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "423:4:0",
+                    "src": "502:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -471,11 +528,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 31,
-                  "name": "limit",
+                  "id": 34,
+                  "name": "lastUpdatedOn",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "436:10:0",
+                  "scope": 36,
+                  "src": "521:18:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -483,10 +540,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 30,
+                    "id": 33,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "436:4:0",
+                    "src": "521:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -496,19 +553,93 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "422:25:0"
+              "src": "501:39:0"
             },
-            "returnParameters": {
-              "id": 36,
+            "scope": 47,
+            "src": "401:140:0",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 46,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getGuardians",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 41,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 35,
+                  "id": 38,
+                  "name": "offset",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 46,
+                  "src": "568:11:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 37,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "568:4:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 40,
+                  "name": "limit",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 46,
+                  "src": "581:10:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 39,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "581:4:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "567:25:0"
+            },
+            "returnParameters": {
+              "id": 45,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 44,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "495:16:0",
+                  "scope": 46,
+                  "src": "640:16:0",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -517,20 +648,20 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 33,
+                      "id": 42,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "495:7:0",
+                      "src": "640:7:0",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 34,
+                    "id": 43,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "495:9:0",
+                    "src": "640:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -540,29 +671,29 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "494:18:0"
+              "src": "639:18:0"
             },
-            "scope": 38,
-            "src": "401:112:0",
+            "scope": 47,
+            "src": "546:112:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 39,
-        "src": "25:490:0"
+        "scope": 48,
+        "src": "25:635:0"
       }
     ],
-    "src": "0:516:0"
+    "src": "0:661:0"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsGuardians.sol",
     "exportedSymbols": {
       "IOrbsGuardians": [
-        38
+        47
       ]
     },
-    "id": 39,
+    "id": 48,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -581,9 +712,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 38,
+        "id": 47,
         "linearizedBaseContracts": [
-          38
+          47
         ],
         "name": "IOrbsGuardians",
         "nodeType": "ContractDefinition",
@@ -662,7 +793,7 @@
               "parameters": [],
               "src": "153:0:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "56:98:0",
             "stateMutability": "payable",
             "superFunction": null,
@@ -689,7 +820,7 @@
               "parameters": [],
               "src": "184:0:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "159:26:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -771,7 +902,7 @@
               ],
               "src": "250:6:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "190:67:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -879,7 +1010,7 @@
               ],
               "src": "352:43:0"
             },
-            "scope": 38,
+            "scope": 47,
             "src": "262:134:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -888,23 +1019,57 @@
           {
             "body": null,
             "documentation": null,
-            "id": 37,
+            "id": 36,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
-            "name": "getGuardians",
+            "name": "getRegistrationBlockHeight",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 32,
+              "id": 30,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
                   "id": 29,
-                  "name": "offset",
+                  "name": "guardian",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "423:11:0",
+                  "scope": 36,
+                  "src": "437:16:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 28,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "437:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "436:18:0"
+            },
+            "returnParameters": {
+              "id": 35,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 32,
+                  "name": "registeredOn",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "502:17:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -912,10 +1077,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 28,
+                    "id": 31,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "423:4:0",
+                    "src": "502:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -926,11 +1091,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 31,
-                  "name": "limit",
+                  "id": 34,
+                  "name": "lastUpdatedOn",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "436:10:0",
+                  "scope": 36,
+                  "src": "521:18:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -938,10 +1103,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 30,
+                    "id": 33,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "436:4:0",
+                    "src": "521:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -951,19 +1116,93 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "422:25:0"
+              "src": "501:39:0"
             },
-            "returnParameters": {
-              "id": 36,
+            "scope": 47,
+            "src": "401:140:0",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 46,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getGuardians",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 41,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 35,
+                  "id": 38,
+                  "name": "offset",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 46,
+                  "src": "568:11:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 37,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "568:4:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 40,
+                  "name": "limit",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 46,
+                  "src": "581:10:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 39,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "581:4:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "567:25:0"
+            },
+            "returnParameters": {
+              "id": 45,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 44,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 37,
-                  "src": "495:16:0",
+                  "scope": 46,
+                  "src": "640:16:0",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
@@ -972,20 +1211,20 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 33,
+                      "id": 42,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "495:7:0",
+                      "src": "640:7:0",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 34,
+                    "id": 43,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "495:9:0",
+                    "src": "640:9:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -995,20 +1234,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "494:18:0"
+              "src": "639:18:0"
             },
-            "scope": 38,
-            "src": "401:112:0",
+            "scope": 47,
+            "src": "546:112:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 39,
-        "src": "25:490:0"
+        "scope": 48,
+        "src": "25:635:0"
       }
     ],
-    "src": "0:516:0"
+    "src": "0:661:0"
   },
   "compiler": {
     "name": "solc",
@@ -1016,7 +1255,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-09T18:25:37.281Z",
+  "updatedAt": "2019-03-11T15:48:09.966Z",
   "devdoc": {
     "methods": {}
   },

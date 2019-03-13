@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -8,24 +9,113 @@ import (
 func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
 
 	require.NoError(t, config.Validate(false))
+	na := NodeAdater(config)
 
-	logStage("Running processing ...")
-	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + 2
-	steps := 0
-	isDone := false
+	logStage("Wait for mirror period to end...")
+	beginProcessingAtBlock := config.FirstElectionBlockNumber + orbs.GetMirrorVotingPeriod() + 1
+	waitForFinality(beginProcessingAtBlock, orbs, ethereum)
+	logStageDone("Wait for mirror period to end")
 
-	for !isDone && steps < maxSteps {
-		isDone = orbs.RunVotingProcess(getOrbsVotingContractName())
-		steps++
-	}
-	logStageDone("RunVotingProcess called %d times", steps)
+	logStage("Running processing...")
+	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
+	na.Process(config.OrbsVotingContractName, maxSteps, orbs.GetOrbsEnvironment())
+	logStageDone("Running processing")
 
-	require.True(t, steps < maxSteps, "should be n steps")
+	logStage("Getting winners processing...")
+	winners := orbs.GetElectedNodes(config.OrbsVotingContractName)
+	logStageDone("And the %d winners are.... %v", len(winners), winners)
 
-	logStage("Running processing ...")
-	winners := orbs.GetElectedNodes(getOrbsValidatorsConfigContractName())
-	logStageDone("And the %d winners are .... %v", len(winners), winners)
+	runNaiveCalculations(config)
+
+	require.Conditionf(t, func() bool {
+		return len(winners) >= 4
+	}, "expecting at least 4 winners but got %d", len(winners))
+
+	logStage("Forwarding results to system...")
+	orbs.ForwardElectionResultsToSystem(winners)
+	signers := orbs.GetCurrentSystemBlockSigners()
+	logStageDone("And the %d signers are.... %v", len(signers), signers)
 
 	logSummary("Process Phase all done.")
 
+	if config.DebugLogs {
+		erc20Txt := fmt.Sprintf(`EthereumErc20Address: "%s",`+"\n", config.EthereumErc20Address)
+		votingTxt := fmt.Sprintf(`EthereumVotingAddress: "%s",`+"\n", config.EthereumVotingAddress)
+		guardianTxt := fmt.Sprintf(`EthereumGuardiansAddress: "%s",`+"\n", config.EthereumGuardiansAddress)
+		validatorTxt := fmt.Sprintf(`EthereumValidatorsAddress: "%s",`+"\n", config.EthereumValidatorsAddress)
+		validatorRegTxt := fmt.Sprintf(`EthereumValidatorsRegAddress: "%s",`+"\n", config.EthereumValidatorsRegAddress)
+		logSummary("If you want to rerun without re-deploy on ethereum please update the test configuration with these value:\n%s%s%s%s%s\nDeploy Phase all done.\n\n", erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
+	}
+}
+
+func runNaiveCalculations(config *Config) []int {
+	relationship := make(map[int]int)
+
+	for _, transfer := range config.Transfers {
+		if transfer.Amount == 0 {
+			relationship[transfer.FromIndex] = transfer.ToIndex
+		}
+	}
+
+	for _, delegate := range config.Delegates {
+		relationship[delegate.FromIndex] = delegate.ToIndex
+	}
+
+	for key, value := range relationship {
+		fmt.Printf("Delegator %d to agent %d\n", key, value)
+	}
+
+	// run twice
+	for from, to := range relationship {
+		if config.DelegatorStakeValues[from] != 0 {
+			config.DelegatorStakeValues[to] += config.DelegatorStakeValues[from]
+			config.DelegatorStakeValues[from] = 0
+		}
+	}
+	for from, to := range relationship {
+		if config.DelegatorStakeValues[from] != 0 {
+			config.DelegatorStakeValues[to] += config.DelegatorStakeValues[from]
+			config.DelegatorStakeValues[from] = 0
+		}
+	}
+
+	for i, stake := range config.DelegatorStakeValues {
+		fmt.Printf("stake %d is %d\n", i, stake)
+	}
+
+	guardianVote := make(map[int]int)
+	totalVotes := 0
+	for _, guardian := range config.GuardiansAccounts {
+		guardianVote[guardian] = config.DelegatorStakeValues[guardian]
+		totalVotes += config.DelegatorStakeValues[guardian]
+	}
+	voteThreshhold := totalVotes * 7 / 10
+	for key, value := range guardianVote {
+		fmt.Printf("Guardiand %d all vote %d\n", key, value)
+	}
+	fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
+
+	guardianToCandidate := make(map[int][]int)
+	for _, vote := range config.Votes {
+		guardianToCandidate[vote.ActivistIndex] = vote.Candidates
+	}
+
+	candidateVote := make(map[int]int)
+	for guardian, candidates := range guardianToCandidate {
+		for _, candidate := range candidates {
+			candidateVote[candidate] = candidateVote[candidate] + config.DelegatorStakeValues[guardian]
+		}
+	}
+
+	elected := make([]int, 0)
+	for _, validValidator := range config.ValidatorsAccounts {
+		vote, ok := candidateVote[validValidator]
+		if !ok || vote < voteThreshhold {
+			elected = append(elected, validValidator)
+			fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
+		} else {
+			fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
+		}
+	}
+	return elected
 }

@@ -8,6 +8,7 @@ out# See https://help.github.com/articles/ignoring-files/ for more about ignorin
 
 # testing
 /coverage
+_reports
 
 # production
 /build
@@ -25,3 +26,6 @@ yarn-error.log*
 
 voting
 contracts
+
+_out
+_report

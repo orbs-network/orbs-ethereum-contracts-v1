@@ -20,7 +20,7 @@ const OrbsValidatorsRegistryContractJSON = require('./src/contracts/OrbsValidato
 
   const validatorsRegistryContract = new web3.eth.Contract(
     OrbsValidatorsRegistryContractJSON.abi,
-    OrbsContractsInfo.OrbsValidators.address
+    OrbsContractsInfo.OrbsValidatorsRegistry.address
   );
 
   const guardians = await guardiansContract

@@ -7,6 +7,8 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 )
 
 func logStage(msg string, args ...interface{}) {
@@ -40,10 +42,19 @@ func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
 
 const STAKE_TOKEN_DELEGATE_VALUE = uint64(7)
 
-func getOrbsVotingContractName() string {
-	return "OrbsVoting"
+func IntToAddr(num int) string {
+	return fmt.Sprintf("0x%040d", num)
 }
 
-func getOrbsValidatorsConfigContractName() string {
-	return "OrbsValidatorsConfig"
+func IpToHexaBytes(ip string) string {
+	elements := strings.Split(ip, ".")
+	if len(elements) != 4 {
+		panic("ip address must contain 4 numbers")
+	}
+	e1, _ := strconv.Atoi(elements[0])
+	e2, _ := strconv.Atoi(elements[1])
+	e3, _ := strconv.Atoi(elements[2])
+	e4, _ := strconv.Atoi(elements[3])
+
+	return fmt.Sprintf("0x%02x%02x%02x%02x", e1, e2, e3, e4)
 }

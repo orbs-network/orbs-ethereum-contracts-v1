@@ -1,19 +1,19 @@
-import { StakeholdersDriver } from './driver';
+import StakeholdersDriver from './driver';
 import { generateGuardiansData } from './fixtures';
 import { waitForElement, cleanup } from 'react-testing-library';
 
-describe('Stakeholders components', () => {
+describe('Stakeholders Page', () => {
   let guardiansData, driver: StakeholdersDriver;
 
   beforeEach(() => {
     guardiansData = generateGuardiansData();
-    driver = new StakeholdersDriver();
+    driver = new StakeholdersDriver(guardiansData);
   });
 
   afterEach(cleanup);
 
   it('should render guardians', async () => {
-    const { getByTestId } = driver.renderWithData(guardiansData);
+    const { getByTestId } = driver.render();
     const guardianList = getByTestId('guardians-list');
 
     await waitForElement(() => guardianList.children.length);
@@ -34,15 +34,10 @@ describe('Stakeholders components', () => {
   });
 
   it('should delegate to a selected candidate', async () => {
-    const props = {
-      guardiansContract: driver.withGuardiansContract(guardiansData),
-      votingContract: driver.withVotingContract(),
-      metamaskService: driver.withMetamaskService()
-    };
-    const delegateSpy = jest.spyOn(props.votingContract.methods, 'delegate');
+    const delegateSpy = jest.spyOn(driver.apiService, 'delegate');
     const firstAddress = Object.keys(guardiansData)[0];
 
-    const { getByTestId } = driver.renderWithProps(props);
+    const { getByTestId } = driver.render();
     const guardianList = getByTestId('guardians-list');
     await waitForElement(() => guardianList.children.length);
 

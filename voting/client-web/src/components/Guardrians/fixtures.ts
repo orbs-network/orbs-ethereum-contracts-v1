@@ -1,0 +1,13 @@
+import Chance from 'chance';
+const chance = new Chance();
+
+export const generateValidatorsData = () => {
+  const addresses = Array.from(Array(5), () => `0x${chance.hash()}`);
+  return addresses.reduce((acc, currAddress) => {
+    acc[currAddress] = {
+      name: chance.name(),
+      website: chance.url()
+    };
+    return acc;
+  }, {});
+};

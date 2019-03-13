@@ -11,7 +11,7 @@ Local setup consist of two three parts: 1) web client, 2) metamask extension and
     1. Run `npm run migrate`. This will deploy Ethereum smart contracts to your local blockchain.
     1. Open Ganache. You should see 3 contract deployed in transactions.
     1. Take contract addresses from transactions
-    1. Set contract addresses in `src/contract-info.js`
+    1. Run `npm run contracts:local`
 1. Running `client-web`
     1. Clone the project `git clone https://github.com/orbs-network/orbs-ethereum-contracts`. This project is a monorepo. The interesting part for us is `Voting` folder. It contains contract and client side.
     1. Navigate to `client-web` folder `cd voting/client-web`.
@@ -34,5 +34,6 @@ It's a little bit of a hustle, but at the end, you should be able to delegate an
     1. Run `npm test`
 
 ## Deploy
+1. `npm run contracts:prod`
 1. `npm run deploy`
 1. [https://orbs-network.github.io/voting/](https://orbs-network.github.io/voting/)

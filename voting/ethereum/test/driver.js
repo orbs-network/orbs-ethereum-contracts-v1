@@ -13,10 +13,11 @@ module.exports.Driver = class {
         this.runningCounter = 0;
     }
 
-    async deployVoting() {
-        if (this.OrbsVoting === undefined) { // a stateless contract
-            this.OrbsVoting = await OrbsVoting.new();
+    async deployVoting(maxVoteOutNodes) {
+        if (isNaN(maxVoteOutNodes)) {
+            maxVoteOutNodes = 3;
         }
+        this.OrbsVoting = await OrbsVoting.new(maxVoteOutNodes);
     }
     async deployRegistry() {
         this.OrbsRegistry = await OrbsValidatorsRegistry.new();

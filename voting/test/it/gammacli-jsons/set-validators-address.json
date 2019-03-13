@@ -1,0 +1,10 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "unsafetests_setValidatorsEthereumContractAddress",
+    "Arguments": [
+        {
+            "Type": "string",
+            "Value": "0xe46Dd32d653C1dea4F8272b83656534374883654"
+        }
+    ]
+}

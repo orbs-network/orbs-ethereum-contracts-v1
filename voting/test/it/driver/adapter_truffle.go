@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapter {
@@ -15,6 +16,7 @@ func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapte
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ganache",
+		networkUrl:  "http://127.0.0.1:7545",
 		startBlock:  0,
 		stakeFactor: stakeFactor,
 	}
@@ -25,6 +27,7 @@ func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapte
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ropsten",
+		networkUrl:  "http://127.0.0.1:7545",
 		startBlock:  400000,
 		stakeFactor: stakeFactor,
 	}
@@ -34,6 +37,7 @@ type truffleAdapter struct {
 	debug       bool
 	projectPath string
 	network     string
+	networkUrl  string
 	startBlock  int
 	stakeFactor uint64
 }
@@ -141,12 +145,23 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []stri
 	return out.Validators
 }
 
-func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int) {
-	out, _ := json.Marshal(validators)
+func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
+	accountIndexesJson, _ := json.Marshal(accountIndexes)
+	ta.run("exec ./truffle-scripts/topUpEther.js",
+		"ACCOUNT_INDEXES_ON_ETHEREUM="+string(accountIndexesJson),
+	)
+}
+
+func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {
+	validatorsJson, _ := json.Marshal(validators)
+	orbsAddressesJson, _ := json.Marshal(orbsAddresses)
+	orbsIpsJson, _ := json.Marshal(orbsIps)
 	ta.run("exec ./truffle-scripts/setValidators.js",
 		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
 		"VALIDATORS_REGISTRY_CONTRACT_ADDRESS="+ethereumValidatorsRegAddress,
-		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+		"VALIDATOR_ACCOUNT_INDEXES_ON_ETHEREUM="+string(validatorsJson),
+		"VALIDATOR_ORBS_ADDRESSES="+string(orbsAddressesJson),
+		"VALIDATOR_ORBS_IPS="+string(orbsIpsJson),
 	)
 }
 
@@ -170,7 +185,7 @@ func (ta *truffleAdapter) Delegate(ethereumVotingAddress string, from int, to in
 	)
 }
 
-func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, candidates [3]int) {
+func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, candidates []int) {
 	out, _ := json.Marshal(candidates)
 	ta.run("exec ./truffle-scripts/vote.js",
 		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
@@ -179,8 +194,39 @@ func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, 
 	)
 }
 
-func (ta *truffleAdapter) Mine(blocks int) {
-	ta.run("exec ./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocks))
+func (ta *truffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress string) {
+	bytes := ta.run("exec ./truffle-scripts/deployGuardians.js")
+	out := struct {
+		Address string
+	}{}
+	err := json.Unmarshal(bytes, &out)
+	if err != nil {
+		panic(err.Error() + "\n" + string(bytes))
+	}
+	return out.Address
+}
+
+func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardians []int) {
+	out, _ := json.Marshal(guardians)
+	ta.run("exec ./truffle-scripts/setGuardians.js",
+		"GUARDIANS_CONTRACT_ADDRESS="+ethereumGuardiansAddress,
+		"GUARDIAN_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+	)
+}
+
+func (ta *truffleAdapter) WaitForBlock(blockNumber int) {
+	if ta.network == "ganache" {
+		blocksToMine := blockNumber - ta.GetCurrentBlock()
+		if blocksToMine > 0 {
+			ta.run("exec ./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocksToMine))
+		}
+	} else { // busy wait until block number is reached
+		fmt.Printf("Waiting for block %d...\n", blockNumber)
+		for cb := ta.GetCurrentBlock(); cb < blockNumber; cb = ta.GetCurrentBlock() {
+			fmt.Printf("	current block is %d\n", cb)
+			time.Sleep(1 * time.Second)
+		}
+	}
 }
 
 func (ta *truffleAdapter) WaitForFinality() {
@@ -221,4 +267,12 @@ func (ta *truffleAdapter) fromEthereumToken(tokenValue uint64) int {
 
 func (ta *truffleAdapter) toEthereumToken(testValue int) uint64 {
 	return uint64(testValue) * ta.stakeFactor
+}
+
+func (ta *truffleAdapter) GetConnectionUrl() string {
+	ethereumUrl, result := os.LookupEnv("GANACHE_HOST")
+	if result == false {
+		return ta.networkUrl
+	}
+	return ethereumUrl
 }

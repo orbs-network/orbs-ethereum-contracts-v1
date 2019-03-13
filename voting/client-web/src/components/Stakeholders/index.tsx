@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
-import Explanations from './explanations';
 import GuardianDialog from './dialog';
+import { Link } from 'react-router-dom';
+import Explanations from './explanations';
+import { Mode } from '../../api/interface';
+import Typography from '@material-ui/core/Typography';
 
-const StakeholderPage = ({
-  guardiansContract,
-  votingContract,
-  metamaskService
-}) => {
+const StakeholderPage = ({ apiService }) => {
   const [guardians, setGuardians] = useState({} as {
     [address: string]: { name: string; url: string };
   });
@@ -15,19 +14,16 @@ const StakeholderPage = ({
   const [dialogState, setDialogState] = useState(false);
 
   const fetchGuardians = async () => {
-    const from = await metamaskService.enable();
-    const addresses = await guardiansContract.methods
-      .getGuardians(0, 100)
-      .call({ from });
+    const addresses = await apiService.getGuardians();
     const details = await Promise.all(
-      addresses.map(address =>
-        guardiansContract.methods.getGuardianData(address).call({ from })
-      )
+      addresses.map(address => apiService.getGuardianData(address))
     );
+
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
         name: details[idx]['name'],
-        url: details[idx]['website']
+        url: details[idx]['website'],
+        balance: details[idx]['balance']
       };
       return acc;
     }, {});
@@ -39,10 +35,7 @@ const StakeholderPage = ({
   }, []);
 
   const delegate = async candidate => {
-    const from = await metamaskService.enable();
-    const receipt = await votingContract.methods
-      .delegate(candidate)
-      .send({ from });
+    const receipt = await apiService.delegate(candidate);
     console.log(receipt);
   };
 
@@ -58,11 +51,25 @@ const StakeholderPage = ({
     setDialogState(true);
   };
 
+  const hasMetamask = () => {
+    return apiService.mode === Mode.ReadWrite;
+  };
+
   return (
     <>
       <Explanations />
+
+      {hasMetamask() && (
+        <Link to="/guardian/new">
+          <Typography variant="subtitle1" color="textSecondary">
+            Join as a Guardian
+          </Typography>
+        </Link>
+      )}
+
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
       <GuardianDialog
+        readOnly={!hasMetamask()}
         dialogState={dialogState}
         guardian={Object.assign(
           { address: selectGuardian },

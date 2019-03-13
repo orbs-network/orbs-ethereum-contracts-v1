@@ -1,22 +1,26 @@
 package driver
 
+import "time"
+
 type OrbsAdapter interface {
-	DeployContract(orbsVotingContractName string, orbsConfigContractName string)
+	DeployContract(orbsVotingContractName string)
 	SetContractConstants(orbsVotingContractName string)
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
-	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
-	BindVotingContractToEthereum(orbsVotingContractName string, ethereumAsbAddress string)
+	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string)
+	BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string)
+	BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
+	BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string)
 	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)
 
-	MirrorDelegateByTransfer(orbsVotingContractName string, transferTransactionHash string)
-	MirrorDelegate(orbsVotingContractName string, transferTransactionHash string)
-	MirrorVote(orbsVotingContractName string, transferTransactionHash string)
-
-	RunVotingProcess(orbsVotingContractName string) bool
-	GetElectedNodes(orbsConfigContractName string) []string
+	GetElectedNodes(orbsVotingContractName string) []string
+	ForwardElectionResultsToSystem(electedValidatorAddresses []string)
+	GetCurrentSystemBlockSigners() []string
 
 	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int
+	GetOrbsEnvironment() string
+	GetFinalityBlocksComponent() int
+	GetFinalityTimeComponent() time.Duration
 }
 
 type EthereumAdapter interface {
@@ -27,21 +31,24 @@ type EthereumAdapter interface {
 	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes []int)
 	SetStakes(ethereumErc20Address string, stakes []int)
 	Transfer(ethereumErc20Address string, from int, to int, amount int)
+	TopUpEther(accountIndexes []int)
 
 	DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string)
 	GetValidators(ethereumValidatorsAddress string) []string
-	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int)
+	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string)
 
 	DeployVotingContract() (ethereumVotingAddress string)
 	Delegate(ethereumVotingAddress string, from int, to int)
-	Vote(ethereumVotingAddress string, activistInded int, to [3]int)
+	Vote(ethereumVotingAddress string, activistInded int, to []int)
 
-	WaitForFinality()
-	Mine(blocks int)
+	DeployGuardiansContract() (ethereumGuardiansAddress string)
+	SetGuardians(ethereumGuardiansAddress string, guardians []int)
+
+	WaitForBlock(blockNumber int)
+	GetConnectionUrl() string
 }
 
 type NodeScriptAdapter interface {
-	FindDelegateByTransferEvents(ethereumVotingAddress string, startBlock int, endBlock int) []delegateByTransferData
-	FindDelegateEvents(ethereumVotingAddress string, startBlock int, endBlock int) []delegateData
-	FindVoteEvents(ethereumVotingAddress string, startBlock int, endBlock int) []voteData
+	Mirror(orbsVotingContractName string, gammaEnv string)
+	Process(orbsVotingContractName string, ethereumErc20Address string, ethereumVotingAddress string, startBlock int, endBlock int, ethereumUrl string, gammaEnv string)
 }

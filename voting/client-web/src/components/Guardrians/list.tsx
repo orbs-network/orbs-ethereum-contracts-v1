@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = () => ({});
 
-const ValidatorsList = ({ onToggle, validators, classes }) => {
+const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
   return (
     <Table className={classes.table}>
       <TableHead>
@@ -25,10 +25,12 @@ const ValidatorsList = ({ onToggle, validators, classes }) => {
         {Object.keys(validators).map(address => (
           <TableRow data-testid={`validator-${address}`} key={address}>
             <TableCell padding="checkbox">
-              <Checkbox
-                defaultChecked={validators[address].checked}
-                onChange={() => onToggle(address)}
-              />
+              {!readOnly && (
+                <Checkbox
+                  defaultChecked={validators[address].checked}
+                  onChange={() => onToggle(address)}
+                />
+              )}
             </TableCell>
             <TableCell
               component="th"

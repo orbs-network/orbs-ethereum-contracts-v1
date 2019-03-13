@@ -4,8 +4,7 @@ const hasLocalStorageAccess = () => {
   return !!window.localStorage;
 };
 
-export const save = (addresses: string[]): boolean => {
-  const from = ethereum.selectedAddress;
+export const save = (from, addresses: string[]): boolean => {
   if (!hasLocalStorageAccess()) {
     return false;
   }
@@ -17,8 +16,7 @@ export const save = (addresses: string[]): boolean => {
   }
 };
 
-export const get = (): string[] => {
-  const from = ethereum.selectedAddress;
+export const get = (from: string): string[] => {
   if (!hasLocalStorageAccess) {
     return [];
   }

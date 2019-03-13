@@ -63,16 +63,31 @@ contract('OrbsValidatorsRegistry', accounts => {
                 await driver.deployRegistry();
 
                 await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
-                let result = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+                const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
 
-                assert.equal(result.name, name);
-                assert.equal(result.ipAddress, ip);
-                assert.equal(result.website, url);
-                assert.equal(result.orbsAddress, orbsAddr);
-                assert.equal(result.name, result[0]);
-                assert.equal(result.ipAddress, result[1]);
-                assert.equal(result.website, result[2]);
-                assert.equal(result.orbsAddress, orbsAddr);
+                assert.equal(valData.name, name);
+                assert.equal(valData.ipAddress, ip);
+                assert.equal(valData.website, url);
+                assert.equal(valData.orbsAddress, orbsAddr);
+                assert.equal(valData.name, valData[0]);
+                assert.equal(valData.ipAddress, valData[1]);
+                assert.equal(valData.website, valData[2]);
+                assert.equal(valData.orbsAddress, valData[3]);
+            });
+        });
+
+        describe('and then getRegistrationBlockHeight() is called', () => {
+            it('should return the correct the registration block height', async () => {
+                await driver.deployRegistry();
+
+                const regRes = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+                const regBlk = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
+
+                const blockNumber = regRes.receipt.blockNumber;
+                assert.equal(regBlk.registeredOn.toNumber(), blockNumber);
+                assert.equal(regBlk.lastUpdatedOn.toNumber(), blockNumber);
+                assert.equal(regBlk.registeredOn.toNumber(), regBlk[0].toNumber());
+                assert.equal(regBlk.lastUpdatedOn.toNumber(), regBlk[1].toNumber());
             });
         });
 
@@ -93,33 +108,6 @@ contract('OrbsValidatorsRegistry', accounts => {
             await assertReject(driver.OrbsRegistry.register(name, ip, url, undefined));
 
             await assertResolve(driver.OrbsRegistry.register(name, ip, url, orbsAddr));
-        });
-
-        it('should reject non EOAs', async () => {
-            await driver.deployRegistry();
-
-            const ValidatorRegisteringContract = artifacts.require('ValidatorRegisteringContract');
-            const name = "name";
-            const ip = "0xFF00FF00";
-            const url = "url";
-            const orbsAddr = accounts[0];
-            await assertReject(ValidatorRegisteringContract.new(
-                driver.OrbsRegistry.address,
-                name,
-                ip,
-                url,
-                orbsAddr
-            ), "expected registration from contract constructor to fail");
-
-            const eoaValidatorAddr = accounts[1];
-            await assertResolve(driver.OrbsRegistry.register(
-                name,
-                ip,
-                url,
-                orbsAddr,
-                {from:eoaValidatorAddr}
-            ), "expected registration to succeed when sent from EOA");
-            assert(await driver.OrbsRegistry.isValidator(eoaValidatorAddr))
         });
 
         it('should reject duplicate entries', async () => {
@@ -146,6 +134,42 @@ contract('OrbsValidatorsRegistry', accounts => {
 
             await assertReject(driver.OrbsRegistry.register(name, "0x0102030400000000000001", url, orbsAddr));
             await assertResolve(driver.OrbsRegistry.register(name, "0x0102030400000000000000", url, orbsAddr));
+        });
+
+        describe('twice for the same validator', () => {
+            it('should replace values and update updatedOnBlock', async () => {
+                await driver.deployRegistry();
+
+                await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
+                await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+
+                const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+                assert.equal(valData.name, name);
+                assert.equal(valData.ipAddress, ip);
+                assert.equal(valData.website, url);
+                assert.equal(valData.orbsAddress, orbsAddr);
+                assert.equal(valData.name, valData[0]);
+                assert.equal(valData.ipAddress, valData[1]);
+                assert.equal(valData.website, valData[2]);
+                assert.equal(valData.orbsAddress, valData[3]);
+
+            });
+
+            it('returns correct block heights after a successful override', async () => {
+                await driver.deployRegistry();
+
+                const regRes1 = await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
+                const regRes2 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, {from: accounts[1]});
+                
+                const regBlck = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
+                const registrationHeight = regRes1.receipt.blockNumber;
+                const updateHeight = regRes2.receipt.blockNumber;
+                assert(registrationHeight < updateHeight, "expected registration block height to be less than updating block height");
+                assert.equal(regBlck.registeredOn.toNumber(), registrationHeight);
+                assert.equal(regBlck.lastUpdatedOn.toNumber(), updateHeight);
+                assert.equal(regBlck.registeredOn.toNumber(), regBlck[0].toNumber());
+                assert.equal(regBlck.lastUpdatedOn.toNumber(), regBlck[1].toNumber());
+            });
         });
     });
 

@@ -2,7 +2,7 @@ module.exports = async function(done) {
   try {
 
     const voting = artifacts.require('OrbsVoting');
-    let instance = await voting.new();
+    let instance = await voting.new(3);
 
     console.log(JSON.stringify({
       Address: instance.address
