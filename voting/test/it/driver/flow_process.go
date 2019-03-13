@@ -25,6 +25,10 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	winners := orbs.GetElectedNodes(config.OrbsVotingContractName)
 	logStageDone("And the %d winners are.... %v", len(winners), winners)
 
+	require.Conditionf(t, func() bool {
+		return len(winners) >= 4
+	}, "expecting at least 4 winners but got %d", len(winners))
+
 	logStage("Forwarding results to system...")
 	orbs.ForwardElectionResultsToSystem(winners)
 	signers := orbs.GetCurrentSystemBlockSigners()

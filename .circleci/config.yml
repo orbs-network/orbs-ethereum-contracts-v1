@@ -11,7 +11,9 @@ jobs:
     steps:
       - checkout
       - run: ./.circleci/voting.sh
-
+      - store_artifacts:
+          path: _out
+          destination: test-output
 workflows:
   version: 2
   commit:
