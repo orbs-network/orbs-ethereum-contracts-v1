@@ -9,18 +9,18 @@ jobs:
   voting-orbs-tests:
     docker:
       - image: circleci/golang:1.11.4
-    working_directory: ./voting/orbs
     steps:
       - checkout
+      - run: cd voting/orbs
       - run: go get ./...
       - run: go test .
 
   voting-solidity-tests:
     docker:
       - image: circleci/node:11.2.0
-    working_directory: ./voting/ethereum
     steps:
       - checkout
+      - run: cd voting/ethereum
       - run: npm install
       - run: npm test
 
@@ -37,10 +37,10 @@ workflows:
   version: 2
   voting:
     jobs:
-      - vorting-orbs-tests
+      - voting-orbs-tests
       - voting-e2e
       - voting-solidity-tests
   asb:
     jobs:
       - asb-e2e
-
+√
