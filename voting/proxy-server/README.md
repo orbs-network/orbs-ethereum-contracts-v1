@@ -14,6 +14,6 @@ The current host of the docker image is Heroku.
 1. Login to Heroku
 
 ### How to deploy?
-1. Run `npm run copy-contracts`
+1. Run `npm run contracts:prod`
 1. Run `heroku container:push web -a orbs-voting-proxy-server`
 1. Run `heroku container:release web -a orbs-voting-proxy-server`

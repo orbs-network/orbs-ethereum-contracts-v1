@@ -3,7 +3,7 @@ import GuardiansList from './list';
 import GuardianDialog from './dialog';
 import { Link } from 'react-router-dom';
 import Explanations from './explanations';
-import { Strategies } from '../../api/interface';
+import { Mode } from '../../api/interface';
 import Typography from '@material-ui/core/Typography';
 
 const StakeholderPage = ({ apiService }) => {
@@ -19,13 +19,11 @@ const StakeholderPage = ({ apiService }) => {
       addresses.map(address => apiService.getGuardianData(address))
     );
 
-    const balance = await apiService.orbs.getBalance(addresses[0]);
-    console.log(balance);
-
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
         name: details[idx]['name'],
-        url: details[idx]['website']
+        url: details[idx]['website'],
+        balance: details[idx]['balance']
       };
       return acc;
     }, {});
@@ -54,7 +52,7 @@ const StakeholderPage = ({ apiService }) => {
   };
 
   const hasMetamask = () => {
-    return apiService.type === Strategies.metamask;
+    return apiService.mode === Mode.ReadWrite;
   };
 
   return (

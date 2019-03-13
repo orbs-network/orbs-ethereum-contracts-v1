@@ -11,21 +11,14 @@ import {
 import theme from './theme';
 import styles from './style';
 import ReadOnlyBanner from '../ReadOnlyBanner';
-import { RemoteStrategy } from '../../api/remote';
-import { MetamaskStrategy } from '../../api/metamask';
-import { IApiStrategy, Strategies } from '../../api/interface';
-import { OrbsApi } from '../../api/orbs';
+import { ApiService } from '../../api';
+import { Mode } from '../../api/interface';
 
 class App extends Component<WithStyles> {
-  apiService: IApiStrategy;
+  apiService: ApiService;
   constructor(props) {
     super(props);
-    if (window['ethereum']) {
-      this.apiService = new MetamaskStrategy();
-    } else {
-      this.apiService = new RemoteStrategy();
-    }
-    this.apiService.orbs = new OrbsApi();
+    this.apiService = new ApiService();
   }
   render() {
     const { classes } = this.props;
@@ -36,9 +29,7 @@ class App extends Component<WithStyles> {
           <div className={classes.root}>
             <Header />
             <Main apiService={this.apiService} />
-            {this.apiService.type === Strategies.remote ? (
-              <ReadOnlyBanner />
-            ) : null}
+            {this.apiService.mode === Mode.ReadOnly ? <ReadOnlyBanner /> : null}
           </div>
         </MuiThemeProvider>
       </Router>

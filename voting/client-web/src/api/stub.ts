@@ -1,7 +1,7 @@
-import { IApiStrategy, Strategies } from './interface';
+import { IApiStrategy, Mode } from './interface';
 
 export class ApiStrategyStub implements IApiStrategy {
-  type = Strategies.metamask;
+  mode = Mode.ReadWrite;
   constructor(private guardians, private validators) {}
   getCurrentAddress() {
     return Promise.resolve('some-fake-addreess');

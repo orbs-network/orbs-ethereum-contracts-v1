@@ -47,6 +47,7 @@ func TestFullFlowOnGanache(t *testing.T) {
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
+
 	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
 	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
 }

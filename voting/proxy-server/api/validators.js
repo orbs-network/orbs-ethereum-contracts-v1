@@ -17,9 +17,7 @@ const validatorsApiFactory = web3 => {
   );
 
   router.get('/validators', async (req, res) => {
-    const validators = await validatorsContract.methods
-      .getValidators()
-      .call();
+    const validators = await validatorsContract.methods.getValidators().call();
     res.json(validators);
   });
 

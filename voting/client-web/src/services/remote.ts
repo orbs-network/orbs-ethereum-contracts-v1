@@ -1,14 +1,16 @@
 import axios from 'axios';
-import { IApiStrategy, Strategies } from './interface';
 
 const remoteAddress = 'https://orbs-voting-proxy-server.herokuapp.com/api';
 
-export class RemoteStrategy implements IApiStrategy {
-  type = Strategies.remote;
-  getGuardians() {
-    return axios.get(`${remoteAddress}/guardians`).then(res => res.data);
+export class RemoteService {
+  getGuardians(offset: number, limit: number) {
+    return axios
+      .get(`${remoteAddress}/guardians`, {
+        params: { limit, offset }
+      })
+      .then(res => res.data);
   }
-  getGuardianData(address) {
+  getGuardianData(address: string) {
     return axios
       .get(`${remoteAddress}/guardians/${address}`)
       .then(res => res.data);
@@ -16,7 +18,7 @@ export class RemoteStrategy implements IApiStrategy {
   getValidators() {
     return axios.get(`${remoteAddress}/validators`).then(res => res.data);
   }
-  getValidatorData(address) {
+  getValidatorData(address: string) {
     return axios
       .get(`${remoteAddress}/validators/${address}`)
       .then(res => res.data);
