@@ -10,9 +10,11 @@ import {
 } from '@material-ui/core/styles';
 import theme from './theme';
 import styles from './style';
-import MetamaskStrategy from '../../api/metamask';
-import { IApiStrategy } from '../../api/interface';
+import ReadOnlyBanner from '../ReadOnlyBanner';
 import { RemoteStrategy } from '../../api/remote';
+import { MetamaskStrategy } from '../../api/metamask';
+import { IApiStrategy, Strategies } from '../../api/interface';
+import { OrbsApi } from '../../api/orbs';
 
 class App extends Component<WithStyles> {
   apiService: IApiStrategy;
@@ -23,6 +25,7 @@ class App extends Component<WithStyles> {
     } else {
       this.apiService = new RemoteStrategy();
     }
+    this.apiService.orbs = new OrbsApi();
   }
   render() {
     const { classes } = this.props;
@@ -33,6 +36,9 @@ class App extends Component<WithStyles> {
           <div className={classes.root}>
             <Header />
             <Main apiService={this.apiService} />
+            {this.apiService.type === Strategies.remote ? (
+              <ReadOnlyBanner />
+            ) : null}
           </div>
         </MuiThemeProvider>
       </Router>

@@ -6,6 +6,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.2",
     "axios": "^0.18.0",
+    "orbs-client-sdk": "0.0.5",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-router-dom": "^4.3.1",
@@ -37,7 +38,8 @@
     "eject": "react-scripts eject",
     "lint": "prettier --single-quote --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "deploy": "npm run build && ./scripts/deploy.sh",
-    "update-contracts": "./scripts/update-contracts-info.js"
+    "contracts:local": "./scripts/update-contracts-info.js",
+    "contracts:prod": "./scripts/copy-contracts.sh"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [

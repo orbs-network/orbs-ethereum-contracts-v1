@@ -18,6 +18,10 @@ const StakeholderPage = ({ apiService }) => {
     const details = await Promise.all(
       addresses.map(address => apiService.getGuardianData(address))
     );
+
+    const balance = await apiService.orbs.getBalance(addresses[0]);
+    console.log(balance);
+
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
         name: details[idx]['name'],

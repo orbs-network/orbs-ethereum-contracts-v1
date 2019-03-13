@@ -8,7 +8,7 @@ import {
 import MetamaskService from '../services/metamask';
 import { IApiStrategy, Strategies } from './interface';
 
-export default class MetamaskStrategy implements IApiStrategy {
+export class MetamaskStrategy implements IApiStrategy {
   private web3: Web3;
   private validatorsRegistryContract;
   private validatorsContract;
