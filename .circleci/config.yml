@@ -32,6 +32,7 @@ jobs:
     docker:
       - image: circleci/node:11.2.0
     steps:
+      - checkout
       - run: cd voting/client-web && npm install && npm run test:ci
       - store_test_results:
           path: voting/client-web/_reports
