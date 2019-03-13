@@ -1,12 +1,34 @@
 version: 2
 jobs:
-  asb:
+  asb-e2e:
     machine: true
     steps:
       - checkout
       - run: ./.circleci/main.sh
 
-  voting:
+  voting-orbs-tests:
+    docker:
+      - image: circleci/golang:1.11.4
+    steps:
+      - checkout
+      - run: cd voting/orbs && ./test.sh
+      - store_artifacts:
+          path: voting/orbs/_out
+      - store_test_results:
+          path: voting/orbs/_out
+
+  voting-solidity-tests:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: cd voting/ethereum && ./test.sh
+      - store_artifacts:
+          path: voting/ethereum/_out
+      - store_test_results:
+          path: voting/ethereum/_reports
+
+  voting-e2e:
     machine: true
     steps:
       - checkout
@@ -14,9 +36,14 @@ jobs:
       - store_artifacts:
           path: _out
           destination: test-output
+
 workflows:
   version: 2
-  commit:
+  voting:
     jobs:
-      - asb
-      - voting
+      - voting-orbs-tests
+      - voting-e2e
+      - voting-solidity-tests
+  asb:
+    jobs:
+      - asb-e2e
