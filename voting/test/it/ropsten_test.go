@@ -45,8 +45,7 @@ var configRopsten = &driver.Config{
 func TestDeployOnRopsten(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
-	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	// Temp deploy of orbs contracts
 	orbs.DeployContract(configRopsten.OrbsVotingContractName)
@@ -58,8 +57,7 @@ func TestDeployOnRopsten(t *testing.T) {
 func TestRecordOnRopsten(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
-	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
 }
@@ -67,11 +65,18 @@ func TestRecordOnRopsten(t *testing.T) {
 func TestMirrorAndProcessOnRopsten(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
-	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
 	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
+}
+
+func TestReclaimGuardianDepositsOnRopsten(t *testing.T) {
+
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+
+	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
 }
 
 // value 0 -> delegate.

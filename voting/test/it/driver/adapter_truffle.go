@@ -12,22 +12,31 @@ import (
 )
 
 func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapter {
+	ganacheUrl, envOverride := os.LookupEnv("GANACHE_HOST")
+	if envOverride == false {
+		ganacheUrl = "http://127.0.0.1:7545"
+	}
+
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ganache",
-		networkUrl:  "http://127.0.0.1:7545",
+		networkUrl:  ganacheUrl,
 		startBlock:  0,
 		stakeFactor: stakeFactor,
 	}
 }
 
 func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapter {
+	ropstenUrl, foundUrl := os.LookupEnv("ROPSTEN_URL")
+	if foundUrl == false {
+		panic("Please set ROPSTEN_URL")
+	}
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ropsten",
-		networkUrl:  "http://127.0.0.1:7545",
+		networkUrl:  ropstenUrl,
 		startBlock:  400000,
 		stakeFactor: stakeFactor,
 	}
@@ -214,6 +223,14 @@ func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardian
 	)
 }
 
+func (ta *truffleAdapter) ResignGuardians(ethereumGuardiansAddress string, guardians []int) {
+	out, _ := json.Marshal(guardians)
+	ta.run("exec ./truffle-scripts/resignGuardians.js",
+		"GUARDIANS_CONTRACT_ADDRESS="+ethereumGuardiansAddress,
+		"GUARDIAN_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+	)
+}
+
 func (ta *truffleAdapter) WaitForBlock(blockNumber int) {
 	if ta.network == "ganache" {
 		blocksToMine := blockNumber - ta.GetCurrentBlock()
@@ -266,9 +283,5 @@ func (ta *truffleAdapter) toEthereumToken(testValue int) uint64 {
 }
 
 func (ta *truffleAdapter) GetConnectionUrl() string {
-	ethereumUrl, result := os.LookupEnv("GANACHE_HOST")
-	if result == false {
-		return ta.networkUrl
-	}
-	return ethereumUrl
+	return ta.networkUrl
 }

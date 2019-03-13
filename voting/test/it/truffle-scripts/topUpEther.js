@@ -26,5 +26,4 @@ module.exports = async function (done) {
         console.log(e);
         done(e);
     }
-}
-;
+};

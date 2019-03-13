@@ -5,7 +5,7 @@ const mnemonic = process.env.ROPSTEN_SECRET;
 module.exports = {
   networks: {
     ropsten: {
-      provider: () => new HDWalletProvider(mnemonic, process.env.ROPSTEN_INFURA_URL, 0, 25),
+      provider: () => new HDWalletProvider(mnemonic, process.env.ROPSTEN_URL, 0, 25),
       network_id: '3',
     },
     ganache: {

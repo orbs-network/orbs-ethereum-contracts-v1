@@ -43,6 +43,7 @@ type EthereumAdapter interface {
 
 	DeployGuardiansContract() (ethereumGuardiansAddress string)
 	SetGuardians(ethereumGuardiansAddress string, guardians []int)
+	ResignGuardians(ethereumGuardiansAddress string, guardians []int)
 
 	WaitForBlock(blockNumber int)
 	GetConnectionUrl() string
