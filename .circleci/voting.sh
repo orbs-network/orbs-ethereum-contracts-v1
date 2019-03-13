@@ -1,4 +1,5 @@
 #!/bin/bash -x
+export GANACHE_START_TIME=$(node -e "console.log(new Date(new Date() - 1000 * 60 * 25))")
 
 echo "Building the test container for the voting contracts.."
 docker build -t orbs:voting -f docker/images/voting/Dockerfile .
@@ -21,6 +22,6 @@ mkdir _out
 docker-compose -f docker/compose/voting/docker-compose.yml logs > _out/docker.log
 
 echo "Shutting down test environment.."
-docker-compose -f docker/compose/voting/docker-compose.yml down -v
+#docker-compose -f docker/compose/voting/docker-compose.yml down -v
 
 exit $EXITCODE
