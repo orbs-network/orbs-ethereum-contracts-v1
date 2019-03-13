@@ -1,8 +1,10 @@
 package driver
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"time"
 )
 
 func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
@@ -12,15 +14,39 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	currentBlock := ethereum.GetCurrentBlock()
 
-	logStage("Set election date ...")
-	orbs.SetFirstElectionBlockNumber(getOrbsVotingContractName(), currentBlock+1)
-	logStageDone("Election date in ethereum block number = %d", currentBlock+1)
+	if config.FirstElectionBlockNumber == 0 {
+		config.FirstElectionBlockNumber = currentBlock + 1
+	}
 
-	logStage("Running mirror script  ...")
-	na.Mirror(getOrbsVotingContractName(), config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), currentBlock,
+	logStage("Set election date...")
+	orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, config.FirstElectionBlockNumber)
+	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
+
+	logStage("Waiting for finality...")
+	waitForFinality(config.FirstElectionBlockNumber, orbs, ethereum)
+	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
+
+	logStage("Running mirror script...")
+	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), config.FirstElectionBlockNumber,
 		ethereum.GetConnectionUrl(), orbs.GetOrbsEnvironment())
-	logStageDone("Delegate mirroring")
 
+	require.True(t, ethereum.GetCurrentBlock() < config.FirstElectionBlockNumber+orbs.GetMirrorVotingPeriod(), "Mirroring did not complete within mirroring grace period. consider increasing adapter.voteMirrorPeriod")
+
+	logStageDone("Running mirror script")
+
+	logSummary("Mirror Phase all done.\n\n")
+}
+
+func waitForFinality(blockNumber int, orbs OrbsAdapter, ethereum EthereumAdapter) {
+	targetBlockHeight := blockNumber + orbs.GetFinalityBlocksComponent() + 1
+	ethereum.WaitForBlock(targetBlockHeight)
+	sleepFor := orbs.GetFinalityTimeComponent()
+	fmt.Printf("%v > Due to finality time component, sleeping for %v\n", time.Now().Format("15:04:05"), sleepFor)
+	time.Sleep(sleepFor)
+	ethereum.WaitForBlock(ethereum.GetCurrentBlock() + 1) // force a new block to be closed - expecting it's timestamp to be beyond finality time component (based on our local clock)
+}
+
+func oldManualMirroringFlow_commentedOut() {
 	//logStage("Running script to find Delegate Transfer Events ...")
 	//delegateByTransferEvents := na.FindDelegateByTransferEvents(config.EthereumErc20Address, ethereum.GetStartOfHistoryBlock(), currentBlock)
 	//// TODO v1 calculate how many delegate transfer, which to/from -- issue i hold index and not address ??
@@ -29,7 +55,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//
 	//logStage("Mirroring %d Delegate Transfer Events ...", len(delegateByTransferEvents))
 	//for _, dt := range delegateByTransferEvents {
-	//	orbs.MirrorDelegateByTransfer(getOrbsVotingContractName(), dt.TxHash)
+	//	orbs.MirrorDelegateByTransfer(config.OrbsVotingContractName, dt.TxHash)
 	//}
 	//logStageDone("Mirroring Delegate Transfer")
 	//
@@ -41,7 +67,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//
 	//logStage("Mirroring %d Delegate Events ...", len(delegateEvents))
 	//for _, dt := range delegateEvents {
-	//	orbs.MirrorDelegate(getOrbsVotingContractName(), dt.TxHash)
+	//	orbs.MirrorDelegate(config.OrbsVotingContractName, dt.TxHash)
 	//}
 	//logStageDone("Mirroring Delegate")
 	//
@@ -53,14 +79,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	//
 	//logStage("Mirroring %d Voting Events ...", len(votingEvents))
 	//for _, vt := range votingEvents {
-	//	orbs.MirrorVote(getOrbsVotingContractName(), vt.TxHash)
+	//	orbs.MirrorVote(config.OrbsVotingContractName, vt.TxHash)
 	//}
 	//logStageDone("Mirroring Voting")
-
-	logStage("Advance 10 ethereum blocks ...")
-	ethereum.Mine(orbs.GetMirrorVotingPeriod() + 5)
-	logStageDone("Advance done")
-
-	logSummary("Mirror Phase all done.\n\n")
-
 }

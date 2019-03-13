@@ -7,6 +7,11 @@ WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting
 
 COPY voting/ .
 
+WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting/processor
+RUN rm -f orbs-gamma-config.json && \
+    mv orbs-gamma-config.docker.json orbs-gamma-config.json
+RUN npm install
+
 WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting/test/it
 COPY docker/images/voting/entrypoint.sh .
 

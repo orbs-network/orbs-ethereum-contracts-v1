@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapter {
@@ -144,6 +145,13 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string) []stri
 	return out.Validators
 }
 
+func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
+	accountIndexesJson, _ := json.Marshal(accountIndexes)
+	ta.run("exec ./truffle-scripts/topUpEther.js",
+		"ACCOUNT_INDEXES_ON_ETHEREUM=" + string(accountIndexesJson),
+	)
+}
+
 func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {
 	validatorsJson, _ := json.Marshal(validators)
 	orbsAddressesJson, _ := json.Marshal(orbsAddresses)
@@ -206,8 +214,19 @@ func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardian
 	)
 }
 
-func (ta *truffleAdapter) Mine(blocks int) {
-	ta.run("exec ./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocks))
+func (ta *truffleAdapter) WaitForBlock(blockNumber int) {
+	if ta.network == "ganache" {
+		blocksToMine := blockNumber - ta.GetCurrentBlock()
+		if blocksToMine > 0 {
+			ta.run("exec ./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocksToMine))
+		}
+	} else { // busy wait until block number is reached
+		fmt.Printf("Waiting for block %d...\n", blockNumber)
+		for cb:= ta.GetCurrentBlock(); cb < blockNumber; cb = ta.GetCurrentBlock() {
+			fmt.Printf("	current block is %d\n", cb)
+			time.Sleep(1 * time.Second)
+		}
+	}
 }
 
 func (ta *truffleAdapter) run(args string, env ...string) []byte {

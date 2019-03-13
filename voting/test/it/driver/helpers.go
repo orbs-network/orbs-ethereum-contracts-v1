@@ -42,10 +42,6 @@ func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
 
 const STAKE_TOKEN_DELEGATE_VALUE = uint64(7)
 
-func getOrbsVotingContractName() string {
-	return "OrbsVoting"
-}
-
 func IntToAddr(num int) string {
 	return fmt.Sprintf("0x%040d", num)
 }

@@ -11,12 +11,28 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	require.NoError(t, config.Validate(false))
 	na := NodeAdater(config)
 
-	logStage("Running processing ...")
-	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
-	na.Process(getOrbsVotingContractName(), maxSteps, orbs.GetOrbsEnvironment())
+	logStage("Wait for mirror period to end...")
+	beginProcessingAtBlock := config.FirstElectionBlockNumber + orbs.GetMirrorVotingPeriod() + 1
+	waitForFinality(beginProcessingAtBlock, orbs, ethereum)
+	logStageDone("Wait for mirror period to end")
 
-	winners := orbs.GetElectedNodes(getOrbsVotingContractName())
-	logStageDone("And the %d winners are .... %v", len(winners), winners)
+	logStage("Running processing...")
+	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
+	na.Process(config.OrbsVotingContractName, maxSteps, orbs.GetOrbsEnvironment())
+	logStageDone("Running processing")
+
+	logStage("Getting winners processing...")
+	winners := orbs.GetElectedNodes(config.OrbsVotingContractName)
+	logStageDone("And the %d winners are.... %v", len(winners), winners)
+
+	require.Conditionf(t, func() bool {
+		return len(winners) >= 4
+	}, "expecting at least 4 winners but got %d", len(winners))
+
+	logStage("Forwarding results to system...")
+	orbs.ForwardElectionResultsToSystem(winners)
+	signers := orbs.GetCurrentSystemBlockSigners()
+	logStageDone("And the %d signers are.... %v", len(signers), signers)
 
 	runNaiveCalulations(config)
 
