@@ -43,4 +43,3 @@ workflows:
   asb:
     jobs:
       - asb-e2e
-√
