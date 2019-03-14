@@ -21,6 +21,7 @@ fname="logs/ropsten_full_output_$today$suffix.log"
 
 printf 'logging in file: %s\n' "$fname"
 
+mkdir -p logs
 time go test . -run TestFullOnRopsten -v -count 1 -timeout 0  2>&1 | tee $fname
 
 
