@@ -24,7 +24,9 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	ethereum.SetStakes(config.EthereumErc20Address, config.DelegatorStakeValues)
 	balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
 	require.Len(t, balances, len(config.DelegatorStakeValues))
-	require.EqualValues(t, config.DelegatorStakeValues, balances)
+	for i, conifgBalance := range config.DelegatorStakeValues {
+		require.EqualValues(t, conifgBalance, balances[i])
+	}
 	logStageDone("Stakes on Ethereum = %v", balances)
 
 	deployingEthereumVoting := config.EthereumVotingAddress == ""
@@ -47,7 +49,7 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 		logStage("Setting Ethereum Validators accounts ...")
 		ethereum.SetValidators(config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress, config.ValidatorsAccounts, config.ValidatorsOrbsAddresses, config.ValidatorsOrbsIps)
-		validators := ethereum.GetValidators(config.EthereumValidatorsAddress)
+		validators := ethereum.GetValidators(config.EthereumValidatorsAddress, config.EthereumValidatorsRegAddress)
 		require.Len(t, validators, len(config.ValidatorsAccounts))
 		logStageDone("Set Validators to be %v", validators)
 	} else {

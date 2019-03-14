@@ -52,26 +52,33 @@ async function transferEvents() {
     }
 
     for (let i = 0;i < transferEvents.length;i++) {
-        let command = `gamma-cli send-tx ./gammacli-jsons/mirror-transfer.json -signer user1 -name ${orbsVotingContractName} -arg1 ${transferEvents[i].txHash} -env ${orbsEnvironment}`;
-        if (verbose) {
-            console.log('\x1b[32m%s\x1b[0m', `Transfer event ${i+1}:`);
-            console.log(transferEvents[i]);
-            console.log(`RUNNING: ${command}`);
-        }
-        const {stdout} = await exec(command);
-        let result = JSON.parse(stdout);
-
-        if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
-            if (result.OutputArguments.length > 0 && result.OutputArguments[0].Value.indexOf("failed since already have delegation with method Delegate") !== -1) {
-                if (verbose) {
-                    console.log('\x1b[33m%s\x1b[0m', `mirroring transfer event with txHash ${transferEvents[i].txHash} skipped because a stronger event exists (no problem here)`)
-                }
-            } else {
-                throw new Error(`problem mirroring transfer event with txHash ${transferEvents[i].txHash} result:\n${stdout}`);
+        try {
+            let command = `gamma-cli send-tx ./gammacli-jsons/mirror-transfer.json -signer user1 -name ${orbsVotingContractName} -arg1 ${transferEvents[i].txHash} -env ${orbsEnvironment}`;
+            if (verbose) {
+                console.log('\x1b[32m%s\x1b[0m', `Transfer event ${i + 1}:`);
+                console.log(transferEvents[i]);
+                console.log(`RUNNING: ${command}`);
             }
-        } else if (verbose) {
-            console.log(`OUTPUT:`);
-            console.log(result);
+            const {stdout, stderr} = await exec(command);
+            if (stdout.length === 0 && stderr.length > 0){
+                throw new Error(stderr);
+            }
+            let result = JSON.parse(stdout);
+
+            if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
+                if (result.OutputArguments.length > 0 && result.OutputArguments[0].Value.indexOf("failed since already have delegation with method Delegate") !== -1) {
+                    if (verbose) {
+                        console.log('\x1b[33m%s\x1b[0m', `mirroring transfer event with txHash ${transferEvents[i].txHash} skipped because a stronger event exists (no problem here)`)
+                    }
+                } else {
+                    throw new Error(`problem mirroring transfer event with txHash ${transferEvents[i].txHash} result:\n${stdout}`);
+                }
+            } else if (verbose) {
+                console.log(`OUTPUT:`);
+                console.log(result);
+            }
+        } catch (e){
+            console.log(`Could not mirror event Err OUTPUT:\n` + e);
         }
     }
 }
@@ -83,21 +90,28 @@ async function delegateEvents() {
     }
 
     for (let i = 0;i < delegateEvents.length;i++) {
-        let command = `gamma-cli send-tx ./gammacli-jsons/mirror-delegate.json -signer user1 -name ${orbsVotingContractName} -arg1 ${delegateEvents[i].txHash} -env ${orbsEnvironment}`;
-        if (verbose) {
-            console.log('\x1b[32m%s\x1b[0m', `Delegation event ${i+1}:`);
-            console.log(delegateEvents[i]);
-            console.log(`RUNNING: ${command}`);
-        }
-        const {stdout} = await exec(command);
-        let result = JSON.parse(stdout);
+        try {
+            let command = `gamma-cli send-tx ./gammacli-jsons/mirror-delegate.json -signer user1 -name ${orbsVotingContractName} -arg1 ${delegateEvents[i].txHash} -env ${orbsEnvironment}`;
+            if (verbose) {
+                console.log('\x1b[32m%s\x1b[0m', `Delegation event ${i + 1}:`);
+                console.log(delegateEvents[i]);
+                console.log(`RUNNING: ${command}`);
+            }
+            const {stdout, stderr} = await exec(command);
+            if (stdout.length === 0 && stderr.length > 0){
+                throw new Error(stderr);
+            }
+            let result = JSON.parse(stdout);
 
-        if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
-            throw new Error(`problem mirroring delegate event with txHash ${delegateEvents[i].txHash} result:\n${stdout}`);
-        }
-        if (verbose) {
-            console.log(`OUTPUT:`);
-            console.log(result);
+            if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
+                throw new Error(`problem mirroring delegate event with txHash ${delegateEvents[i].txHash} result:\n${stdout}`);
+            }
+            if (verbose) {
+                console.log(`OUTPUT:`);
+                console.log(result);
+            }
+        } catch (e){
+            console.log(`Could not mirror event Err OUTPUT:\n` + e);
         }
     }
 }
@@ -109,21 +123,28 @@ async function voteEvents() {
     }
 
     for (let i = 0;i < voteEvents.length;i++) {
-        let command = `gamma-cli send-tx ./gammacli-jsons/mirror-vote.json -signer user1 -name ${orbsVotingContractName} -arg1 ${voteEvents[i].txHash} -env ${orbsEnvironment}`;
-        if (verbose) {
-            console.log('\x1b[32m%s\x1b[0m', `Voting event ${i+1}:`);
-            console.log(voteEvents[i]);
-            console.log(`RUNNING: ${command}`);
-        }
-        const {stdout} = await exec(command);
-        let result = JSON.parse(stdout);
+        try {
+            let command = `gamma-cli send-tx ./gammacli-jsons/mirror-vote.json -signer user1 -name ${orbsVotingContractName} -arg1 ${voteEvents[i].txHash} -env ${orbsEnvironment}`;
+            if (verbose) {
+                console.log('\x1b[32m%s\x1b[0m', `Voting event ${i + 1}:`);
+                console.log(voteEvents[i]);
+                console.log(`RUNNING: ${command}`);
+            }
+            const {stdout, stderr } = await exec(command);
+            if (stdout.length === 0 && stderr.length > 0){
+                throw new Error(stderr);
+            }
+            let result = JSON.parse(stdout);
 
-        if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
-            throw new Error(`problem mirroring vote event  with txHash ${voteEvents[i].txHash} result:\n${stdout}`);
-        }
-        if (verbose) {
-            console.log(`OUTPUT:`);
-            console.log(result);
+            if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
+                throw new Error(`problem mirroring vote event  with txHash ${voteEvents[i].txHash} result:\n${stdout}`);
+            }
+            if (verbose) {
+                console.log(`OUTPUT:`);
+                console.log(result);
+            }
+        } catch (e){
+            console.log(`Could not mirror event Err OUTPUT:\n` + e);
         }
     }
 }

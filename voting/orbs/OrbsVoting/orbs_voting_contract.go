@@ -32,11 +32,12 @@ var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
 var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(480)
 var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(40320)
 var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(17280)
-var FIRST_ELECTION_BLOCK = uint64(7519801)
+var TRANSITION_PERIOD_LENGTH_IN_BLOCKS = uint64(1)
+var FIRST_ELECTION_BLOCK = uint64(7467969)
 var MAX_CANDIDATE_VOTES = 3
 var MAX_ELECTED_VALIDATORS = 22
+var MIN_ELECTED_VALIDATORS = 7
 var VOTE_OUT_WEIGHT_PERCENT = uint64(70)
-var TRANSITION_PERIOD_LENGTH_IN_BLOCKS = uint64(1)
 
 func _init() {
 	_setElectionBlockNumber(FIRST_ELECTION_BLOCK)
@@ -46,12 +47,13 @@ func _init() {
 /***
  * unsafetests functions
  */
-func unsafetests_setVariables(stakeFactor uint64, voteMirrorPeriod uint64, voteValidPeriod uint64, electionPeriod uint64, electedValidators uint32) {
+func unsafetests_setVariables(stakeFactor uint64, voteMirrorPeriod uint64, voteValidPeriod uint64, electionPeriod uint64, maxElectedValidators uint32, minElectedValidators uint32) {
 	ETHEREUM_STAKE_FACTOR = big.NewInt(int64(stakeFactor))
 	VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = voteMirrorPeriod
 	VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = voteValidPeriod
 	ELECTION_PERIOD_LENGTH_IN_BLOCKS = electionPeriod
-	MAX_ELECTED_VALIDATORS = int(electedValidators)
+	MAX_ELECTED_VALIDATORS = int(maxElectedValidators)
+	MIN_ELECTED_VALIDATORS = int(minElectedValidators)
 }
 
 func unsafetests_setElectedValidators(joinedAddresses []byte) {
@@ -246,8 +248,7 @@ func mirrorVote(hexEncodedEthTxHash string) {
 		_setNumberOfGurdians(numOfGuardians + 1)
 	}
 
-	// TODO v1 noam due-diligent guardian missing
-
+	fmt.Printf("elections %10d: guardian %x voted against (%d) %v\n", _getElectionBlockNumber(), e.Voter, len(e.Nodes), e.Nodes)
 	_setCandidates(e.Voter[:], e.Nodes)
 	state.WriteUint64(_formatGuardianBlockNumberKey(e.Voter[:]), eventBlockNumber)
 	state.WriteUint32(_formatGuardianBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
@@ -453,7 +454,6 @@ func _collectNextValidatorDataFromEthereum() (isDone bool) {
 
 func _collectOneValidatorDataFromEthereum(i int) {
 	validator := _getValidValidatorEthereumAddressAtIndex(i)
-	fmt.Printf("elections %10d: %d is %x\n", _getElectionBlockNumber(), i, validator)
 
 	var orbsAddress [20]byte
 	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsRegistryEthereumContractAddress(), getValidatorsRegistryAbi(), "getOrbsAddress", &orbsAddress, validator)
@@ -611,7 +611,12 @@ func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes 
 			fmt.Printf("elections %10d: candidate %x voted out by %d votes\n", _getElectionBlockNumber(), validator, voted)
 		}
 	}
-	return winners
+	if len(winners) < MIN_ELECTED_VALIDATORS {
+		fmt.Printf("elections %10d: not enought validators left after vote using all valid validators %v\n", _getElectionBlockNumber(), validValidators)
+		return validValidators
+	} else {
+		return winners
+	}
 }
 
 var VOTING_PROCESS_STATE_KEY = []byte("Voting_Process_State")

@@ -269,6 +269,41 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 	})
 }
 
+func TestOrbsVotingContract_mirrorVoteLessThanMaximum(t *testing.T) {
+	txHex := "0xabcd"
+	guardianAddr := [20]byte{0x01}
+	candidateAddrs := [][20]byte{{0x02}, {0x03}}
+	blockNumber := 100
+	txIndex := 10
+
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		setTimingInMirror(m)
+
+		// prepare
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
+			v := out.(*VoteOut)
+			v.Voter = guardianAddr
+			v.Nodes = candidateAddrs
+		})
+		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
+
+		// call
+		mirrorVote(txHex)
+
+		// assert
+		m.VerifyMocks()
+		candidates := make([]byte, 0, len(candidateAddrs)*20)
+		for _, v := range candidateAddrs {
+			candidates = append(candidates, v[:]...)
+		}
+
+		require.EqualValues(t, candidates, state.ReadBytes(_formatGuardianCandidateKey(guardianAddr[:])))
+		require.EqualValues(t, blockNumber, state.ReadUint64(_formatGuardianBlockNumberKey(guardianAddr[:])))
+		require.EqualValues(t, txIndex, state.ReadUint32(_formatGuardianBlockTxIndexKey(guardianAddr[:])))
+	})
+}
+
 func TestOrbsVotingContract_mirrorVote_NotGuardian(t *testing.T) {
 	txHex := "0xabcd"
 	guardianAddr := [20]byte{0x01}
@@ -525,6 +560,8 @@ func newHarness() *harness {
 	VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = 3
 	VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = 500
 	ELECTION_PERIOD_LENGTH_IN_BLOCKS = 200
+	MIN_ELECTED_VALIDATORS = 3
+	MAX_ELECTED_VALIDATORS = 10
 	return &harness{nextGuardianAddress: 0xa1, nextDelegatorAddress: 0xb1, nextValidatorAddress: 0xd1, nextValidatorOrbsAddress: 0xe1}
 }
 
