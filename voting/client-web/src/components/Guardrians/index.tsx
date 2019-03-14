@@ -138,7 +138,9 @@ const GuardianPage = ({ classes, apiService }) => {
           <>
             <LeaveEveryoneButton
               onVote={commitVote}
-              disabled={hasSomebodySelected()}
+              disabled={
+                hasSomebodySelected() || Object.keys(validators).length === 0
+              }
             />
             <VoteButton onVote={commitVote} disabled={!hasSomebodySelected()} />
           </>
