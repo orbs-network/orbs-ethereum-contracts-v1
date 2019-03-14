@@ -1,6 +1,6 @@
 import GuardiansPageDriver from './driver';
 import { generateValidatorsData } from './fixtures';
-import { cleanup } from 'react-testing-library';
+import { cleanup, wait } from 'react-testing-library';
 
 describe('Guardians Page', () => {
   let driver: GuardiansPageDriver, validatorsData;
@@ -62,13 +62,17 @@ describe('Guardians Page', () => {
     driver.chooseValidator(firstAddress);
 
     await getByTestId('vote-button').click();
+    await wait();
+
     expect(spy).toHaveBeenCalledWith([firstAddress]);
+    spy.mockRestore();
   });
 
   it('should vote out with empty list', async () => {
     const spy = jest.spyOn(driver.apiService, 'voteOut');
     const { getByTestId } = await driver.render();
     await getByTestId('leave-everyone-button').click();
+    await wait();
     expect(spy).toHaveBeenCalledWith([]);
     spy.mockRestore();
   });
