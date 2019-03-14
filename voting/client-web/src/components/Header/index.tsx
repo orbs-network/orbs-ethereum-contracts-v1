@@ -25,7 +25,7 @@ const styles = theme => ({
 
 const Header = ({ classes }) => {
   return (
-    <AppBar position="fixed" className={classes.appBar}>
+    <AppBar position="fixed" className={classes.appBar} data-testid="header">
       <Toolbar>
         <Link to="/">
           <img className={classes.logo} src={logo} alt="Orbs" />
