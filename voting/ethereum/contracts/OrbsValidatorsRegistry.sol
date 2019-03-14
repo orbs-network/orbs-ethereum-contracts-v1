@@ -21,6 +21,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     mapping(bytes32 => address) public lookupName;
     mapping(bytes32 => address) public lookupUrl;
+    mapping(bytes32 => address) public lookupIp;
     mapping(address => address) public lookupOrbsAddr;
 
     function register(
@@ -33,10 +34,11 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
-        require(isIPV4(ipAddress), "Please pass an address of up to 4 bytes");
+        require(ipAddress.length == 4, "Please pass an ip address represented as an array of exactly 4 bytes");
         require(orbsAddress != address(0), "Please provide a valid Orbs Address");
 
         bytes32 nameHash = keccak256(bytes(name));
+        bytes32 ipHash   = keccak256(ipAddress);
         bytes32 urlHash  = keccak256(bytes(website));
 
         require(
@@ -50,6 +52,11 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
                 "URL is already in use by another validator"
         );
         require(
+            lookupIp[ipHash] == address(0) ||
+            lookupIp[ipHash] == msg.sender,
+                "IP Address is already in use by another validator"
+        );
+        require(
             lookupOrbsAddr[orbsAddress] == address(0) ||
             lookupOrbsAddr[orbsAddress] == msg.sender,
                 "Orbs Address is already in use by another validator"
@@ -57,6 +64,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
         lookupName[nameHash] = msg.sender;
         lookupUrl[urlHash] = msg.sender;
+        lookupIp[ipHash] = msg.sender;
         lookupOrbsAddr[orbsAddress] = msg.sender;
 
         uint registeredOnBlock;
@@ -84,6 +92,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
         delete lookupName[keccak256(bytes(data.name))];
         delete lookupUrl[keccak256(bytes(data.website))];
+        delete lookupIp[keccak256(data.ipAddress)];
         delete lookupOrbsAddr[data.orbsAddress];
 
         delete validatorsData[msg.sender];
@@ -138,15 +147,5 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     function isValidator(address addr) public view returns (bool) {
         return bytes(validatorsData[addr].name).length > 0;
-    }
-
-    function isIPV4(bytes memory inBytes) internal pure returns (bool){
-        uint inBytesLength = inBytes.length;
-        for (uint256 i = 4; i < inBytesLength; i++) { // only 0's beyond the 4th byte
-            if (inBytes[i] != 0) {
-                return false;
-            }
-        }
-        return true;
     }
 }
