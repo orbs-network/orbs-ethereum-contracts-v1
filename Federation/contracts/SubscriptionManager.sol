@@ -6,10 +6,11 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./DateTime.sol";
 import "./IFederation.sol";
 import "./Upgradable.sol";
+import "./ISubscriptionChecker.sol";
 
 
 /// @title Orbs billing and subscription smart contract.
-contract SubscriptionManager is Upgradable {
+contract SubscriptionManager is Upgradable, ISubscriptionChecker {
     using SafeMath for uint256;
 
     // The version of the current subscription manager smart contract.
