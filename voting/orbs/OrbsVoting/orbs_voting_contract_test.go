@@ -706,6 +706,11 @@ func TestOrbsVotingContract_processVote_CalulateStakes(t *testing.T) {
 		require.True(t, i <= expectedNumOfStateTransitions, "did not finish in correct amount of passes")
 		require.EqualValues(t, "", _getVotingProcessState())
 		require.ElementsMatch(t, [][20]byte{v1.address, v3.address, v4.address, v5.address}, elected)
+		require.EqualValues(t, 40, getCumulativeParticipationReward(d2.address[:]))
+		require.EqualValues(t, 8, getCumulativeParticipationReward(g1.address[:]))
+		require.EqualValues(t, 80, getCumulativeParticipationReward(g4.address[:]))
+		require.EqualValues(t, 16, getCumulativeParticipationReward(g2.address[:]))
+		require.EqualValues(t, 32, getCumulativeParticipationReward(g3.address[:]))
 	})
 }
 
@@ -1030,24 +1035,30 @@ func TestOrbsVotingContract_processVote_calculateOneGuardianVoteRecursive(t *tes
 		{0xb3}: 400,
 	}
 	tests := []struct {
-		name         string
-		expect       uint64
-		relationship map[[20]byte][][20]byte
+		name                   string
+		expect                 uint64
+		relationship           map[[20]byte][][20]byte
+		expectParticipantStake map[[20]byte]uint64 // will not include the guardian stake in it.
 	}{
-		{"simple one delegate", 200, map[[20]byte][][20]byte{{0xa0}: {{0xb1}}}},
-		{"simple two delegates", 600, map[[20]byte][][20]byte{{0xa0}: {{0xb1}, {0xb3}}}},
-		{"simple all delegates", 1000, map[[20]byte][][20]byte{{0xa0}: {{0xb1}, {0xb0}, {0xb2}, {0xb3}}}},
-		{"level one has another delegate", 500, map[[20]byte][][20]byte{{0xa0}: {{0xb1}}, {0xb1}: {{0xb2}}}},
-		{"simple and level one has another delegate", 600, map[[20]byte][][20]byte{{0xa0}: {{0xb0}, {0xb1}}, {0xb1}: {{0xb2}}}},
-		{"level one has another two delegate", 900, map[[20]byte][][20]byte{{0xa0}: {{0xb1}}, {0xb1}: {{0xb2}, {0xb3}}}},
-		{"level two has level one has another two delegate", 1000, map[[20]byte][][20]byte{{0xa0}: {{0xb0}}, {0xb0}: {{0xb1}}, {0xb1}: {{0xb2}, {0xb3}}}},
+		{"simple one delegate", 200, map[[20]byte][][20]byte{{0xa0}: {{0xb1}}}, map[[20]byte]uint64{{0xb1}: 200}},
+		{"simple two delegates", 600, map[[20]byte][][20]byte{{0xa0}: {{0xb1}, {0xb3}}}, map[[20]byte]uint64{{0xb3}: 400, {0xb1}: 200}},
+		{"simple all delegates", 1000, map[[20]byte][][20]byte{{0xa0}: {{0xb1}, {0xb0}, {0xb2}, {0xb3}}}, map[[20]byte]uint64{{0xb3}: 400, {0xb2}: 300, {0xb1}: 200, {0xb0}: 100}},
+		{"level one has another delegate", 500, map[[20]byte][][20]byte{{0xa0}: {{0xb1}}, {0xb1}: {{0xb2}}}, map[[20]byte]uint64{{0xb2}: 300, {0xb1}: 200}},
+		{"simple and level one has another delegate", 600, map[[20]byte][][20]byte{{0xa0}: {{0xb0}, {0xb1}}, {0xb1}: {{0xb2}}}, map[[20]byte]uint64{{0xb2}: 300, {0xb1}: 200, {0xb0}: 100}},
+		{"level one has another two delegate", 900, map[[20]byte][][20]byte{{0xa0}: {{0xb1}}, {0xb1}: {{0xb2}, {0xb3}}}, map[[20]byte]uint64{{0xb2}: 300, {0xb1}: 200, {0xb3}: 400}},
+		{"level two has level one has another two delegate", 1000, map[[20]byte][][20]byte{{0xa0}: {{0xb0}}, {0xb0}: {{0xb1}}, {0xb1}: {{0xb2}, {0xb3}}}, map[[20]byte]uint64{{0xb3}: 400, {0xb2}: 300, {0xb1}: 200, {0xb0}: 100}},
 	}
 	for i := range tests {
 		cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
 		t.Run(cTest.name, func(t *testing.T) {
 			t.Parallel()
-			stakes := _calculateOneGuardianVoteRecursive(guardian, cTest.relationship, delegatorStakes)
+			participant := make(map[[20]byte]uint64)
+			stakes := _calculateOneGuardianVoteRecursive(guardian, cTest.relationship, delegatorStakes, participant)
 			require.EqualValues(t, cTest.expect, stakes, fmt.Sprintf("%s was calculated to %d instead of %d", cTest.name, stakes, cTest.expect))
+			require.EqualValues(t, len(cTest.expectParticipantStake), len(participant), "participants length not equal")
+			for k, v := range participant {
+				require.EqualValues(t, cTest.expectParticipantStake[k], v, "bad values")
+			}
 		})
 	}
 }
@@ -1090,7 +1101,8 @@ func TestOrbsVotingContract_processVote_guardiansCastVotes(t *testing.T) {
 		}
 		for i := range tests {
 			cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
-			candidatesVotes, total := _guardiansCastVotes(cTest.guardianStake, relationship, delegatorStakes)
+			candidatesVotes, total, _, _ := _guardiansCastVotes(cTest.guardianStake, relationship, delegatorStakes)
+			// TODO v1 Noam ... check this ?
 			require.EqualValues(t, cTest.expectedTotal, total)
 			for validator, vote := range cTest.expect {
 				require.EqualValues(t, vote, candidatesVotes[validator])
