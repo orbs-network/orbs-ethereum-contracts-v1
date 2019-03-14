@@ -32,6 +32,7 @@ type EthereumAdapter interface {
 	SetStakes(ethereumErc20Address string, stakes []int)
 	Transfer(ethereumErc20Address string, from int, to int, amount int)
 	TopUpEther(accountIndexes []int)
+	PrintBalances()
 
 	DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string)
 	GetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) []validatorData

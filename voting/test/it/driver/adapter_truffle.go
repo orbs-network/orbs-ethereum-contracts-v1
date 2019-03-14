@@ -74,6 +74,10 @@ func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
 	)
 }
 
+func (ta *truffleAdapter) PrintBalances() {
+	ta.run("exec ./truffle-scripts/printTotalBalance.js")
+}
+
 func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
 	bytes := ta.run("exec ./truffle-scripts/deployERC20.js")
 	out := struct {

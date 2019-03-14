@@ -18,7 +18,7 @@ var guardiansAccountsRopsten = []int{4, 6, 10, 11}
 var validatorAccountsRopsten = []int{20, 21, 22, 23, 24}
 var configRopsten = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
-	OrbsVotingContractName:       "",                                           			       // name of the orbs contract
+	OrbsVotingContractName:       "",                                                              // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
 	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
@@ -47,11 +47,15 @@ func TestFullOnRopsten(t *testing.T) {
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
 	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
+	ethereum.PrintBalances()
+
 	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
 	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
 	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
 	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
 	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
+
+	ethereum.PrintBalances()
 }
 
 func TestDeployOnRopsten(t *testing.T) {
