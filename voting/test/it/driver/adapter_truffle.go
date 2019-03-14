@@ -37,7 +37,7 @@ func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapte
 		projectPath: ".",
 		network:     "ropsten",
 		networkUrl:  ropstenUrl,
-		startBlock:  5196631,
+		startBlock:  5196956,
 		stakeFactor: stakeFactor,
 	}
 }

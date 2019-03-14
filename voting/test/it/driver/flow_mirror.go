@@ -30,7 +30,8 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	na.Mirror(config.OrbsVotingContractName, config.EthereumErc20Address, config.EthereumVotingAddress, ethereum.GetStartOfHistoryBlock(), config.FirstElectionBlockNumber,
 		ethereum.GetConnectionUrl(), orbs.GetOrbsEnvironment())
 
-	require.True(t, ethereum.GetCurrentBlock() < config.FirstElectionBlockNumber+orbs.GetMirrorVotingPeriod(), "Mirroring did not complete within mirroring grace period. consider increasing adapter.voteMirrorPeriod")
+	// TODO create orbs.GetCurrentFinalBlock() to enable this require:
+	//require.True(t, orbs.GetCurrentFinalBlock() < config.FirstElectionBlockNumber+orbs.GetMirrorVotingPeriod() + orbs.GetFinalityBlocksComponent() + , "Mirroring did not complete within mirroring grace period. consider increasing adapter.voteMirrorPeriod")
 
 	logStageDone("Running mirror script")
 

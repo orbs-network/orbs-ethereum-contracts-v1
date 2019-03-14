@@ -28,12 +28,12 @@ func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
 		debug: config.DebugLogs,
 		env:   "integrative",
 		stakeFactor:             10000,
-		voteMirrorPeriod:        15,
+		voteMirrorPeriod:        25,
 		voteValidPeriod:         500,
 		electionPeriod:          200,
 		maxElectedValidators:    10,
 		minElectedValidators:    7,
-		finalityBlocksComponent: 1,
+		finalityBlocksComponent: 10,
 		finalityTimeComponent:   2 * time.Minute + 5 * time.Second,
 	}
 }
@@ -51,8 +51,12 @@ type gammaCliAdapter struct {
 	finalityTimeComponent   time.Duration
 }
 
-func (gamma *gammaCliAdapter) DeployContract(orbsVotingContractName string) {
+func (gamma *gammaCliAdapter) DeployContract(orbsVotingContractName string) string {
+	if orbsVotingContractName == "" {
+		orbsVotingContractName = fmt.Sprintf("OrbsVoting_%d", time.Now().Unix())
+	}
 	gamma.run("deploy ./../../orbs/OrbsVoting/orbs_voting_contract.go -name " + orbsVotingContractName + " -signer user1")
+	return orbsVotingContractName
 }
 
 func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string) {

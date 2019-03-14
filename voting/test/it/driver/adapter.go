@@ -3,7 +3,7 @@ package driver
 import "time"
 
 type OrbsAdapter interface {
-	DeployContract(orbsVotingContractName string)
+	DeployContract(orbsVotingContractName string) string
 	SetContractConstants(orbsVotingContractName string)
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
 	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string)
