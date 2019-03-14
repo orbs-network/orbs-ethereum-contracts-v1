@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
 
-const DisabledVoteButton = () => {
+const ReadOnlyVoteButton = () => {
   return (
     <Tooltip title="Install Metamask extension to have access to voting capabilities">
       <div>
@@ -27,15 +27,31 @@ const DisabledVoteButton = () => {
   );
 };
 
-const VoteButton = ({ onVote }) => {
+const VoteButton = ({ onVote, disabled }) => {
   return (
     <Button
       data-testid="vote-button"
       onClick={onVote}
       variant="outlined"
       color="secondary"
+      disabled={disabled}
     >
       Vote Out
+    </Button>
+  );
+};
+
+const LeaveEveryoneButton = ({ onVote, disabled }) => {
+  return (
+    <Button
+      data-testid="leave-everyone-button"
+      style={{ marginRight: 15 }}
+      variant="outlined"
+      color="secondary"
+      onClick={onVote}
+      disabled={disabled}
+    >
+      Keep everyone
     </Button>
   );
 };
@@ -93,9 +109,10 @@ const GuardianPage = ({ classes, apiService }) => {
     setValidators(Object.assign({}, validators));
   };
 
-  const hasMetamask = () => {
-    return apiService.mode === Mode.ReadWrite;
-  };
+  const hasMetamask = () => apiService.mode === Mode.ReadWrite;
+
+  const hasSomebodySelected = () =>
+    Object.keys(validators).some(address => validators[address].checked);
 
   useEffect(() => {
     fetchValidators();
@@ -118,9 +135,15 @@ const GuardianPage = ({ classes, apiService }) => {
       />
       <div className={classes.voteButton}>
         {hasMetamask() ? (
-          <VoteButton onVote={commitVote} />
+          <>
+            <LeaveEveryoneButton
+              onVote={commitVote}
+              disabled={hasSomebodySelected()}
+            />
+            <VoteButton onVote={commitVote} disabled={!hasSomebodySelected()} />
+          </>
         ) : (
-          <DisabledVoteButton />
+          <ReadOnlyVoteButton />
         )}
       </div>
     </>

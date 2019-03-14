@@ -10,7 +10,6 @@ export class MetamaskService {
   private validatorsRegistryContract;
   private guardiansContract;
   private votingContract;
-  private metamaskService;
 
   constructor() {
     this.web3 = new Web3(ethereum as any);
@@ -39,18 +38,18 @@ export class MetamaskService {
   }
 
   async delegate(candidate: string) {
-    const from = await this.metamaskService.enable();
+    const from = await this.enableMetamask();
     return this.votingContract.methods.delegate(candidate).send({ from });
   }
 
   async voteOut(validators: string[]) {
-    const from = await this.metamaskService.enable();
+    const from = await this.enableMetamask();
     return this.votingContract.methods.voteOut(validators).send({ from });
   }
 
   async registerGuardian(info) {
     const { name, website } = info;
-    const from = await this.metamaskService.enable();
+    const from = await this.enableMetamask();
     return this.guardiansContract.methods
       .register(name, website)
       .send({ from });
@@ -58,7 +57,7 @@ export class MetamaskService {
 
   async registerValidator(info) {
     const { name, ipAddress, website, orbsAddress } = info;
-    const from = await this.metamaskService.enable();
+    const from = await this.enableMetamask();
     const ipHex = this.ipAddressToHex(ipAddress);
     return this.validatorsRegistryContract.methods
       .register(name, ipHex, website, orbsAddress)

@@ -1,6 +1,6 @@
 import GuardiansPageDriver from './driver';
 import { generateValidatorsData } from './fixtures';
-import { waitForElement, cleanup } from 'react-testing-library';
+import { cleanup } from 'react-testing-library';
 
 describe('Guardians Page', () => {
   let driver: GuardiansPageDriver, validatorsData;
@@ -13,9 +13,8 @@ describe('Guardians Page', () => {
   afterEach(cleanup);
 
   it('should render the list', async () => {
-    const { getByTestId } = driver.render();
+    const { getByTestId } = await driver.render();
     const validatorsList = getByTestId('validators-list');
-    await waitForElement(() => validatorsList.children.length);
 
     expect(validatorsList.children.length).toEqual(
       Object.keys(validatorsData).length
@@ -32,5 +31,45 @@ describe('Guardians Page', () => {
         validatorsData[address].website
       );
     });
+  });
+
+  it('should have vote out button disabled', async () => {
+    const { getByTestId } = await driver.render();
+    expect(getByTestId('vote-button')).toBeDisabled();
+  });
+
+  it('should have keep everyone button enabled', async () => {
+    const { getByTestId } = await driver.render();
+    expect(getByTestId('leave-everyone-button')).not.toBeDisabled();
+  });
+
+  it('should change buttons disabled status on check', async () => {
+    const { getByTestId } = await driver.render();
+
+    const firstAddress = Object.keys(validatorsData)[0];
+    driver.chooseValidator(firstAddress);
+
+    expect(getByTestId('vote-button')).not.toBeDisabled();
+    expect(getByTestId('leave-everyone-button')).toBeDisabled();
+  });
+
+  it('should vote out with chosen addresses', async () => {
+    const spy = jest.spyOn(driver.apiService, 'voteOut');
+
+    const { getByTestId } = await driver.render();
+
+    const firstAddress = Object.keys(validatorsData)[0];
+    driver.chooseValidator(firstAddress);
+
+    await getByTestId('vote-button').click();
+    expect(spy).toHaveBeenCalledWith([firstAddress]);
+  });
+
+  it('should vote out with empty list', async () => {
+    const spy = jest.spyOn(driver.apiService, 'voteOut');
+    const { getByTestId } = await driver.render();
+    await getByTestId('leave-everyone-button').click();
+    expect(spy).toHaveBeenCalledWith([]);
+    spy.mockRestore();
   });
 });

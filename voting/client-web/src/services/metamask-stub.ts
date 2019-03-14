@@ -1,28 +1,32 @@
-import { stubWarning } from '../decorators/stub-warning';
-
 export class MetamaskServiceStub {
-  @stubWarning()
   getCurrentAddress() {
+    console.warn(
+      'Method "getCurrentAddress" is not available in read-only mode'
+    );
     return '';
   }
 
-  @stubWarning()
   delegate() {
+    console.warn('Method "delegate" is not available in read-only mode');
     return Promise.reject();
   }
 
-  @stubWarning()
   voteOut() {
+    console.warn('Method "voteOut" is not available in read-only mode');
     return Promise.reject();
   }
 
-  @stubWarning()
   registerGuardian() {
+    console.warn(
+      'Method "registerGuardian" is not available in read-only mode'
+    );
     return Promise.reject();
   }
 
-  @stubWarning()
   registerValidator() {
+    console.warn(
+      'Method "registerValidator" is not available in read-only mode'
+    );
     return Promise.reject();
   }
 }

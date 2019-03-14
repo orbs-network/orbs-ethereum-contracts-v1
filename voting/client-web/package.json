@@ -37,6 +37,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:ci": "react-scripts test --no-watch --testResultsProcessor ./node_modules/jest-junit",
+    "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
+    "test:coverage": "react-scripts test --no-watch --coverage",
     "eject": "react-scripts eject",
     "lint": "prettier --single-quote --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "deploy": "npm run build && ./scripts/deploy.sh",

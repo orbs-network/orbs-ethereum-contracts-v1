@@ -27,6 +27,7 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
             <TableCell padding="checkbox">
               {!readOnly && (
                 <Checkbox
+                  data-testid={`validator-${address}-checkbox`}
                   defaultChecked={validators[address].checked}
                   onChange={() => onToggle(address)}
                 />
