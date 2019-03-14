@@ -17,6 +17,7 @@ func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
 		voteValidPeriod:         500,
 		electionPeriod:          200,
 		maxElectedValidators:    5,
+		minElectedValidators:    3,
 		finalityBlocksComponent: 1,
 		finalityTimeComponent:   10 * time.Second,
 	}
@@ -31,6 +32,7 @@ func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
 		voteValidPeriod:         500,
 		electionPeriod:          200,
 		maxElectedValidators:    10,
+		minElectedValidators:    7,
 		finalityBlocksComponent: 1,
 		finalityTimeComponent:   2 * time.Minute + 5 * time.Second,
 	}
@@ -44,6 +46,7 @@ type gammaCliAdapter struct {
 	voteValidPeriod         uint64
 	electionPeriod          uint64
 	maxElectedValidators    int
+	minElectedValidators    int
 	finalityBlocksComponent int
 	finalityTimeComponent   time.Duration
 }
@@ -58,7 +61,8 @@ func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string
 		" -arg2 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
 		" -arg3 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
 		" -arg4 " + fmt.Sprintf("%d", gamma.electionPeriod) +
-		" -arg5 " + fmt.Sprintf("%d", gamma.maxElectedValidators))
+		" -arg5 " + fmt.Sprintf("%d", gamma.maxElectedValidators) +
+		" -arg6 " + fmt.Sprintf("%d", gamma.minElectedValidators))
 }
 
 func (gamma *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
@@ -81,7 +85,7 @@ func (gamma *gammaCliAdapter) BindGuardiansContractToEthereum(orbsVotingContract
 	gamma.run("send-tx ./gammacli-jsons/set-guardians-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumGuardiansAddress)
 }
 
-func (gamma *gammaCliAdapter) SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
+func (gamma *gammaCliAdapter) SetElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
 	gamma.run("send-tx ./gammacli-jsons/set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
 }
 
@@ -100,7 +104,7 @@ func (gamma *gammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []s
 	lenoutput := (len(out.OutputArguments[0].Value) - 2) / 40
 	respose := make([]string, lenoutput)
 	for i := 0; i < lenoutput; i++ {
-		respose[i] = "0x" + out.OutputArguments[0].Value[i*40+2:(i+1)*40+2]
+		respose[i] = "0x" + strings.ToLower(out.OutputArguments[0].Value[i*40+2:(i+1)*40+2])
 	}
 
 	return respose

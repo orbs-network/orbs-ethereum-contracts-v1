@@ -20,6 +20,7 @@ const ReadOnlyBanner = ({ classes }) => {
       open={true}
     >
       <SnackbarContent
+        data-testid="read-only-banner"
         className={classes.warning}
         message="Attention! You are in Read Only mode."
       />

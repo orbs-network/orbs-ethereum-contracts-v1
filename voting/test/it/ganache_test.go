@@ -88,6 +88,6 @@ func generateVotes(activists []int, validatorAccounts []int) []*driver.VoteEvent
 		{6, []int{22}},
 		{4, []int{21}}, // revote
 		{11, []int{}},
-		//{15, [3]int{24, 21, 22}}, // not an guardian // TODO v1 noam
+		{15, []int{24, 21, 22}}, // not an guardian
 	}
 }

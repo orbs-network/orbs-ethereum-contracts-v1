@@ -10,7 +10,7 @@ type OrbsAdapter interface {
 	BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string)
 	BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string)
 	BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string)
-	SetFirstElectionBlockNumber(orbsVotingContractName string, blockHeight int)
+	SetElectionBlockNumber(orbsVotingContractName string, blockHeight int)
 
 	GetElectedNodes(orbsVotingContractName string) []string
 	ForwardElectionResultsToSystem(electedValidatorAddresses []string)
@@ -28,13 +28,13 @@ type EthereumAdapter interface {
 	GetCurrentBlock() int
 
 	DeployERC20Contract() (ethereumErc20Address string)
-	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes []int)
+	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes map[int]int)
 	SetStakes(ethereumErc20Address string, stakes []int)
 	Transfer(ethereumErc20Address string, from int, to int, amount int)
 	TopUpEther(accountIndexes []int)
 
 	DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string)
-	GetValidators(ethereumValidatorsAddress string) []string
+	GetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) []validatorData
 	SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string)
 
 	DeployVotingContract() (ethereumVotingAddress string)

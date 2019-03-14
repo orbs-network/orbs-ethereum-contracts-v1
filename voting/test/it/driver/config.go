@@ -78,6 +78,6 @@ type TransferEvent struct {
 }
 
 type VoteEvent struct {
-	ActivistIndex int
+	GuardianIndex int
 	Candidates    []int
 }

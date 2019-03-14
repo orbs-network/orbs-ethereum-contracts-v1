@@ -19,7 +19,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 
 	logStage("Set election date...")
-	orbs.SetFirstElectionBlockNumber(config.OrbsVotingContractName, config.FirstElectionBlockNumber)
+	orbs.SetElectionBlockNumber(config.OrbsVotingContractName, config.FirstElectionBlockNumber)
 	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
 
 	logStage("Waiting for finality...")

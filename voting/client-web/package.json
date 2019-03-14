@@ -32,6 +32,7 @@
   },
   "scripts": {
     "prestart": "node ./harness.js",
+    "postinstall": "npm run contracts:prod",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -50,7 +51,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm run test:ci"
     }
   },
   "eslintConfig": {
