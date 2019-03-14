@@ -269,6 +269,27 @@ func (ta *truffleAdapter) WaitForFinality() {
 }
 
 func (ta *truffleAdapter) run(args string, env ...string) []byte {
+	var lastErr error
+	for i := 0; i < 3; i++ { // retry loop
+
+		out, err := ta._run(args, env...) // 1 attempt
+		if err != nil {
+			lastErr = err
+
+			fmt.Printf("\nError in attempt #%d. (error: %s) \n\n", i, err)
+
+			time.Sleep(5 * time.Second)
+			continue
+		}
+
+		// success
+		return out
+
+	}
+	panic(lastErr)
+}
+
+func (ta *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	args += " --network " + ta.network
 	if ta.debug {
 		fmt.Println("\n  ### RUNNING: truffle " + args)
@@ -293,7 +314,12 @@ func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	}
 	// remove first line of output (Using network...)
 	index := bytes.IndexRune(out, '\n')
-	return out[index:]
+
+	if index == -1 {
+		return nil, fmt.Errorf("failed to find fist linefeed in output: %s", string(out))
+	}
+
+	return out[index:], nil
 }
 
 func (ta *truffleAdapter) fromEthereumToken(tokenValue uint64) int {
