@@ -19,7 +19,7 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 		_init()
 		_setElectedValidatorsBlockNumberAtIndex(currIndex, currBlockNumber)
 		_setElectedValidatorsBlockHeightAtIndex(currIndex, currentBlockHeight)
-		_setElectedValidatorsAtIndex(currIndex, currElected)
+		_setElectedValidatorsOrAtIndex(currIndex, currElected)
 		_setNumberOfElections(currIndex)
 		_setElectionBlockNumber(newBlockNumber)
 		_setValidValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
@@ -97,10 +97,10 @@ func TestOrbsElectionResultsContract_getElectionResultsByBlockNumber_getSeveralV
 		_setNumberOfElections(3)
 
 		// call
-		foundElected1 := getElectedValidatorsByBlockNumber(blockNumber1 + 1)
-		foundElected2 := getElectedValidatorsByBlockNumber(blockNumber2 + 5000)
-		foundElected3 := getElectedValidatorsByBlockNumber(blockNumber3 + 1000000)
-		foundElected0 := getElectedValidatorsByBlockNumber(5)
+		foundElected1 := getElectedValidatorsEthereumAddressByBlockNumber(blockNumber1 + 1)
+		foundElected2 := getElectedValidatorsEthereumAddressByBlockNumber(blockNumber2 + 5000)
+		foundElected3 := getElectedValidatorsEthereumAddressByBlockNumber(blockNumber3 + 1000000)
+		foundElected0 := getElectedValidatorsEthereumAddressByBlockNumber(5)
 
 		// assert
 		require.EqualValues(t, elected1, foundElected1)
