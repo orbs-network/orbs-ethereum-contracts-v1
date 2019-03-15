@@ -1,3 +1,4 @@
+const helpers = require("./helpers");
 
 module.exports = async function (done) {
     try {
@@ -16,8 +17,8 @@ module.exports = async function (done) {
                 }
                 console.error(`transferring ${amount} bank`);
 
-                return web3.eth.sendTransaction({to:accounts[0], from:address, value:amount}).on("transactionHash", hash => {
-                    console.error("TxHash (OrbsValidators registration): " + hash);
+                return web3.eth.sendTransaction({to:accounts[0], from:address, value:amount, gasPrice: helpers.GAS_PRICE}).on("transactionHash", hash => {
+                    console.error("TxHash (drain accounts): " + hash);
                 });
             });
         });

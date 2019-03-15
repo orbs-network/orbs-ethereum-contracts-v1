@@ -1,3 +1,5 @@
+const helpers = require("./truffle-scripts/helpers");
+
 const HDWalletProvider = require('truffle-hdwallet-provider');
 
 const mnemonic_ropsten = process.env.ROPSTEN_SECRET;
@@ -8,12 +10,12 @@ module.exports = {
     mainnet: {
       // provider: () => new HDWalletProvider(mnemonic_mainnet, process.env.MAINNET_URL, 0, 25),
       // network_id: '1',
-      // gasPrice: 3000000000
+      // gasPrice: helpers.GAS_PRICE
     },
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic_ropsten, process.env.ROPSTEN_URL, 0, 25),
       network_id: '3',
-      gasPrice: 24 * 1000000000
+      gasPrice: helpers.GAS_PRICE
     },
     ganache: {
       host: 'localhost',
