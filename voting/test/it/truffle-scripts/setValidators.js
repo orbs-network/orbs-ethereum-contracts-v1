@@ -38,21 +38,14 @@ module.exports = async function (done) {
         let ips = JSON.parse(validatorOrbsIps);
         let orbsAddresses = JSON.parse(validatorOrbsAddresses);
 
-        let txs = validators.map(address => {
-            return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, accounts[0]).then(() => {
-                return validatorsInstance.addValidator(address).on("transactionHash", hash => {
-                    console.error("TxHash (OrbsValidators registration): " + hash);
-                });
+        let txs1 = validators.map(address => {
+            return validatorsInstance.addValidator(address).on("transactionHash", hash => {
+                console.error("TxHash (OrbsValidators registration): " + hash);
             });
         });
 
-
-        await Promise.all(txs);
-
         const validatorsRegInstance = await artifacts.require('IOrbsValidatorsRegistry').at(validatorsRegistryContractAddress);
-
-
-        txs = validators.map((address, i) => {
+        let txs2 = validators.map((address, i) => {
             return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, accounts[0]).then(() => {
                 return validatorsRegInstance.register(`Validator ${i}`, ips[i], `https://www.validator${i}.com`, orbsAddresses[i], {from: address})
                     .on("transactionHash", hash => {
@@ -61,7 +54,8 @@ module.exports = async function (done) {
             });
         });
 
-        await Promise.all(txs);
+        await Promise.all(txs1);
+        await Promise.all(txs2);
 
         let indexToAddressMap = validatorIndexes.map(i => {
             return {Index: i, Address: accounts[i]};
