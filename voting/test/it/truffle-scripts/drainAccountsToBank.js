@@ -11,7 +11,7 @@ module.exports = async function (done) {
                 return Promise.resolve();
             }
             return web3.eth.getBalance(address).then((balance)=>{
-                let amount = web3.utils.toBN(balance).sub((web3.utils.toBN(web3.utils.toWei('24', "gwei"))).mul(web3.utils.toBN(21000))).toString();
+                let amount = web3.utils.toBN(balance).sub((web3.utils.toBN(helpers.GAS_PRICE)).mul(web3.utils.toBN(21000))).toString();
                 if (amount < 0) {
                     return Promise.resolve();
                 }
