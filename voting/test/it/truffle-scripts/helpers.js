@@ -1,8 +1,8 @@
 
-const GUARDIAN_DEPOSIT = '0.1';
-const MIN_BALANCE_GUARDIAN = '0.5';
-const MIN_BALANCE = '0.4';
-const BALANCE_BUFFER = '0.4';
+const GUARDIAN_DEPOSIT = '0.01';
+const MIN_BALANCE_GUARDIAN = '0.17';
+const MIN_BALANCE = '0.16';
+const BALANCE_BUFFER = '0.04';
 
 module.exports.MIN_BALANCE_FEES = MIN_BALANCE;
 module.exports.MIN_BALANCE_DEPOSIT = MIN_BALANCE_GUARDIAN;

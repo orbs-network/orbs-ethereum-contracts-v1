@@ -14,7 +14,10 @@ module.exports = async function (done) {
         let accounts = accountIndexes.map(elem => availableAccounts[elem]);
 
         let txs = accounts.map(address => {
-            return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, accounts[0]);
+            if (availableAccounts[0] === address) {
+                return Promise.resolve();
+            }
+            return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, availableAccounts[0]);
         });
 
         await Promise.all(txs);
