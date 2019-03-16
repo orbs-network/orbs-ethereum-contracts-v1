@@ -6,10 +6,12 @@ fi
 
 cp ../../build/ethereum/*.json ./build/contracts
 
-gamma-cli stop-local
-killall Ganache
+## Uncomment these lines to reset Ganache and Gamma on each invocation
+#
+#killall Ganache
+#nohup /Applications/Ganache.app/Contents/MacOS/Ganache&
+#gamma-cli stop-local
 
-nohup /Applications/Ganache.app/Contents/MacOS/Ganache&
 gamma-cli start-local -wait -env experimental
 
 go test . -run TestFullFlowOnGanache -v -count 1
