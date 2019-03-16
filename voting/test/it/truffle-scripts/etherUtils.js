@@ -1,10 +1,14 @@
 
+// TODO move these consts to configuration object
+// numbers for mainnet tests. requires  > 0.6 ether available during the test and uses up ~0.0382:
+// don't for get to collect deposits (run reclaimEther flow and then `truffle exec drainAccountsToBank`) after execution
 const GUARDIAN_DEPOSIT = '0.01';
-const MIN_BALANCE_GUARDIAN = '0.17';
-const MIN_BALANCE = '0.16';
-const BALANCE_BUFFER = '0.04';
+const MIN_BALANCE_GUARDIAN = '0.032';
+const MIN_BALANCE = '0.027';
+const BALANCE_BUFFER = '0.007';
 
-const GAS_PRICE = 24 * 1000000000;
+const GAS_PRICE = 3 * 1000000000;
+
 
 module.exports.MIN_BALANCE_FEES = MIN_BALANCE;
 module.exports.MIN_BALANCE_DEPOSIT = MIN_BALANCE_GUARDIAN;

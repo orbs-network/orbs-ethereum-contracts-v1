@@ -5,12 +5,6 @@ import (
 	"testing"
 )
 
-// TODO add to driver config all the required orbsAddresses and IPs
-// TODO Verify proper registration of accounts as guardians - check if guardians are already registered! fund deposits only if needed
-// TODO reclaim guardian deposit on teardown
-
-// TODO new flow - propagate elections results and verify committee change.
-
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
 // DON'T FORGET TO UPDATE VALUES ACCORDING TO INSTRUCTIONS AFTER DEPLOY
 var delegatorsNumberRopsten = 15

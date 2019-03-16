@@ -42,6 +42,22 @@ func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapte
 	}
 }
 
+// MAINNET CONFIG // TODO move all configurations to incoming config and unite all three constructors
+//func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapter {
+//	ropstenUrl, foundUrl := os.LookupEnv("MAINNET_URL")
+//	if foundUrl == false {
+//		panic("Please set MAINNET_URL")
+//	}
+//	return &truffleAdapter{
+//		debug:       config.DebugLogs,
+//		projectPath: ".",
+//		network:     "mainnet",
+//		networkUrl:  ropstenUrl,
+//		startBlock:  7374356,
+//		stakeFactor: stakeFactor,
+//	}
+//}
+
 type truffleAdapter struct {
 	debug       bool
 	projectPath string
