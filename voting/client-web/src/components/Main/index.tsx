@@ -4,6 +4,7 @@ import NewGuardian from '../NewGuardian';
 import NewValidator from '../NewValidator';
 import GuardianPage from '../Guardrians';
 import DelegatorsPage from '../Delegators';
+import ValidatorsPage from '../Validators';
 import { Route, RouteProps } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import styles from './style';
@@ -25,6 +26,13 @@ const Main = ({ apiService, classes }) => {
         path="/guardian"
         component={(props: RouteProps) => (
           <GuardianPage {...props} apiService={apiService} />
+        )}
+      />
+      <Route
+        exact
+        path="/validator"
+        component={(props: RouteProps) => (
+          <ValidatorsPage {...props} apiService={apiService} />
         )}
       />
       <Route
