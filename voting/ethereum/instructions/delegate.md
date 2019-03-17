@@ -45,13 +45,13 @@ In order to delegate follow these steps:
 1. Click *Access*.
    * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
 1. Select `delegate` in the drop down list *Read / Write Contract*
-![](./delegation_1.png)
+![](delegation_3.png)
 The function parameter for the `delegate` call will appear in the form.
 1. Fill the parameter field labeled `to address`
 with the Ethereum account address you would like to delegate to.
     - for example: `0x3d4cF597FAFc4096d99d1fe01aD6c03cDCBb1bC0`
     - only valid addresses are accepted. To cancel a previous delegation, delegate to the sender's address
-![](./delegation_2.png)
+![](delegation_4.png)
 1. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
 In this example we choose to provide a mnemonic to open our wallet:
@@ -63,25 +63,25 @@ The address you choose should be the address holding the Orbs token balance you 
 Make sure the account has a positive Ether balance for transaction fees. 
 <br>
 Then click *Unlock* 
-![](./delegation_3.png)
+![](delegation_6.png)
 1. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
 `500,000` should be more than enough (at the time this is being written a successful delegation uses 
 ~45,000 Gas). You will not be charged for unused gas.
 <br>
 Click *WRITE*
-![](./delegation_4.png)
+![](delegation_7.png)
 Don't forget to adjust Gas Price so the transaction is accepted in a reasonable time. Then Click *Write*, and then *Sign Transaction* 
-![](./delegation_5.png)
+![](delegation_8.png)
 Click *Send Transaction*
-![](./delegation_6.png)
+![](delegation_9.png)
 Review, then click *Send*
 
 1. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
 Navigate to *Etherscan* by clicking *Verify (Etherscan)*
-![](./delegation_7.png)
+![](delegation_10.png)
 
 1. Confirm the transaction has been accepted successfully.
-![](./delegation_8.png)
+![](delegation_11.png)
  
 Make sure you see 
 > TxReceipt Status:Success
