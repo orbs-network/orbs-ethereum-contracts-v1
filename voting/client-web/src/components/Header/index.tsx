@@ -41,7 +41,7 @@ const Header = ({ classes }) => {
               GUARDIANS
             </Typography>
           </Link>
-          <Link to="/" className={classes.navItem}>
+          <Link to="/validator" className={classes.navItem}>
             <Typography variant="h6" color="secondary" noWrap>
               VALIDATORS
             </Typography>

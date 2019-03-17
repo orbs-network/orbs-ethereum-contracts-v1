@@ -11,6 +11,7 @@ module.exports.numToAddress = (num) => {
 module.exports.Driver = class {
     constructor(){
         this.runningCounter = 0;
+        this.registrationDeposit = web3.utils.toWei("0.01", "ether");
     }
 
     async deployVoting(maxVoteOutNodes) {
@@ -31,7 +32,7 @@ module.exports.Driver = class {
     };
 
     async deployGuardians() {
-        this.OrbsGuardians = await OrbsGuardians.new();
+        this.OrbsGuardians = await OrbsGuardians.new(this.registrationDeposit);
     };
 
     async deployValidatorsWithRegistry(maxValidators) {

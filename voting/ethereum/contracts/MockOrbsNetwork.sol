@@ -5,13 +5,13 @@ import "./IOrbsNetworkTopology.sol";
 
 contract MockOrbsNetwork is IOrbsNetworkTopology {
 
-    address[] nodes = [address(0)];
-    bytes4[] ips = [bytes4(0xFFFFFFFF)];
+    bytes20[] nodes = new bytes20[](0);
+    bytes4[] ips = new bytes4[](0);
 
     function getNetworkTopology()
         public
         view
-        returns (address[] memory nodeAddresses,bytes4[] memory ipAddresses)
+        returns (bytes20[] memory nodeAddresses,bytes4[] memory ipAddresses)
     {
         return (nodes, ips);
     }

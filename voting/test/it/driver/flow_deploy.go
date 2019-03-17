@@ -10,6 +10,9 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	require.NoError(t, config.Validate(true))
 
+	config.OrbsVotingContractName = orbs.DeployContract(config.OrbsVotingContractName)
+	orbs.SetContractConstants(config.OrbsVotingContractName)
+
 	deployingEthereumErc20 := config.EthereumErc20Address == ""
 	if deployingEthereumErc20 {
 		logStage("Deploying Ethereum ERC20 contract...")
@@ -96,8 +99,10 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		validatorRegTxt = fmt.Sprintf(`EthereumValidatorsRegAddress: "%s",`+"\n", config.EthereumValidatorsRegAddress)
 	}
 
+	orbsVotingContractNameTxt := fmt.Sprintf(`OrbsVotingContractName: "%s",`+"\n", config.OrbsVotingContractName)
+
 	if erc20Txt != "" || votingTxt != "" || validatorTxt != "" || validatorRegTxt != "" || guardianTxt != "" {
-		logSummary("IMPORTANT! Please update the test configuration with this value:\n%s%s%s%s%s\nDeploy Phase all done.\n\n", erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
+		logSummary("IMPORTANT! Please update the test configuration with this value:\n%s%s%s%s%s%s\nDeploy Phase all done.\n\n", orbsVotingContractNameTxt, erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
 	} else {
 		logSummary("Deploy Phase all done.\n\n")
 	}

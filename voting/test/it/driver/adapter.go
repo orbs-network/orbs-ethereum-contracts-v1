@@ -3,7 +3,7 @@ package driver
 import "time"
 
 type OrbsAdapter interface {
-	DeployContract(orbsVotingContractName string)
+	DeployContract(orbsVotingContractName string) string
 	SetContractConstants(orbsVotingContractName string)
 	BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string)
 	BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string)
@@ -32,6 +32,7 @@ type EthereumAdapter interface {
 	SetStakes(ethereumErc20Address string, stakes []int)
 	Transfer(ethereumErc20Address string, from int, to int, amount int)
 	TopUpEther(accountIndexes []int)
+	PrintBalances()
 
 	DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string)
 	GetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) []validatorData
@@ -43,6 +44,7 @@ type EthereumAdapter interface {
 
 	DeployGuardiansContract() (ethereumGuardiansAddress string)
 	SetGuardians(ethereumGuardiansAddress string, guardians []int)
+	ResignGuardians(ethereumGuardiansAddress string, guardians []int)
 
 	WaitForBlock(blockNumber int)
 	GetConnectionUrl() string

@@ -17,6 +17,12 @@
       "Endpoints": [
         "http://us-east-1.global.nodes.staging.orbs-test.com/vchains/42"
       ]
+    },
+    "integrative": {
+      "VirtualChain": 1008,
+      "Endpoints": [
+        "http://18.219.51.57/vchains/1008"
+      ]
     }
   }
 }

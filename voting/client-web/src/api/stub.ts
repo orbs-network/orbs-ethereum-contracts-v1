@@ -30,4 +30,7 @@ export class ApiStrategyStub implements IApiStrategy {
   registerValidator() {
     return Promise.resolve(true);
   }
+  getElectedValidators() {
+    return Promise.resolve([]);
+  }
 }

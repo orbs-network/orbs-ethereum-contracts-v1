@@ -23,10 +23,10 @@ export default () => (
     </Typography>
     <Typography paragraph variant="h6" color="textPrimary">
       Guardians are expected to actively monitormaintain active monitoring of
-      the Orbs network and the operation of the vValidators, and cast their
-      votes to support and promote the best interests of the network. Guardians
-      are encouraged to build a community of Delegators who empower them with
-      their voting weight, thereby increasing the Guardian’s voting impact.
+      the Orbs network and the operation of the Validators, and cast their votes
+      to support and promote the best interests of the network. Guardians are
+      encouraged to build a community of Delegators who empower them with their
+      voting weight, thereby increasing the Guardian’s voting impact.
     </Typography>
   </>
 );
