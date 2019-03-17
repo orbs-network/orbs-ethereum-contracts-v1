@@ -109,7 +109,7 @@ func TestFullFlowOnGanache(t *testing.T) {
 	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
 	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
 
-	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
+	driver.RunReclaimGuardianDepositsFlow(t, configGanache, ethereum)
 
 	ethereum.PrintBalances()
 }
@@ -119,7 +119,7 @@ func TestDeployOnGanache(t *testing.T) {
 	orbs := configGanache.OrbsAdapter
 	ethereum := configGanache.EthereumAdapter
 
-	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
+	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 }
 
 func TestRecordOnGanache(t *testing.T) {
@@ -127,7 +127,7 @@ func TestRecordOnGanache(t *testing.T) {
 	orbs := configGanache.OrbsAdapter
 	ethereum := configGanache.EthereumAdapter
 
-	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
+	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
 }
 
 func TestMirrorAndProcessOnGanache(t *testing.T) {
@@ -135,15 +135,15 @@ func TestMirrorAndProcessOnGanache(t *testing.T) {
 	orbs := configGanache.OrbsAdapter
 	ethereum := configGanache.EthereumAdapter
 
-	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
-	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
+	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
+	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
 }
 
 func TestReclaimGuardianDepositsOnGanache(t *testing.T) {
 
 	ethereum := configGanache.EthereumAdapter
 
-	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
+	driver.RunReclaimGuardianDepositsFlow(t, configGanache, ethereum)
 }
 
 // value 0 -> delegate.
