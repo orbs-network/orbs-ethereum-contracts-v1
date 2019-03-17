@@ -66,7 +66,7 @@ Then click *Unlock*
 ![](delegation_6.png)
 1. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
 `500,000` should be more than enough (at the time this is being written a successful delegation uses 
-~45,000 Gas). You will not be charged for unused gas.
+~64,352 Gas). You will not be charged for unused gas.
 <br>
 Click *WRITE*
 ![](delegation_7.png)

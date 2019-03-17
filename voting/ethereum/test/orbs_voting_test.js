@@ -100,6 +100,13 @@ contract('Voting', accounts => {
 
             assert.deepEqual(getCounter(receipt1) + 1, getCounter(receipt2))
         });
+
+        it('should reject delegation to 0 address', async () => {
+            await driver.deployVoting();
+            let to = numToAddress(0);
+
+            await assertReject(driver.OrbsVoting.delegate(to), "expected delegating to zero address to fail");
+        });
     });
 
     describe('when calling the getLastVote() function', () => {

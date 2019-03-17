@@ -17,7 +17,8 @@ contract OrbsVoting is IOrbsVoting {
     uint delegationCounter;
     uint public maxVoteOutNodes;
 
-    mapping(address => VotingRecord) mostRecentVotes;
+    mapping(address => VotingRecord) lastVotes;
+    mapping(address => address) lastDelegations;
 
 
     constructor(uint maxVoteOutNodes_) public {
@@ -38,13 +39,18 @@ contract OrbsVoting is IOrbsVoting {
 
         voteCounter++;
 
-        mostRecentVotes[msg.sender] = VotingRecord(block.number, nodes);
+        lastVotes[msg.sender] = VotingRecord(block.number, nodes);
 
         emit VoteOut(msg.sender, addressesAsBytes20, voteCounter);
     }
 
     function delegate(address to) public {
+        require(to != address(0), "must delegate to non 0");
+
         delegationCounter++;
+
+        lastDelegations[msg.sender] = to;
+
         emit Delegate(msg.sender, to, delegationCounter);
     }
 
@@ -53,7 +59,7 @@ contract OrbsVoting is IOrbsVoting {
         view
         returns (address[] memory nodes, uint blockHeight)
     {
-        VotingRecord storage lastVote = mostRecentVotes[guardian];
+        VotingRecord storage lastVote = lastVotes[guardian];
 
         require(lastVote.blockHeight > 0, "Guardian never voted");
 
