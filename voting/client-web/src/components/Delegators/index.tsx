@@ -82,7 +82,7 @@ const DelegatorsPage = ({ apiService }) => {
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
       {hasMetamask() && (
-        <Typography paragraph variant="h6" color="textPrimary">
+        <Typography paragraph variant="body1" color="textPrimary">
           Want to delegate manually to another address? Click{' '}
           <Link
             variant="h6"
@@ -96,8 +96,8 @@ const DelegatorsPage = ({ apiService }) => {
         </Typography>
       )}
 
-      <Typography paragraph variant="h6" color="textPrimary">
-        Delegation Status: Your vote is going to: `0x`
+      <Typography paragraph variant="body1" color="textPrimary">
+        Delegation Status: Your vote is going to `0x`
       </Typography>
 
       <GuardianDialog

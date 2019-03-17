@@ -151,6 +151,10 @@ const GuardianPage = ({ classes, apiService }) => {
           <ReadOnlyVoteButton />
         )}
       </div>
+
+      <Typography paragraph variant="body1" color="textPrimary">
+        Your most recent vote was against: `0x`
+      </Typography>
     </>
   );
 };
