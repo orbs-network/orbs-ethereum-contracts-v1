@@ -129,12 +129,6 @@ func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes 
 		stakesData[stake.Index] = ta.fromEthereumToken(n)
 	}
 	return stakesData
-	//response := make([]int, len(out.Balances))
-	//for i, v := range out.Balances {
-	//	n, _ := strconv.ParseUint(v, 16, 32)
-	//	response[i] = ta.fromEthereumToken(n)
-	//}
-	//return response
 }
 
 func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {

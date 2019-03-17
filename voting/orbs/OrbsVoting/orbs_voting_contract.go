@@ -10,16 +10,19 @@ import (
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 	"math/big"
+	"sort"
 )
 
 var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
 	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
 	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress, unsafetests_setValidatorsRegistryEthereumContractAddress,
-	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber, // TODO v1 noam unsafe
+	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber,
 	mirrorDelegationByTransfer, mirrorDelegation, mirrorVote,
 	processVoting,
+	getElectionPeriod, getElectionBlockNumber, getNextElectionBlockNumber,
 	getElectedValidators, getElectedValidatorsByBlockNumber, getElectedValidatorsByBlockHeight,
 	getElectedValidatorsByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex, getNumberOfElections,
+	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -122,12 +125,12 @@ func mirrorDelegation(hexEncodedEthTxHash string) {
 func _mirrorPeriodValidator() {
 	currentBlock := ethereum.GetBlockNumber()
 	if _isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, _getElectionBlockNumber()))
+		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, getElectionBlockNumber()))
 	}
 }
 
 func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint64, eventBlockTxIndex uint32, eventName string) {
-	electionBlockNumber := _getElectionBlockNumber()
+	electionBlockNumber := getElectionBlockNumber()
 	if eventBlockNumber > electionBlockNumber {
 		panic(fmt.Errorf("delegate with medthod %s from %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
 			eventName, delegator, agent, eventBlockNumber, electionBlockNumber))
@@ -230,7 +233,7 @@ func mirrorVote(hexEncodedEthTxHash string) {
 			e.Voter, e.Nodes, eventBlockNumber))
 	}
 
-	electionBlockNumber := _getElectionBlockNumber()
+	electionBlockNumber := getElectionBlockNumber()
 	if eventBlockNumber > electionBlockNumber {
 		panic(fmt.Errorf("voteOut of guardian %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
 			e.Voter, e.Nodes, eventBlockNumber, electionBlockNumber))
@@ -248,7 +251,7 @@ func mirrorVote(hexEncodedEthTxHash string) {
 		_setNumberOfGurdians(numOfGuardians + 1)
 	}
 
-	fmt.Printf("elections %10d: guardian %x voted against (%d) %v\n", _getElectionBlockNumber(), e.Voter, len(e.Nodes), e.Nodes)
+	fmt.Printf("elections %10d: guardian %x voted against (%d) %v\n", getElectionBlockNumber(), e.Voter, len(e.Nodes), e.Nodes)
 	_setCandidates(e.Voter[:], e.Nodes)
 	state.WriteUint64(_formatGuardianBlockNumberKey(e.Voter[:]), eventBlockNumber)
 	state.WriteUint32(_formatGuardianBlockTxIndexKey(e.Voter[:]), eventBlockTxIndex)
@@ -388,13 +391,13 @@ func _setValidValidatorStake(validator []byte, stake uint64) {
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", _getElectionBlockNumber(), _getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS, currentBlock))
+		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", getElectionBlockNumber(), getElectionBlockNumber()+VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS, currentBlock))
 	}
 
 	electedValidators := _processVotingStateMachine()
 	if electedValidators != nil {
 		_setElectedValidators(electedValidators)
-		_setElectionBlockNumber(safeuint64.Add(_getElectionBlockNumber(), ELECTION_PERIOD_LENGTH_IN_BLOCKS))
+		_setElectionBlockNumber(safeuint64.Add(getElectionBlockNumber(), ELECTION_PERIOD_LENGTH_IN_BLOCKS))
 		return 1
 	} else {
 		return 0
@@ -404,6 +407,7 @@ func processVoting() uint64 {
 func _processVotingStateMachine() [][20]byte {
 	processState := _getVotingProcessState()
 	if processState == "" {
+		_resetRewards()
 		_readValidValidatorsFromEthereumToState()
 		_nextProcessVotingState(VOTING_PROCESS_STATE_VALIDATORS)
 		return nil
@@ -423,8 +427,9 @@ func _processVotingStateMachine() [][20]byte {
 		}
 		return nil
 	} else if processState == VOTING_PROCESS_STATE_CALCULATIONS {
-		candidateVotes, totalVotes := _calculateVotes()
+		candidateVotes, totalVotes, participantStakes, guardiansAccumulatedStake := _calculateVotes()
 		elected := _processValidatorsSelection(candidateVotes, totalVotes)
+		_processRewards(totalVotes, elected, participantStakes, guardiansAccumulatedStake)
 		_setVotingProcessState("")
 		return elected
 	}
@@ -434,12 +439,12 @@ func _processVotingStateMachine() [][20]byte {
 func _nextProcessVotingState(stage string) {
 	_setVotingProcessItem(0)
 	_setVotingProcessState(stage)
-	fmt.Printf("elections %10d: moving to state %s\n", _getElectionBlockNumber(), stage)
+	fmt.Printf("elections %10d: moving to state %s\n", getElectionBlockNumber(), stage)
 }
 
 func _readValidValidatorsFromEthereumToState() {
 	var validValidators [][20]byte
-	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsEthereumContractAddress(), getValidatorsAbi(), "getValidators", &validValidators)
+	ethereum.CallMethodAtBlock(getElectionBlockNumber(), getValidatorsEthereumContractAddress(), getValidatorsAbi(), "getValidators", &validValidators)
 
 	_setValidValidators(validValidators)
 }
@@ -456,12 +461,12 @@ func _collectOneValidatorDataFromEthereum(i int) {
 	validator := _getValidValidatorEthereumAddressAtIndex(i)
 
 	var orbsAddress [20]byte
-	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getValidatorsRegistryEthereumContractAddress(), getValidatorsRegistryAbi(), "getOrbsAddress", &orbsAddress, validator)
+	ethereum.CallMethodAtBlock(getElectionBlockNumber(), getValidatorsRegistryEthereumContractAddress(), getValidatorsRegistryAbi(), "getOrbsAddress", &orbsAddress, validator)
 	stake := _getStakeAtElection(validator)
 
 	_setValidValidatorStake(validator[:], stake)
 	_setValidValidatorOrbsAddress(validator[:], orbsAddress[:])
-	fmt.Printf("elections %10d: from ethereum Validator %x, stake %d orbsAddress %x\n", _getElectionBlockNumber(), validator, stake, orbsAddress)
+	fmt.Printf("elections %10d: from ethereum Validator %x, stake %d orbsAddress %x\n", getElectionBlockNumber(), validator, stake, orbsAddress)
 }
 
 func _collectNextGuardianStakeFromEthereum() bool {
@@ -476,15 +481,15 @@ func _collectOneGuardianStakeFromEthereum(i int) {
 	guardian := _getGuardianAtIndex(i)
 	stake := uint64(0)
 	voteBlockNumber := state.ReadUint64(_formatGuardianBlockNumberKey(guardian[:]))
-	if voteBlockNumber != 0 && safeuint64.Add(voteBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) > _getElectionBlockNumber() {
+	if voteBlockNumber != 0 && safeuint64.Add(voteBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) > getElectionBlockNumber() {
 		isGuardian := false
-		ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getGuardiansEthereumContractAddress(), getGuardiansAbi(), "isGuardian", &isGuardian, guardian)
+		ethereum.CallMethodAtBlock(getElectionBlockNumber(), getGuardiansEthereumContractAddress(), getGuardiansAbi(), "isGuardian", &isGuardian, guardian)
 		if isGuardian {
 			stake = _getStakeAtElection(guardian)
 		}
 	}
 	state.WriteUint64(_formatGuardianStakeKey(guardian[:]), stake)
-	fmt.Printf("elections %10d: from ethereum guardian %x, stake %d\n", _getElectionBlockNumber(), guardian, stake)
+	fmt.Printf("elections %10d: from ethereum guardian %x, stake %d\n", getElectionBlockNumber(), guardian, stake)
 }
 
 func _collectNextDelegatorStakeFromEthereum() bool {
@@ -499,20 +504,20 @@ func _collectOneDelegatorStakeFromEthereum(i int) {
 	delegator := _getDelegatorAtIndex(i)
 	stake := _getStakeAtElection(delegator)
 	state.WriteUint64(_formatDelegatorStakeKey(delegator[:]), stake)
-	fmt.Printf("elections %10d: from ethereum delegator %x , stake %d\n", _getElectionBlockNumber(), delegator, stake)
+	fmt.Printf("elections %10d: from ethereum delegator %x , stake %d\n", getElectionBlockNumber(), delegator, stake)
 }
 
 func _getStakeAtElection(ethAddr [20]byte) uint64 {
 	stake := new(*big.Int)
-	ethereum.CallMethodAtBlock(_getElectionBlockNumber(), getTokenEthereumContractAddress(), getTokenAbi(), "balanceOf", stake, ethAddr)
+	ethereum.CallMethodAtBlock(getElectionBlockNumber(), getTokenEthereumContractAddress(), getTokenAbi(), "balanceOf", stake, ethAddr)
 	return ((*stake).Div(*stake, ETHEREUM_STAKE_FACTOR)).Uint64()
 }
 
-func _calculateVotes() (candidateVotes map[[20]byte]uint64, totalVotes uint64) {
+func _calculateVotes() (candidateVotes map[[20]byte]uint64, totalVotes uint64, participantStakes map[[20]byte]uint64, guardianAccumulatedStakes map[[20]byte]uint64) {
 	guardianStakes := _collectGuardiansStake()
 	delegatorStakes := _collectDelegatorsStake(guardianStakes)
 	guardianToDelegators := _findGuardianDelegators(delegatorStakes)
-	candidateVotes, totalVotes = _guardiansCastVotes(guardianStakes, guardianToDelegators, delegatorStakes)
+	candidateVotes, totalVotes, participantStakes, guardianAccumulatedStakes = _guardiansCastVotes(guardianStakes, guardianToDelegators, delegatorStakes)
 	return
 }
 
@@ -522,12 +527,12 @@ func _collectGuardiansStake() (guardianStakes map[[20]byte]uint64) {
 	for i := 0; i < numOfGuardians; i++ {
 		guardian := _getGuardianAtIndex(i)
 		voteBlockNumber := state.ReadUint64(_formatGuardianBlockNumberKey(guardian[:]))
-		if voteBlockNumber != 0 && safeuint64.Add(voteBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) > _getElectionBlockNumber() {
+		if voteBlockNumber != 0 && safeuint64.Add(voteBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS) > getElectionBlockNumber() {
 			stake := state.ReadUint64(_formatGuardianStakeKey(guardian[:]))
 			guardianStakes[guardian] = stake
-			fmt.Printf("elections %10d: guardian %x , stake %d\n", _getElectionBlockNumber(), guardian, stake)
+			fmt.Printf("elections %10d: guardian %x, stake %d\n", getElectionBlockNumber(), guardian, stake)
 		} else {
-			fmt.Printf("elections %10d: guardian %x voted at %d is too old, ignoring as guardian \n", _getElectionBlockNumber(), guardian, voteBlockNumber)
+			fmt.Printf("elections %10d: guardian %x voted at %d is too old, ignoring as guardian \n", getElectionBlockNumber(), guardian, voteBlockNumber)
 		}
 	}
 	return
@@ -541,9 +546,9 @@ func _collectDelegatorsStake(guardianStakes map[[20]byte]uint64) (delegatorStake
 		if _, ok := guardianStakes[delegator]; !ok {
 			stake := state.ReadUint64(_formatDelegatorStakeKey(delegator[:]))
 			delegatorStakes[delegator] = stake
-			fmt.Printf("elections %10d: delegator %x, stake %d\n", _getElectionBlockNumber(), delegator, stake)
+			fmt.Printf("elections %10d: delegator %x, stake %d\n", getElectionBlockNumber(), delegator, stake)
 		} else {
-			fmt.Printf("elections %10d: delegator %x ignored as it is also a guardian\n", _getElectionBlockNumber(), delegator)
+			fmt.Printf("elections %10d: delegator %x ignored as it is also a guardian\n", getElectionBlockNumber(), delegator)
 		}
 	}
 	return
@@ -555,7 +560,7 @@ func _findGuardianDelegators(delegatorStakes map[[20]byte]uint64) (guardianToDel
 	for delegator := range delegatorStakes {
 		guardian := _getDelegatorGuardian(delegator[:])
 		if !bytes.Equal(guardian[:], delegator[:]) {
-			fmt.Printf("elections %10d: delegator %x, guardian/agent %x\n", _getElectionBlockNumber(), delegator, guardian)
+			fmt.Printf("elections %10d: delegator %x, guardian/agent %x\n", getElectionBlockNumber(), delegator, guardian)
 			guardianDelegatorList, ok := guardianToDelegators[guardian]
 			if !ok {
 				guardianDelegatorList = [][20]byte{}
@@ -567,30 +572,37 @@ func _findGuardianDelegators(delegatorStakes map[[20]byte]uint64) (guardianToDel
 	return
 }
 
-func _guardiansCastVotes(guardianStakes map[[20]byte]uint64, guardianDelegators map[[20]byte][][20]byte, delegatorStakes map[[20]byte]uint64) (candidateVotes map[[20]byte]uint64, totalVotes uint64) {
+func _guardiansCastVotes(guardianStakes map[[20]byte]uint64, guardianDelegators map[[20]byte][][20]byte, delegatorStakes map[[20]byte]uint64) (candidateVotes map[[20]byte]uint64, totalVotes uint64, participantStakes map[[20]byte]uint64, guardainsAccumulatedStakes map[[20]byte]uint64) {
 	totalVotes = uint64(0)
 	candidateVotes = make(map[[20]byte]uint64)
+	participantStakes = make(map[[20]byte]uint64)
+	guardainsAccumulatedStakes = make(map[[20]byte]uint64)
 	for guardian, guardianStake := range guardianStakes {
-		stake := safeuint64.Add(guardianStake, _calculateOneGuardianVoteRecursive(guardian, guardianDelegators, delegatorStakes))
+		participantStakes[guardian] = guardianStake
+		fmt.Printf("elections %10d: guardian %x, self-voting stake %d\n", getElectionBlockNumber(), guardian, guardianStake)
+		stake := safeuint64.Add(guardianStake, _calculateOneGuardianVoteRecursive(guardian, guardianDelegators, delegatorStakes, participantStakes))
+		guardainsAccumulatedStakes[guardian] = stake
 		totalVotes = safeuint64.Add(totalVotes, stake)
-		fmt.Printf("elections %10d: guardian %x, voting stake %d\n", _getElectionBlockNumber(), guardian, stake)
+		fmt.Printf("elections %10d: guardian %x, voting stake %d\n", getElectionBlockNumber(), guardian, stake)
 
 		candidateList := _getCandidates(guardian[:])
 		for _, candidate := range candidateList {
-			fmt.Printf("elections %10d: guardian %x, voted for candidate %x\n", _getElectionBlockNumber(), guardian, candidate)
+			fmt.Printf("elections %10d: guardian %x, voted for candidate %x\n", getElectionBlockNumber(), guardian, candidate)
 			candidateVotes[candidate] = safeuint64.Add(candidateVotes[candidate], stake)
 		}
 	}
-	fmt.Printf("elections %10d: total voting stake %d\n", _getElectionBlockNumber(), totalVotes)
+	fmt.Printf("elections %10d: total voting stake %d\n", getElectionBlockNumber(), totalVotes)
 	return
 }
 
-func _calculateOneGuardianVoteRecursive(currentLevelGuardian [20]byte, guardianToDelegators map[[20]byte][][20]byte, delegatorStakes map[[20]byte]uint64) uint64 {
+// Note : important that first call is to guardian ... otherwise not all delegators will be added to participants
+func _calculateOneGuardianVoteRecursive(currentLevelGuardian [20]byte, guardianToDelegators map[[20]byte][][20]byte, delegatorStakes map[[20]byte]uint64, participantStakes map[[20]byte]uint64) uint64 {
 	guardianDelegatorList, ok := guardianToDelegators[currentLevelGuardian]
 	currentVotes := delegatorStakes[currentLevelGuardian]
 	if ok {
 		for _, delegate := range guardianDelegatorList {
-			currentVotes = safeuint64.Add(currentVotes, _calculateOneGuardianVoteRecursive(delegate, guardianToDelegators, delegatorStakes))
+			participantStakes[delegate] = delegatorStakes[delegate]
+			currentVotes = safeuint64.Add(currentVotes, _calculateOneGuardianVoteRecursive(delegate, guardianToDelegators, delegatorStakes, participantStakes))
 		}
 	}
 	return currentVotes
@@ -599,20 +611,20 @@ func _calculateOneGuardianVoteRecursive(currentLevelGuardian [20]byte, guardianT
 func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes uint64) [][20]byte {
 	validValidators := _getValidValidators()
 	voteOutThreshhold := safeuint64.Div(safeuint64.Mul(totalVotes, VOTE_OUT_WEIGHT_PERCENT), 100)
-	fmt.Printf("elections %10d: %d is vote out threshhold\n", _getElectionBlockNumber(), voteOutThreshhold)
+	fmt.Printf("elections %10d: %d is vote out threshhold\n", getElectionBlockNumber(), voteOutThreshhold)
 
 	winners := make([][20]byte, 0, len(validValidators))
 	for _, validator := range validValidators {
 		voted, ok := candidateVotes[validator]
 		if !ok || voted < voteOutThreshhold {
-			fmt.Printf("elections %10d: elected %x (got %d vote outs)\n", _getElectionBlockNumber(), validator, voted)
+			fmt.Printf("elections %10d: elected %x (got %d vote outs)\n", getElectionBlockNumber(), validator, voted)
 			winners = append(winners, validator)
 		} else {
-			fmt.Printf("elections %10d: candidate %x voted out by %d votes\n", _getElectionBlockNumber(), validator, voted)
+			fmt.Printf("elections %10d: candidate %x voted out by %d votes\n", getElectionBlockNumber(), validator, voted)
 		}
 	}
 	if len(winners) < MIN_ELECTED_VALIDATORS {
-		fmt.Printf("elections %10d: not enought validators left after vote using all valid validators %v\n", _getElectionBlockNumber(), validValidators)
+		fmt.Printf("elections %10d: not enought validators left after vote using all valid validators %v\n", getElectionBlockNumber(), validValidators)
 		return validValidators
 	} else {
 		return winners
@@ -646,6 +658,164 @@ func _setVotingProcessItem(i int) {
 }
 
 /***
+ * Rewards
+ */
+var ELECTION_PARTICIPATION_MAX_REWARD = uint64(493150) // 60M / number of elections per year
+var ELECTION_PARTICIPATION_MAX_STAKE_REWARD_PERCENT = uint64(8)
+var ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD = uint64(328767) // 40M / number of elections per year
+var ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT = uint64(10)
+var ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER = 10
+var ELECTION_VALIDATOR_INTRODUCTION_MAX_REWARD = uint64(8220) // 1M / number of elections per year
+var ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT = uint64(4)
+
+func _resetRewards() {
+
+}
+
+func _getValidatorsStake() (validatorsStake map[[20]byte]uint64) {
+	validatorsStake = make(map[[20]byte]uint64)
+	numOfValidators := _getNumberOfValidValidaors()
+	for i := 0; i < numOfValidators; i++ {
+		validator := _getValidValidatorEthereumAddressAtIndex(i)
+		stake := _getValidValidatorStake(validator[:])
+		validatorsStake[validator] = stake
+		fmt.Printf("elections %10d rewards: validator %x, stake %d\n", getElectionBlockNumber(), validator, stake)
+	}
+	return
+}
+
+func _processRewards(totalVotes uint64, elected [][20]byte, participantStakes map[[20]byte]uint64, guardiansAccumulatedStake map[[20]byte]uint64) {
+	_processRewardsParticipants(totalVotes, participantStakes)
+	_processRewardsGuardians(totalVotes, guardiansAccumulatedStake)
+	validatorsStake := _getValidatorsStake()
+	_processRewardsValidators(validatorsStake)
+}
+
+func _processRewardsParticipants(totalVotes uint64, participantStakes map[[20]byte]uint64) {
+	totalReward := _maxRewardForGroup(ELECTION_PARTICIPATION_MAX_REWARD, totalVotes, ELECTION_PARTICIPATION_MAX_STAKE_REWARD_PERCENT)
+	fmt.Printf("elections %10d rewards: participants total reward is %d \n", getElectionBlockNumber(), totalReward)
+	for participant, stake := range participantStakes {
+		reward := safeuint64.Div(safeuint64.Mul(stake, totalReward), totalVotes)
+		fmt.Printf("elections %10d rewards: participant %x, stake %d adding %d\n", getElectionBlockNumber(), participant, stake, reward)
+		_addCumulativeParticipationReward(participant[:], reward)
+	}
+}
+
+func _processRewardsGuardians(totalVotes uint64, guardiansAccumulatedStake map[[20]byte]uint64) {
+	if len(guardiansAccumulatedStake) > ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER {
+		fmt.Printf("elections %10d rewards: there are %d guardians with total reward is %d - choosing %d top guardians\n",
+			getElectionBlockNumber(), len(guardiansAccumulatedStake), totalVotes, ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER)
+		guardiansAccumulatedStake, totalVotes = _getTopGuardians(guardiansAccumulatedStake)
+		fmt.Printf("elections %10d rewards: top %d guardians with total vote is now %d \n", getElectionBlockNumber(), len(guardiansAccumulatedStake), totalVotes)
+	}
+
+	totalReward := _maxRewardForGroup(ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD, totalVotes, ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT)
+	fmt.Printf("elections %10d rewards: guardians total reward is %d \n", getElectionBlockNumber(), totalReward)
+	for guardian, stake := range guardiansAccumulatedStake {
+		reward := safeuint64.Div(safeuint64.Mul(stake, totalReward), totalVotes)
+		fmt.Printf("elections %10d rewards: guardian %x, stake %d adding %d\n", getElectionBlockNumber(), guardian, stake, reward)
+		_addCumulativeGuardianExcellenceReward(guardian[:], reward)
+	}
+}
+
+func _processRewardsValidators(validatorStakes map[[20]byte]uint64) {
+	for validator, stake := range validatorStakes {
+		reward := safeuint64.Add(ELECTION_VALIDATOR_INTRODUCTION_MAX_REWARD, safeuint64.Div(safeuint64.Mul(stake, ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT), 100))
+		fmt.Printf("elections %10d rewards: validator %x, stake %d adding %d\n", getElectionBlockNumber(), validator, stake, reward)
+		_addCumulativeValidatorReward(validator[:], reward)
+	}
+}
+
+func _maxRewardForGroup(upperMaximum, totalVotes, percent uint64) uint64 {
+	calcMaximum := safeuint64.Div(safeuint64.Mul(totalVotes, percent), 100)
+	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = totalVotes %d * percent %d\n", getElectionBlockNumber(), upperMaximum, calcMaximum, totalVotes, percent)
+	if calcMaximum < upperMaximum {
+		return calcMaximum
+	}
+	return upperMaximum
+}
+
+func _formatCumulativeParticipationReward(delegator []byte) []byte {
+	return []byte(fmt.Sprintf("Participant_CumReward_%s", hex.EncodeToString(delegator)))
+}
+
+func getCumulativeParticipationReward(delegator []byte) uint64 {
+	return state.ReadUint64(_formatCumulativeParticipationReward(delegator))
+}
+
+func _addCumulativeParticipationReward(delegator []byte, reward uint64) {
+	_addCumulativeReward(_formatCumulativeParticipationReward(delegator), reward)
+}
+
+func _formatCumulativeGuardianExcellenceReward(guardian []byte) []byte {
+	return []byte(fmt.Sprintf("Guardian_CumReward_%s", hex.EncodeToString(guardian)))
+}
+
+func getCumulativeGuardianExcellenceReward(guardian []byte) uint64 {
+	return state.ReadUint64(_formatCumulativeGuardianExcellenceReward(guardian))
+}
+
+func _addCumulativeGuardianExcellenceReward(guardian []byte, reward uint64) {
+	_addCumulativeReward(_formatCumulativeGuardianExcellenceReward(guardian), reward)
+}
+
+func _formatCumulativeValidatorReward(validator []byte) []byte {
+	return []byte(fmt.Sprintf("Vaidator_CumReward_%s", hex.EncodeToString(validator)))
+}
+
+func getCumulativeValidatorReward(validator []byte) uint64 {
+	return state.ReadUint64(_formatCumulativeValidatorReward(validator))
+}
+
+func _addCumulativeValidatorReward(validator []byte, reward uint64) {
+	_addCumulativeReward(_formatCumulativeValidatorReward(validator), reward)
+}
+
+func _addCumulativeReward(key []byte, reward uint64) {
+	sumReward := safeuint64.Add(state.ReadUint64(key), reward)
+	state.WriteUint64(key, sumReward)
+}
+
+/***
+ * Rewards: Sort top guardians using sort.Interface
+ */
+func _getTopGuardians(guardiansAccumulatedStake map[[20]byte]uint64) (topGuardiansStake map[[20]byte]uint64, totalVotes uint64) {
+	totalVotes = uint64(0)
+	topGuardiansStake = make(map[[20]byte]uint64)
+
+	guardianList := make(guardianArray, 0, len(guardiansAccumulatedStake))
+	for guardian, vote := range guardiansAccumulatedStake {
+		guardianList = append(guardianList, &guardianVote{guardian, vote})
+	}
+	sort.Sort(guardianList)
+
+	for i := 0; i < ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER; i++ {
+		fmt.Printf("elections %10d rewards: top guardian %x, has %d votes\n", getElectionBlockNumber(), guardianList[i].guardian, guardianList[i].vote)
+		totalVotes = safeuint64.Add(totalVotes, guardianList[i].vote)
+		topGuardiansStake[guardianList[i].guardian] = guardianList[i].vote
+	}
+	return
+}
+
+type guardianVote struct {
+	guardian [20]byte
+	vote     uint64
+}
+type guardianArray []*guardianVote
+
+func (s guardianArray) Len() int {
+	return len(s)
+}
+
+func (s guardianArray) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s guardianArray) Less(i, j int) bool {
+	return s[i].vote > s[j].vote
+}
+
+/***
  * Helpers
  */
 func _addressSliceToArray(a []byte) [20]byte {
@@ -655,12 +825,16 @@ func _addressSliceToArray(a []byte) [20]byte {
 }
 
 func _isAfterElectionMirroring(BlockNumber uint64) bool {
-	return BlockNumber > safeuint64.Add(_getElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
+	return BlockNumber > safeuint64.Add(getElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 /*****
  * Election results
  */
+func getElectionPeriod() uint64 {
+	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
+}
+
 func getElectedValidators() []byte {
 	index := getNumberOfElections()
 	return getElectedValidatorsByIndex(index)
@@ -687,7 +861,7 @@ func getElectedValidatorsByBlockHeight(blockHeight uint64) []byte {
 }
 
 func _setElectedValidators(elected [][20]byte) {
-	electionBlockNumber := _getElectionBlockNumber()
+	electionBlockNumber := getElectionBlockNumber()
 	index := getNumberOfElections()
 	if getElectedValidatorsBlockNumberByIndex(index) > electionBlockNumber {
 		panic(fmt.Sprintf("Election results rejected as new election happend at block %d which is older than last election %d",
@@ -705,7 +879,7 @@ func _translateElectedAddressesToOrbsAddressesAndConcat(elected [][20]byte) []by
 	electedForSave := make([]byte, 0, len(elected)*20)
 	for i := range elected {
 		electedOrbsAddress := _getValidValidatorOrbsAddress(elected[i][:])
-		fmt.Printf("elections %10d: translate %x to %x\n", _getElectionBlockNumber(), elected[i][:], electedOrbsAddress)
+		fmt.Printf("elections %10d: translate %x to %x\n", getElectionBlockNumber(), elected[i][:], electedOrbsAddress)
 		electedForSave = append(electedForSave, electedOrbsAddress[:]...)
 	}
 	return electedForSave
@@ -766,8 +940,12 @@ func _setElectedValidatorsAtIndex(index uint32, elected []byte) {
 
 var ELECTION_BLOCK_NUMBER = []byte("Election_Block_Number")
 
-func _getElectionBlockNumber() uint64 {
+func getElectionBlockNumber() uint64 {
 	return state.ReadUint64(ELECTION_BLOCK_NUMBER)
+}
+
+func getNextElectionBlockNumber() uint64 {
+	return safeuint64.Add(getElectionBlockNumber(), getElectionPeriod())
 }
 
 func _setElectionBlockNumber(BlockNumber uint64) {
