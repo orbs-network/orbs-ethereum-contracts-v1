@@ -7,10 +7,6 @@ import (
 	"testing"
 )
 
-func TestOrbsVotingContract_processRewards_reset(t *testing.T) {
-
-}
-
 func TestOrbsVotingContract_processRewards_getValidatorStakes(t *testing.T) {
 	validators := [][20]byte{{0x01}, {0x02}, {0x03}}
 	stakes := []uint64{100, 200}
@@ -35,7 +31,7 @@ func TestOrbsVotingContract_processRewards_getValidatorStakes(t *testing.T) {
 		require.EqualValues(t, len(validators), len(vtoS))
 		for i := 0; i < _getNumberOfValidValidaors(); i++ {
 			require.EqualValues(t, validators[i], _getValidValidatorEthereumAddressAtIndex(i))
-			require.EqualValues(t, stakesReal[i], _getValidValidatorStake(validators[i][:]))
+			require.EqualValues(t, stakesReal[i], getValidValidatorStake(validators[i][:]))
 		}
 	})
 }

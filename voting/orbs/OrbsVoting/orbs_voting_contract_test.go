@@ -78,6 +78,35 @@ func TestOrbsVotingContract_mirrorDelegationData_DelegateReplacesTransfer(t *tes
 	})
 }
 
+func TestOrbsVotingContract_mirrorDelegationData_DelegateReset(t *testing.T) {
+	delegatorAddr := []byte{0x01}
+	agentAddr := []byte{0x02}
+	eventName := DELEGATION_NAME
+	eventBlockNumber := uint64(100)
+	eventBlockTxIndex := uint32(10)
+	emptyAddre := [20]byte{}
+
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
+
+		// prepare
+		state.WriteBytes(_formatDelegatorAgentKey(delegatorAddr), agentAddr)
+		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_NAME)
+		state.WriteUint64(_formatDelegatorBlockNumberKey(delegatorAddr), 95)
+		state.WriteUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr), 1)
+
+		// call
+		_mirrorDelegationData(delegatorAddr, delegatorAddr, eventBlockNumber, eventBlockTxIndex, eventName)
+
+		// assert
+		require.EqualValues(t, emptyAddre[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr)))
+		require.EqualValues(t, eventBlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr)))
+		require.EqualValues(t, eventBlockTxIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr)))
+		require.EqualValues(t, DELEGATION_NAME, state.ReadBytes(_formatDelegatorMethod(delegatorAddr)))
+	})
+}
+
 func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockNumber(t *testing.T) {
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
@@ -144,11 +173,23 @@ func TestOrbsVotingContract_preMirrorDelegationData_MirrorPeriodEnded(t *testing
 		_init()
 		// prepare
 		_setElectionBlockNumber(150)
+		_setVotingProcessState("x")
 		m.MockEthereumGetBlockNumber(5000)
 
 		require.Panics(t, func() {
 			_mirrorPeriodValidator()
 		}, "should panic because mirror period should have ended")
+	})
+}
+
+func TestOrbsVotingContract_preMirrorDelegationData_MirrorPeriodNotEndIfNotProcessStart(t *testing.T) {
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		// prepare
+		_setElectionBlockNumber(150)
+		m.MockEthereumGetBlockNumber(5000)
+
+		_mirrorPeriodValidator()
 	})
 }
 
