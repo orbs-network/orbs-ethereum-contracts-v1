@@ -25,10 +25,10 @@ var configRopsten = &driver.Config{
 	ValidatorsAccounts:           validatorAccounts,                                               // user index 20 ... if you have more than 5 add more Ropsten accounts
 	ValidatorsOrbsAddresses:      []string{"0xf2915f50D9946a34Da51f746E85fD8A935Bea465", "0xbb92862fc7DC3bdA21294DB7b6c6628d9B65D49F", "0x38593d40b7F13f9CbF71e615dF4d51bb49947f86", "0x32489dF19c68E1881219F37e7AcabD9C05d405C4", "0xfE176d83686b87408988eeEb9835E282FF12fbFf"},
 	ValidatorsOrbsIps:            []string{driver.IpToHexaBytes("18.219.51.57"), driver.IpToHexaBytes("54.193.117.100"), driver.IpToHexaBytes("34.210.94.85"), driver.IpToHexaBytes("63.35.108.49"), driver.IpToHexaBytes("18.196.28.98")},
-	Transfers:                    generateTransfersRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
-	Delegates:                    generateDelegatesRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
-	Votes:                        generateVotesRopsten(guardiansAccountsRopsten, validatorAccountsRopsten),
-	FirstElectionBlockNumber:     0, // zero to automatically determine after mirroring completes. positive value to enforce static value // TODO replace with the anticipated block number for end of recording phase
+	Transfers:                generateTransfersRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
+	Delegates:                generateDelegatesRopsten(delegatorsNumberRopsten, guardiansAccountsRopsten),
+	Votes:                    generateVotesRopsten(guardiansAccountsRopsten, validatorAccountsRopsten),
+	FirstElectionBlockNumber: 0, // zero to automatically determine after mirroring completes. positive value to enforce static value
 }
 
 // before starting:
@@ -38,8 +38,8 @@ var configRopsten = &driver.Config{
 
 func TestFullOnRopsten(t *testing.T) {
 
-	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	orbs := gammaTestnet
+	ethereum := truffleRopsten
 
 	ethereum.PrintBalances()
 
@@ -54,24 +54,24 @@ func TestFullOnRopsten(t *testing.T) {
 
 func TestDeployOnRopsten(t *testing.T) {
 
-	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	orbs := gammaTestnet
+	ethereum := truffleRopsten
 
 	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
 }
 
 func TestRecordOnRopsten(t *testing.T) {
 
-	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	orbs := gammaTestnet
+	ethereum := truffleRopsten
 
 	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
 }
 
 func TestMirrorAndProcessOnRopsten(t *testing.T) {
 
-	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	orbs := gammaTestnet
+	ethereum := truffleRopsten
 
 	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
 	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
@@ -79,8 +79,7 @@ func TestMirrorAndProcessOnRopsten(t *testing.T) {
 
 func TestReclaimGuardianDepositsOnRopsten(t *testing.T) {
 
-	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	ethereum := truffleRopsten
 
 	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
 }

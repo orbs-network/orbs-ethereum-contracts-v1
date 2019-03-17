@@ -1,8 +1,11 @@
 package it
 
 import (
+	"fmt"
 	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
+	"os"
 	"testing"
+	"time"
 )
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
@@ -10,9 +13,61 @@ import (
 var delegatorsNumber = 15
 var guardiansAccounts = []int{4, 6, 10, 11}
 var validatorAccounts = []int{20, 21, 22, 23, 24}
+
+const STAKE_FACTOR = 10000
+
+var gammaTestnet = driver.NewGammaCliAdapter(
+	true,
+	"integrative",
+	STAKE_FACTOR,
+	30,
+	500,
+	200,
+	10,
+	7,
+	10,
+	2*time.Minute+5*time.Second)
+
+var gammaLocal = driver.NewGammaCliAdapter(
+	true,
+	"experimental", // use "local" for the stable local gamma-cli ... or for client tests
+	STAKE_FACTOR,
+	10,
+	500,
+	200,
+	5,
+	3,
+	1,
+	10*time.Second)
+
+var truffleGanache = driver.NewTruffleAdapter(
+	true,
+	".",
+	"ganache",
+	getEnv("GANACHE_HOST", "http://127.0.0.1:7545"),
+	0,
+	STAKE_FACTOR)
+
+var truffleRopsten = driver.NewTruffleAdapter(
+	true,
+	".",
+	"ropsten",
+	requireEnv("ROPSTEN_URL"),
+	5196956,
+	STAKE_FACTOR,
+)
+
+var truffleMainnet = driver.NewTruffleAdapter(
+	true,
+	".",
+	"mainnet",
+	requireEnv("MAINNET_URL"),
+	7374356,
+	STAKE_FACTOR,
+)
 var configGanache = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
-	OrbsVotingContractName:       "OrbsVoting",                                                    // name of the orbs contract
+	OrbsVotingContractName:       "",                                                              // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
 	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
@@ -29,6 +84,12 @@ var configGanache = &driver.Config{
 	Delegates:                    generateDelegates(delegatorsNumber, guardiansAccounts),
 	Votes:                        generateVotes(guardiansAccounts, validatorAccounts),
 	FirstElectionBlockNumber:     0, // zero to automatically determine after mirroring completes. positive value to enforce static value
+
+	OrbsAdapter: gammaLocal,
+	//OrbsAdapter: 				gammaTestnet,
+	EthereumAdapter: truffleGanache,
+	// EthereumAdapter: truffleRopsten,
+	// EthereumAdapter: truffleMainnet,
 }
 
 // before starting:
@@ -38,14 +99,51 @@ var configGanache = &driver.Config{
 
 func TestFullFlowOnGanache(t *testing.T) {
 
-	orbs := driver.AdapterForGammaCliLocal(configGanache)
-	ethereum := driver.AdapterForTruffleGanache(configGanache, orbs.GetStakeFactor())
+	orbs := configGanache.OrbsAdapter
+	ethereum := configGanache.EthereumAdapter
+
+	ethereum.PrintBalances()
 
 	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 	driver.RunRecordFlow(t, configGanache, orbs, ethereum)
-
 	driver.RunMirrorFlow(t, configGanache, orbs, ethereum)
 	driver.RunProcessFlow(t, configGanache, orbs, ethereum)
+
+	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
+
+	ethereum.PrintBalances()
+}
+
+func TestDeployOnGanache(t *testing.T) {
+
+	orbs := configGanache.OrbsAdapter
+	ethereum := configGanache.EthereumAdapter
+
+	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
+}
+
+func TestRecordOnGanache(t *testing.T) {
+
+	orbs := configGanache.OrbsAdapter
+	ethereum := configGanache.EthereumAdapter
+
+	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
+}
+
+func TestMirrorAndProcessOnGanache(t *testing.T) {
+
+	orbs := configGanache.OrbsAdapter
+	ethereum := configGanache.EthereumAdapter
+
+	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
+	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
+}
+
+func TestReclaimGuardianDepositsOnGanache(t *testing.T) {
+
+	ethereum := configGanache.EthereumAdapter
+
+	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
 }
 
 // value 0 -> delegate.
@@ -86,4 +184,20 @@ func generateVotes(activists []int, validatorAccounts []int) []*driver.VoteEvent
 		{11, []int{}},
 		{15, []int{24, 21, 22}}, // not an guardian
 	}
+}
+
+func getEnv(varName string, defaultVal string) string {
+	result, envOverride := os.LookupEnv(varName)
+	if envOverride == false {
+		result = defaultVal
+	}
+	return result
+}
+
+func requireEnv(varName string) string {
+	result, envOverride := os.LookupEnv(varName)
+	if envOverride == false {
+		panic(fmt.Sprintf("Please set %s", varName))
+	}
+	return result
 }
