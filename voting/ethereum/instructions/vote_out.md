@@ -7,7 +7,7 @@ Voting is performed via a transaction sent to OrbsVoting contract. The transacti
 a list of validators deemed unwanted as Orbs block signers. By sending an empty list, the 
 Guardian expresses consent to include all listed validators in the signing committee.
 
-For a more detailed account of voting, rewards and guardians role see [here](???)
+For a more detailed account of delegation, voting, and rewards see [here](???)
 
 This document walks you through the voting process using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
@@ -19,7 +19,6 @@ Any wallet software may be used, and the choice of MyCrypto here is for illustra
  - MyCrypto desktop app (or another equivalent wallet software)
  - A wallet setup with your Guardians's Ethereum account keys with a positive Ether balance for gas payment
  - ABI and contract address available on Etherscan. For example, on Ropsten testnet the contract may be found [here][1] 
- - Registration data
 
 ### Voting steps
 
@@ -32,11 +31,11 @@ In order to vote follow these steps:
 1. Extract the Contract ABI from the Etherscan *code* [tab][1] and paste it in the test box labeled *ABI / JSON Interface*. 
 ![](./voting_2.png)
 1. Click *Access*.
-* If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
+   * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
 1. Select `voteOut` in the drop down list *Read / Write Contract*
 ![](./voting_3.png)
 The function parameter for the `voteOut` call will appear in the form.
-1. Fill the paramete field labeled `nodes address[]`
+1. Fill the parameter field labeled `nodes address[]`
 with the Ethereum addresses corresponding to any Validator you wish to vote out.
 An empty list implies all validators are approved by the voting guardians.
     - The list will be represented as a JSON array. for example:
@@ -44,18 +43,18 @@ An empty list implies all validators are approved by the voting guardians.
     - to represent an empty list pass `[]`
     - If any of the addresses does not match a registered validator it will be ignored by Orbs when counting votes
     - validators are indicated using their Ethereum accounts addresses as registered under the OrbsValidatorsRegistry contract.
-
 ![](./voting_4.png)
-
 1. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
 In this example we choose to provide a mnemonic to open our wallet:
+![](./unlock_mnemonic.png)
+Click *Choose Address*
 ![](./voting_5.png)
-Proceed to *Choose Address*. 
 1. Select your Guardians's Ethereum address. 
 The address you choose should be your Guardian's identifying address as [registered under OrbsGuardians](./guardian_registration.md) contract.
+Make sure the account has a positive Ether balance for transaction fees.
+<br> Then click *Unlock*. 
 ![](./voting_6.png)
-Make sure the account has a positive Ether balance for transaction fees. Then click *Unlock*.
 1. Verify *Automatically Calculate Gas Limit* is checked. 
 ![](./voting_7.png)
 Don't forget to adjust Gas Price so the transaction is accepted in a reasonable time. Then Click *Write*, and then *Sign Transaction* 
@@ -69,7 +68,7 @@ Navigate to *Etherscan* by clicking *Verify (Etherscan)*
 ![](./voting_10.png)
 
 1. Confirm the transaction has been accepted successfully.
-![](voting_12.png)
+![](./voting_11.png)
  
 Make sure you see 
 > TxReceipt Status:Success
