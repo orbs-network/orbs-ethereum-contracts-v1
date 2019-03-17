@@ -38,6 +38,9 @@ export class ApiService implements IApiStrategy {
   getValidators() {
     return this.remote.getValidators();
   }
+  getElectedValidators() {
+    return this.remote.getElectedValidators();
+  }
   getValidatorData(address: string) {
     return this.remote.getValidatorData(address);
   }

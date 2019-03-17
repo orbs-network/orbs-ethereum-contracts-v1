@@ -22,21 +22,24 @@ const ValidatorsList = ({ validators, classes }) => {
         </TableRow>
       </TableHead>
       <TableBody data-testid="validators-list">
-        {Object.keys(validators).map(address => (
-          <TableRow data-testid={`validator-${address}`} key={address}>
+        {validators.map(validator => (
+          <TableRow
+            data-testid={`validator-${validator.address}`}
+            key={validator.address}
+          >
             <TableCell
               component="th"
               scope="row"
-              data-testid={`validator-${address}-name`}
+              data-testid={`validator-${validator.address}-name`}
             >
-              {validators[address].name}
+              {validator.name}
             </TableCell>
-            <TableCell data-testid={`validator-${address}-address`}>
-              {address}
+            <TableCell data-testid={`validator-${validator.address}-address`}>
+              {validator.address}
             </TableCell>
-            <TableCell>0</TableCell>
-            <TableCell>0</TableCell>
-            <TableCell>0</TableCell>
+            <TableCell>{validator.stake}</TableCell>
+            <TableCell>{validator.totalReward}</TableCell>
+            <TableCell>{validator.participationReward}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -8,11 +8,12 @@ import { Link } from 'react-router-dom';
 const styles = () => ({});
 
 const ValidatorsPage = ({ classes, apiService }) => {
-  const [validators, setValidators] = useState({} as {
-    [address: string]: { checked: boolean; name: string; url: string };
-  });
+  const [validators, setValidators] = useState([]);
 
-  const fetchElectedValidators = async () => {};
+  const fetchElectedValidators = async () => {
+    const list = await apiService.getElectedValidators();
+    setValidators(list);
+  };
 
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;
 
