@@ -6,6 +6,32 @@ import (
 	"testing"
 )
 
+func TestOrbsElectionResultsContract_getEffectiveElectionBlockNumber_emptyElection(t *testing.T) {
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+
+		// call
+		b := getEffectiveElectionBlockNumber()
+
+		// assert
+		require.EqualValues(t, 0, b)
+	})
+}
+
+func TestOrbsElectionResultsContract_getEffectiveElectionBlockNumber(t *testing.T) {
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		setPastElection(1, 10000, 50, []byte{}, []byte{})
+		_setNumberOfElections(1)
+
+		// call
+		b := getEffectiveElectionBlockNumber()
+
+		// assert
+		require.EqualValues(t, 10000, b)
+	})
+}
+
 func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 	currIndex := uint32(2)
 	currBlockNumber := uint64(10000)
@@ -20,7 +46,7 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 		_init()
 		setPastElection(currIndex, currBlockNumber, currentBlockHeight, currElected, currOrbsElected)
 		_setNumberOfElections(currIndex)
-		_setElectionBlockNumber(newBlockNumber)
+		_setCurrentElectionBlockNumber(newBlockNumber)
 		_setValidValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
@@ -45,7 +71,7 @@ func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setElectionBlockNumber(newBlockNumber)
+		_setCurrentElectionBlockNumber(newBlockNumber)
 		_setValidValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
@@ -67,7 +93,7 @@ func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *t
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setElectionBlockNumber(newBlockNumber)
+		_setCurrentElectionBlockNumber(newBlockNumber)
 		_setElectedValidatorsBlockNumberAtIndex(currIndex, currBlockNumber)
 		_setNumberOfElections(currIndex)
 

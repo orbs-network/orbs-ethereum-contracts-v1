@@ -47,7 +47,7 @@ function getAddressFromTopic(event, i) {
 }
 
 function getCandidates(event) {
-    return event.returnValues.nodes;
+    return event.returnValues.validators;
 }
 
 function isObjectNewerThanTx(latestDelegate, event) {
