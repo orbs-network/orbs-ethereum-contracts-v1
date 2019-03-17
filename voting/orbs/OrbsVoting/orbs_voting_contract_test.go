@@ -18,7 +18,7 @@ func TestOrbsVotingContract_mirrorDelegationData(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
+		_setCurrentElectionBlockNumber(150)
 
 		// call
 		_mirrorDelegationData(delegatorAddr, agentAddr, eventBlockNumber, eventBlockTxIndex, eventName)
@@ -40,7 +40,7 @@ func TestOrbsVotingContract_mirrorDelegationData_TransferDoesNotReplaceDelegate(
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
+		_setCurrentElectionBlockNumber(150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_NAME)
@@ -60,7 +60,7 @@ func TestOrbsVotingContract_mirrorDelegationData_DelegateReplacesTransfer(t *tes
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
+		_setCurrentElectionBlockNumber(150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_BY_TRANSFER_NAME)
@@ -78,6 +78,35 @@ func TestOrbsVotingContract_mirrorDelegationData_DelegateReplacesTransfer(t *tes
 	})
 }
 
+func TestOrbsVotingContract_mirrorDelegationData_DelegateReset(t *testing.T) {
+	delegatorAddr := []byte{0x01}
+	agentAddr := []byte{0x02}
+	eventName := DELEGATION_NAME
+	eventBlockNumber := uint64(100)
+	eventBlockTxIndex := uint32(10)
+	emptyAddre := [20]byte{}
+
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		_setCurrentElectionBlockNumber(150)
+
+		// prepare
+		state.WriteBytes(_formatDelegatorAgentKey(delegatorAddr), agentAddr)
+		state.WriteString(_formatDelegatorMethod(delegatorAddr), DELEGATION_NAME)
+		state.WriteUint64(_formatDelegatorBlockNumberKey(delegatorAddr), 95)
+		state.WriteUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr), 1)
+
+		// call
+		_mirrorDelegationData(delegatorAddr, delegatorAddr, eventBlockNumber, eventBlockTxIndex, eventName)
+
+		// assert
+		require.EqualValues(t, emptyAddre[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr)))
+		require.EqualValues(t, eventBlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr)))
+		require.EqualValues(t, eventBlockTxIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr)))
+		require.EqualValues(t, DELEGATION_NAME, state.ReadBytes(_formatDelegatorMethod(delegatorAddr)))
+	})
+}
+
 func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockNumber(t *testing.T) {
 	delegatorAddr := []byte{0x01}
 	agentAddr := []byte{0x02}
@@ -87,7 +116,7 @@ func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockNumbe
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
+		_setCurrentElectionBlockNumber(150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), eventName)
@@ -108,7 +137,7 @@ func TestOrbsVotingContract_mirrorDelegationData_AlreadyHaveNewerEventBlockTxInd
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		state.WriteUint64(ELECTION_BLOCK_NUMBER, 150)
+		_setCurrentElectionBlockNumber(150)
 
 		// prepare
 		state.WriteString(_formatDelegatorMethod(delegatorAddr), eventName)
@@ -130,7 +159,7 @@ func TestOrbsVotingContract_mirrorDelegationData_EventBlockNumberAfterElection(t
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setElectionBlockNumber(150)
+		_setCurrentElectionBlockNumber(150)
 
 		//assert
 		require.Panics(t, func() {
@@ -143,12 +172,24 @@ func TestOrbsVotingContract_preMirrorDelegationData_MirrorPeriodEnded(t *testing
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 		// prepare
-		_setElectionBlockNumber(150)
+		_setCurrentElectionBlockNumber(150)
+		_setVotingProcessState("x")
 		m.MockEthereumGetBlockNumber(5000)
 
 		require.Panics(t, func() {
 			_mirrorPeriodValidator()
 		}, "should panic because mirror period should have ended")
+	})
+}
+
+func TestOrbsVotingContract_preMirrorDelegationData_MirrorPeriodNotEndIfNotProcessStart(t *testing.T) {
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		// prepare
+		_setCurrentElectionBlockNumber(150)
+		m.MockEthereumGetBlockNumber(5000)
+
+		_mirrorPeriodValidator()
 	})
 }
 
@@ -249,7 +290,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -284,7 +325,7 @@ func TestOrbsVotingContract_mirrorVoteLessThanMaximum(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -319,7 +360,7 @@ func TestOrbsVotingContract_mirrorVote_NotGuardian(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, false)
 
@@ -344,7 +385,7 @@ func TestOrbsVotingContract_mirrorVote_NoCandidates(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -378,7 +419,7 @@ func TestOrbsVotingContract_mirrorVote_TooManyCandidates(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 
 		require.Panics(t, func() {
@@ -402,7 +443,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockNumber(t *testi
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, 10, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -428,7 +469,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, 10, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -464,7 +505,7 @@ func TestOrbsVotingContract_getStakeFromEthereum(t *testing.T) {
 		_init()
 
 		// prepare
-		_setElectionBlockNumber(blockNumber)
+		_setCurrentElectionBlockNumber(blockNumber)
 		mockStakeInEthereum(m, blockNumber, addr, stakeSetup)
 
 		// call
@@ -549,7 +590,7 @@ func (f *harness) setupEthereumStateBeforeProcess(m Mockery) {
 }
 
 func (f *harness) setupOrbsStateBeforeProcess() {
-	_setElectionBlockNumber(f.electionBlock)
+	_setCurrentElectionBlockNumber(f.electionBlock)
 	f.mockDelegationsInOrbsBeforeProcess()
 	f.mockGuardianVotesInOrbsBeforeProcess()
 	f.mockValidatorsInOrbsBeforeProcess()
@@ -723,7 +764,7 @@ func TestOrbsVotingContract_processVote_validValidatorsFromEthereumToState(t *te
 
 		// prepare
 		mockValidatorsInEthereum(m, electionBlock, validators)
-		_setElectionBlockNumber(electionBlock)
+		_setCurrentElectionBlockNumber(electionBlock)
 
 		// call
 		_readValidValidatorsFromEthereumToState()
@@ -781,6 +822,7 @@ func TestOrbsVotingContract_processVote_collectOneGuardianStakeFromEthereum_NoSt
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		h.setupOrbsStateBeforeProcess()
 
 		// call
 		_collectOneGuardianStakeFromEthereum(0)
@@ -895,7 +937,7 @@ func TestOrbsVotingContract_processVote_collectOneDelegatorStakeFromEthereum_NoS
 		_init()
 
 		// prepare
-		_setElectionBlockNumber(electionBlock)
+		_setCurrentElectionBlockNumber(electionBlock)
 		mockStakeInEthereum(m, electionBlock, [20]byte{}, 0)
 
 		// call
@@ -1049,9 +1091,8 @@ func TestOrbsVotingContract_processVote_calculateOneGuardianVoteRecursive(t *tes
 		{"level two has level one has another two delegate", 1000, map[[20]byte][][20]byte{{0xa0}: {{0xb0}}, {0xb0}: {{0xb1}}, {0xb1}: {{0xb2}, {0xb3}}}, map[[20]byte]uint64{{0xb3}: 400, {0xb2}: 300, {0xb1}: 200, {0xb0}: 100}},
 	}
 	for i := range tests {
-		cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
+		cTest := tests[i]
 		t.Run(cTest.name, func(t *testing.T) {
-			t.Parallel()
 			participant := make(map[[20]byte]uint64)
 			stakes := _calculateOneGuardianVoteRecursive(guardian, cTest.relationship, delegatorStakes, participant)
 			require.EqualValues(t, cTest.expect, stakes, fmt.Sprintf("%s was calculated to %d instead of %d", cTest.name, stakes, cTest.expect))
@@ -1087,6 +1128,7 @@ func TestOrbsVotingContract_processVote_guardiansCastVotes(t *testing.T) {
 		_setCandidates(g1[:], g1Vote)
 		_setCandidates(g2[:], g2Vote)
 		_setCandidates(g3[:], g3Vote)
+		_setCurrentElectionBlockNumber(50000)
 
 		tests := []struct {
 			name          string
@@ -1100,7 +1142,7 @@ func TestOrbsVotingContract_processVote_guardiansCastVotes(t *testing.T) {
 			{"simple second guardian no delegates", map[[20]byte]uint64{v1: 320, v2: 320}, 370, map[[20]byte]uint64{g0: 20, g3: 50}},
 		}
 		for i := range tests {
-			cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
+			cTest := tests[i]
 			candidatesVotes, total, _, _ := _guardiansCastVotes(cTest.guardianStake, relationship, delegatorStakes)
 			// TODO v1 Noam ... check this ?
 			require.EqualValues(t, cTest.expectedTotal, total)
@@ -1131,14 +1173,41 @@ func TestOrbsVotingContract_processVote_processValidatorsSelection(t *testing.T)
 		_setValidValidatorEthereumAddressAtIndex(1, v2[:])
 		_setValidValidatorEthereumAddressAtIndex(2, v3[:])
 		_setValidValidatorEthereumAddressAtIndex(3, v4[:])
+		_setCurrentElectionBlockNumber(50000)
 
 		for i := range tests {
-			cTest := tests[i] // this is so that we can run tests in parallel, see https://gist.github.com/posener/92a55c4cd441fc5e5e85f27bca008721
+			cTest := tests[i]
 			validCandidates := _processValidatorsSelection(cTest.original, cTest.maxVotes)
 			require.Equal(t, len(cTest.expect), len(validCandidates))
 			require.ElementsMatch(t, cTest.expect, validCandidates)
 		}
 	})
+}
+
+func TestOrbsVotingContract_initCurrentElectionBlockNumber(t *testing.T) {
+	t.Skip() // TODO v1 fix the fake sdk
+	tests := []struct {
+		name                     string
+		expectCurrentBlockNumber uint64
+		ethereumBlockNumber      uint64
+	}{
+		{"before is 0", FIRST_ELECTION_BLOCK, 0},
+		{"before is a small number", FIRST_ELECTION_BLOCK, 5000000},
+		{"before is after first but before second", FIRST_ELECTION_BLOCK + ELECTION_PERIOD_LENGTH_IN_BLOCKS, 7480969},
+		{"before is after second", FIRST_ELECTION_BLOCK + 2*ELECTION_PERIOD_LENGTH_IN_BLOCKS, 7495969},
+	}
+	for i := range tests {
+		cTest := tests[i]
+		t.Run(cTest.name, func(t *testing.T) {
+			InServiceScope(nil, nil, func(m Mockery) {
+				_init()
+				_setCurrentElectionBlockNumber(0)
+				m.MockEthereumGetBlockNumber(int(cTest.ethereumBlockNumber))
+				after := _getCurrentElectionBlockNumber()
+				require.EqualValues(t, cTest.expectCurrentBlockNumber, after, "'%s' failed ", cTest.name)
+			})
+		})
+	}
 }
 
 /***
@@ -1150,5 +1219,5 @@ func setTimingInMirror(m Mockery) {
 }
 func setTiming(m Mockery, electionBlock uint64, currentBlock int) {
 	m.MockEthereumGetBlockNumber(currentBlock)
-	_setElectionBlockNumber(electionBlock)
+	_setCurrentElectionBlockNumber(electionBlock)
 }

@@ -7,10 +7,6 @@ import (
 	"testing"
 )
 
-func TestOrbsVotingContract_processRewards_reset(t *testing.T) {
-
-}
-
 func TestOrbsVotingContract_processRewards_getValidatorStakes(t *testing.T) {
 	validators := [][20]byte{{0x01}, {0x02}, {0x03}}
 	stakes := []uint64{100, 200}
@@ -20,6 +16,7 @@ func TestOrbsVotingContract_processRewards_getValidatorStakes(t *testing.T) {
 		_init()
 
 		// prepare
+		_setCurrentElectionBlockNumber(5000)
 		_setNumberOfValidValidaors(len(validators))
 		for i := 0; i < len(validators); i++ {
 			_setValidValidatorEthereumAddressAtIndex(i, validators[i][:])
@@ -35,30 +32,8 @@ func TestOrbsVotingContract_processRewards_getValidatorStakes(t *testing.T) {
 		require.EqualValues(t, len(validators), len(vtoS))
 		for i := 0; i < _getNumberOfValidValidaors(); i++ {
 			require.EqualValues(t, validators[i], _getValidValidatorEthereumAddressAtIndex(i))
-			require.EqualValues(t, stakesReal[i], _getValidValidatorStake(validators[i][:]))
+			require.EqualValues(t, stakesReal[i], getValidValidatorStake(validators[i][:]))
 		}
-	})
-}
-
-func TestOrbsVotingContract_processRewards(t *testing.T) {
-	//totalVotes := uint64(0)
-	//elected := [][20]byte{}
-	//delegatorsStake := map[[20]byte]uint64{}
-	//guardiansStake := map[[20]byte]uint64{}
-	//validatorsStake := map[[20]byte]uint64{}
-	totalVotes := uint64(0)
-	elected := [][20]byte{}
-	participantStakes := map[[20]byte]uint64{}
-	guardiansStake := map[[20]byte]uint64{}
-	//validatorsStake := map[[20]byte]uint64{}
-
-	InServiceScope(nil, nil, func(m Mockery) {
-		_init()
-
-		// call
-		_processRewards(totalVotes, elected, participantStakes, guardiansStake)
-
-		// assert
 	})
 }
 
@@ -69,6 +44,7 @@ func TestOrbsVotingContract_processRewards_processRewardsParticipants(t *testing
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 
 		// call
 		_processRewardsParticipants(totalVotes, participantStakes)
@@ -89,6 +65,7 @@ func TestOrbsVotingContract_processRewards_processRewardsParticipants_TotalAbove
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 
 		// call
 		_processRewardsParticipants(totalVotes, h.getAllStakes())
@@ -107,6 +84,7 @@ func TestOrbsVotingContract_processRewards_processRewardsParticipants_SmallNumbe
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 
 		// call
 		_processRewardsGuardians(totalVotes, guardiansAccumulatedStakes)
@@ -127,6 +105,7 @@ func TestOrbsVotingContract_processRewards_processRewardsParticipants_SmallNumbe
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 
 		// call
 		_processRewardsGuardians(totalVotes, guardiansAccumulatedStakes)
@@ -149,6 +128,7 @@ func TestOrbsVotingContract_processRewards_processRewardsParticipants_LargeNumbe
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 
 		// call
 		_processRewardsGuardians(0, h.getAllStakes())
@@ -184,6 +164,7 @@ func TestOrbsVotingContract_processRewards_processRewardsParticipants_LargeNumbe
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 
 		// call
 		_processRewardsGuardians(0, h.getAllStakes())
@@ -211,6 +192,7 @@ func TestOrbsVotingContract_processRewards_processRewardsValidators(t *testing.T
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 
 		// call
 		_processRewardsValidators(validatorStakes)
@@ -237,6 +219,7 @@ func TestOrbsVotingContract_processRewards_maxRewardForGroup(t *testing.T) {
 	}
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		_setCurrentElectionBlockNumber(5000)
 		for i := range tests {
 			cTest := tests[i]
 			reward := _maxRewardForGroup(cTest.max, cTest.total, cTest.percent)
