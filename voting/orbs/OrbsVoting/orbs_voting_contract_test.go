@@ -290,7 +290,7 @@ func TestOrbsVotingContract_mirrorVote(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -325,7 +325,7 @@ func TestOrbsVotingContract_mirrorVoteLessThanMaximum(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -360,7 +360,7 @@ func TestOrbsVotingContract_mirrorVote_NotGuardian(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, false)
 
@@ -385,7 +385,7 @@ func TestOrbsVotingContract_mirrorVote_NoCandidates(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -419,7 +419,7 @@ func TestOrbsVotingContract_mirrorVote_TooManyCandidates(t *testing.T) {
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 
 		require.Panics(t, func() {
@@ -443,7 +443,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockNumber(t *testi
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, 10, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
@@ -469,7 +469,7 @@ func TestOrbsVotingContract_mirrorVote_AlreadyHaveNewerEventBlockTxIndex(t *test
 		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, VOTE_OUT_NAME, blockNumber, 10, func(out interface{}) {
 			v := out.(*VoteOut)
 			v.Voter = guardianAddr
-			v.Nodes = candidateAddrs
+			v.Validators = candidateAddrs
 		})
 		mockGuardianInEthereum(m, uint64(blockNumber), guardianAddr, true)
 
