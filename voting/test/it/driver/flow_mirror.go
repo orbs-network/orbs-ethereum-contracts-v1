@@ -39,7 +39,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 }
 
 func waitForFinality(blockNumber int, orbs OrbsAdapter, ethereum EthereumAdapter) {
-	targetBlockHeight := blockNumber + orbs.GetFinalityBlocksComponent() + 1
+	targetBlockHeight := blockNumber + orbs.GetFinalityBlocksComponent()
 	ethereum.WaitForBlock(targetBlockHeight)
 	sleepFor := orbs.GetFinalityTimeComponent()
 	fmt.Printf("%v > Due to finality time component, sleeping for %v\n", time.Now().Format("15:04:05"), sleepFor)
