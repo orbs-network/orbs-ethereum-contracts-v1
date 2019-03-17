@@ -3,8 +3,6 @@
 
 ## Parameters
 * `VOTE_MIRRORING_PERIOD_LENGTH_IN_BLOCKS` - the time after an election event when processing can start. Mirroring may continue until the end of the mirroring period.
-* `FINALITY_CONSTANT` - Amount of blocks to wait for finality.
-  * Default: 120
 * `VOTING_VALIDITY_TIME` - The number of Ethereum blocks during which a Guardian's voting is valid
   * Default: 40320 (~ 7 days)
 `PROCESSING_TRANSACTIONS_BATCH_SIZE` - The maximum number of `Processing` transactions that can be sent concurrently (in the same block).
@@ -37,6 +35,7 @@
 * Mirror delegations since the last block that delegations were mirrored from on this virtual chain (locally) until the current Ethereum block number (inclusive).
   * Store locally the last block that was covered by the delegation mirroring. 
   * If no delegation stored, there's no harm in collecting past delegation data.
+    * The Election contract will return error on the duplicate mirrored trasnactions.
   * Use `Election.mirrorDelegation(hexEncodedEthTxHash)` or `Election.mirrorDelegationByTransfer(hexEncodedEthTxHash)`.
 * Mirror all VoteOut transactions with block_height > current election block number - `VOTING_VALIDITY_TIME`. Note: no harm in mirror older votes.
   * Use `Election.mirrorVote(hexEncodedEthTxHash)`
