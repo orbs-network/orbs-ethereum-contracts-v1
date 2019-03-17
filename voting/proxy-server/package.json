@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/orbs-network/orbs-ethereum-contracts#readme",
   "dependencies": {
+    "chance": "^1.0.18",
     "cors": "2.8.5",
     "express": "4.16.4",
     "orbs-client-sdk": "0.0.5",
