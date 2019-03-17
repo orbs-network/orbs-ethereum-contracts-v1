@@ -7,7 +7,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = () => ({});
+const styles = () => ({
+  table: {
+    marginBottom: 30
+  }
+});
 
 const GuardiansList = ({ onSelect, guardians, classes }) => {
   return (
@@ -17,7 +21,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
           <TableCell>Name</TableCell>
           <TableCell>Address</TableCell>
           <TableCell>Website</TableCell>
-          <TableCell>Balance</TableCell>
+          <TableCell>Stake in last election</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="guardians-list">

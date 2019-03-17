@@ -3,7 +3,7 @@ import Home from '../Home';
 import NewGuardian from '../NewGuardian';
 import NewValidator from '../NewValidator';
 import GuardianPage from '../Guardrians';
-import StakeholderPage from '../Stakeholders';
+import DelegatorsPage from '../Delegators';
 import { Route, RouteProps } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import styles from './style';
@@ -17,7 +17,7 @@ const Main = ({ apiService, classes }) => {
         exact
         path="/delegator"
         component={(props: RouteProps) => (
-          <StakeholderPage {...props} apiService={apiService} />
+          <DelegatorsPage {...props} apiService={apiService} />
         )}
       />
       <Route
