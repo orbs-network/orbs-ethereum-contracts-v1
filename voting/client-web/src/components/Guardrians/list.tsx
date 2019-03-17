@@ -19,6 +19,7 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
           <TableCell>Name</TableCell>
           <TableCell>Address</TableCell>
           <TableCell>Website</TableCell>
+          <TableCell>Last election votes against (%)</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="validators-list">
@@ -55,6 +56,7 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
                 {validators[address].url}
               </Link>
             </TableCell>
+            <TableCell>0</TableCell>
           </TableRow>
         ))}
       </TableBody>

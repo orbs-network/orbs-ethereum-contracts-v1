@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
 import GuardianDialog from '../GuardianDetails';
 import ManualDelegationDialog from '../ManualDelegation';
-import { Link as RouterLink } from 'react-router-dom';
+
 import { Mode } from '../../api/interface';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
@@ -69,23 +69,15 @@ const DelegatorsPage = ({ apiService }) => {
     return apiService.mode === Mode.ReadWrite;
   };
 
-  const NewGuardianLink = props => <RouterLink to="/guardian/new" {...props} />;
-
   return (
     <>
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        Guardian List
+        Guardians List
       </Typography>
 
-      {hasMetamask() && (
-        <Typography paragraph variant="h6" color="textPrimary">
-          In case you'd like to become a Guardian, follow{' '}
-          <Link variant="h6" color="secondary" component={NewGuardianLink}>
-            this link
-          </Link>
-          .
-        </Typography>
-      )}
+      <Typography align="right" variant="overline">
+        Total stake: 100,000,000 Orbs
+      </Typography>
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
@@ -103,6 +95,10 @@ const DelegatorsPage = ({ apiService }) => {
           .
         </Typography>
       )}
+
+      <Typography paragraph variant="h6" color="textPrimary">
+        Delegation Status: Your vote is going to: `0x`
+      </Typography>
 
       <GuardianDialog
         readOnly={!hasMetamask()}

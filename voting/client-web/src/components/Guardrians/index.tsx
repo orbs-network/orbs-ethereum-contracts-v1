@@ -1,7 +1,5 @@
 import styles from './styles';
 import ValidatorsList from './list';
-import { Link } from 'react-router-dom';
-import Explanations from './explanations';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Mode } from '../../api/interface';
@@ -9,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
+import { Link } from 'react-router-dom';
 
 const ReadOnlyVoteButton = () => {
   return (
@@ -120,14 +119,18 @@ const GuardianPage = ({ classes, apiService }) => {
 
   return (
     <>
-      <Explanations />
+      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
+        Validators List
+      </Typography>
+
       {hasMetamask() && (
-        <Link to="/validator/new">
-          <Typography variant="subtitle1" color="textSecondary">
-            Join as a Validator
+        <Link to="/guardian/new">
+          <Typography variant="overline" color="textSecondary">
+            Become a guardian
           </Typography>
         </Link>
       )}
+
       <ValidatorsList
         readOnly={!hasMetamask()}
         validators={validators}
