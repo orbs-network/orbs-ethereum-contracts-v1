@@ -8,7 +8,7 @@
       "outputs": [
         {
           "name": "nodeAddresses",
-          "type": "address[]"
+          "type": "bytes20[]"
         },
         {
           "name": "ipAddresses",
@@ -24,7 +24,7 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsNetworkTopology {\n    function getNetworkTopology()\n        external\n        view\n        returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses);\n}\n\n",
+  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsNetworkTopology {\n    function getNetworkTopology()\n        external\n        view\n        returns (bytes20[] memory nodeAddresses, bytes4[] memory ipAddresses);\n}\n\n",
   "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
   "ast": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsNetworkTopology.sol",
@@ -88,19 +88,18 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeIdentifier": "t_array$_t_bytes20_$dyn_memory_ptr",
+                    "typeString": "bytes20[]"
                   },
                   "typeName": {
                     "baseType": {
                       "id": 51,
-                      "name": "address",
+                      "name": "bytes20",
                       "nodeType": "ElementaryTypeName",
                       "src": "139:7:1",
-                      "stateMutability": "nonpayable",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
+                        "typeIdentifier": "t_bytes20",
+                        "typeString": "bytes20"
                       }
                     },
                     "id": 52,
@@ -108,8 +107,8 @@
                     "nodeType": "ArrayTypeName",
                     "src": "139:9:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeIdentifier": "t_array$_t_bytes20_$dyn_storage_ptr",
+                      "typeString": "bytes20[]"
                     }
                   },
                   "value": null,
@@ -229,19 +228,18 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
-                    "typeString": "address[]"
+                    "typeIdentifier": "t_array$_t_bytes20_$dyn_memory_ptr",
+                    "typeString": "bytes20[]"
                   },
                   "typeName": {
                     "baseType": {
                       "id": 51,
-                      "name": "address",
+                      "name": "bytes20",
                       "nodeType": "ElementaryTypeName",
                       "src": "139:7:1",
-                      "stateMutability": "nonpayable",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_address",
-                        "typeString": "address"
+                        "typeIdentifier": "t_bytes20",
+                        "typeString": "bytes20"
                       }
                     },
                     "id": 52,
@@ -249,8 +247,8 @@
                     "nodeType": "ArrayTypeName",
                     "src": "139:9:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
-                      "typeString": "address[]"
+                      "typeIdentifier": "t_array$_t_bytes20_$dyn_storage_ptr",
+                      "typeString": "bytes20[]"
                     }
                   },
                   "value": null,
@@ -314,7 +312,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-14T18:30:29.913Z",
+  "updatedAt": "2019-03-17T16:33:02.890Z",
   "devdoc": {
     "methods": {}
   },

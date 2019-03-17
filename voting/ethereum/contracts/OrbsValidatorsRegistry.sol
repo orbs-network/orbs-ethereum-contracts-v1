@@ -10,7 +10,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         string name;
         bytes ipAddress;
         string website;
-        address orbsAddress;
+        bytes20 orbsAddress;
         uint registeredOnBlock;
         uint lastUpdatedOnBlock;
     }
@@ -22,20 +22,20 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     mapping(bytes32 => address) public lookupName;
     mapping(bytes32 => address) public lookupUrl;
     mapping(bytes32 => address) public lookupIp;
-    mapping(address => address) public lookupOrbsAddr;
+    mapping(bytes20 => address) public lookupOrbsAddr;
 
     function register(
         string memory name,
         bytes memory ipAddress,
         string memory website,
-        address orbsAddress
+        bytes20 orbsAddress
     )
         public
     {
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
         require(ipAddress.length == 4, "Please pass an ip address represented as an array of exactly 4 bytes");
-        require(orbsAddress != address(0), "Please provide a valid Orbs Address");
+        require(orbsAddress != bytes20(0), "Please provide a valid Orbs Address");
 
         bytes32 nameHash = keccak256(bytes(name));
         bytes32 ipHash   = keccak256(ipAddress);
@@ -107,7 +107,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             string memory name,
             bytes memory ipAddress,
             string memory website,
-            address orbsAddress
+            bytes20 orbsAddress
         )
     {
         require(isValidator(validator), "Unlisted Validator");
@@ -138,7 +138,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     function getOrbsAddress(address validator)
         public
         view
-        returns (address)
+        returns (bytes20)
     {
         require(isValidator(validator), "Unlisted Validator");
 

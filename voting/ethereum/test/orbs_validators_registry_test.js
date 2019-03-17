@@ -68,7 +68,7 @@ contract('OrbsValidatorsRegistry', accounts => {
                 assert.equal(valData.name, name);
                 assert.equal(valData.ipAddress, ip);
                 assert.equal(valData.website, url);
-                assert.equal(valData.orbsAddress, orbsAddr);
+                assert.equal(valData.orbsAddress.toUpperCase(), orbsAddr.toUpperCase());
                 assert.equal(valData.name, valData[0]);
                 assert.equal(valData.ipAddress, valData[1]);
                 assert.equal(valData.website, valData[2]);
@@ -148,7 +148,7 @@ contract('OrbsValidatorsRegistry', accounts => {
                 assert.equal(valData.name, name);
                 assert.equal(valData.ipAddress, ip);
                 assert.equal(valData.website, url);
-                assert.equal(valData.orbsAddress, orbsAddr);
+                assert.equal(valData.orbsAddress.toUpperCase(), orbsAddr.toUpperCase());
                 assert.equal(valData.name, valData[0]);
                 assert.equal(valData.ipAddress, valData[1]);
                 assert.equal(valData.website, valData[2]);

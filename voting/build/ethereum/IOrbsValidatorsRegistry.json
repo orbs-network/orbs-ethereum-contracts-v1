@@ -42,7 +42,7 @@
         },
         {
           "name": "orbsAddress",
-          "type": "address"
+          "type": "bytes20"
         }
       ],
       "name": "register",
@@ -84,7 +84,7 @@
         },
         {
           "name": "orbsAddress",
-          "type": "address"
+          "type": "bytes20"
         }
       ],
       "payable": false,
@@ -145,7 +145,7 @@
       "outputs": [
         {
           "name": "orbsAddress",
-          "type": "address"
+          "type": "bytes20"
         }
       ],
       "payable": false,
@@ -157,7 +157,7 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsValidatorsRegistry {\n    event ValidatorLeft(address indexed validator);\n    event ValidatorRegistered(address indexed validator);\n\n    function register(\n        string calldata name,\n        bytes calldata ipAddress,\n        string calldata website,\n        address orbsAddress\n    )\n        external;\n    function leave() external;\n    function getValidatorData(address validator)\n        external\n        view\n        returns (\n            string memory name,\n            bytes memory ipAddress,\n            string memory website,\n            address orbsAddress\n        );\n    function getRegistrationBlockHeight(address validator)\n        external\n        view\n        returns (uint registeredOn, uint lastUpdatedOn);\n    function isValidator(address validator) external view returns (bool);\n    function getOrbsAddress(address validator)\n        external\n        view\n        returns (address orbsAddress);\n}\n",
+  "source": "pragma solidity 0.5.3;\n\n\ninterface IOrbsValidatorsRegistry {\n    event ValidatorLeft(address indexed validator);\n    event ValidatorRegistered(address indexed validator);\n\n    function register(\n        string calldata name,\n        bytes calldata ipAddress,\n        string calldata website,\n        bytes20 orbsAddress\n    )\n        external;\n    function leave() external;\n    function getValidatorData(address validator)\n        external\n        view\n        returns (\n            string memory name,\n            bytes memory ipAddress,\n            string memory website,\n            bytes20 orbsAddress\n        );\n    function getRegistrationBlockHeight(address validator)\n        external\n        view\n        returns (uint registeredOn, uint lastUpdatedOn);\n    function isValidator(address validator) external view returns (bool);\n    function getOrbsAddress(address validator)\n        external\n        view\n        returns (bytes20 orbsAddress);\n}\n",
   "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidatorsRegistry.sol",
   "ast": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/voting/ethereum/contracts/IOrbsValidatorsRegistry.sol",
@@ -379,18 +379,17 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
                   },
                   "typeName": {
                     "id": 117,
-                    "name": "address",
+                    "name": "bytes20",
                     "nodeType": "ElementaryTypeName",
                     "src": "300:7:3",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
                     }
                   },
                   "value": null,
@@ -573,18 +572,17 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
                   },
                   "typeName": {
                     "id": 134,
-                    "name": "address",
+                    "name": "bytes20",
                     "nodeType": "ElementaryTypeName",
                     "src": "587:7:3",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
                     }
                   },
                   "value": null,
@@ -846,18 +844,17 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
                   },
                   "typeName": {
                     "id": 157,
-                    "name": "address",
+                    "name": "bytes20",
                     "nodeType": "ElementaryTypeName",
                     "src": "932:7:3",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
                     }
                   },
                   "value": null,
@@ -1099,18 +1096,17 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
                   },
                   "typeName": {
                     "id": 117,
-                    "name": "address",
+                    "name": "bytes20",
                     "nodeType": "ElementaryTypeName",
                     "src": "300:7:3",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
                     }
                   },
                   "value": null,
@@ -1293,18 +1289,17 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
                   },
                   "typeName": {
                     "id": 134,
-                    "name": "address",
+                    "name": "bytes20",
                     "nodeType": "ElementaryTypeName",
                     "src": "587:7:3",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
                     }
                   },
                   "value": null,
@@ -1566,18 +1561,17 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
                   },
                   "typeName": {
                     "id": 157,
-                    "name": "address",
+                    "name": "bytes20",
                     "nodeType": "ElementaryTypeName",
                     "src": "932:7:3",
-                    "stateMutability": "nonpayable",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
                     }
                   },
                   "value": null,
@@ -1605,7 +1599,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-14T18:30:29.915Z",
+  "updatedAt": "2019-03-17T16:33:02.892Z",
   "devdoc": {
     "methods": {}
   },
