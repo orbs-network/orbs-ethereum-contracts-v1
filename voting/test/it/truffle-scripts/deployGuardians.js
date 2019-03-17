@@ -1,8 +1,10 @@
+
+const helpers = require('./helpers');
 module.exports = async function(done) {
   try {
 
     const guardians = artifacts.require('OrbsGuardians');
-    let instance = await guardians.new();
+    let instance = await guardians.new(helpers.getWeiDeposit(web3));
 
     console.log(JSON.stringify({
       Address: instance.address

@@ -43,12 +43,13 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	logSummary("Process Phase all done.")
 
 	if config.DebugLogs {
+		orbsContractTxt := fmt.Sprintf(`OrbsVotingContractName: "%s",`+"\n", config.OrbsVotingContractName)
 		erc20Txt := fmt.Sprintf(`EthereumErc20Address: "%s",`+"\n", config.EthereumErc20Address)
 		votingTxt := fmt.Sprintf(`EthereumVotingAddress: "%s",`+"\n", config.EthereumVotingAddress)
 		guardianTxt := fmt.Sprintf(`EthereumGuardiansAddress: "%s",`+"\n", config.EthereumGuardiansAddress)
 		validatorTxt := fmt.Sprintf(`EthereumValidatorsAddress: "%s",`+"\n", config.EthereumValidatorsAddress)
 		validatorRegTxt := fmt.Sprintf(`EthereumValidatorsRegAddress: "%s",`+"\n", config.EthereumValidatorsRegAddress)
-		logSummary("If you want to rerun without re-deploy on ethereum please update the test configuration with these value:\n%s%s%s%s%s\nDeploy Phase all done.\n\n", erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
+		logSummary("If you want to rerun without re-deploy on ethereum please update the test configuration with these value:\n%s%s%s%s%s%s\nDeploy Phase all done.\n\n", orbsContractTxt, erc20Txt, votingTxt, validatorTxt, validatorRegTxt, guardianTxt)
 	}
 }
 

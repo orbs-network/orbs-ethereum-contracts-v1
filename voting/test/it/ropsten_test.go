@@ -5,12 +5,6 @@ import (
 	"testing"
 )
 
-// TODO add to driver config all the required orbsAddresses and IPs
-// TODO Verify proper registration of accounts as guardians - check if guardians are already registered! fund deposits only if needed
-// TODO reclaim guardian deposit on teardown
-
-// TODO new flow - propagate elections results and verify committee change.
-
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
 // DON'T FORGET TO UPDATE VALUES ACCORDING TO INSTRUCTIONS AFTER DEPLOY
 var delegatorsNumberRopsten = 15
@@ -18,7 +12,7 @@ var guardiansAccountsRopsten = []int{4, 6, 10, 11}
 var validatorAccountsRopsten = []int{20, 21, 22, 23, 24}
 var configRopsten = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
-	OrbsVotingContractName:       "OrbsVoting_1",                                                  // name of the orbs contract
+	OrbsVotingContractName:       "",                                                              // name of the orbs contract
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
 	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
@@ -42,15 +36,26 @@ var configRopsten = &driver.Config{
 // 2. change account setting to generate 25 accounts
 // 3. make sure gamma server is running with `gamma-cli start-local`
 
+func TestFullOnRopsten(t *testing.T) {
+
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+
+	ethereum.PrintBalances()
+
+	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
+	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
+	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
+	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
+	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
+
+	ethereum.PrintBalances()
+}
+
 func TestDeployOnRopsten(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
-	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
-
-	// Temp deploy of orbs contracts
-	orbs.DeployContract(configRopsten.OrbsVotingContractName)
-	orbs.SetContractConstants(configRopsten.OrbsVotingContractName)
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
 }
@@ -58,8 +63,7 @@ func TestDeployOnRopsten(t *testing.T) {
 func TestRecordOnRopsten(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
-	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	driver.RunRecordFlow(t, configRopsten, orbs, ethereum)
 }
@@ -67,11 +71,18 @@ func TestRecordOnRopsten(t *testing.T) {
 func TestMirrorAndProcessOnRopsten(t *testing.T) {
 
 	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
-	ethereum := driver.AdapterForTruffleGanache(configRopsten, orbs.GetStakeFactor()) // TODO use the commented line instead
-	//ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
 
 	driver.RunMirrorFlow(t, configRopsten, orbs, ethereum)
 	driver.RunProcessFlow(t, configRopsten, orbs, ethereum)
+}
+
+func TestReclaimGuardianDepositsOnRopsten(t *testing.T) {
+
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten, orbs.GetStakeFactor())
+
+	driver.RunReclaimGuardianDepositsFlow(t, configRopsten, ethereum)
 }
 
 // value 0 -> delegate.

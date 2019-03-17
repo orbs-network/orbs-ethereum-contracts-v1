@@ -91,16 +91,16 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     function getNetworkTopology()
         public
         view
-        returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses)
+        returns (bytes20[] memory nodeAddresses, bytes4[] memory ipAddresses)
     {
         bytes20[] memory validators = getValidators(); // filter unregistered
         uint validatorsLength = validators.length;
-        nodeAddresses = new address[](validatorsLength);
+        nodeAddresses = new bytes20[](validatorsLength);
         ipAddresses = new bytes4[](validatorsLength);
 
         for (uint i = 0; i < validatorsLength; i++) {
             bytes memory ip;
-            address orbsAddr;
+            bytes20 orbsAddr;
             (,ip,,orbsAddr) = registry.getValidatorData(address(validators[i]));
             nodeAddresses[i] = orbsAddr;
             ipAddresses[i] = ipAddress(ip);

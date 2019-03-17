@@ -49,7 +49,9 @@ Enter `1` in the *Value* field. This will send 1 Ether with your registration re
 will refund you the deposit if you later request to unregister.
 A 1 Ether deposit is required for registration. You may not send more than exactly 1 Ether.
 ![](../instructions/enroll_guardian_7.png)
-1. Verify that the option *Automatically Calculate Gas Limit* is switched off, and manually adjust the *Gas Limit* field as required. `500,000` will be more than enough (at the time this is being written a successful registration uses ~115000 Gas).
+1. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
+`500,000` should be more than enough (at the time this is being written a successful registration uses 
+~115000 gas). You will not be charged for unused gas.
 ![](../instructions/enroll_guardian_8.png)
 Click *Write* 
 ![](../instructions/enroll_guardian_9.png)

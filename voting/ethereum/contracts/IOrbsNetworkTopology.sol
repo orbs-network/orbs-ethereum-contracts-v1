@@ -5,6 +5,6 @@ interface IOrbsNetworkTopology {
     function getNetworkTopology()
         external
         view
-        returns (address[] memory nodeAddresses, bytes4[] memory ipAddresses);
+        returns (bytes20[] memory nodeAddresses, bytes4[] memory ipAddresses);
 }
 

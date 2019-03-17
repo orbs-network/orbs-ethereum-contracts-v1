@@ -14,17 +14,21 @@ contract OrbsGuardians is IOrbsGuardians {
         uint lastUpdatedOnBlock;
     }
 
-    // The version of the current federation smart contract.
-    uint public constant VERSION = 1;
-
-    uint public constant REGISTRATION_DEPOSIT = 1 ether;
-
     event GuardianAdded(address indexed validator);
     event GuardianLeft(address indexed validator);
     event GuardianModified(address indexed validator);
 
+    // The version of the current federation smart contract.
+    uint public constant VERSION = 1;
+
+    uint public registrationDeposit = 1 ether;
+
     address[] public guardians;
     mapping(address => GuardianData) public guardiansData;
+
+    constructor(uint registrationDeposit_) public {
+        registrationDeposit = registrationDeposit_;
+    }
 
     function register(string memory name, string memory website)
         public
@@ -38,7 +42,7 @@ contract OrbsGuardians is IOrbsGuardians {
         uint registeredOnBlock;
         uint index;
         if (adding) {
-            require(msg.value == REGISTRATION_DEPOSIT, "Please provide 1 Ether registration deposit");
+            require(msg.value == registrationDeposit, "Please provide the exact registration deposit");
             index = guardians.length;
             registeredOnBlock = block.number;
             guardians.push(msg.sender);
@@ -66,7 +70,7 @@ contract OrbsGuardians is IOrbsGuardians {
         delete guardiansData[msg.sender];
         guardians.length--;
 
-        msg.sender.transfer(REGISTRATION_DEPOSIT);
+        msg.sender.transfer(registrationDeposit);
 
         emit GuardianLeft(msg.sender);
     }
