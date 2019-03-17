@@ -7,7 +7,7 @@ import "./IOrbsVoting.sol";
 contract OrbsVoting is IOrbsVoting {
     struct VotingRecord {
         uint blockHeight;
-        address[] nodes;
+        address[] validators;
     }
 
     // The version of the current federation smart contract.
@@ -27,19 +27,19 @@ contract OrbsVoting is IOrbsVoting {
         maxVoteOutNodes = maxVoteOutNodes_;
     }
 
-    function voteOut(address[] memory nodes) public {
-        require(nodes.length <= maxVoteOutNodes, "Nodes list is over the allowed length");
+    function voteOut(address[] memory validators) public {
+        require(validators.length <= maxVoteOutNodes, "Validators list is over the allowed length");
 
-        uint nodesLength = nodes.length;
+        uint nodesLength = validators.length;
         bytes20[] memory addressesAsBytes20 = new bytes20[](nodesLength);
         for (uint i=0; i < nodesLength; i++) {
-            require(nodes[i] != address(0), "All nodes must be non 0");
-            addressesAsBytes20[i] = bytes20(nodes[i]);
+            require(validators[i] != address(0), "All validator addresses must be non 0");
+            addressesAsBytes20[i] = bytes20(validators[i]);
         }
 
         voteCounter++;
 
-        lastVotes[msg.sender] = VotingRecord(block.number, nodes);
+        lastVotes[msg.sender] = VotingRecord(block.number, validators);
 
         emit VoteOut(msg.sender, addressesAsBytes20, voteCounter);
     }
@@ -57,13 +57,13 @@ contract OrbsVoting is IOrbsVoting {
     function getLastVote(address guardian)
         public
         view
-        returns (address[] memory nodes, uint blockHeight)
+        returns (address[] memory validators, uint blockHeight)
     {
         VotingRecord storage lastVote = lastVotes[guardian];
 
         require(lastVote.blockHeight > 0, "Guardian never voted");
 
         blockHeight = lastVote.blockHeight;
-        nodes = lastVote.nodes;
+        validators = lastVote.validators;
     }
 }
