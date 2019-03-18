@@ -1,6 +1,6 @@
 ## Voting
 
-Guardians vote to approve or vote out validators. A Validator that was voted out can not be elected in the election. A Guardian may update her vote at any time where the latest vote recorded prior to the election event is considered for the election.
+Guardians vote to approve or vote out validators. A Validator that was voted out can not be elected in the election. A Guardian may update her vote at any time where the latest vote recorded prior to the election event is considered for the election. A Guardian vote remains valid for up to one week / 40320 Ethereum blocks.
 
 Voting is performed via a transaction sent to OrbsVoting contract. The transaction includes
 a list of validators to vote out and may include up to 3 Valdiaotors. By sending an empty list, the 
