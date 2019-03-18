@@ -22,6 +22,8 @@ Voting/ethereum/build/
 Voting/mirror_process/package-lock.json
 Voting/test/it/build/
 Voting/test/it/package-lock.json
+Voting/orbs/Elections
+Voting/orbs/mergetool
 
 **/node_modules/
 # **/build/
