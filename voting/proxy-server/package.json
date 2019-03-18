@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "lint": "prettier --single-quote --write '**/*.js'",
-    "contracts:prod": "./scripts/copy-contracts.sh"
+    "contracts:prod": "./scripts/copy-contracts.sh",
+    "deploy": "./scripts/heroku-deploy.sh"
   },
   "repository": {
     "type": "git",
