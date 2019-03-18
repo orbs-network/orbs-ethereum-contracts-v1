@@ -3,6 +3,8 @@ const HDWalletProvider = require('truffle-hdwallet-provider');
 const mnemonic = process.env.ROPSTEN_SECRET;
 
 module.exports = {
+  contracts_build_directory: "../ethereum/build/contracts",
+  contracts_directory: "../ethereum/contracts",
   networks: {
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic, process.env.ROPSTEN_INFURA_URL, 0, 10),
