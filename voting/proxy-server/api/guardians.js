@@ -11,12 +11,43 @@ const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
     OrbsContractsInfo.OrbsGuardians.address
   );
 
+  const getGuardianVoteWeight = async address => {
+    const votingWeightQuery = orbsClient.createQuery(
+      orbsAccount.publicKey,
+      'OrbsVoting_1552865801',
+      'getGuardianVotingWeight',
+      [Orbs.argAddress(address.toLowerCase())]
+    );
+    const votingWeightResults = await orbsClient.sendQuery(votingWeightQuery);
+    return votingWeightResults.outputArguments[0].value;
+  };
+
+  const getTotalStake = async () => {
+    const totalStakeQuery = orbsClient.createQuery(
+      orbsAccount.publicKey,
+      'OrbsVoting_1552865801',
+      'getTotalStake',
+      []
+    );
+    const totalStakeResults = await orbsClient.sendQuery(totalStakeQuery);
+    return totalStakeResults.outputArguments[0].value;
+  };
+
   router.get('/guardians', async (req, res) => {
     try {
       const guardians = await guardiansContract.methods
         .getGuardians(0, 100)
         .call();
       res.json(guardians);
+    } catch (err) {
+      res.status(500).send(err.toString());
+    }
+  });
+
+  router.get('/guardians/stake', async (req, res) => {
+    try {
+      const totalStake = await getTotalStake();
+      res.send(totalStake.toString());
     } catch (err) {
       res.status(500).send(err.toString());
     }
@@ -29,16 +60,12 @@ const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
         .getGuardianData(address)
         .call();
 
-      const query = orbsClient.createQuery(
-        orbsAccount.publicKey,
-        'BenchmarkToken',
-        'getBalance',
-        [Orbs.argAddress(address.toLowerCase())]
-      );
+      const [votingWeightResults, totalStakeResults] = await Promise.all([
+        getGuardianVoteWeight(address),
+        getTotalStake()
+      ]);
 
-      const {outputArguments} = await orbsClient.sendQuery(query);
-
-      data['balance'] = outputArguments[0].value.toString();
+      data['stake'] = (votingWeightResults / totalStakeResults).toString();
 
       res.json(data);
     } catch (err) {

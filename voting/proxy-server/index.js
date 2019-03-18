@@ -8,8 +8,9 @@ const electedValidatorsApiFactory = require('./api/elected-validators');
 const Orbs = require('orbs-client-sdk');
 
 const port = process.env.PORT || 5678;
-const virtualChainId = 2020;
-const orbsNodeUrl = `http://3.122.219.67/vchains/${virtualChainId}`;
+const virtualChainId = 1008;
+const orbsNodeAddress = '18.219.51.57';
+const orbsNodeUrl = `http://${orbsNodeAddress}/vchains/${virtualChainId}`;
 
 const app = express();
 

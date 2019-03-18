@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "lint": "prettier --single-quote --write '**/*.js'",
     "contracts:prod": "./scripts/copy-contracts.sh",
     "deploy": "./scripts/heroku-deploy.sh"
@@ -27,6 +27,7 @@
     "web3": "1.0.0-beta.48"
   },
   "devDependencies": {
+    "nodemon": "^1.18.10",
     "prettier": "^1.16.4"
   }
 }
