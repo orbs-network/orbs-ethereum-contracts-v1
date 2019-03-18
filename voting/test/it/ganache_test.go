@@ -1,7 +1,6 @@
 package it
 
 import (
-	"fmt"
 	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
 	"os"
 	"testing"
@@ -52,7 +51,7 @@ var truffleRopsten = driver.NewTruffleAdapter(
 	true,
 	".",
 	"ropsten",
-	requireEnv("ROPSTEN_URL"),
+	getEnv("ROPSTEN_URL", ""),
 	5196956,
 	STAKE_FACTOR,
 )
@@ -61,7 +60,7 @@ var truffleMainnet = driver.NewTruffleAdapter(
 	true,
 	".",
 	"mainnet",
-	requireEnv("MAINNET_URL"),
+	getEnv("MAINNET_URL", ""),
 	7374356,
 	STAKE_FACTOR,
 )
@@ -85,11 +84,17 @@ var configGanache = &driver.Config{
 	Votes:                        generateVotes(guardiansAccounts, validatorAccounts),
 	FirstElectionBlockNumber:     0, // zero to automatically determine after mirroring completes. positive value to enforce static value
 
-	OrbsAdapter: gammaLocal,
-	//OrbsAdapter: 				gammaTestnet,
-	EthereumAdapter: truffleGanache,
-	// EthereumAdapter: truffleRopsten,
-	// EthereumAdapter: truffleMainnet,
+	// Local gamma with Ganache
+	OrbsAdapter:                  gammaLocal,
+	EthereumAdapter:              truffleGanache,
+
+	// Ropsten - remember to configure Orbs testnet to point to Ropsten
+	//OrbsAdapter:                  gammaTestnet,
+	//EthereumAdapter:              truffleRopsten,
+
+	// Mainnet - remember to configure Orbs testnet to point to Mainnet
+	//OrbsAdapter:                  gammaTestnet,
+	//EthereumAdapter:              truffleMainnet,
 }
 
 // before starting:
@@ -194,10 +199,3 @@ func getEnv(varName string, defaultVal string) string {
 	return result
 }
 
-func requireEnv(varName string) string {
-	result, envOverride := os.LookupEnv(varName)
-	if envOverride == false {
-		panic(fmt.Sprintf("Please set %s", varName))
-	}
-	return result
-}
