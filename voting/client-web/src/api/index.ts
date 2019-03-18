@@ -47,4 +47,7 @@ export class ApiService implements IApiStrategy {
   registerValidator(info) {
     return this.metamask.registerValidator(info);
   }
+  getRewards(address: string) {
+    return this.remote.getRewards(address);
+  }
 }

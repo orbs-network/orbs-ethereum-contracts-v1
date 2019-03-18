@@ -23,4 +23,5 @@ export interface IApiStrategy {
     website: url,
     orbsAddress: address
   ): Promise<{}>;
+  getRewards(address: string): Promise<any>;
 }
