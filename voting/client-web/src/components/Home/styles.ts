@@ -25,5 +25,14 @@ export default theme => ({
     height: '90%',
     width: '90%',
     margin: '0 auto'
+  },
+  ctaButton: {
+    background: '#16faff',
+    border: 0,
+    borderRadius: '100px',
+    padding: '.8em 1.6em',
+    '&:hover': {
+      opacity: 0.9
+    }
   }
 });
