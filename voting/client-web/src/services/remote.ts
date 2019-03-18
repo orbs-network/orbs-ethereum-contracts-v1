@@ -33,4 +33,7 @@ export class RemoteService {
       .get(`${remoteAddress}/rewards/${address}`)
       .then(res => res.data);
   }
+  getTotalStake() {
+    return axios.get(`${remoteAddress}/guardians/stake`).then(res => res.data);
+  }
 }

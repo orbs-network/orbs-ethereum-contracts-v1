@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
-import GuardianDialog from '../GuardianDetails';
-import ManualDelegationDialog from '../ManualDelegation';
-
-import { Mode } from '../../api/interface';
-import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import { Mode } from '../../api/interface';
+import GuardianDialog from '../GuardianDetails';
+import Typography from '@material-ui/core/Typography';
+import ManualDelegationDialog from '../ManualDelegation';
 
 const DelegatorsPage = ({ apiService }) => {
   const [guardians, setGuardians] = useState({} as {
@@ -20,6 +19,13 @@ const DelegatorsPage = ({ apiService }) => {
     setManualDelegationDialogState
   ] = useState(false);
 
+  const [totalStake, setTotalStake] = useState('0');
+
+  const fetchTotalStake = async () => {
+    const totalStake = await apiService.getTotalStake();
+    setTotalStake(totalStake);
+  };
+
   const fetchGuardians = async () => {
     const addresses = await apiService.getGuardians();
     const details = await Promise.all(
@@ -30,7 +36,7 @@ const DelegatorsPage = ({ apiService }) => {
       acc[curr] = {
         name: details[idx]['name'],
         url: details[idx]['website'],
-        balance: details[idx]['balance']
+        stake: details[idx]['stake']
       };
       return acc;
     }, {});
@@ -38,6 +44,7 @@ const DelegatorsPage = ({ apiService }) => {
   };
 
   useEffect(() => {
+    fetchTotalStake();
     fetchGuardians();
   }, []);
 
@@ -76,7 +83,7 @@ const DelegatorsPage = ({ apiService }) => {
       </Typography>
 
       <Typography align="right" variant="overline">
-        Total stake: 100,000,000 Orbs
+        Total stake: {totalStake} Orbs
       </Typography>
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />

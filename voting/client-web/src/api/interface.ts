@@ -24,4 +24,5 @@ export interface IApiStrategy {
     orbsAddress: address
   ): Promise<{}>;
   getRewards(address: string): Promise<any>;
+  getTotalStake(): Promise<string>;
 }

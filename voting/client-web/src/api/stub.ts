@@ -36,4 +36,7 @@ export class ApiStrategyStub implements IApiStrategy {
   getRewards() {
     return Promise.resolve({});
   }
+  getTotalStake() {
+    return Promise.resolve('totally-fake-stake');
+  }
 }
