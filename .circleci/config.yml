@@ -46,6 +46,15 @@ jobs:
           path: _out
           destination: test-output
 
+  subscription-e2e:
+    machine: true
+    steps:
+      - checkout
+      - run: ./.circleci/subscription.sh
+      - store_artifacts:
+          path: _out
+          destination: test-output
+
 workflows:
   version: 2
   voting:
@@ -57,3 +66,6 @@ workflows:
   asb:
     jobs:
       - asb-e2e
+  subscription:
+    jobs:
+      - subscription-e2e

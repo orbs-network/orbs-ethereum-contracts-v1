@@ -1,0 +1,12 @@
+{
+  "Environments": {
+    "local": {
+      "VirtualChain": 42,
+      "Endpoints": ["http://gamma:8080"]
+    },
+    "experimental": {
+      "VirtualChain": 42,
+      "Endpoints": ["http://gamma:8080"]
+    }
+  }
+}
