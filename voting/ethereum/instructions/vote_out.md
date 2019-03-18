@@ -80,4 +80,4 @@ With sufficient block confirmations.
 ##### Notes
 * If a vote is made from a non-guardian address the vote will succeed but Orbs network will ignore it. Guardianship is verified on Orbs upon processing of voting results.
 * If a vote is made with a non-validator address in the nodes list the vote will succeed but Orbs betwork will ignore the vote. Validator registration is verified on Orbs upon processing of voting result. 
-* To change a vote just vote again before the end of the subscription period.
+* A vote may be modified at any time, where the last vote recorded before an election event is taken into consideration.
