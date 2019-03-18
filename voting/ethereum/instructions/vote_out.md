@@ -6,6 +6,8 @@ Voting is performed via a transaction sent to OrbsVoting contract. The transacti
 a list of validators to vote out and may include up to 3 Valdiaotors. By sending an empty list, the 
 Guardian expresses consent to include all listed validators in the signing committee.
 
+A Guardian voting weight for an election equals to the total voting weight that was delegated to her, directly or indirectly including her own, based on the Delegators stake at the time of the election event.
+
 For a more detailed account of delegation, voting, and rewards see [here](???)
 
 This document walks you through the voting process using the MyCrypto desktop wallet application.
