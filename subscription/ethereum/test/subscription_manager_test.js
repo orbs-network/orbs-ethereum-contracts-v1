@@ -1,0 +1,6 @@
+
+contract('SubscriptionManager', accounts => {
+
+
+});
+

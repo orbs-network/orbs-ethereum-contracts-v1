@@ -55,6 +55,18 @@ jobs:
           path: _out
           destination: test-output
 
+  subscription-solidity-tests:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: cd subscription/ethereum && ./test.sh
+      - store_artifacts:
+          path: subscription/ethereum/_out
+      - store_test_results:
+          path: subscription/ethereum/_reports
+
+
 workflows:
   version: 2
   voting:
@@ -68,4 +80,5 @@ workflows:
       - asb-e2e
   subscription:
     jobs:
+      - subscription-solidity-tests
       - subscription-e2e
