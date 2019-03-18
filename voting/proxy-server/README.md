@@ -3,7 +3,7 @@
 
 ## Development
 1. Run `npm install`
-1. Run `npm start`
+1. Run `npm run dev`
 
 ## Deployment
 The current host of the docker image is Heroku.

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "lint": "prettier --single-quote --write '**/*.js'",
     "contracts:prod": "./scripts/copy-contracts.sh",
     "deploy": "./scripts/heroku-deploy.sh"
