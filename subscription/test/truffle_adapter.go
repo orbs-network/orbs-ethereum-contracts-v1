@@ -93,7 +93,7 @@ func (t *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	cmd.Dir = "."
 	cmd.Env = append(os.Environ(), env...)
 	out, err := cmd.CombinedOutput()
-	println(out)
+	println(string(out))
 	if err != nil {
 		return nil, err
 	}
@@ -107,8 +107,6 @@ func (t *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	return out[index:], nil
 }
 
-
 func newTruffle() *truffleAdapter {
-	return &truffleAdapter{network:"ganache"}
+	return &truffleAdapter{network: "ganache"}
 }
-
