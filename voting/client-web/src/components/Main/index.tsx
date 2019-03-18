@@ -1,8 +1,9 @@
 import React from 'react';
 import Home from '../Home';
+import RewardsPage from '../Rewards';
+import GuardianPage from '../Guardrians';
 import NewGuardian from '../NewGuardian';
 import NewValidator from '../NewValidator';
-import GuardianPage from '../Guardrians';
 import DelegatorsPage from '../Delegators';
 import ValidatorsPage from '../Validators';
 import { Route, RouteProps } from 'react-router-dom';
@@ -33,6 +34,13 @@ const Main = ({ apiService, classes }) => {
         path="/validator"
         component={(props: RouteProps) => (
           <ValidatorsPage {...props} apiService={apiService} />
+        )}
+      />
+      <Route
+        exact
+        path="/reward"
+        component={(props: RouteProps) => (
+          <RewardsPage {...props} apiService={apiService} />
         )}
       />
       <Route
