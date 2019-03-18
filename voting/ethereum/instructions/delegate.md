@@ -5,19 +5,14 @@ or a guardian of their choice. By delegating to an active and reputable guardian
 a delegator becomes eligible for rewards (see detailed explanation [here][voting_explained]).  
 
 Delegation is performed by one of two mechanisms: 
-* An *implicit delegation* is performed by a symbolic transfer of tokens
-* An *explicit delegation* is performed by a transaction sent to OrbsVoting contract. 
+* An *implicit delegation* is performed by a transfer of 7 token fractions 
+* An *explicit delegation* is performed by a Delegation transaction sent to OrbsVoting contract. 
 
-Once delegated, the delegator's choice remains in place indefinitely, or until
-another delegation occurs. However, and implicit delegation does not override an explicit delegation, even if
-it occurs later than the explicit delegation.
-
-To cancel all delegations, a later self-delegation may be performed. Delegating to one's self cancels any 
-previous delegations. 
+Once delegated, a delegation remains valid and persists unless modified. A delegation may be modified at any time, or canceled by delegating to the Delegator's address. Once explicit delegation was preformed, it take precedence over an implicit delegation, even if it occurs later than the explicit one.   
 
 For a more detailed account of delegation (including implicit delegation), voting, and rewards see [here][voting_explained]
 
-This document focuses on *Explicit delegations* using OrbsVoting contract.
+This document describes the *Explicit delegations* using OrbsVoting contract.
 
 The document walks you through the voting process using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
