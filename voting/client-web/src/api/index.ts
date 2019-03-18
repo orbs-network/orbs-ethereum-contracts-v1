@@ -1,12 +1,21 @@
 import { IApiStrategy, Mode } from './interface';
 import { RemoteService } from '../services/remote';
 import { MetamaskService } from '../services/metamask';
+import { MetamaskServiceStub } from '../services/metamask-stub';
 
 export class ApiService implements IApiStrategy {
-  private metamask: MetamaskService = new MetamaskService();
-  private remote: RemoteService = new RemoteService();
+  private metamask;
+  private remote;
+  mode: Mode;
 
-  mode: Mode = window['ethereum'] ? Mode.ReadWrite : Mode.ReadOnly;
+  constructor() {
+    this.mode = window['ethereum'] ? Mode.ReadWrite : Mode.ReadOnly;
+    this.remote = new RemoteService();
+    this.metamask =
+      this.mode === Mode.ReadWrite
+        ? new MetamaskService()
+        : new MetamaskServiceStub();
+  }
 
   getCurrentAddress() {
     return this.metamask.getCurrentAddress();
@@ -28,6 +37,9 @@ export class ApiService implements IApiStrategy {
   }
   getValidators() {
     return this.remote.getValidators();
+  }
+  getElectedValidators() {
+    return this.remote.getElectedValidators();
   }
   getValidatorData(address: string) {
     return this.remote.getValidatorData(address);

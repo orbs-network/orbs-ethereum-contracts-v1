@@ -1,5 +1,4 @@
 const helpers = require('./helpers');
-const MIN_BALANCE_FEES = web3.utils.toWei("0.4", "ether");
 
 const accountOnEthereumIndexes = process.env.ACCOUNT_INDEXES_ON_ETHEREUM;
 
@@ -15,7 +14,10 @@ module.exports = async function (done) {
         let accounts = accountIndexes.map(elem => availableAccounts[elem]);
 
         let txs = accounts.map(address => {
-            return helpers.verifyEtherBalance(web3, address, MIN_BALANCE_FEES, accounts[0]);
+            if (availableAccounts[0] === address) {
+                return Promise.resolve();
+            }
+            return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, availableAccounts[0]);
         });
 
         await Promise.all(txs);
@@ -26,5 +28,4 @@ module.exports = async function (done) {
         console.log(e);
         done(e);
     }
-}
-;
+};

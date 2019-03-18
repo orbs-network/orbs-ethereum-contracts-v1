@@ -26,7 +26,7 @@ class App extends Component<WithStyles> {
       <Router basename={process.env.PUBLIC_URL}>
         <MuiThemeProvider theme={theme}>
           <CssBaseline />
-          <div className={classes.root}>
+          <div className={classes.root} data-testid="container">
             <Header />
             <Main apiService={this.apiService} />
             {this.apiService.mode === Mode.ReadOnly ? <ReadOnlyBanner /> : null}

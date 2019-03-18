@@ -32,7 +32,7 @@ contract('Voting', accounts => {
             assert.equal(e.event, "VoteOut");
             assert.equal(e.args.voter, accounts[0]);
             assert.equal(e.args.voteCounter, 1);
-            assert.deepEqual(e.args.nodes, suspiciousNodes.map(a => a.toLowerCase()));
+            assert.deepEqual(e.args.validators, suspiciousNodes.map(a => a.toLowerCase()));
         });
 
         it('should increment voteCounter', async () => {
@@ -55,7 +55,7 @@ contract('Voting', accounts => {
             assert.equal(e.event, "VoteOut");
             assert.equal(e.args.voter, accounts[0]);
             assert.equal(e.args.voteCounter, 1);
-            assert.deepEqual(e.args.nodes, []);
+            assert.deepEqual(e.args.validators, []);
         });
 
         it('should disallow voting for too many nodes', async () => {
@@ -100,6 +100,13 @@ contract('Voting', accounts => {
 
             assert.deepEqual(getCounter(receipt1) + 1, getCounter(receipt2))
         });
+
+        it('should reject delegation to 0 address', async () => {
+            await driver.deployVoting();
+            let to = numToAddress(0);
+
+            await assertReject(driver.OrbsVoting.delegate(to), "expected delegating to zero address to fail");
+        });
     });
 
     describe('when calling the getLastVote() function', () => {
@@ -115,7 +122,7 @@ contract('Voting', accounts => {
             assert.deepEqual(reportedFirstVote[0], firstVote);
             assert.equal(reportedFirstVote[1].toNumber(), firstVoteBlockHeight);
 
-            assert.deepEqual(reportedFirstVote[0], reportedFirstVote.nodes, "expected first item in tuple to be nodes");
+            assert.deepEqual(reportedFirstVote[0], reportedFirstVote.validators, "expected first item in tuple to be nodes");
             assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockHeight.toNumber(), "expected second item in tuple to be block height");
 
             const secondVoteBlockHeight = await driver.OrbsVoting.voteOut(secondVote).then(r => r.receipt.blockNumber);

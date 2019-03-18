@@ -27,6 +27,7 @@ Voting/test/it/package-lock.json
 # **/build/
 
 nohup.out
+logs/
 
 _out
 _reports

@@ -1,7 +1,5 @@
 import styles from './styles';
 import ValidatorsList from './list';
-import { Link } from 'react-router-dom';
-import Explanations from './explanations';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Mode } from '../../api/interface';
@@ -9,8 +7,9 @@ import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
+import { Link } from 'react-router-dom';
 
-const DisabledVoteButton = () => {
+const ReadOnlyVoteButton = () => {
   return (
     <Tooltip title="Install Metamask extension to have access to voting capabilities">
       <div>
@@ -27,15 +26,31 @@ const DisabledVoteButton = () => {
   );
 };
 
-const VoteButton = ({ onVote }) => {
+const VoteButton = ({ onVote, disabled }) => {
   return (
     <Button
       data-testid="vote-button"
       onClick={onVote}
       variant="outlined"
       color="secondary"
+      disabled={disabled}
     >
       Vote Out
+    </Button>
+  );
+};
+
+const LeaveEveryoneButton = ({ onVote, disabled }) => {
+  return (
+    <Button
+      data-testid="leave-everyone-button"
+      style={{ marginRight: 15 }}
+      variant="outlined"
+      color="secondary"
+      onClick={onVote}
+      disabled={disabled}
+    >
+      Keep everyone
     </Button>
   );
 };
@@ -93,9 +108,10 @@ const GuardianPage = ({ classes, apiService }) => {
     setValidators(Object.assign({}, validators));
   };
 
-  const hasMetamask = () => {
-    return apiService.mode === Mode.ReadWrite;
-  };
+  const hasMetamask = () => apiService.mode === Mode.ReadWrite;
+
+  const hasSomebodySelected = () =>
+    Object.keys(validators).some(address => validators[address].checked);
 
   useEffect(() => {
     fetchValidators();
@@ -103,14 +119,18 @@ const GuardianPage = ({ classes, apiService }) => {
 
   return (
     <>
-      <Explanations />
+      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
+        Validators List
+      </Typography>
+
       {hasMetamask() && (
-        <Link to="/validator/new">
-          <Typography variant="subtitle1" color="textSecondary">
-            Join as a Validator
+        <Link to="/guardian/new">
+          <Typography variant="overline" color="textSecondary">
+            Become a guardian
           </Typography>
         </Link>
       )}
+
       <ValidatorsList
         readOnly={!hasMetamask()}
         validators={validators}
@@ -118,11 +138,23 @@ const GuardianPage = ({ classes, apiService }) => {
       />
       <div className={classes.voteButton}>
         {hasMetamask() ? (
-          <VoteButton onVote={commitVote} />
+          <>
+            <LeaveEveryoneButton
+              onVote={commitVote}
+              disabled={
+                hasSomebodySelected() || Object.keys(validators).length === 0
+              }
+            />
+            <VoteButton onVote={commitVote} disabled={!hasSomebodySelected()} />
+          </>
         ) : (
-          <DisabledVoteButton />
+          <ReadOnlyVoteButton />
         )}
       </div>
+
+      <Typography paragraph variant="body1" color="textPrimary">
+        Your most recent vote was against: `0x`
+      </Typography>
     </>
   );
 };

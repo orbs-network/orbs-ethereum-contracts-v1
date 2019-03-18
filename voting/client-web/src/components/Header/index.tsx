@@ -25,7 +25,7 @@ const styles = theme => ({
 
 const Header = ({ classes }) => {
   return (
-    <AppBar position="fixed" className={classes.appBar}>
+    <AppBar position="fixed" className={classes.appBar} data-testid="header">
       <Toolbar>
         <Link to="/">
           <img className={classes.logo} src={logo} alt="Orbs" />
@@ -41,7 +41,7 @@ const Header = ({ classes }) => {
               GUARDIANS
             </Typography>
           </Link>
-          <Link to="/" className={classes.navItem}>
+          <Link to="/validator" className={classes.navItem}>
             <Typography variant="h6" color="secondary" noWrap>
               VALIDATORS
             </Typography>

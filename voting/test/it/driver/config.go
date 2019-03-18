@@ -28,6 +28,9 @@ type Config struct {
 
 func (config *Config) Validate(isDeploy bool) error {
 	if !isDeploy {
+		if config.OrbsVotingContractName == "" {
+			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "OrbsVotingContractName")
+		}
 		if config.EthereumErc20Address == "" {
 			return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "EthereumErc20Address")
 		}

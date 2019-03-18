@@ -12,26 +12,51 @@ import (
 )
 
 func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapter {
+	ganacheUrl, envOverride := os.LookupEnv("GANACHE_HOST")
+	if envOverride == false {
+		ganacheUrl = "http://127.0.0.1:7545"
+	}
+
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ganache",
-		networkUrl:  "http://127.0.0.1:7545",
+		networkUrl:  ganacheUrl,
 		startBlock:  0,
 		stakeFactor: stakeFactor,
 	}
 }
 
 func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapter {
+	ropstenUrl, foundUrl := os.LookupEnv("ROPSTEN_URL")
+	if foundUrl == false {
+		panic("Please set ROPSTEN_URL")
+	}
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
 		network:     "ropsten",
-		networkUrl:  "http://127.0.0.1:7545",
-		startBlock:  400000,
+		networkUrl:  ropstenUrl,
+		startBlock:  5196956,
 		stakeFactor: stakeFactor,
 	}
 }
+
+// MAINNET CONFIG // TODO move all configurations to incoming config and unite all three constructors
+//func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapter {
+//	ropstenUrl, foundUrl := os.LookupEnv("MAINNET_URL")
+//	if foundUrl == false {
+//		panic("Please set MAINNET_URL")
+//	}
+//	return &truffleAdapter{
+//		debug:       config.DebugLogs,
+//		projectPath: ".",
+//		network:     "mainnet",
+//		networkUrl:  ropstenUrl,
+//		startBlock:  7374356,
+//		stakeFactor: stakeFactor,
+//	}
+//}
 
 type truffleAdapter struct {
 	debug       bool
@@ -63,6 +88,10 @@ func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
 	ta.run("exec ./truffle-scripts/topUpEther.js",
 		"ACCOUNT_INDEXES_ON_ETHEREUM="+string(accountIndexesJson),
 	)
+}
+
+func (ta *truffleAdapter) PrintBalances() {
+	ta.run("exec ./truffle-scripts/printTotalBalance.js")
 }
 
 func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
@@ -100,12 +129,6 @@ func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes 
 		stakesData[stake.Index] = ta.fromEthereumToken(n)
 	}
 	return stakesData
-	//response := make([]int, len(out.Balances))
-	//for i, v := range out.Balances {
-	//	n, _ := strconv.ParseUint(v, 16, 32)
-	//	response[i] = ta.fromEthereumToken(n)
-	//}
-	//return response
 }
 
 func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
@@ -232,6 +255,14 @@ func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardian
 	)
 }
 
+func (ta *truffleAdapter) ResignGuardians(ethereumGuardiansAddress string, guardians []int) {
+	out, _ := json.Marshal(guardians)
+	ta.run("exec ./truffle-scripts/resignGuardians.js",
+		"GUARDIANS_CONTRACT_ADDRESS="+ethereumGuardiansAddress,
+		"GUARDIAN_ACCOUNT_INDEXES_ON_ETHEREUM="+string(out),
+	)
+}
+
 func (ta *truffleAdapter) WaitForBlock(blockNumber int) {
 	if ta.network == "ganache" {
 		blocksToMine := blockNumber - ta.GetCurrentBlock()
@@ -252,6 +283,27 @@ func (ta *truffleAdapter) WaitForFinality() {
 }
 
 func (ta *truffleAdapter) run(args string, env ...string) []byte {
+	var lastErr error
+	for i := 0; i < 3; i++ { // retry loop
+
+		out, err := ta._run(args, env...) // 1 attempt
+		if err != nil {
+			lastErr = err
+
+			fmt.Printf("\nError in attempt #%d. (error: %s) \n\n", i, err)
+
+			time.Sleep(5 * time.Second)
+			continue
+		}
+
+		// success
+		return out
+
+	}
+	panic(lastErr)
+}
+
+func (ta *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	args += " --network " + ta.network
 	if ta.debug {
 		fmt.Println("\n  ### RUNNING: truffle " + args)
@@ -276,7 +328,12 @@ func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	}
 	// remove first line of output (Using network...)
 	index := bytes.IndexRune(out, '\n')
-	return out[index:]
+
+	if index == -1 {
+		return nil, fmt.Errorf("failed to find fist linefeed in output: %s", string(out))
+	}
+
+	return out[index:], nil
 }
 
 func (ta *truffleAdapter) fromEthereumToken(tokenValue uint64) int {
@@ -288,9 +345,5 @@ func (ta *truffleAdapter) toEthereumToken(testValue int) uint64 {
 }
 
 func (ta *truffleAdapter) GetConnectionUrl() string {
-	ethereumUrl, result := os.LookupEnv("GANACHE_HOST")
-	if result == false {
-		return ta.networkUrl
-	}
-	return ethereumUrl
+	return ta.networkUrl
 }

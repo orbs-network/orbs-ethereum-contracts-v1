@@ -1,13 +1,13 @@
-import StakeholdersDriver from './driver';
+import DelegatorsDriver from './driver';
 import { generateGuardiansData } from './fixtures';
-import { waitForElement, cleanup } from 'react-testing-library';
+import { waitForElement, cleanup, fireEvent } from 'react-testing-library';
 
-describe('Stakeholders Page', () => {
-  let guardiansData, driver: StakeholdersDriver;
+describe('Delegators Page', () => {
+  let guardiansData, driver: DelegatorsDriver;
 
   beforeEach(() => {
     guardiansData = generateGuardiansData();
-    driver = new StakeholdersDriver(guardiansData);
+    driver = new DelegatorsDriver(guardiansData);
   });
 
   afterEach(cleanup);
@@ -47,5 +47,27 @@ describe('Stakeholders Page', () => {
 
     await getByTestId('delegate-button').click();
     expect(delegateSpy).toHaveBeenCalledWith(firstAddress);
+  });
+
+  it('should be able to delegate manually', async () => {
+    const delegateSpy = jest.spyOn(driver.apiService, 'delegate');
+    const address = '0xa8F0f2A5D6E3799D5a0Bed1d1B3C61d21B163EFD';
+
+    const { getByTestId } = driver.render();
+    const guardianList = getByTestId('guardians-list');
+    await waitForElement(() => guardianList.children.length);
+
+    getByTestId(`open-manual-delegation-dialog`).click();
+
+    await waitForElement(() => getByTestId('manual-delegation-dialog'));
+
+    fireEvent.change(
+      getByTestId('delegate-address-field').querySelector('input')!,
+      { target: { value: address } }
+    );
+
+    await getByTestId('delegate-button').click();
+
+    expect(delegateSpy).toHaveBeenCalledWith(address);
   });
 });

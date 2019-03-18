@@ -58,7 +58,9 @@ Proceed to *Choose Address*.
 The address you choose will be the Validator's identification for voting later on.
 ![](../instructions/enroll_validator_6.png)
 Make sure the account has a positive Ether balance for transaction fees. Then click *Unlock*.
-1. Adjust the *Gas Limit* as required. `500,000` should be more than enough (at the time this is being written a successful registration uses ~174000 Gas)
+1. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
+`500,000` should be more than enough (at the time this is being written a successful registration uses 
+~174000 gas). You will not be charged for unused gas.
 ![](../instructions/enroll_validator_7.png)
 Click *Write*, then *Sign Transaction* 
 ![](../instructions/enroll_validator_8.png)
