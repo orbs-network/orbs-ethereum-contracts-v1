@@ -1,6 +1,6 @@
 ## Guardian Registration
 In order to participate in the voting, a Guardian must first register. 
-An Orbs Guardian is identified and delegated to by her Ethereum address. 
+An Orbs Guardian is identified and delegated to by an Ethereum address. 
 
 This document walks you through the registration process of Guardians using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
@@ -13,7 +13,7 @@ Note: A Guardian may update her registration data at any time or leave the regis
 
 ### Registration pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)
- - A wallet setup with your Guardian's Ethereum account keys with a positive Ether balance for fees
+ - A wallet setup with your Guardian's Ethereum account keys with a positive Ether balance for fees (transaction and deposit)
  - ABI and contract address available on Etherscan. For example, on Ropsten testnet the contract may be found [here][1] 
  - 1 Ether deposit required to resgister as a Guardian
  - Registration data
@@ -30,7 +30,7 @@ in the test box labeled *ABI / JSON Interface*.
 ![](../instructions/enroll_guardian_2.png)
 1. Click *Access*.
    * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
-1. Select `register` in the drop down list *Read / Write Contract*
+1. Select `register` in the drop-down list *Read / Write Contract*
 ![](../instructions/enroll_guardian_3.png)
 The function parameters for the `register` call will appear in the form.
 1. Fill the fields labeled `name` and `website` 
@@ -47,11 +47,10 @@ Click *Unlock*
 1. After unlocking an account, a new field labeled *Value* will appear after the website entry field (see below).
 Enter `1` in the *Value* field. This will send 1 Ether with your registration request as a deposit. `OrbsGuardian` contract
 will refund you the deposit if you later request to unregister.
-A 1 Ether deposit is required for registration. You may not send more than exactly 1 Ether.
+**Excatly** 1 Ether deposit is required for registration. You may not send more or less than exactly 1 Ether - it will fail the registration process.
 ![](../instructions/enroll_guardian_7.png)
-1. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
-`500,000` should be more than enough (at the time this is being written a successful registration uses 
-~115000 gas). You will not be charged for unused gas.
+1. Uncheck *Automatically Calculate Gas Limit* to avoid miscalculation by the wallet software and adjust the *Gas Limit* as required. `500,000` should be more than enough (at the time this is being written a successful registration uses 
+~115000 gas). You will not be charged for unused gas. Also adjust the *Gas Price* to something that will get the transaction processed in a timely manner.
 ![](../instructions/enroll_guardian_8.png)
 Click *Write* 
 ![](../instructions/enroll_guardian_9.png)
@@ -77,7 +76,6 @@ With sufficient block confirmations.
 ##### Notes
 * The contract does not enforce uniqueness of name and website values between the different Guardians. Two Guardians may register with same name, or website url. It is up to the Delegators to vet their Guardians. 
 * To make changes to your registration repeat the process providing new values. A deposit is not required when re-registering. If you send a second deposit the transaction will revert.
-* To to be removed from the Guardians list, use the leave() function.
+* To be removed from the Guardians list, use the leave() function.
   * Upon leave() the 1 Ether deposit is transferred back to the Guardian address.
- 
 
