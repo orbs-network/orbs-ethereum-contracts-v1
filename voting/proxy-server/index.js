@@ -2,6 +2,7 @@ const Web3 = require('web3');
 const cors = require('cors');
 const express = require('express');
 const guardiansApiFactory = require('./api/guardians');
+const rewardsApiFactory = require('./api/rewards');
 const validatorsApiFactory = require('./api/validators');
 const electedValidatorsApiFactory = require('./api/elected-validators');
 const Orbs = require('orbs-client-sdk');
@@ -36,5 +37,6 @@ app.get('/is_alive', (req, res) => res.sendStatus(200));
 app.use('/api', guardiansApiFactory(web3, orbsAccount, orbsClient));
 app.use('/api', electedValidatorsApiFactory());
 app.use('/api', validatorsApiFactory(web3));
+app.use('/api', rewardsApiFactory());
 
 app.listen(port, () => console.log(`Started on port ${port}!`));
