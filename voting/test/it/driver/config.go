@@ -5,27 +5,25 @@ import (
 )
 
 type Config struct {
-	DebugLogs                     bool
-	EthereumErc20Address          string
-	EthereumValidatorsAddress     string
-	EthereumValidatorsRegAddress  string
-	EthereumVotingAddress         string
-	EthereumGuardiansAddress      string
-	UserAccountOnOrbs             string
-	DelegatorsNumber              int
-	DelegatorStakeValues          []int
-	GuardiansAccounts             []int
-	ValidatorsAccounts            []int
-	ValidatorsOrbsAddresses       []string
-	ValidatorsOrbsIps             []string
-	SetupOverEthereumBlock        int
-	Transfers                     []*TransferEvent
-	Delegates                     []*DelegateEvent
-	Votes                         []*VoteEvent
-	OrbsVotingContractName        string
-	FirstElectionBlockNumber      int // zero to automatically determine after mirroring completes. positive value to enforce static value
-	OrbsAdapter                   OrbsAdapter
-	EthereumAdapter               EthereumAdapter
+	DebugLogs                    bool
+	EthereumErc20Address         string
+	EthereumValidatorsAddress    string
+	EthereumValidatorsRegAddress string
+	EthereumVotingAddress        string
+	EthereumGuardiansAddress     string
+	UserAccountOnOrbs            string
+	DelegatorsNumber             int
+	DelegatorStakeValues         []int
+	GuardiansAccounts            []int
+	ValidatorsAccounts           []int
+	ValidatorsOrbsAddresses      []string
+	ValidatorsOrbsIps            []string
+	SetupOverEthereumBlock       int
+	Transfers                    []*TransferEvent
+	Delegates                    []*DelegateEvent
+	Votes                        []*VoteEvent
+	OrbsVotingContractName       string
+	FirstElectionBlockNumber     int // zero to automatically determine after mirroring completes. positive value to enforce static value
 }
 
 func (config *Config) Validate(isDeploy bool) error {
