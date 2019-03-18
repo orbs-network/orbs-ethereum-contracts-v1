@@ -15,6 +15,10 @@ func getElectionPeriod() uint64 {
 	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
 }
 
+func getElectedValidators() []byte { // TODO remove pending issue https://github.com/orbs-network/orbs-network-go/issues/1063
+	return getElectedValidatorsOrbsAddress()
+}
+
 func getElectedValidatorsOrbsAddress() []byte {
 	index := getNumberOfElections()
 	return getElectedValidatorsOrbsAddressByIndex(index)
