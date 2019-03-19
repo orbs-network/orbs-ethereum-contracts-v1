@@ -1,21 +1,12 @@
 const express = require('express');
-const Orbs = require('orbs-client-sdk');
-const contractsInfo = require('../contracts-info');
-const guardiansContractJSON = require('../contracts/OrbsGuardians.json');
 
-const guardiansApiFactory = (web3, orbsClientService) => {
+const guardiansApiFactory = (ethereumClient, orbsClientService) => {
   const router = express.Router();
-
-  const guardiansContract = new web3.eth.Contract(
-    guardiansContractJSON.abi,
-    contractsInfo.EthereumGuardiansContract.address
-  );
 
   router.get('/guardians', async (req, res) => {
     try {
-      const guardians = await guardiansContract.methods
-        .getGuardians(0, 100)
-        .call();
+      const { offset, limit } = req.query;
+      const guardians = await ethereumClient.getGuardians(offset, limit);
       res.json(guardians);
     } catch (err) {
       res.status(500).send(err.toString());
@@ -25,9 +16,7 @@ const guardiansApiFactory = (web3, orbsClientService) => {
   router.get('/guardians/:address', async (req, res) => {
     try {
       const address = req.params['address'];
-      const data = await guardiansContract.methods
-        .getGuardianData(address)
-        .call();
+      const data = await ethereumClient.getGuardianData(address);
 
       const [votingWeightResults, totalStakeResults] = await Promise.all([
         orbsClientService.getGuardianVoteWeight(address),

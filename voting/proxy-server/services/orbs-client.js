@@ -44,6 +44,18 @@ class OrbsClientService {
     ]);
     return this.sendQuery(query);
   }
+
+  getValidatorStake(address) {
+    const query = this.buildQuery('getValidValidatorStake', [
+      Orbs.argAddress(address.toLowerCase())
+    ]);
+    return this.sendQuery(query);
+  }
+
+  getElectedValidators() {
+    const query = this.buildQuery('getElectedValidatorsEthereumAddress', []);
+    return this.sendQuery(query);
+  }
 }
 
 module.exports = {
