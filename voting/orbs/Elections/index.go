@@ -2,6 +2,10 @@ package elections_systemcontract
 
 import "math/big"
 
+// helpers for avoiding reliance on strings throughout the system
+const CONTRACT_NAME = "_Elections"
+const METHOD_GET_ELECTED_VALIDATORS = "getElectedValidatorsOrbsAddress"
+
 // parameters
 var DELEGATION_NAME = "Delegate"
 var DELEGATION_BY_TRANSFER_NAME = "Transfer"
