@@ -14,7 +14,7 @@ const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
   const getGuardianVoteWeight = async address => {
     const votingWeightQuery = orbsClient.createQuery(
       orbsAccount.publicKey,
-      'OrbsVoting_1552865801',
+      contractsInfo.OrbsVotingContract.name,
       'getGuardianVotingWeight',
       [Orbs.argAddress(address.toLowerCase())]
     );
@@ -25,7 +25,7 @@ const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
   const getTotalStake = async () => {
     const totalStakeQuery = orbsClient.createQuery(
       orbsAccount.publicKey,
-      'OrbsVoting_1552865801',
+      contractsInfo.OrbsVotingContract.name,
       'getTotalStake',
       []
     );

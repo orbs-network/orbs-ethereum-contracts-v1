@@ -10,5 +10,8 @@ module.exports = {
   },
   EthereumVotingContract: {
     address: '0x1d230A72130E7a09204d3017d9BBF13552BDDe0b'
+  },
+  OrbsVotingContract: {
+    name: 'OrbsVoting_1552865801'
   }
 };
