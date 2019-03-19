@@ -8,7 +8,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     struct ValidatorData {
         string name;
-        bytes ipAddress;
+        bytes4 ipAddress;
         string website;
         bytes20 orbsAddress;
         uint registeredOnBlock;
@@ -19,14 +19,12 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     mapping(address => ValidatorData) public validatorsData;
 
-    mapping(bytes32 => address) public lookupName;
-    mapping(bytes32 => address) public lookupUrl;
     mapping(bytes32 => address) public lookupIp;
     mapping(bytes20 => address) public lookupOrbsAddr;
 
     function register(
         string memory name,
-        bytes memory ipAddress,
+        bytes4 ipAddress,
         string memory website,
         bytes20 orbsAddress
     )
@@ -34,26 +32,12 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
-        require(ipAddress.length == 4, "Please pass an ip address represented as an array of exactly 4 bytes");
+        require(ipAddress != bytes4(0), "Please pass a valid ip address represented as an array of exactly 4 bytes");
         require(orbsAddress != bytes20(0), "Please provide a valid Orbs Address");
 
-        bytes32 nameHash = keccak256(bytes(name));
-        bytes32 ipHash   = keccak256(ipAddress);
-        bytes32 urlHash  = keccak256(bytes(website));
-
         require(
-            lookupName[nameHash] == address(0) ||
-            lookupName[nameHash] == msg.sender,
-                "Name is already in use by another validator"
-        );
-        require(
-            lookupUrl[urlHash] == address(0) ||
-            lookupUrl[urlHash] == msg.sender,
-                "URL is already in use by another validator"
-        );
-        require(
-            lookupIp[ipHash] == address(0) ||
-            lookupIp[ipHash] == msg.sender,
+            lookupIp[ipAddress] == address(0) ||
+            lookupIp[ipAddress] == msg.sender,
                 "IP Address is already in use by another validator"
         );
         require(
@@ -62,15 +46,11 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
                 "Orbs Address is already in use by another validator"
         );
 
-        lookupName[nameHash] = msg.sender;
-        lookupUrl[urlHash] = msg.sender;
-        lookupIp[ipHash] = msg.sender;
+        lookupIp[ipAddress] = msg.sender;
         lookupOrbsAddr[orbsAddress] = msg.sender;
 
-        uint registeredOnBlock;
-        if (validatorsData[msg.sender].registeredOnBlock != 0) {
-            registeredOnBlock = validatorsData[msg.sender].registeredOnBlock;
-        } else {
+        uint registeredOnBlock = validatorsData[msg.sender].registeredOnBlock;
+        if (registeredOnBlock == 0) {
             registeredOnBlock = block.number;
         }
 
@@ -90,9 +70,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
         ValidatorData storage data = validatorsData[msg.sender];
 
-        delete lookupName[keccak256(bytes(data.name))];
-        delete lookupUrl[keccak256(bytes(data.website))];
-        delete lookupIp[keccak256(data.ipAddress)];
+        delete lookupIp[data.ipAddress];
         delete lookupOrbsAddr[data.orbsAddress];
 
         delete validatorsData[msg.sender];
@@ -105,7 +83,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         view
         returns (
             string memory name,
-            bytes memory ipAddress,
+            bytes4 ipAddress,
             string memory website,
             bytes20 orbsAddress
         )

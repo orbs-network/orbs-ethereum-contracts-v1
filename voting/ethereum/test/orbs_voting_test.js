@@ -109,6 +109,25 @@ contract('Voting', accounts => {
         });
     });
 
+    describe('when calling the getCurrentDelegation(delegator) function', () => {
+        it('returns the last delegation made by delegator', async () => {
+            await driver.deployVoting();
+            const delegator = accounts[3];
+            const to = [1,2].map(i => numToAddress(i));
+
+            const readDelegation0 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation0, numToAddress(0), "current delegation should be zero before delegating");
+
+            await driver.OrbsVoting.delegate(to[0], {from: delegator});
+            const readDelegation1 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation1, to[0], "current delegation should be the last delegated to after first delegation");
+
+            await driver.OrbsVoting.delegate(to[1], {from: delegator});
+            const readDelegation2 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation2, to[1], "current delegation should be the last delegated to after additional delegations");
+        });
+    });
+
     describe('when calling the getLastVote() function', () => {
         it('returns the last vote made by a voter', async () => {
             await driver.deployVoting();

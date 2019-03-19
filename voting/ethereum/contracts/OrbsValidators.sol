@@ -38,7 +38,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
                 "Can't add more members!"
         );
 
-        require(!isApproved(validator), "Address must not be already a member");
+        require(!isApproved(validator), "Address must not be already approved");
 
         approvedValidators.push(validator);
         approvalBlockHeight[validator] = block.number;
@@ -50,7 +50,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         for (uint i = 0; i < approvedLength; ++i) {
             if (approvedValidators[i] == validator) {
                 approvedValidators[i] = approvedValidators[approvedLength - 1];
-                delete approvedValidators[i];
+                delete approvedValidators[approvedLength - 1];
                 approvedValidators.length--;
                 delete approvalBlockHeight[validator];
 
@@ -99,22 +99,16 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         ipAddresses = new bytes4[](validatorsLength);
 
         for (uint i = 0; i < validatorsLength; i++) {
-            bytes memory ip;
+            bytes4 ip;
             bytes20 orbsAddr;
             (,ip,,orbsAddr) = registry.getValidatorData(address(validators[i]));
             nodeAddresses[i] = orbsAddr;
-            ipAddresses[i] = ipAddress(ip);
+            ipAddresses[i] = ip;
         }
     }
 
     function isApproved(address m) internal view returns (bool) {
-        uint approvedLength = approvedValidators.length;
-        for (uint i = 0; i < approvedLength; i++) {
-            if (approvedValidators[i] == m) {
-                return true;
-            }
-        }
-        return false;
+        return approvalBlockHeight[m] > 0;
     }
 
     function countRegisteredValidators() internal view returns (uint) {
@@ -126,20 +120,5 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
             }
         }
         return registeredCount;
-    }
-
-    function ipAddress(bytes memory inBytes)
-        internal
-        pure
-        returns (bytes4)
-    {
-        bytes4 result;
-        uint256 bytesAvailable = inBytes.length < 4 ? inBytes.length : 4;
-        for (uint256 i = 0; i < bytesAvailable; i++) {
-            bytes4 shifter = inBytes[i];
-            shifter = shifter >> 8 * i;
-            result = result | shifter;
-        }
-        return result;
     }
 }

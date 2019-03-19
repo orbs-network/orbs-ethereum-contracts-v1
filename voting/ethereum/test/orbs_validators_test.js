@@ -142,6 +142,58 @@ contract('OrbsValidators', accounts => {
             const blockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
             assert.equal(blockHeight, 0, "expected addition block height to be cleared after removal");
         });
+
+        it('removes only the correct validator', async () => {
+            await driver.deployValidatorsWithRegistry(100);
+
+            await driver.addValidatorWithData(accounts[1]); // add validator and set data
+            await driver.addValidatorWithData(accounts[2]); // add validator and set data
+            await driver.addValidatorWithData(accounts[3]); // add validator and set data
+            await driver.addValidatorWithData(accounts[4]); // add validator and set data
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsBeforeRemove = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsBeforeRemove, [accounts[1], accounts[2], accounts[3], accounts[4]]);
+
+            // remove in the middle
+            const r1 = await driver.OrbsValidators.remove(accounts[2]);
+            assert.equal(r1.logs[0].event, "ValidatorRemoved");
+
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsAfterRemove1 = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsAfterRemove1, [accounts[1], accounts[4], accounts[3]]);
+
+            // remove first
+            const r2 = await driver.OrbsValidators.remove(accounts[1]);
+            assert.equal(r2.logs[0].event, "ValidatorRemoved");
+
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsAfterRemove2 = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsAfterRemove2, [accounts[3], accounts[4]]);
+
+            // remove last
+            const r3 = await driver.OrbsValidators.remove(accounts[4]);
+            assert.equal(r3.logs[0].event, "ValidatorRemoved");
+
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsAfterRemove3 = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsAfterRemove3, [accounts[3]]);
+        });
     });
 
     describe('when getNetworkTopology() is called', () => {

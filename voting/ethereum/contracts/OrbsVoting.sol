@@ -30,9 +30,9 @@ contract OrbsVoting is IOrbsVoting {
     function voteOut(address[] memory validators) public {
         require(validators.length <= maxVoteOutNodes, "Validators list is over the allowed length");
 
-        uint nodesLength = validators.length;
-        bytes20[] memory addressesAsBytes20 = new bytes20[](nodesLength);
-        for (uint i=0; i < nodesLength; i++) {
+        uint validatorsLength = validators.length;
+        bytes20[] memory addressesAsBytes20 = new bytes20[](validatorsLength);
+        for (uint i=0; i < validatorsLength; i++) {
             require(validators[i] != address(0), "All validator addresses must be non 0");
             addressesAsBytes20[i] = bytes20(validators[i]);
         }
@@ -65,5 +65,13 @@ contract OrbsVoting is IOrbsVoting {
 
         blockHeight = lastVote.blockHeight;
         validators = lastVote.validators;
+    }
+
+    function getCurrentDelegation(address delegator)
+    public
+    view
+    returns (address to)
+    {
+        return lastDelegations[delegator];
     }
 }

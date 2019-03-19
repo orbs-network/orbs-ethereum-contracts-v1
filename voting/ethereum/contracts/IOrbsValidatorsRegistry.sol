@@ -7,7 +7,7 @@ interface IOrbsValidatorsRegistry {
 
     function register(
         string calldata name,
-        bytes calldata ipAddress,
+        bytes4 ipAddress,
         string calldata website,
         bytes20 orbsAddress
     )
@@ -18,7 +18,7 @@ interface IOrbsValidatorsRegistry {
         view
         returns (
             string memory name,
-            bytes memory ipAddress,
+            bytes4 ipAddress,
             string memory website,
             bytes20 orbsAddress
         );
