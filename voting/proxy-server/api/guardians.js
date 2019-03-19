@@ -1,14 +1,14 @@
 const express = require('express');
 const Orbs = require('orbs-client-sdk');
-const OrbsContractsInfo = require('../contracts-info');
-const OrbsGuardiansContractJSON = require('../contracts/OrbsGuardians.json');
+const contractsInfo = require('../contracts-info');
+const guardiansContractJSON = require('../contracts/OrbsGuardians.json');
 
 const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
   const router = express.Router();
 
   const guardiansContract = new web3.eth.Contract(
-    OrbsGuardiansContractJSON.abi,
-    OrbsContractsInfo.OrbsGuardians.address
+    guardiansContractJSON.abi,
+    contractsInfo.EthereumGuardiansContract.address
   );
 
   const getGuardianVoteWeight = async address => {
