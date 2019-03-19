@@ -3,8 +3,7 @@ let verbose = false;
 let maxNumberOfProcess  = process.env.MAXIMUM_NUMBER_OF_TRIES;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const gamma = require('./gamma-calls');
 
 function validateInput() {
     if (!orbsEnvironment) {
@@ -34,14 +33,7 @@ async function processCall() {
     let isDone = 0;
     let numberOfCalls = 0;
     do {
-        let command = `gamma-cli send-tx ./gammacli-jsons/process-voting.json -signer user1 -name ${orbsVotingContractName} -env ${orbsEnvironment}`;
-        const {stdout} = await exec(command);
-        let result = JSON.parse(stdout);
-
-        if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS") || result.OutputArguments.length === 0 ) {
-            throw new Error(`problem processing votes result:\n${stdout}`);
-        }
-
+        let result = await gamma.sendTransaction('process-voting.json', [], orbsVotingContractName, orbsEnvironment);
         isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
 
         if (verbose && numberOfCalls !== 0 && (numberOfCalls % 10) === 0) {
@@ -60,13 +52,39 @@ async function processCall() {
 
 }
 
+async function getProcessingStartBlockNumber() {
+    let blockNumber = 0;
+    try {
+        let result = await gamma.runQuery('get-processing-start-block.json', orbsVotingContractName, orbsEnvironment);
+        blockNumber = parseInt(result.OutputArguments[0].Value)
+    } catch (e){
+        console.log(`Could not get processing start block number. Error OUTPUT:\n` + e);
+    }
+    return blockNumber;
+}
+
+async function isProcessingAllowed() {
+    let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
+    let processStartBlockNumber = await getProcessingStartBlockNumber();
+
+    if (currentBlockNumber >= processStartBlockNumber) {
+        return true;
+    } else {
+        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block number: ${processStartBlockNumber}.
+         Processing is not needed please try again later!!\n`);
+        return false;
+    }
+}
 
 async function main() {
     validateInput();
     if (verbose) {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
-    await processCall();
+
+    if (isProcessingAllowed()) {
+        await processCall();
+    }
 }
 
 main()
