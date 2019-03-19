@@ -34,7 +34,7 @@ app.use(cors(corsOptions));
 app.get('/is_alive', (req, res) => res.sendStatus(200));
 app.use('/api', guardiansApiFactory(web3, orbsClientService));
 app.use('/api', electedValidatorsApiFactory());
-app.use('/api', validatorsApiFactory(web3));
+app.use('/api', validatorsApiFactory(web3, orbsClientService));
 app.use('/api', rewardsApiFactory());
 app.use('/api', stakeApiFactory(orbsClientService));
 

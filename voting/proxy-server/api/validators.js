@@ -3,7 +3,7 @@ const contractsInfo = require('../contracts-info');
 const validatorsContractJSON = require('../contracts/OrbsValidators.json');
 const validatorsRegistryContractJSON = require('../contracts/OrbsValidatorsRegistry.json');
 
-const validatorsApiFactory = web3 => {
+const validatorsApiFactory = (web3, orbsClientService) => {
   const router = express.Router();
 
   const validatorsContract = new web3.eth.Contract(
@@ -23,9 +23,21 @@ const validatorsApiFactory = web3 => {
 
   router.get('/validators/:address', async (req, res) => {
     try {
+      const address = req.params['address'];
       const data = await validatorsRegistryContract.methods
-        .getValidatorData(req.params['address'])
+        .getValidatorData(address)
         .call();
+
+      const [validatorVotesResults, totalStakeResults] = await Promise.all([
+        orbsClientService.getValidatorVotes(address),
+        orbsClientService.getTotalStake()
+      ]);
+
+      data['votesAgainst'] = (
+        (100n * validatorVotesResults) /
+        totalStakeResults
+      ).toString();
+
       res.json(data);
     } catch (err) {
       console.log(err);

@@ -60,7 +60,7 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
                 {validators[address].url}
               </Link>
             </TableCell>
-            <TableCell>0</TableCell>
+            <TableCell>{validators[address].votesAgainst}</TableCell>
           </TableRow>
         ))}
       </TableBody>
