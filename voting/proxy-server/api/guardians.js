@@ -3,7 +3,7 @@ const Orbs = require('orbs-client-sdk');
 const contractsInfo = require('../contracts-info');
 const guardiansContractJSON = require('../contracts/OrbsGuardians.json');
 
-const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
+const guardiansApiFactory = (web3, orbsClientService) => {
   const router = express.Router();
 
   const guardiansContract = new web3.eth.Contract(
@@ -11,43 +11,12 @@ const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
     contractsInfo.EthereumGuardiansContract.address
   );
 
-  const getGuardianVoteWeight = async address => {
-    const votingWeightQuery = orbsClient.createQuery(
-      orbsAccount.publicKey,
-      contractsInfo.OrbsVotingContract.name,
-      'getGuardianVotingWeight',
-      [Orbs.argAddress(address.toLowerCase())]
-    );
-    const votingWeightResults = await orbsClient.sendQuery(votingWeightQuery);
-    return votingWeightResults.outputArguments[0].value;
-  };
-
-  const getTotalStake = async () => {
-    const totalStakeQuery = orbsClient.createQuery(
-      orbsAccount.publicKey,
-      contractsInfo.OrbsVotingContract.name,
-      'getTotalStake',
-      []
-    );
-    const totalStakeResults = await orbsClient.sendQuery(totalStakeQuery);
-    return totalStakeResults.outputArguments[0].value;
-  };
-
   router.get('/guardians', async (req, res) => {
     try {
       const guardians = await guardiansContract.methods
         .getGuardians(0, 100)
         .call();
       res.json(guardians);
-    } catch (err) {
-      res.status(500).send(err.toString());
-    }
-  });
-
-  router.get('/guardians/stake', async (req, res) => {
-    try {
-      const totalStake = await getTotalStake();
-      res.send(totalStake.toString());
     } catch (err) {
       res.status(500).send(err.toString());
     }
@@ -61,8 +30,8 @@ const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
         .call();
 
       const [votingWeightResults, totalStakeResults] = await Promise.all([
-        getGuardianVoteWeight(address),
-        getTotalStake()
+        orbsClientService.getGuardianVoteWeight(address),
+        orbsClientService.getTotalStake()
       ]);
 
       data['stake'] = (votingWeightResults / totalStakeResults).toString();
