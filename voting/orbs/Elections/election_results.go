@@ -189,9 +189,9 @@ func getCurrentEthereumBlockNumber() uint64 {
 }
 
 func getProcessingStartBlockNumber() uint64 {
-	return getCurrentElectionBlockNumber() + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
+	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 func getMirroringEndBlockNumber() uint64 {
-	return getCurrentElectionBlockNumber() + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
+	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }

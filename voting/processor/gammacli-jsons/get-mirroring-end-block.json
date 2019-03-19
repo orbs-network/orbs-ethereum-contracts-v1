@@ -1,0 +1,6 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "getMirroringEndBlockNumber",
+    "Arguments": [
+    ]
+}

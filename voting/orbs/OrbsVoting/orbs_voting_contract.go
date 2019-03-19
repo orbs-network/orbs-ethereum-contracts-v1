@@ -186,7 +186,7 @@ func getCurrentElectionBlockNumber() uint64 {
 }
 
 func getNextElectionBlockNumber() uint64 {
-	return safeuint64.Add(_getCurrentElectionBlockNumber(), getElectionPeriod())
+	return safeuint64.Add(getCurrentElectionBlockNumber(), getElectionPeriod())
 }
 
 func getCurrentEthereumBlockNumber() uint64 {
@@ -194,11 +194,11 @@ func getCurrentEthereumBlockNumber() uint64 {
 }
 
 func getProcessingStartBlockNumber() uint64 {
-	return _getCurrentElectionBlockNumber() + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
+	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 func getMirroringEndBlockNumber() uint64 {
-	return _getCurrentElectionBlockNumber() + VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS
+	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 /*****
@@ -315,8 +315,8 @@ func _addressSliceToArray(a []byte) [20]byte {
 	return array
 }
 
-func _isAfterElectionMirroring(BlockNumber uint64) bool {
-	return BlockNumber > safeuint64.Add(_getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
+func _isAfterElectionMirroring(blockNumber uint64) bool {
+	return blockNumber > getMirroringEndBlockNumber()
 }
 
 func _mirrorPeriodValidator() {
