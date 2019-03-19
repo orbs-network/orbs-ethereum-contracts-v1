@@ -28,6 +28,11 @@ export class RemoteService {
       .get(`${remoteAddress}/validators/${address}`)
       .then(res => res.data);
   }
+  getElectedValidatorData(address: string) {
+    return axios
+      .get(`${remoteAddress}/validators/elected/${address}`)
+      .then(res => res.data);
+  }
   getRewards(address: string) {
     return axios
       .get(`${remoteAddress}/rewards/${address}`)

@@ -14,31 +14,30 @@ const ValidatorsList = ({ validators, classes }) => {
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
-          <TableCell>Address</TableCell>
+          <TableCell>Ethereum Address</TableCell>
+          <TableCell>Orbs Address</TableCell>
           <TableCell>Stake</TableCell>
           <TableCell>Total Reward</TableCell>
           <TableCell>Participation Reward</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="validators-list">
-        {validators.map(validator => (
-          <TableRow
-            data-testid={`validator-${validator.address}`}
-            key={validator.address}
-          >
+        {Object.keys(validators).map(id => (
+          <TableRow data-testid={`validator-${id}`} key={id}>
             <TableCell
               component="th"
               scope="row"
-              data-testid={`validator-${validator.address}-name`}
+              data-testid={`validator-${id}-name`}
             >
-              {validator.name}
+              {validators[id].name}
             </TableCell>
-            <TableCell data-testid={`validator-${validator.address}-address`}>
-              {validator.address}
+            <TableCell data-testid={`validator-${id}-address`}>{id}</TableCell>
+            <TableCell data-testid={`validator-${id}-orbs-address`}>
+              {validators[id].orbsAddress}
             </TableCell>
-            <TableCell>{validator.stake}</TableCell>
-            <TableCell>{validator.totalReward}</TableCell>
-            <TableCell>{validator.participationReward}</TableCell>
+            <TableCell>{validators[id].stake}</TableCell>
+            <TableCell>-</TableCell>
+            <TableCell>-</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -8,11 +8,23 @@ import { Link } from 'react-router-dom';
 const styles = () => ({});
 
 const ValidatorsPage = ({ classes, apiService }) => {
-  const [validators, setValidators] = useState([]);
+  const [validators, setValidators] = useState({});
 
   const fetchElectedValidators = async () => {
-    const list = await apiService.getElectedValidators();
-    setValidators(list);
+    const ids = await apiService.getElectedValidators();
+    const list = await Promise.all(
+      ids.map(address => apiService.getElectedValidatorData(address))
+    );
+    const validators = ids.reduce((acc, currId, idx) => {
+      acc[currId] = {
+        name: list[idx]['name'],
+        address: currId,
+        orbsAddress: list[idx]['orbsAddress'],
+        stake: list[idx]['stake']
+      };
+      return acc;
+    }, {});
+    setValidators(validators);
   };
 
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;
