@@ -13,13 +13,13 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     uint public constant VERSION = 1;
 
     // Maximum number of the federation members.
-    uint public constant MAX_VALIDATOR_LIMIT = 100;
+    uint internal constant MAX_VALIDATOR_LIMIT = 100;
     uint public validatorLimit;
 
-    IOrbsValidatorsRegistry public registry;
+    IOrbsValidatorsRegistry public orbsValidatorsRegistry;
 
-    address[] public approvedValidators;
-    mapping(address => uint) approvalBlockHeight;
+    address[] internal approvedValidators;
+    mapping(address => uint) internal approvalBlockHeight;
 
     constructor(address registry_, uint validatorLimit_) public {
         require(registry_ != address(0), "Registry contract address 0");
@@ -27,7 +27,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         require(validatorLimit_ <= MAX_VALIDATOR_LIMIT, "Limit is too high");
 
         validatorLimit = validatorLimit_;
-        registry = IOrbsValidatorsRegistry(registry_);
+        orbsValidatorsRegistry = IOrbsValidatorsRegistry(registry_);
     }
 
     function addValidator(address validator) public onlyOwner {
@@ -62,7 +62,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     }
 
     function isValidator(address validator) public view returns (bool) {
-        return isApproved(validator) && registry.isValidator(validator);
+        return isApproved(validator) && orbsValidatorsRegistry.isValidator(validator);
     }
 
     function getValidators() public view returns (bytes20[] memory) {
@@ -72,7 +72,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         uint pushAt = 0;
         uint approvedLength = approvedValidators.length;
         for (uint i = 0; i < approvedLength; i++) {
-            if (registry.isValidator(approvedValidators[i])) {
+            if (orbsValidatorsRegistry.isValidator(approvedValidators[i])) {
                 validators[pushAt] = bytes20(approvedValidators[i]);
                 pushAt++;
             }
@@ -101,7 +101,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         for (uint i = 0; i < validatorsLength; i++) {
             bytes4 ip;
             bytes20 orbsAddr;
-            (,ip,,orbsAddr,) = registry.getValidatorData(address(validators[i]));
+            (,ip,,orbsAddr,) = orbsValidatorsRegistry.getValidatorData(address(validators[i]));
             nodeAddresses[i] = orbsAddr;
             ipAddresses[i] = ip;
         }
@@ -115,7 +115,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         uint registeredCount = 0;
         uint approvedLength = approvedValidators.length;
         for (uint i = 0; i < approvedLength; i++) {
-            if (registry.isValidator(approvedValidators[i])) {
+            if (orbsValidatorsRegistry.isValidator(approvedValidators[i])) {
                 registeredCount++;
             }
         }

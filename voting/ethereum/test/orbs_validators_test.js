@@ -23,13 +23,16 @@ contract('OrbsValidators', accounts => {
 
     describe('when calling the addValidator() function', () => {
         it('should add the member to the list and emit event', async () => {
-            await driver.deployValidators(100);
+            await driver.deployRegistry();
+
+            const OrbsValidatorsStateView = artifacts.require('OrbsValidatorsStateView');
+            const stateView = await OrbsValidatorsStateView.new(driver.OrbsRegistry, 100);
 
             const validatorAddr  = numToAddress(1);
-            let r = await driver.OrbsValidators.addValidator(validatorAddr);
+            let r = await stateView.addValidator(validatorAddr);
             assert.equal(r.logs[0].event, "ValidatorAdded");
 
-            let member1 = await driver.OrbsValidators.approvedValidators(0);
+            let member1 = await stateView.getApprovedValidatorAt(0);
             assert.equal(member1, validatorAddr);
         });
 

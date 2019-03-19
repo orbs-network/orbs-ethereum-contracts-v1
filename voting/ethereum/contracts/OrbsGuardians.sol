@@ -23,8 +23,8 @@ contract OrbsGuardians is IOrbsGuardians {
 
     uint public registrationDeposit = 1 ether;
 
-    address[] public guardians;
-    mapping(address => GuardianData) public guardiansData;
+    address[] internal guardians;
+    mapping(address => GuardianData) internal guardiansData;
 
     constructor(uint registrationDeposit_) public {
         registrationDeposit = registrationDeposit_;

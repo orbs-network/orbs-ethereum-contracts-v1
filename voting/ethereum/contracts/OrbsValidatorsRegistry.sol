@@ -18,10 +18,10 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     uint public constant VERSION = 1;
 
-    mapping(address => ValidatorData) public validatorsData;
+    mapping(address => ValidatorData) internal validatorsData;
 
-    mapping(bytes32 => address) public lookupIp;
-    mapping(bytes20 => address) public lookupOrbsAddr;
+    mapping(bytes32 => address) public lookupByIp;
+    mapping(bytes20 => address) public lookupByOrbsAddr;
 
     function register(
         string memory name,
@@ -38,18 +38,18 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         require(orbsAddress != bytes20(0), "Please provide a valid Orbs Address");
 
         require(
-            lookupIp[ipAddress] == address(0) ||
-            lookupIp[ipAddress] == msg.sender,
+            lookupByIp[ipAddress] == address(0) ||
+            lookupByIp[ipAddress] == msg.sender,
                 "IP Address is already in use by another validator"
         );
         require(
-            lookupOrbsAddr[orbsAddress] == address(0) ||
-            lookupOrbsAddr[orbsAddress] == msg.sender,
+            lookupByOrbsAddr[orbsAddress] == address(0) ||
+            lookupByOrbsAddr[orbsAddress] == msg.sender,
                 "Orbs Address is already in use by another validator"
         );
 
-        lookupIp[ipAddress] = msg.sender;
-        lookupOrbsAddr[orbsAddress] = msg.sender;
+        lookupByIp[ipAddress] = msg.sender;
+        lookupByOrbsAddr[orbsAddress] = msg.sender;
 
         uint registeredOnBlock = validatorsData[msg.sender].registeredOnBlock;
         if (registeredOnBlock == 0) {
@@ -73,8 +73,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
         ValidatorData storage data = validatorsData[msg.sender];
 
-        delete lookupIp[data.ipAddress];
-        delete lookupOrbsAddr[data.orbsAddress];
+        delete lookupByIp[data.ipAddress];
+        delete lookupByOrbsAddr[data.orbsAddress];
 
         delete validatorsData[msg.sender];
 

@@ -13,22 +13,22 @@ contract OrbsVoting is IOrbsVoting {
     // The version of the current federation smart contract.
     uint public constant VERSION = 1;
 
-    uint voteCounter;
-    uint delegationCounter;
-    uint public maxVoteOutNodes;
+    uint internal voteCounter;
+    uint internal delegationCounter;
+    uint public maxVoteOutLength;
 
-    mapping(address => VotingRecord) lastVotes;
-    mapping(address => address) lastDelegations;
+    mapping(address => VotingRecord) internal lastVotes;
+    mapping(address => address) internal lastDelegations;
 
 
-    constructor(uint maxVoteOutNodes_) public {
+    constructor(uint maxVoteOutLength_) public {
         voteCounter = 0;
         delegationCounter = 0;
-        maxVoteOutNodes = maxVoteOutNodes_;
+        maxVoteOutLength = maxVoteOutLength_;
     }
 
     function voteOut(address[] memory validators) public {
-        require(validators.length <= maxVoteOutNodes, "Validators list is over the allowed length");
+        require(validators.length <= maxVoteOutLength, "Validators list is over the allowed length");
 
         uint validatorsLength = validators.length;
         bytes20[] memory addressesAsBytes20 = new bytes20[](validatorsLength);
