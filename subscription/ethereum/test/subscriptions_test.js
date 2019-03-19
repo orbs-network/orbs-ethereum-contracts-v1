@@ -1,16 +1,17 @@
 const {BigNumber} = require('bignumber.js');
-const {moment} = require('moment');
+const moment = require('moment');
 const {expectRevert} = require('./assertExtensions');
 
-const {time} = require('./time');
+const time = require('./time');
 
 const TEST_ACCOUNTS = require('./accounts.json');
 
 const TEST_ACCOUNTS_ADDRESSES = TEST_ACCOUNTS.map(account => account.address);
 
 const OrbsTokenMock = artifacts.require('./OrbsTokenMock.sol');
-const SubscriptionManagerMock = artifacts.require('./SubscriptionManagerMock.sol');
+const OrbsSubscriptionsMock = artifacts.require('./OrbsSubscriptionsMock.sol');
 const OrbsValidatorsMock = artifacts.require('./OrbsValidatorsMock.sol');
+const DateTime = artifacts.require('./DateTime');
 
 contract('SubscriptionManager', (accounts) => {
   let token;
@@ -102,42 +103,45 @@ contract('SubscriptionManager', (accounts) => {
 
   beforeEach(async () => {
     token = await OrbsTokenMock.new();
+
+    const dateTime = await DateTime.new();
+    await OrbsSubscriptionsMock.link(DateTime, dateTime.address);
   });
 
   describe('construction', async () => {
-    let federation;
+    let validators;
     const minimalMonthlySubscription = 100;
 
     beforeEach(async () => {
       const federationMembers = accounts.slice(7, 10);
-      federation = await OrbsValidatorsMock.new(federationMembers, { from: owner });
+      validators = await OrbsValidatorsMock.new(federationMembers, { from: owner });
     });
 
     it('should not allow to initialize with a 0x0 token', async () => {
-      await expectRevert(SubscriptionManagerMock.new(ZERO_ADDRESS, federation.address, minimalMonthlySubscription,
+      await expectRevert(OrbsSubscriptionsMock.new(ZERO_ADDRESS, validators.address, minimalMonthlySubscription,
         { from: owner }));
     });
 
-    it('should not allow to initialize with a 0x0 federation', async () => {
-      await expectRevert(SubscriptionManagerMock.new(token.address, ZERO_ADDRESS, minimalMonthlySubscription,
+    it('should not allow to initialize with a 0x0 validators', async () => {
+      await expectRevert(OrbsSubscriptionsMock.new(token.address, ZERO_ADDRESS, minimalMonthlySubscription,
         { from: owner }));
     });
 
     it('should not allow to initialize with a 0 minimal subscription allocation', async () => {
-      await expectRevert(SubscriptionManagerMock.new(token.address, federation.address, 0, { from: owner }));
+      await expectRevert(OrbsSubscriptionsMock.new(token.address, validators.address, 0, { from: owner }));
     });
 
     it('should correctly initialize fields', async () => {
-      const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
+      const manager = await OrbsSubscriptionsMock.new(token.address, validators.address, minimalMonthlySubscription,
         { from: owner });
 
       expect(await manager.orbs.call()).to.eql(token.address);
-      expect(await manager.federation.call()).to.eql(federation.address);
+      expect(await manager.validators.call()).to.eql(validators.address);
       expect((await manager.minimalMonthlySubscription.call()).toNumber()).to.be.equal(minimalMonthlySubscription);
     });
 
     it('should report version', async () => {
-      const manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
+      const manager = await OrbsSubscriptionsMock.new(token.address, validators.address, minimalMonthlySubscription,
         { from: owner });
 
       expect((await manager.VERSION.call()).toNumber()).to.be.equal(VERSION);
@@ -155,13 +159,13 @@ contract('SubscriptionManager', (accounts) => {
       { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(30, 50) },
       { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS) },
     ].forEach((spec) => {
-      let federation;
+      let validators;
 
       beforeEach(async () => {
-        federation = await OrbsValidatorsMock.new(spec.federationMembers, { from: owner });
+        validators = await OrbsValidatorsMock.new(spec.federationMembers, { from: owner });
       });
 
-      context(`with ${spec.federationMembers.length} federation members`, async () => {
+      context(`with ${spec.federationMembers.length} validators `, async () => {
         const minimalMonthlySubscription = 100;
         const initialValue = 100000000;
         const user1 = accounts[1];
@@ -207,7 +211,7 @@ contract('SubscriptionManager', (accounts) => {
           await token.assign(user1, initialValue);
           await token.assign(user2, initialValue);
 
-          manager = await SubscriptionManagerMock.new(token.address, federation.address, minimalMonthlySubscription,
+          manager = await OrbsSubscriptionsMock.new(token.address, validators.address, minimalMonthlySubscription,
             { from: owner });
         });
 
@@ -323,7 +327,7 @@ contract('SubscriptionManager', (accounts) => {
             await checkSubscription(manager, id, profile, now, currentTime.year, currentTime.month, 3 * value);
           });
 
-          it('should distribute the fees between the federation members', async () => {
+          it('should distribute the fees between the validators members', async () => {
             const values = [value, 3 * value, value2, 1];
             await subscribeForCurrentMonth(manager, id, profile, values[0], user1);
             await subscribeForCurrentMonth(manager, id, profile, values[1], user2);
@@ -392,11 +396,11 @@ contract('SubscriptionManager', (accounts) => {
           //   await checkSubscription(manager, id, profile, now, currentTime.year, currentTime.month, value);
           //   await checkTotal(manager, currentTime.year, currentTime.month, value);
           //
-          //   const newManager = await SubscriptionManagerMock.new(token.address, federation.address,
+          //   const newManager = await OrbsSubscriptionsMock.new(token.address, validators.address,
           //     minimalMonthlySubscription, { from: owner });
-          //   await newManager.transferOwnership(federation.address);
-          //   await federation.upgradeSubscriptionManager(newManager.address, { from: owner });
-          //   expect(await federation.subscriptionManager.call()).to.eql(newManager.address);
+          //   await newManager.transferOwnership(validators.address);
+          //   await validators.upgradeSubscriptionManager(newManager.address, { from: owner });
+          //   expect(await validators.subscriptionManager.call()).to.eql(newManager.address);
           //
           //   await subscribeForCurrentMonth(newManager, id, profile, value * 2, user1);
           //   await checkSubscription(newManager, id, profile, now, currentTime.year, currentTime.month, value * 2);
@@ -452,7 +456,7 @@ contract('SubscriptionManager', (accounts) => {
             await checkTotal(manager, beginningOfNextMonth.year, beginningOfNextMonth.month, total);
           });
 
-          it('should distribute the fees between the federation members', async () => {
+          it('should distribute the fees between the validators members', async () => {
             const nextMonthValues = [100 * value, 300 * value, 1000 * value2];
             await subscribeForNextMonth(manager, id, profile, nextMonthValues[0], user1);
             await subscribeForNextMonth(manager, id, profile, nextMonthValues[1], user2);
@@ -494,11 +498,11 @@ contract('SubscriptionManager', (accounts) => {
           //     beginningOfNextMonth.month, value);
           //   await checkTotal(manager, beginningOfNextMonth.year, beginningOfNextMonth.month, value);
           //
-          //   const newManager = await SubscriptionManagerMock.new(token.address, federation.address,
+          //   const newManager = await OrbsSubscriptionsMock.new(token.address, validators.address,
           //     minimalMonthlySubscription, { from: owner });
-          //   await newManager.transferOwnership(federation.address);
-          //   await federation.upgradeSubscriptionManager(newManager.address, { from: owner });
-          //   expect(await federation.subscriptionManager.call()).to.eql(newManager.address);
+          //   await newManager.transferOwnership(validators.address);
+          //   await validators.upgradeSubscriptionManager(newManager.address, { from: owner });
+          //   expect(await validators.subscriptionManager.call()).to.eql(newManager.address);
           //
           //   await subscribeForNextMonth(newManager, id, profile, value * 2, user1);
           //   await checkSubscription(newManager, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
@@ -509,7 +513,7 @@ contract('SubscriptionManager', (accounts) => {
 
         context('during 3 months', async () => {
           // This is a mixed test which verifies the subscription model end-to-end.
-          it('should distribute the fees between the federation members', async () => {
+          it('should distribute the fees between the validators members', async () => {
             const nextMonthValue = 1201;
             const nextMonthValue2 = 8872;
 

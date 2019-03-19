@@ -3,7 +3,7 @@ pragma solidity 0.5.3;
 import "../contracts/OrbsSubscriptions.sol";
 import "./../../../voting/ethereum/contracts/IOrbsValidators.sol";
 
-contract SubscriptionManagerMock is OrbsSubscriptions {
+contract OrbsSubscriptionsMock is OrbsSubscriptions {
     struct UpgradeContext {
         bool called;
         address newContract;
