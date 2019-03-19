@@ -26,7 +26,7 @@ contract('OrbsValidators', accounts => {
             await driver.deployRegistry();
 
             const OrbsValidatorsStateView = artifacts.require('OrbsValidatorsStateView');
-            const stateView = await OrbsValidatorsStateView.new(driver.OrbsRegistry, 100);
+            const stateView = await OrbsValidatorsStateView.new(driver.OrbsRegistry.address, 100);
 
             const validatorAddr  = numToAddress(1);
             let r = await stateView.addValidator(validatorAddr);

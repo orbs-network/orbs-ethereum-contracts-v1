@@ -4,7 +4,7 @@ import "./../contracts/OrbsValidators.sol";
 
 contract OrbsValidatorsStateView is OrbsValidators {
     constructor(address registry_, uint validatorLimit_)
-        OrbsValidators(msg.sender, 100) public {
+        OrbsValidators(registry_, validatorLimit_) public {
     }
 
     function getApprovedValidatorAt(uint index) public view returns (address) {
