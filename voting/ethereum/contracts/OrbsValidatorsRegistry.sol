@@ -13,6 +13,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         bytes20 orbsAddress;
         uint registeredOnBlock;
         uint lastUpdatedOnBlock;
+        bytes declarationHash;
     }
 
     uint public constant VERSION = 1;
@@ -26,7 +27,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         string memory name,
         bytes4 ipAddress,
         string memory website,
-        bytes20 orbsAddress
+        bytes20 orbsAddress,
+        bytes memory declarationHash
     )
         public
     {
@@ -60,7 +62,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             website,
             orbsAddress,
             registeredOnBlock,
-            block.number
+            block.number,
+            declarationHash
         );
         emit ValidatorRegistered(msg.sender);
     }
@@ -85,7 +88,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             string memory name,
             bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress
+            bytes20 orbsAddress,
+            bytes memory declarationHash
         )
     {
         require(isValidator(validator), "Unlisted Validator");
@@ -95,7 +99,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             entry.name,
             entry.ipAddress,
             entry.website,
-            entry.orbsAddress
+            entry.orbsAddress,
+            entry.declarationHash
         );
     }
 

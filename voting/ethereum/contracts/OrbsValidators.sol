@@ -101,7 +101,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         for (uint i = 0; i < validatorsLength; i++) {
             bytes4 ip;
             bytes20 orbsAddr;
-            (,ip,,orbsAddr) = registry.getValidatorData(address(validators[i]));
+            (,ip,,orbsAddr,) = registry.getValidatorData(address(validators[i]));
             nodeAddresses[i] = orbsAddr;
             ipAddresses[i] = ip;
         }
