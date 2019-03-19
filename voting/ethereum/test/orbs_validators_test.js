@@ -213,9 +213,9 @@ contract('OrbsValidators', accounts => {
 
             const networkTopology = await driver.OrbsValidators.getNetworkTopology();
 
-            assert(networkTopology.nodeAddresses.length !== 3, "expected network topology to exclude added validators  with no data set");
-            assert.deepEqual(networkTopology.nodeAddresses, addresses, "expected the array of addresses to return");
-            assert.deepEqual(networkTopology.ipAddresses, ips, "expected the array of ips to return");
+            assert.equal(networkTopology.nodeAddresses.length, 2, "expected network topology to include two validators");
+            assert.deepEqual(networkTopology.nodeAddresses, [addresses[0], addresses[1]], "expected the array of addresses to return");
+            assert.deepEqual(networkTopology.ipAddresses,  [ips[0], ips[1]], "expected the array of ips to return");
         });
     });
 });
