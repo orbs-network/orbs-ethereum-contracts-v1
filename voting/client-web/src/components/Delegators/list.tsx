@@ -54,7 +54,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
                 {guardians[address].url}
               </Link>
             </TableCell>
-            <TableCell>{guardians[address].balance}</TableCell>
+            <TableCell>{guardians[address].stake}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -33,4 +33,13 @@ export class ApiStrategyStub implements IApiStrategy {
   getElectedValidators() {
     return Promise.resolve([]);
   }
+  getElectedValidatorData() {
+    return Promise.resolve({});
+  }
+  getRewards() {
+    return Promise.resolve({});
+  }
+  getTotalStake() {
+    return Promise.resolve('totally-fake-stake');
+  }
 }

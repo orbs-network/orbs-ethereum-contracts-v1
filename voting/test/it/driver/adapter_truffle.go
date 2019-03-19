@@ -11,54 +11,25 @@ import (
 	"time"
 )
 
-func AdapterForTruffleGanache(config *Config, stakeFactor uint64) EthereumAdapter {
-	ganacheUrl, envOverride := os.LookupEnv("GANACHE_HOST")
-	if envOverride == false {
-		ganacheUrl = "http://127.0.0.1:7545"
-	}
-
-	return &truffleAdapter{
-		debug:       config.DebugLogs,
-		projectPath: ".",
-		network:     "ganache",
-		networkUrl:  ganacheUrl,
-		startBlock:  0,
+func NewTruffleAdapter(
+	debug bool,
+	projectPath string,
+	network string,
+	networkUrl string,
+	startBlock int,
+	stakeFactor uint64,
+) *TruffleAdapter {
+	return &TruffleAdapter{
+		debug:       debug,
+		projectPath: projectPath,
+		network:     network,
+		networkUrl:  networkUrl,
+		startBlock:  startBlock,
 		stakeFactor: stakeFactor,
 	}
 }
 
-func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapter {
-	ropstenUrl, foundUrl := os.LookupEnv("ROPSTEN_URL")
-	if foundUrl == false {
-		panic("Please set ROPSTEN_URL")
-	}
-	return &truffleAdapter{
-		debug:       config.DebugLogs,
-		projectPath: ".",
-		network:     "ropsten",
-		networkUrl:  ropstenUrl,
-		startBlock:  5196956,
-		stakeFactor: stakeFactor,
-	}
-}
-
-// MAINNET CONFIG // TODO move all configurations to incoming config and unite all three constructors
-//func AdapterForTruffleRopsten(config *Config, stakeFactor uint64) EthereumAdapter {
-//	ropstenUrl, foundUrl := os.LookupEnv("MAINNET_URL")
-//	if foundUrl == false {
-//		panic("Please set MAINNET_URL")
-//	}
-//	return &truffleAdapter{
-//		debug:       config.DebugLogs,
-//		projectPath: ".",
-//		network:     "mainnet",
-//		networkUrl:  ropstenUrl,
-//		startBlock:  7374356,
-//		stakeFactor: stakeFactor,
-//	}
-//}
-
-type truffleAdapter struct {
+type TruffleAdapter struct {
 	debug       bool
 	projectPath string
 	network     string
@@ -67,11 +38,11 @@ type truffleAdapter struct {
 	stakeFactor uint64
 }
 
-func (ta *truffleAdapter) GetStartOfHistoryBlock() int {
+func (ta *TruffleAdapter) GetStartOfHistoryBlock() int {
 	return ta.startBlock
 }
 
-func (ta *truffleAdapter) GetCurrentBlock() int {
+func (ta *TruffleAdapter) GetCurrentBlock() int {
 	bytesOutput := ta.run("exec ./truffle-scripts/getCurrentBlock.js")
 	out := struct {
 		CurrentBlock int
@@ -83,18 +54,18 @@ func (ta *truffleAdapter) GetCurrentBlock() int {
 	return out.CurrentBlock
 }
 
-func (ta *truffleAdapter) TopUpEther(accountIndexes []int) {
+func (ta *TruffleAdapter) TopUpEther(accountIndexes []int) {
 	accountIndexesJson, _ := json.Marshal(accountIndexes)
 	ta.run("exec ./truffle-scripts/topUpEther.js",
 		"ACCOUNT_INDEXES_ON_ETHEREUM="+string(accountIndexesJson),
 	)
 }
 
-func (ta *truffleAdapter) PrintBalances() {
+func (ta *TruffleAdapter) PrintBalances() {
 	ta.run("exec ./truffle-scripts/printTotalBalance.js")
 }
 
-func (ta *truffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
+func (ta *TruffleAdapter) DeployERC20Contract() (ethereumErc20Address string) {
 	bytes := ta.run("exec ./truffle-scripts/deployERC20.js")
 	out := struct {
 		Address string
@@ -111,7 +82,7 @@ type accountStake struct {
 	Balance string
 }
 
-func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) map[int]int {
+func (ta *TruffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) map[int]int {
 	bytes := ta.run("exec ./truffle-scripts/getStakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"NUMBER_OF_STAKEHOLDERS_ETHEREUM="+fmt.Sprintf("%d", numberOfStakes),
@@ -131,7 +102,7 @@ func (ta *truffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes 
 	return stakesData
 }
 
-func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
+func (ta *TruffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
 	ethStakes := make([]uint64, len(stakes))
 	for i, v := range stakes {
 		ethStakes[i] = ta.toEthereumToken(v) + 10*STAKE_TOKEN_DELEGATE_VALUE
@@ -144,7 +115,7 @@ func (ta *truffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
 	)
 }
 
-func (ta *truffleAdapter) Transfer(ethereumErc20Address string, from int, to int, amount int) {
+func (ta *TruffleAdapter) Transfer(ethereumErc20Address string, from int, to int, amount int) {
 	var tokens uint64
 	if amount == 0 {
 		tokens = STAKE_TOKEN_DELEGATE_VALUE
@@ -159,7 +130,7 @@ func (ta *truffleAdapter) Transfer(ethereumErc20Address string, from int, to int
 	)
 }
 
-func (ta *truffleAdapter) DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) {
+func (ta *TruffleAdapter) DeployValidatorsContract() (ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) {
 	bytes := ta.run("exec ./truffle-scripts/deployValidators.js")
 	out := struct {
 		ValidatorsAddress         string
@@ -178,7 +149,7 @@ type validatorData struct {
 	OrbsAddress string
 }
 
-func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) []validatorData {
+func (ta *TruffleAdapter) GetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string) []validatorData {
 	bytes := ta.run("exec ./truffle-scripts/getValidators.js",
 		"VALIDATORS_CONTRACT_ADDRESS="+ethereumValidatorsAddress,
 		"VALIDATORS_REGISTRY_CONTRACT_ADDRESS="+ethereumValidatorsRegAddress,
@@ -193,7 +164,7 @@ func (ta *truffleAdapter) GetValidators(ethereumValidatorsAddress string, ethere
 	return out.Validators
 }
 
-func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {
+func (ta *TruffleAdapter) SetValidators(ethereumValidatorsAddress string, ethereumValidatorsRegAddress string, validators []int, orbsAddresses []string, orbsIps []string) {
 	validatorsJson, _ := json.Marshal(validators)
 	orbsAddressesJson, _ := json.Marshal(orbsAddresses)
 	orbsIpsJson, _ := json.Marshal(orbsIps)
@@ -206,7 +177,7 @@ func (ta *truffleAdapter) SetValidators(ethereumValidatorsAddress string, ethere
 	)
 }
 
-func (ta *truffleAdapter) DeployVotingContract() (ethereumVotingAddress string) {
+func (ta *TruffleAdapter) DeployVotingContract() (ethereumVotingAddress string) {
 	bytes := ta.run("exec ./truffle-scripts/deployVoting.js")
 	out := struct {
 		Address string
@@ -218,7 +189,7 @@ func (ta *truffleAdapter) DeployVotingContract() (ethereumVotingAddress string) 
 	return out.Address
 }
 
-func (ta *truffleAdapter) Delegate(ethereumVotingAddress string, from int, to int) {
+func (ta *TruffleAdapter) Delegate(ethereumVotingAddress string, from int, to int) {
 	ta.run("exec ./truffle-scripts/delegate.js",
 		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
 		"FROM_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", from),
@@ -226,7 +197,7 @@ func (ta *truffleAdapter) Delegate(ethereumVotingAddress string, from int, to in
 	)
 }
 
-func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, candidates []int) {
+func (ta *TruffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, candidates []int) {
 	out, _ := json.Marshal(candidates)
 	ta.run("exec ./truffle-scripts/vote.js",
 		"VOTING_CONTRACT_ADDRESS="+ethereumVotingAddress,
@@ -235,7 +206,7 @@ func (ta *truffleAdapter) Vote(ethereumVotingAddress string, activistIndex int, 
 	)
 }
 
-func (ta *truffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress string) {
+func (ta *TruffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress string) {
 	bytes := ta.run("exec ./truffle-scripts/deployGuardians.js")
 	out := struct {
 		Address string
@@ -247,7 +218,7 @@ func (ta *truffleAdapter) DeployGuardiansContract() (ethereumGuardiansAddress st
 	return out.Address
 }
 
-func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardians []int) {
+func (ta *TruffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardians []int) {
 	out, _ := json.Marshal(guardians)
 	ta.run("exec ./truffle-scripts/setGuardians.js",
 		"GUARDIANS_CONTRACT_ADDRESS="+ethereumGuardiansAddress,
@@ -255,7 +226,7 @@ func (ta *truffleAdapter) SetGuardians(ethereumGuardiansAddress string, guardian
 	)
 }
 
-func (ta *truffleAdapter) ResignGuardians(ethereumGuardiansAddress string, guardians []int) {
+func (ta *TruffleAdapter) ResignGuardians(ethereumGuardiansAddress string, guardians []int) {
 	out, _ := json.Marshal(guardians)
 	ta.run("exec ./truffle-scripts/resignGuardians.js",
 		"GUARDIANS_CONTRACT_ADDRESS="+ethereumGuardiansAddress,
@@ -263,7 +234,7 @@ func (ta *truffleAdapter) ResignGuardians(ethereumGuardiansAddress string, guard
 	)
 }
 
-func (ta *truffleAdapter) WaitForBlock(blockNumber int) {
+func (ta *TruffleAdapter) WaitForBlock(blockNumber int) {
 	if ta.network == "ganache" {
 		blocksToMine := blockNumber - ta.GetCurrentBlock()
 		if blocksToMine > 0 {
@@ -278,11 +249,11 @@ func (ta *truffleAdapter) WaitForBlock(blockNumber int) {
 	}
 }
 
-func (ta *truffleAdapter) WaitForFinality() {
+func (ta *TruffleAdapter) WaitForFinality() {
 	ta.run("exec ./truffle-scripts/makeFinal.js")
 }
 
-func (ta *truffleAdapter) run(args string, env ...string) []byte {
+func (ta *TruffleAdapter) run(args string, env ...string) []byte {
 	var lastErr error
 	for i := 0; i < 3; i++ { // retry loop
 
@@ -303,7 +274,7 @@ func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	panic(lastErr)
 }
 
-func (ta *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
+func (ta *TruffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	args += " --network " + ta.network
 	if ta.debug {
 		fmt.Println("\n  ### RUNNING: truffle " + args)
@@ -336,14 +307,14 @@ func (ta *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	return out[index:], nil
 }
 
-func (ta *truffleAdapter) fromEthereumToken(tokenValue uint64) int {
+func (ta *TruffleAdapter) fromEthereumToken(tokenValue uint64) int {
 	return int(tokenValue / ta.stakeFactor)
 }
 
-func (ta *truffleAdapter) toEthereumToken(testValue int) uint64 {
+func (ta *TruffleAdapter) toEthereumToken(testValue int) uint64 {
 	return uint64(testValue) * ta.stakeFactor
 }
 
-func (ta *truffleAdapter) GetConnectionUrl() string {
+func (ta *TruffleAdapter) GetConnectionUrl() string {
 	return ta.networkUrl
 }

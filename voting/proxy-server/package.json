@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
     "start": "node index.js",
     "lint": "prettier --single-quote --write '**/*.js'",
-    "contracts:prod": "./scripts/copy-contracts.sh"
+    "contracts:prod": "./scripts/copy-contracts.sh",
+    "deploy": "./scripts/heroku-deploy.sh"
   },
   "repository": {
     "type": "git",
@@ -19,13 +21,13 @@
   },
   "homepage": "https://github.com/orbs-network/orbs-ethereum-contracts#readme",
   "dependencies": {
-    "chance": "^1.0.18",
     "cors": "2.8.5",
     "express": "4.16.4",
     "orbs-client-sdk": "0.0.5",
     "web3": "1.0.0-beta.48"
   },
   "devDependencies": {
+    "nodemon": "^1.18.10",
     "prettier": "^1.16.4"
   }
 }

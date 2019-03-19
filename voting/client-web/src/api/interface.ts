@@ -15,7 +15,8 @@ export interface IApiStrategy {
   getGuardianData(address: address): Promise<{ name: string; website: url }>;
   registerGuardian(name: string, website: url): Promise<{}>;
   getValidators(): Promise<address[]>;
-  getElectedValidators(): Promise<any[]>;
+  getElectedValidators(): Promise<string[]>;
+  getElectedValidatorData(address: string): Promise<{}>;
   getValidatorData(address: address): Promise<{ name: string; website: url }>;
   registerValidator(
     name: string,
@@ -23,4 +24,6 @@ export interface IApiStrategy {
     website: url,
     orbsAddress: address
   ): Promise<{}>;
+  getRewards(address: string): Promise<any>;
+  getTotalStake(): Promise<string>;
 }

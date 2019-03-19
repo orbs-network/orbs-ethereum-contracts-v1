@@ -1,4 +1,4 @@
-package main
+package elections_systemcontract
 
 import (
 	"fmt"

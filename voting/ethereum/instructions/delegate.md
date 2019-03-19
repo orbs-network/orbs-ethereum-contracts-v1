@@ -1,23 +1,18 @@
 ## Explicit/Implicit Delegation
 
-Orbs token holders are encouraged to delegate their stake to another token holder 
-or a guardian of their choice. By delegating to an active and reputable guardian
-a delegator becomes eligible for rewards (see detailed explanation [here][voting_explained]).  
+Orbs token holders are encouraged to particiapte in the Orbs Universe by delegating their voting weight (stake) to another a guardian that they trust. By delegating to an active and reputable guardian a delegator contributes the network security and becomes eligible for rewards. A delegator may choose to delegate to another Delegator trusting her with the selection of the Guardian. (see detailed explanation [here][voting_explained]).  
 
 Delegation is performed by one of two mechanisms: 
-* An *implicit delegation* is performed by a symbolic transfer of tokens
-* An *explicit delegation* is performed by a transaction sent to OrbsVoting contract. 
+* An *implicit delegation* is performed by a transfer of 7 token fractions 
+* An *explicit delegation* is performed by a Delegation transaction sent to OrbsVoting contract. 
 
-Once delegated, the delegator's choice remains in place indefinitely, or until
-another delegation occurs. However, and implicit delegation does not override an explicit delegation, even if
-it occurs later than the explicit delegation.
+Once delegated, a delegation remains valid and persists unless modified. A delegation may be modified at any time, or canceled by delegating to the Delegator's address. Once explicit delegation was preformed, it take precedence over an implicit delegation, even if it occurs later than the explicit one.   
 
-To cancel all delegations, a later self-delegation may be performed. Delegating to one's self cancels any 
-previous delegations. 
+The voting weight of each Delegator and the stake used fot the reward calculation is based on the Delegator stake at the time of each election event.
 
 For a more detailed account of delegation (including implicit delegation), voting, and rewards see [here][voting_explained]
 
-This document focuses on *Explicit delegations* using OrbsVoting contract.
+This document describes the *Explicit delegations* using OrbsVoting contract.
 
 The document walks you through the voting process using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
@@ -89,8 +84,3 @@ Make sure you see
 With sufficient block confirmations.
 
 [1]: https://ropsten.etherscan.io/address/0x9f313f9b21d9EAcBACF7ad0527EDC39ec3753Fba#code
-
-##### Notes
-* If a vote is made from a non-guardian address the vote will succeed but Orbs network will ignore it. Guardianship is verified on Orbs upon processing of voting results.
-* If a vote is made with a non-validator address in the nodes list the vote will succeed but Orbs betwork will ignore the vote. Validator registration is verified on Orbs upon processing of voting result. 
-* To change a vote just vote again before the end of the subscription period.
