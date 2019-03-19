@@ -21,6 +21,8 @@
     "ganache-cli": "6.2.3",
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi-reporters": "^1.1.7",
-    "truffle": "^5.0.5"
+    "truffle": "^5.0.5",
+    "bignumber.js": "^8.0.1",
+    "moment": "^2.22.2"
   }
 }
