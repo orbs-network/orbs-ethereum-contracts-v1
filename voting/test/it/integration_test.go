@@ -101,7 +101,7 @@ var guardiansAccounts = []int{4, 6, 10, 11}
 var validatorAccounts = []int{20, 21, 22, 23, 24}
 var config = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
-	OrbsVotingContractName:       "",                                                              // name of the orbs contract
+	OrbsVotingContractName:       "_Elections",                                                    // by default use the system contract for elections, put "" to deploy with a random name
 	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
 	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
 	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
