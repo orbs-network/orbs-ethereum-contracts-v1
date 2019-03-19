@@ -56,6 +56,27 @@ class OrbsClientService {
     const query = this.buildQuery('getElectedValidatorsEthereumAddress', []);
     return this.sendQuery(query);
   }
+
+  getParticipationReward(address) {
+    const query = this.buildQuery('getCumulativeParticipationReward', [
+      Orbs.argAddress(address.toLowerCase())
+    ]);
+    return this.sendQuery(query);
+  }
+
+  getGuardianReward(address) {
+    const query = this.buildQuery('getCumulativeGuardianExcellenceReward', [
+      Orbs.argAddress(address.toLowerCase())
+    ]);
+    return this.sendQuery(query);
+  }
+
+  getValidatorReward(address) {
+    const query = this.buildQuery('getCumulativeValidatorReward', [
+      Orbs.argAddress(address.toLowerCase())
+    ]);
+    return this.sendQuery(query);
+  }
 }
 
 module.exports = {

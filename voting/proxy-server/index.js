@@ -33,7 +33,7 @@ app.get('/is_alive', (req, res) => res.sendStatus(200));
 app.use('/api', guardiansApiFactory(ethereumClient, orbsClientService));
 app.use('/api', electedValidatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', validatorsApiFactory(ethereumClient, orbsClientService));
-app.use('/api', rewardsApiFactory());
+app.use('/api', rewardsApiFactory(orbsClientService));
 app.use('/api', stakeApiFactory(orbsClientService));
 
 app.listen(port, () => console.log(`Started on port ${port}!`));
