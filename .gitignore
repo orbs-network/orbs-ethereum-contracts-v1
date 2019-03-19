@@ -23,6 +23,8 @@ Voting/mirror_process/package-lock.json
 Voting/test/it/build/
 Voting/test/it/package-lock.json
 
+subscription/ethereum/build/
+
 **/node_modules/
 # **/build/
 
