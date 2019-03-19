@@ -24,6 +24,16 @@ interface IOrbsValidatorsRegistry {
             bytes20 orbsAddress,
             bytes memory declarationHash
         );
+    function reviewRegistration()
+        external
+        view
+        returns (
+            string memory name,
+            bytes4 ipAddress,
+            string memory website,
+            bytes20 orbsAddress,
+            bytes memory declarationHash
+        );
     function getRegistrationBlockHeight(address validator)
         external
         view

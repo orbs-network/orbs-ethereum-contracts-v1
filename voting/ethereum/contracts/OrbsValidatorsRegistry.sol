@@ -104,6 +104,20 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         );
     }
 
+    function reviewRegistration()
+        public
+        view
+        returns (
+            string memory name,
+            bytes4 ipAddress,
+            string memory website,
+            bytes20 orbsAddress,
+            bytes memory declarationHash
+        )
+    {
+        return getValidatorData(msg.sender);
+    }
+
     function getRegistrationBlockHeight(address validator)
         external
         view

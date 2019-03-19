@@ -201,4 +201,19 @@ contract('OrbsValidatorsRegistry', accounts => {
             assert.equal(fetchedAddress, orbsAddress, "expected fetched address to match the value set");
         });
     });
+
+    describe('when calling the reviewRegistration() function', () => {
+        it('should return the same as getValidatorData(from)', async () => {
+            await driver.deployRegistry();
+
+            await assertReject(driver.OrbsRegistry.reviewRegistration({from: accounts[1]}), "expected review registration to fail before registration");
+
+            await driver.OrbsRegistry.register("test", "0xaabbccdd", "url", numToAddress(12345), "0xFFCC", {from: accounts[1]});
+
+            const getterData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+            const reviewData = await driver.OrbsRegistry.reviewRegistration({from: accounts[1]});
+
+            assert.deepEqual(getterData, reviewData, "expected ")
+        });
+    });
 });

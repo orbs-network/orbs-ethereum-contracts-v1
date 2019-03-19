@@ -112,6 +112,14 @@ contract OrbsGuardians is IOrbsGuardians {
         return (guardiansData[guardian].name, guardiansData[guardian].website);
     }
 
+    function reviewRegistration()
+        public
+        view
+        returns (string memory name, string memory website)
+    {
+        return getGuardianData(msg.sender);
+    }
+
     function getRegistrationBlockHeight(address guardian)
         external
         view
