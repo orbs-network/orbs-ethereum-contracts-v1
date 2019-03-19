@@ -1,14 +1,29 @@
 const express = require('express');
 
-const rewardsApiFactory = () => {
+const rewardsApiFactory = orbsClient => {
   const router = express.Router();
 
   router.get('/rewards/:address', async (req, res) => {
+    const address = req.params['address'];
+    const [
+      delegatorReward,
+      guardianReward,
+      validatorReward
+    ] = await Promise.all([
+      orbsClient.getParticipationReward(address),
+      orbsClient.getGuardianReward(address),
+      orbsClient.getValidatorReward(address)
+    ]);
+
     res.json({
-      delegatorReward: 10000,
-      guardianReward: 20000,
-      validatorReward: 30000,
-      totalReward: 60000
+      delegatorReward: delegatorReward.toString(),
+      guardianReward: guardianReward.toString(),
+      validatorReward: validatorReward.toString(),
+      totalReward: (
+        delegatorReward +
+        guardianReward +
+        validatorReward
+      ).toString()
     });
   });
 

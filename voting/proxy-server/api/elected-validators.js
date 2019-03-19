@@ -1,25 +1,50 @@
-const Chance = require('chance');
 const express = require('express');
 
-const chance = new Chance();
+const ADDRESS_LENGTH = 20;
 
-const validatorsApiFactory = () => {
+const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
   const router = express.Router();
 
+  const getElectedValidators = async () => {
+    const data = await orbsClientService.getElectedValidators();
+    const addresses = [];
+    for (let i = 0; i < data.length; i += ADDRESS_LENGTH) {
+      addresses.push(`0x${data.slice(i, i + ADDRESS_LENGTH).toString('hex')}`);
+    }
+    return addresses;
+  };
+
   router.get('/validators/elected', async (req, res) => {
-    const data = Array.from(Array(5), () => {
-      return {
-        name: chance.name(),
-        address: `0x${chance.hash({ lenght: 20 })}`,
-        stake: chance.integer({ min: 0, max: 100000 }),
-        totalReward: chance.integer({ min: 0, max: 100000 }),
-        participationReward: chance.integer({ min: 0, max: 100000 })
-      };
-    });
+    const data = await getElectedValidators();
     res.json(data);
+  });
+
+  router.get('/validators/elected/:address', async (req, res) => {
+    const address = req.params['address'];
+    const validatorData = await ethereumClient.getValidatorData(address);
+    const stake = await orbsClientService.getValidatorStake(address);
+    const [
+      delegatorReward,
+      guardianReward,
+      validatorReward
+    ] = await Promise.all([
+      orbsClientService.getParticipationReward(address),
+      orbsClientService.getGuardianReward(address),
+      orbsClientService.getValidatorReward(address)
+    ]);
+    const result = Object.assign({}, validatorData, {
+      stake: stake.toString(),
+      participationReward: delegatorReward.toString(),
+      totalReward: (
+        delegatorReward +
+        guardianReward +
+        validatorReward
+      ).toString()
+    });
+    res.json(result);
   });
 
   return router;
 };
 
-module.exports = validatorsApiFactory;
+module.exports = electedValidatorsApiFactory;

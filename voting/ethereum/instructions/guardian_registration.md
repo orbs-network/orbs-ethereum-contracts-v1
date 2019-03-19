@@ -1,22 +1,22 @@
 ## Guardian Registration
-In order to participate in the voting, a Guardian must first register. 
-An Orbs Guardian is identified and delegated to by her Ethereum address. 
+In order to participate in voting, a Guardian must first register. 
+An Orbs Guardian is identified, and delegated to, by her Ethereum address. 
 
-This document walks you through the registration process of Guardians using the MyCrypto desktop wallet application.
-Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
+This document walks you through the Guardian registration process using the MyCrypto desktop wallet application.
+Any wallet software may be used and the choice of MyCrypto here is for illustration only.
 
-### A Guardian registration requires to following data:
-- Name and website URL of the Guardian
+### A Guardian registration requires the following data:
+- Guardian name and website URL
 
 Note: A Guardian may update her registration data at any time or leave the registry.
 
 
 ### Registration pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)
- - A wallet setup with your Guardian's Ethereum account keys with a positive Ether balance for fees
+ - A wallet configured with your Guardian's Ethereum account keys and a positive Ether balance to pay the Ethereum transaction fees
  - ABI and contract address available on Etherscan. For example, on Ropsten testnet the contract may be found [here][1] 
- - 1 Ether deposit required to resgister as a Guardian
- - Registration data
+ - 1 Ether deposit is required to register as a Guardian
+ - Registration data (Guardian name + website URL)
 
 ### Registration steps
 
@@ -34,14 +34,13 @@ in the test box labeled *ABI / JSON Interface*.
 ![](../instructions/enroll_guardian_3.png)
 The function parameters for the `register` call will appear in the form.
 1. Fill the fields labeled `name` and `website` 
-with your guardian details.
+with your Guardian details.
 ![](../instructions/enroll_guardian_4.png)
 1. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
 ![](../instructions/enroll_guardian_5.png)
 1. Proceed to *Select an Address*. Select your Guardians's Ethereum address. 
-The address you choose will be the Guardians's identification for purpose
- of delegation later on.
+The address you choose will be the Guardians's identification for delegation and rewards calculation later on.
 ![](../instructions/enroll_guardian_6.png)
 Click *Unlock*
 1. After unlocking an account, a new field labeled *Value* will appear after the website entry field (see below).
@@ -76,7 +75,7 @@ With sufficient block confirmations.
 
 ##### Notes
 * The contract does not enforce uniqueness of name and website values between the different Guardians. Two Guardians may register with same name, or website url. It is up to the Delegators to vet their Guardians. 
-* To make changes to your registration repeat the process providing new values. A deposit is not required when re-registering. If you send a second deposit the transaction will revert.
+* To make changes to your registration, repeat the process providing new values. A deposit is not required when re-registering. If you send a second deposit the transaction will revert.
 * To to be removed from the Guardians list, use the leave() function.
   * Upon leave() the 1 Ether deposit is transferred back to the Guardian address.
  

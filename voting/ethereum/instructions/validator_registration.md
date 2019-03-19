@@ -3,11 +3,11 @@
 Validator candidates may register to be elected as a Validator using OrbsValidatorsRegistry Ethereum Contract.  
 An Orbs Validator is identified and voted for by her Ethereum address. 
 
-This document walks you through the registration process of Validator and Guardian accounts using the MyCrypto desktop wallet application.
-Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
+This document walks you through the Validator registration process using the MyCrypto desktop wallet application.
+Any wallet software may be used and the choice of MyCrypto here is for illustration only.
 
-### A Validator registration requires to following data:
-- Name and website URL of the Validator
+### A Validator registration requires the following data:
+- Validator name and website URL
 - IP Address of the Orbs node
 - An Orbs node public address
   - The Orbs node addressing scheme is equivalent to Ethereum.
@@ -16,9 +16,9 @@ Note: A Validator may update her registration data at any time or leave the regi
 
 ### Registration pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)
- - A wallet setup with your Validator's Ethereum account keys with a positive Ether balance for gas payment
+ - A wallet configured with your Validator's Ethereum account keys and a positive Ether balance for Ethereum transaction gas payment
  - ABI and contract address available on Etherscan. For example, on Ropsten testnet the contract may be found [here][2] 
- - Registration data
+ - Registration data (see above)
 
 ### Registration steps
 
@@ -83,6 +83,6 @@ With sufficient block confirmations.
 [2]: https://ropsten.etherscan.io/address/0xd492757cee4c0e1159376aE7Da795fB6D949900a#code
 
 ##### Notes
-* The registration values, must be unique among the different Validators, an attempt to register a Validator with a name, website url, Orbs node public address, or Orbs node IP address that matches as existing one will fail the registration.
+* The registration values must be unique among the different Validators. An attempt to register a Validator with a name, website url, Orbs node public address or Orbs node IP address that matches as existing one will fail the registration.
 * To make changes to your registration repeat the process providing new values.
 * To to be removed from the Validators Registry, use the leave() function.
