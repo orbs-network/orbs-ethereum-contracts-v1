@@ -204,13 +204,12 @@ contract('OrbsValidators', accounts => {
             let ips = ["0xaabbccdd", "0x11223344", "0x1122AAFF"];
 
             await assertResolve(driver.OrbsValidators.addValidator(accounts[0]));
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[1])); // decoy - this guy never sets its data
+            await assertResolve(driver.OrbsValidators.addValidator(accounts[1])); // decoy - this guy never sets his data
             await assertResolve(driver.OrbsValidators.addValidator(accounts[2]));
 
-            // set data only for the first and the last, and one other guy that was not approved
             await driver.OrbsRegistry.register("test0", ips[0], "url0", addresses[0], "0xF1", {from: accounts[0]});
             await driver.OrbsRegistry.register("test1", ips[1], "url1", addresses[1], "0xF2", {from: accounts[2]});
-            await driver.OrbsRegistry.register("test2", ips[2], "url2", addresses[2], "0xF3", {from: accounts[3]});
+            await driver.OrbsRegistry.register("test2", ips[2], "url2", addresses[2], "0xF3", {from: accounts[3]}); // decoy - this guy was never approved
 
             const networkTopology = await driver.OrbsValidators.getNetworkTopology();
 
