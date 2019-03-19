@@ -78,7 +78,8 @@ const GuardianPage = ({ classes, apiService }) => {
           checked: false,
           name: validatorsInfo[idx]['name'],
           url: validatorsInfo[idx]['website'],
-          orbsAddress: validatorsInfo[idx]['orbsAddress']
+          orbsAddress: validatorsInfo[idx]['orbsAddress'],
+          votesAgainst: validatorsInfo[idx]['votesAgainst']
         };
         return acc;
       },
