@@ -35,9 +35,9 @@ const ValidatorsList = ({ validators, classes }) => {
             <TableCell data-testid={`validator-${id}-orbs-address`}>
               {validators[id].orbsAddress}
             </TableCell>
-            <TableCell>{validators[id].stake}</TableCell>
-            <TableCell>-</TableCell>
-            <TableCell>-</TableCell>
+            <TableCell>{validators[id].stake} orbs</TableCell>
+            <TableCell>{validators[id].totalReward} orbs</TableCell>
+            <TableCell>{validators[id].participationReward} orbs</TableCell>
           </TableRow>
         ))}
       </TableBody>

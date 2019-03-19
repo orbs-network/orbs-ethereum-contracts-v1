@@ -20,7 +20,9 @@ const ValidatorsPage = ({ classes, apiService }) => {
         name: list[idx]['name'],
         address: currId,
         orbsAddress: list[idx]['orbsAddress'],
-        stake: list[idx]['stake']
+        stake: list[idx]['stake'],
+        totalReward: list[idx]['totalReward'],
+        participationReward: list[idx]['participationReward']
       };
       return acc;
     }, {});
