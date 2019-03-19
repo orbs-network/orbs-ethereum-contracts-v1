@@ -1,16 +1,16 @@
 const Web3 = require('web3');
 const cors = require('cors');
 const express = require('express');
-const guardiansApiFactory = require('./api/guardians');
+const stakeApiFactory = require('./api/stake');
 const rewardsApiFactory = require('./api/rewards');
+const guardiansApiFactory = require('./api/guardians');
 const validatorsApiFactory = require('./api/validators');
 const electedValidatorsApiFactory = require('./api/elected-validators');
-const Orbs = require('orbs-client-sdk');
+const { OrbsClientService } = require('./services/orbs-client');
 
 const port = process.env.PORT || 5678;
 const virtualChainId = 1008;
 const orbsNodeAddress = '18.219.51.57';
-const orbsNodeUrl = `http://${orbsNodeAddress}/vchains/${virtualChainId}`;
 
 const app = express();
 
@@ -20,13 +20,10 @@ const web3 = new Web3(
   )
 );
 
-const orbsClient = new Orbs.Client(
-  orbsNodeUrl,
-  virtualChainId,
-  Orbs.NetworkType.NETWORK_TYPE_TEST_NET
+const orbsClientService = new OrbsClientService(
+  orbsNodeAddress,
+  virtualChainId
 );
-
-const orbsAccount = Orbs.createAccount();
 
 const corsOptions = {
   origin: ['http://localhost:3000', 'https://orbs-network.github.io']
@@ -35,9 +32,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get('/is_alive', (req, res) => res.sendStatus(200));
-app.use('/api', guardiansApiFactory(web3, orbsAccount, orbsClient));
+app.use('/api', guardiansApiFactory(web3, orbsClientService));
 app.use('/api', electedValidatorsApiFactory());
 app.use('/api', validatorsApiFactory(web3));
 app.use('/api', rewardsApiFactory());
+app.use('/api', stakeApiFactory(orbsClientService));
 
 app.listen(port, () => console.log(`Started on port ${port}!`));
