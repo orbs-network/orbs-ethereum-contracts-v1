@@ -12,28 +12,37 @@ class OrbsClientService {
     this.orbsAccount = Orbs.createAccount();
   }
 
-  async getTotalStake() {
-    const totalStakeQuery = this.orbsClient.createQuery(
+  buildQuery(methodName, args) {
+    return this.orbsClient.createQuery(
       this.orbsAccount.publicKey,
       contractsInfo.OrbsVotingContract.name,
-      'getTotalStake',
-      []
+      methodName,
+      args
     );
-    const totalStakeResults = await this.orbsClient.sendQuery(totalStakeQuery);
-    return totalStakeResults.outputArguments[0].value;
   }
 
-  async getGuardianVoteWeight(address) {
-    const votingWeightQuery = this.orbsClient.createQuery(
-      this.orbsAccount.publicKey,
-      contractsInfo.OrbsVotingContract.name,
-      'getGuardianVotingWeight',
-      [Orbs.argAddress(address.toLowerCase())]
-    );
-    const votingWeightResults = await this.orbsClient.sendQuery(
-      votingWeightQuery
-    );
-    return votingWeightResults.outputArguments[0].value;
+  async sendQuery(query) {
+    const results = await this.orbsClient.sendQuery(query);
+    return results.outputArguments[0].value;
+  }
+
+  getTotalStake() {
+    const query = this.buildQuery('getTotalStake', []);
+    return this.sendQuery(query);
+  }
+
+  getGuardianVoteWeight(address) {
+    const query = this.buildQuery('getGuardianVotingWeight', [
+      Orbs.argAddress(address.toLowerCase())
+    ]);
+    return this.sendQuery(query);
+  }
+
+  getValidatorVotes(address) {
+    const query = this.buildQuery('getValidValidatorVote', [
+      Orbs.argAddress(address.toLowerCase())
+    ]);
+    return this.sendQuery(query);
   }
 }
 

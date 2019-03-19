@@ -34,7 +34,10 @@ const guardiansApiFactory = (web3, orbsClientService) => {
         orbsClientService.getTotalStake()
       ]);
 
-      data['stake'] = (votingWeightResults / totalStakeResults).toString();
+      data['stake'] = (
+        (100n * votingWeightResults) /
+        totalStakeResults
+      ).toString();
 
       res.json(data);
     } catch (err) {
