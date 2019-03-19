@@ -46,7 +46,6 @@ contract('OrbsSubscriptions', (accounts) => {
   };
 
   const subscribe = async (subsc, id, profile, value, from, current) => {
-    console.log(`ERC20: ${await subsc.orbs.call()}`);
     const orbs = OrbsTokenMock.at(await subsc.orbs.call());
     await orbs.approve.send(subsc.address, value, { from });
     const method = current ? subsc.subscribeForCurrentMonth : subsc.subscribeForNextMonth;
@@ -104,10 +103,6 @@ contract('OrbsSubscriptions', (accounts) => {
 
   beforeEach(async () => {
     token = await OrbsTokenMock.new();
-    console.log(`Deployed ERC20: ${token.address}`);
-
-    const dateTime = await DateTime.new();
-    await OrbsSubscriptionsMock.link(DateTime, dateTime.address);
   });
 
   describe('construction', async () => {
@@ -117,6 +112,11 @@ contract('OrbsSubscriptions', (accounts) => {
     beforeEach(async () => {
       const federationMembers = accounts.slice(7, 10);
       validators = await OrbsValidatorsMock.new(federationMembers, { from: owner });
+    });
+
+    beforeEach(async () => {
+      const dateTime = await DateTime.new();
+      await OrbsSubscriptionsMock.link(DateTime, dateTime.address);
     });
 
     it('should not allow to initialize with a 0x0 token', async () => {
