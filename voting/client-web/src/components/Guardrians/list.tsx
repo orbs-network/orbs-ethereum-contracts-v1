@@ -17,7 +17,8 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
         <TableRow>
           <TableCell padding="checkbox" />
           <TableCell>Name</TableCell>
-          <TableCell>Address</TableCell>
+          <TableCell>Ethereum Address</TableCell>
+          <TableCell>Orbs Address</TableCell>
           <TableCell>Website</TableCell>
           <TableCell>Last election votes against (%)</TableCell>
         </TableRow>
@@ -43,6 +44,9 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
             </TableCell>
             <TableCell data-testid={`validator-${address}-address`}>
               {address}
+            </TableCell>
+            <TableCell data-testid={`validator-${address}-orbsAddress`}>
+              {validators[address].orbsAddress}
             </TableCell>
             <TableCell>
               <Link

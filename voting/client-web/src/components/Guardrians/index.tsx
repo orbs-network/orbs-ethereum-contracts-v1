@@ -57,7 +57,12 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
 
 const GuardianPage = ({ classes, apiService }) => {
   const [validators, setValidators] = useState({} as {
-    [address: string]: { checked: boolean; name: string; url: string };
+    [address: string]: {
+      checked: boolean;
+      name: string;
+      url: string;
+      orbsAddress: string;
+    };
   });
 
   const fetchValidators = async () => {
@@ -72,7 +77,8 @@ const GuardianPage = ({ classes, apiService }) => {
         acc[currAddress] = {
           checked: false,
           name: validatorsInfo[idx]['name'],
-          url: validatorsInfo[idx]['website']
+          url: validatorsInfo[idx]['website'],
+          orbsAddress: validatorsInfo[idx]['orbsAddress']
         };
         return acc;
       },
