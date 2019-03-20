@@ -1,4 +1,7 @@
-const {BigNumber} = require('bignumber.js');
+const BN = require('bn.js');
+const chai = require('chai');
+chai.use(require('chai-bn')(BN));
+const expect = chai.expect;
 const moment = require('moment');
 const {expectRevert} = require('./assertExtensions');
 
@@ -31,7 +34,9 @@ contract('OrbsSubscriptions', (accounts) => {
 
   // Get block timestamp.
   beforeEach(async () => {
-    now = web3.eth.getBlock(web3.eth.blockNumber).timestamp;
+      const getBlock = await web3.eth.getBlock("latest");
+      now = getBlock.timestamp;
+      console.log(`set now: ${now}`);
   });
 
   const toBytes32 = (data) => {
@@ -46,8 +51,8 @@ contract('OrbsSubscriptions', (accounts) => {
   };
 
   const subscribe = async (subsc, id, profile, value, from, current) => {
-    const orbs = OrbsTokenMock.at(await subsc.orbs.call());
-    await orbs.approve.send(subsc.address, value, { from });
+    const orbs = await OrbsTokenMock.at(await subsc.orbs.call());
+    await orbs.approve(subsc.address, value, { from });
     const method = current ? subsc.subscribeForCurrentMonth : subsc.subscribeForNextMonth;
     return method(toBytes32(id), profile, value, { from });
   };
@@ -82,6 +87,7 @@ contract('OrbsSubscriptions', (accounts) => {
   };
 
   const getCurrentTime = () => {
+    console.log(`reading now: ${now}`);
     const timeNow = moment.unix(now).utc();
 
     return {
@@ -152,14 +158,14 @@ contract('OrbsSubscriptions', (accounts) => {
 
   describe('subscription and fees', async () => {
     [
-      { federationMembers: [accounts[7]] },
+      // { federationMembers: [accounts[7]] },
       { federationMembers: [accounts[3], accounts[5]] },
-      { federationMembers: accounts.slice(3, 6) },
-      { federationMembers: accounts.slice(3, 7) },
-      { federationMembers: accounts.slice(3, 8) },
-      { federationMembers: accounts.slice(3, 10) },
-      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(30, 50) },
-      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS) },
+      // { federationMembers: accounts.slice(3, 6) },
+      // { federationMembers: accounts.slice(3, 7) },
+      // { federationMembers: accounts.slice(3, 8) },
+      // { federationMembers: accounts.slice(3, 10) },
+      // { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(30, 50) },
+      // { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS) },
     ].forEach((spec) => {
       let validators;
 
@@ -187,6 +193,11 @@ contract('OrbsSubscriptions', (accounts) => {
 
         const checkSubscription = async (subscriptionManager, subscriptionId, subscriptionProfile, startTime, year,
           month, subscriptionValue) => {
+
+          if (BN.isBN(subscriptionValue)) {
+            subscriptionValue = subscriptionValue.toNumber();
+          }
+
           const subscription = await getMonthlySubscription(subscriptionManager, subscriptionId, year, month);
           expect(subscription.id).to.eql(subscriptionId);
           expect((subscription.tokens).toNumber()).to.be.equal(subscriptionValue);
@@ -201,8 +212,12 @@ contract('OrbsSubscriptions', (accounts) => {
           }
         };
 
-        const checkTotal = async (subscriptionManager, year, month, totalValue) => {
-          expect(await subscriptionManager.getTotalMonthlySubscriptionsTokens.call(year, month))
+        const checkTotal = async (subsc, year, month, totalValue) => {
+          if (!BN.isBN(totalValue)) {
+              totalValue = new BN(totalValue)
+          }
+
+          expect(await subsc.getTotalMonthlySubscriptionsTokens.call(year, month))
             .to.be.bignumber.equal(totalValue);
         };
 
@@ -277,10 +292,10 @@ contract('OrbsSubscriptions', (accounts) => {
           const currentTime = getCurrentTime();
           const beginningOfNextMonth = getBeginningOfNextMonth();
 
-          const total = values.reduce((res, i) => new BigNumber(res).plus(i));
+          const total = values.reduce((res, i) => new BN(res).add(new BN(i)));
           await checkTotal(subsc, currentTime.year, currentTime.month, total.toNumber());
 
-          const nextMonthTotal = nextMonthValues.reduce((res, i) => new BigNumber(res).plus(i));
+          const nextMonthTotal = nextMonthValues.reduce((res, i) => new BN(res).add(new BN(i)));
           await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, nextMonthTotal.toNumber());
 
           expectRevert(subsc.distributeFeesByTime(currentTime.year + 1, currentTime.month));
@@ -316,7 +331,7 @@ contract('OrbsSubscriptions', (accounts) => {
             await subscribeForCurrentMonth(subsc, id, profile, values[2], user1);
             await subscribeForCurrentMonth(subsc, id, profile, values[3], user2);
 
-            const total = values.reduce((res, i) => new BigNumber(res).plus(i));
+            const total = values.reduce((res, i) => new BN(res).add(new BN(i)));
             await checkSubscription(subsc, id, profile, now, currentTime.year, currentTime.month, total);
             await checkTotal(subsc, currentTime.year, currentTime.month, total);
           });
@@ -346,18 +361,18 @@ contract('OrbsSubscriptions', (accounts) => {
               expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(0);
             }
 
-            const total = values.reduce((res, i) => new BigNumber(res).plus(i));
+            const total = values.reduce((res, i) => new BN(res).add(new BN(i)));
             await checkTotal(subsc, currentTime.year, currentTime.month, total.toNumber());
 
-            const fee = total.idiv(spec.federationMembers.length);
-            const remainder = total.mod(spec.federationMembers.length);
+            const fee = total.div(new BN(spec.federationMembers.length));
+            const remainder = total.mod(new BN(spec.federationMembers.length));
 
             await subsc.distributeFees();
 
             for (const member of spec.federationMembers) {
               let memberFee = fee;
               if (member === spec.federationMembers[0]) {
-                memberFee = memberFee.plus(remainder);
+                memberFee = memberFee.add(new BN(remainder));
               }
 
               expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(memberFee);
@@ -370,18 +385,18 @@ contract('OrbsSubscriptions', (accounts) => {
 
             // Subscribe again and distribute the fees once more.
             await subscribeForCurrentMonth(subsc, id2, profile2, value, user2);
-            const total2 = new BigNumber(value);
+            const total2 = new BN(value);
             await checkTotal(subsc, currentTime.year, currentTime.month, total2.toNumber());
 
-            const fee2 = total2.idiv(spec.federationMembers.length);
-            const remainder2 = total2.mod(spec.federationMembers.length);
+            const fee2 = total2.div(new BN(spec.federationMembers.length));
+            const remainder2 = total2.mod(new BN(spec.federationMembers.length));
 
             await subsc.distributeFees();
 
             for (const member of spec.federationMembers) {
-              let memberFee = fee.plus(fee2);
+              let memberFee = fee.add(new BN(fee2));
               if (member === spec.federationMembers[0]) {
-                memberFee = memberFee.plus(remainder).plus(remainder2);
+                memberFee = memberFee.add(new BN(remainder).add(remainder2));
               }
 
               expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(memberFee);
@@ -392,222 +407,222 @@ contract('OrbsSubscriptions', (accounts) => {
             // Make sure that distributed again fees, since there are no active subscriptions present.
             await expectRevert(subsc.distributeFees());
           });
-
-          // it('should be able to subscribe after an upgrade', async () => {
-          //   await subscribeForCurrentMonth(subsc, id, profile, value, user1);
-          //   await checkSubscription(subsc, id, profile, now, currentTime.year, currentTime.month, value);
-          //   await checkTotal(subsc, currentTime.year, currentTime.month, value);
-          //
-          //   const newManager = await OrbsSubscriptionsMock.new(token.address, validators.address,
-          //     minimalMonthlySubscription, { from: owner });
-          //   await newManager.transferOwnership(validators.address);
-          //   await validators.upgradeSubscriptionManager(newManager.address, { from: owner });
-          //   expect(await validators.subscriptionManager.call()).to.eql(newManager.address);
-          //
-          //   await subscribeForCurrentMonth(newManager, id, profile, value * 2, user1);
-          //   await checkSubscription(newManager, id, profile, now, currentTime.year, currentTime.month, value * 2);
-          //   await checkTotal(newManager, currentTime.year, currentTime.month, value * 2);
-          // });
         });
-
-        context('next month', async () => {
-          let beginningOfNextMonth;
-
-          beforeEach(async () => {
-            beginningOfNextMonth = getBeginningOfNextMonth();
-          });
-
-          it('should subscribe to a single subscription', async () => {
-            await subscribeForNextMonth(subsc, id, profile, value, user1);
-            await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
-              beginningOfNextMonth.month, value);
-            await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, value);
-          });
-
-          it('should subscribe to multiple subscriptions', async () => {
-            await subscribeForNextMonth(subsc, id, profile, value, user1);
-            await subscribeForNextMonth(subsc, id2, profile2, value2, user1);
-
-            await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
-              beginningOfNextMonth.month, value);
-            await checkSubscription(subsc, id2, profile2, beginningOfNextMonth.time, beginningOfNextMonth.year,
-              beginningOfNextMonth.month, value2);
-            await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, value + value2);
-          });
-
-          it('should not be able to change the profile during top-up of the subscription', async () => {
-            await subscribeForNextMonth(subsc, id, profile, value, user1);
-            await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
-              beginningOfNextMonth.month, value);
-
-            await subscribeForNextMonth(subsc, id, profile2, 2 * value, user2);
-            await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
-              beginningOfNextMonth.month, 3 * value);
-          });
-
-          it('should be able to top-up the subscription', async () => {
-            const values = [value, 2 * value, value2, 1];
-            await subscribeForNextMonth(subsc, id, profile, values[0], user1);
-            await subscribeForNextMonth(subsc, id, profile, values[1], user2);
-            await subscribeForNextMonth(subsc, id, profile, values[2], user1);
-            await subscribeForNextMonth(subsc, id, profile, values[3], user2);
-
-            const total = values.reduce((res, i) => new BigNumber(res).plus(i));
-            await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
-              beginningOfNextMonth.month, total);
-            await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, total);
-          });
-
-          it('should distribute the fees between the validators members', async () => {
-            const nextMonthValues = [100 * value, 300 * value, 1000 * value2];
-            await subscribeForNextMonth(subsc, id, profile, nextMonthValues[0], user1);
-            await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
-            await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
-
-            for (const member of spec.federationMembers) {
-              expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(0);
-            }
-
-            const total = nextMonthValues.reduce((res, i) => new BigNumber(res).plus(i));
-            await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, total.toNumber());
-
-            const fee = total.idiv(spec.federationMembers.length);
-            const remainder = total.mod(spec.federationMembers.length);
-
-            // It's shouldn't be possible to distribute future funds.
-            await expectRevert(subsc.distributeFeesByTime(beginningOfNextMonth.year, beginningOfNextMonth.month));
-            await goToNextMonth();
-            await subsc.distributeFees();
-
-            for (const member of spec.federationMembers) {
-              let memberFee = fee;
-              if (member === spec.federationMembers[0]) {
-                memberFee = memberFee.plus(remainder);
-              }
-
-              expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(memberFee);
-            }
-
-            await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, 0);
-
-            // Make sure that distributed again fees, since there are no active subscriptions present.
-            await expectRevert(subsc.distributeFees());
-          });
-
-          // it('should be able to subscribe after an upgrade', async () => {
-          //   await subscribeForNextMonth(subsc, id, profile, value, user1);
-          //   await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
-          //     beginningOfNextMonth.month, value);
-          //   await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, value);
-          //
-          //   const newManager = await OrbsSubscriptionsMock.new(token.address, validators.address,
-          //     minimalMonthlySubscription, { from: owner });
-          //   await newManager.transferOwnership(validators.address);
-          //   await validators.upgradeSubscriptionManager(newManager.address, { from: owner });
-          //   expect(await validators.subscriptionManager.call()).to.eql(newManager.address);
-          //
-          //   await subscribeForNextMonth(newManager, id, profile, value * 2, user1);
-          //   await checkSubscription(newManager, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
-          //     beginningOfNextMonth.month, value * 2);
-          //   await checkTotal(newManager, beginningOfNextMonth.year, beginningOfNextMonth.month, value * 2);
-          // });
-        });
-
-        context('during 3 months', async () => {
-          // This is a mixed test which verifies the subscription model end-to-end.
-          it('should distribute the fees between the validators members', async () => {
-            const nextMonthValue = 1201;
-            const nextMonthValue2 = 8872;
-
-            const fees = [];
-
-            let currentTime = getCurrentTime();
-            fees[0] = {};
-            fees[0].year = currentTime.year;
-            fees[0].month = currentTime.month;
-
-            let currentMonthValues = [5 * value, value, 2 * value2];
-            await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[0], user1);
-            await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[1], user2);
-            await subscribeForCurrentMonth(subsc, id2, profile2, currentMonthValues[2], user1);
-
-            let nextMonthValues = [2 * nextMonthValue, nextMonthValue, 20 * nextMonthValue2];
-            await subscribeForNextMonth(subsc, id, profile, nextMonthValues[0], user1);
-            await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
-            await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
-
-            fees[0].total = currentMonthValues.reduce((res, i) => new BigNumber(res).plus(i));
-            fees[0].fee = fees[0].total.idiv(spec.federationMembers.length);
-            fees[0].remainder = fees[0].total.mod(spec.federationMembers.length);
-            await checkTotal(subsc, fees[0].year, fees[0].month, fees[0].total.toNumber());
-
-            await goToNextMonth();
-
-            currentTime = getCurrentTime();
-            fees[1] = {};
-            fees[1].year = currentTime.year;
-            fees[1].month = currentTime.month;
-
-            currentMonthValues = [value, value2, 2 * value2];
-            await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[0], user1);
-            await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[1], user2);
-            await subscribeForCurrentMonth(subsc, id2, profile2, currentMonthValues[2], user1);
-
-            fees[1].total = currentMonthValues.reduce((res, i) => new BigNumber(res).plus(i))
-              .plus(nextMonthValues.reduce((res, i) => new BigNumber(res).plus(i)));
-            fees[1].fee = fees[1].total.idiv(spec.federationMembers.length);
-            fees[1].remainder = fees[1].total.mod(spec.federationMembers.length);
-            await checkTotal(subsc, fees[1].year, fees[1].month, fees[1].total.toNumber());
-
-            await goToNextMonth();
-
-            currentTime = getCurrentTime();
-            fees[2] = {};
-            fees[2].year = currentTime.year;
-            fees[2].month = currentTime.month;
-
-            currentMonthValues = [value2, 2 * value2, 3 * value];
-            await subscribeForCurrentMonth(subsc, id, profile, value2, user1);
-            await subscribeForCurrentMonth(subsc, id, profile, 2 * value2, user2);
-            await subscribeForCurrentMonth(subsc, id2, profile2, 3 * value, user1);
-
-            nextMonthValues = [nextMonthValue, 20 * nextMonthValue2, 3 * nextMonthValue2];
-            await subscribeForNextMonth(subsc, id, profile, nextMonthValues[0], user1);
-            await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
-            await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
-
-            fees[2].total = currentMonthValues.reduce((res, i) => new BigNumber(res).plus(i));
-            fees[2].fee = fees[2].total.idiv(spec.federationMembers.length);
-            fees[2].remainder = fees[2].total.mod(spec.federationMembers.length);
-            await checkTotal(subsc, fees[2].year, fees[2].month, fees[2].total.toNumber());
-
-            await goToNextMonth();
-
-            // Distribute the monthly fees.
-            for (const fee of fees) {
-              const balances = {};
-              for (const member of spec.federationMembers) {
-                balances[member] = await token.balanceOf.call(member);
-              }
-
-              await subsc.distributeFeesByTime(fee.year, fee.month);
-
-              for (const member of spec.federationMembers) {
-                let memberBalance = balances[member].plus(fee.fee);
-                if (member === spec.federationMembers[0]) {
-                  memberBalance = memberBalance.plus(fee.remainder);
-                }
-
-                expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(memberBalance);
-              }
-
-              await checkTotal(subsc, fee.year, fee.month, 0);
-
-              // Make sure that distributed again fees, since there are no active subscriptions present.
-              await expectRevert(subsc.distributeFeesByTime(fee.year, fee.month));
-            }
-          });
-        });
+        //   // it('should be able to subscribe after an upgrade', async () => {
+        //   //   await subscribeForCurrentMonth(subsc, id, profile, value, user1);
+        //   //   await checkSubscription(subsc, id, profile, now, currentTime.year, currentTime.month, value);
+        //   //   await checkTotal(subsc, currentTime.year, currentTime.month, value);
+        //   //
+        //   //   const newManager = await OrbsSubscriptionsMock.new(token.address, validators.address,
+        //   //     minimalMonthlySubscription, { from: owner });
+        //   //   await newManager.transferOwnership(validators.address);
+        //   //   await validators.upgradeSubscriptionManager(newManager.address, { from: owner });
+        //   //   expect(await validators.subscriptionManager.call()).to.eql(newManager.address);
+        //   //
+        //   //   await subscribeForCurrentMonth(newManager, id, profile, value * 2, user1);
+        //   //   await checkSubscription(newManager, id, profile, now, currentTime.year, currentTime.month, value * 2);
+        //   //   await checkTotal(newManager, currentTime.year, currentTime.month, value * 2);
+        //   // });
+        // });
+        //
+        // context('next month', async () => {
+        //   let beginningOfNextMonth;
+        //
+        //   beforeEach(async () => {
+        //     beginningOfNextMonth = getBeginningOfNextMonth();
+        //   });
+        //
+        //   it('should subscribe to a single subscription', async () => {
+        //     await subscribeForNextMonth(subsc, id, profile, value, user1);
+        //     await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //       beginningOfNextMonth.month, value);
+        //     await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, value);
+        //   });
+        //
+        //   it('should subscribe to multiple subscriptions', async () => {
+        //     await subscribeForNextMonth(subsc, id, profile, value, user1);
+        //     await subscribeForNextMonth(subsc, id2, profile2, value2, user1);
+        //
+        //     await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //       beginningOfNextMonth.month, value);
+        //     await checkSubscription(subsc, id2, profile2, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //       beginningOfNextMonth.month, value2);
+        //     await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, value + value2);
+        //   });
+        //
+        //   it('should not be able to change the profile during top-up of the subscription', async () => {
+        //     await subscribeForNextMonth(subsc, id, profile, value, user1);
+        //     await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //       beginningOfNextMonth.month, value);
+        //
+        //     await subscribeForNextMonth(subsc, id, profile2, 2 * value, user2);
+        //     await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //       beginningOfNextMonth.month, 3 * value);
+        //   });
+        //
+        //   it('should be able to top-up the subscription', async () => {
+        //     const values = [value, 2 * value, value2, 1];
+        //     await subscribeForNextMonth(subsc, id, profile, values[0], user1);
+        //     await subscribeForNextMonth(subsc, id, profile, values[1], user2);
+        //     await subscribeForNextMonth(subsc, id, profile, values[2], user1);
+        //     await subscribeForNextMonth(subsc, id, profile, values[3], user2);
+        //
+        //     const total = values.reduce((res, i) => new BN(res).add(new BN(i)));
+        //     await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //       beginningOfNextMonth.month, total);
+        //     await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, total);
+        //   });
+        //
+        //   it('should distribute the fees between the validators members', async () => {
+        //     const nextMonthValues = [100 * value, 300 * value, 1000 * value2];
+        //     await subscribeForNextMonth(subsc, id, profile, nextMonthValues[0], user1);
+        //     await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
+        //     await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
+        //
+        //     for (const member of spec.federationMembers) {
+        //       expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(0);
+        //     }
+        //
+        //     const total = nextMonthValues.reduce((res, i) => new BN(res).add(new BN(i)));
+        //     await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, total.toNumber());
+        //
+        //     const fee = total.div(new BN(spec.federationMembers.length));
+        //     const remainder = total.mod(new BN(spec.federationMembers.length));
+        //
+        //     // It's shouldn't be possible to distribute future funds.
+        //     await expectRevert(subsc.distributeFeesByTime(beginningOfNextMonth.year, beginningOfNextMonth.month));
+        //     await goToNextMonth();
+        //     await subsc.distributeFees();
+        //
+        //     for (const member of spec.federationMembers) {
+        //       let memberFee = fee;
+        //       if (member === spec.federationMembers[0]) {
+        //         memberFee = memberFee.add(new BN(remainder));
+        //       }
+        //
+        //       expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(memberFee);
+        //     }
+        //
+        //     await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, 0);
+        //
+        //     // Make sure that distributed again fees, since there are no active subscriptions present.
+        //     await expectRevert(subsc.distributeFees());
+        //   });
+        //
+        //   // it('should be able to subscribe after an upgrade', async () => {
+        //   //   await subscribeForNextMonth(subsc, id, profile, value, user1);
+        //   //   await checkSubscription(subsc, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //   //     beginningOfNextMonth.month, value);
+        //   //   await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, value);
+        //   //
+        //   //   const newManager = await OrbsSubscriptionsMock.new(token.address, validators.address,
+        //   //     minimalMonthlySubscription, { from: owner });
+        //   //   await newManager.transferOwnership(validators.address);
+        //   //   await validators.upgradeSubscriptionManager(newManager.address, { from: owner });
+        //   //   expect(await validators.subscriptionManager.call()).to.eql(newManager.address);
+        //   //
+        //   //   await subscribeForNextMonth(newManager, id, profile, value * 2, user1);
+        //   //   await checkSubscription(newManager, id, profile, beginningOfNextMonth.time, beginningOfNextMonth.year,
+        //   //     beginningOfNextMonth.month, value * 2);
+        //   //   await checkTotal(newManager, beginningOfNextMonth.year, beginningOfNextMonth.month, value * 2);
+        //   // });
+        // });
+        //
+        // context('during 3 months', async () => {
+        //   // This is a mixed test which verifies the subscription model end-to-end.
+        //   it('should distribute the fees between the validators members', async () => {
+        //     const nextMonthValue = 1201;
+        //     const nextMonthValue2 = 8872;
+        //
+        //     const fees = [];
+        //
+        //     let currentTime = getCurrentTime();
+        //     fees[0] = {};
+        //     fees[0].year = currentTime.year;
+        //     fees[0].month = currentTime.month;
+        //
+        //     let currentMonthValues = [5 * value, value, 2 * value2];
+        //     await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[0], user1);
+        //     await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[1], user2);
+        //     await subscribeForCurrentMonth(subsc, id2, profile2, currentMonthValues[2], user1);
+        //
+        //     let nextMonthValues = [2 * nextMonthValue, nextMonthValue, 20 * nextMonthValue2];
+        //     await subscribeForNextMonth(subsc, id, profile, nextMonthValues[0], user1);
+        //     await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
+        //     await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
+        //
+        //     fees[0].total = currentMonthValues.reduce((res, i) => new BN(res).add(new BN(i)));
+        //     fees[0].fee = fees[0].total.div(new BN(spec.federationMembers.length));
+        //     fees[0].remainder = fees[0].total.mod(new BN(spec.federationMembers.length));
+        //     await checkTotal(subsc, fees[0].year, fees[0].month, fees[0].total.toNumber());
+        //
+        //     await goToNextMonth();
+        //
+        //     currentTime = getCurrentTime();
+        //     fees[1] = {};
+        //     fees[1].year = currentTime.year;
+        //     fees[1].month = currentTime.month;
+        //
+        //     currentMonthValues = [value, value2, 2 * value2];
+        //     await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[0], user1);
+        //     await subscribeForCurrentMonth(subsc, id, profile, currentMonthValues[1], user2);
+        //     await subscribeForCurrentMonth(subsc, id2, profile2, currentMonthValues[2], user1);
+        //
+        //     fees[1].total = currentMonthValues.reduce((res, i) => new BN(res).add(new BN(i)))
+        //       .add(nextMonthValues.reduce((res, i) => new BN(res).add(new BN(i))));
+        //     fees[1].fee = fees[1].total.div(new BN(spec.federationMembers.length));
+        //     fees[1].remainder = fees[1].total.mod(new BN(spec.federationMembers.length));
+        //     await checkTotal(subsc, fees[1].year, fees[1].month, fees[1].total.toNumber());
+        //
+        //     await goToNextMonth();
+        //
+        //     currentTime = getCurrentTime();
+        //     fees[2] = {};
+        //     fees[2].year = currentTime.year;
+        //     fees[2].month = currentTime.month;
+        //
+        //     currentMonthValues = [value2, 2 * value2, 3 * value];
+        //     await subscribeForCurrentMonth(subsc, id, profile, value2, user1);
+        //     await subscribeForCurrentMonth(subsc, id, profile, 2 * value2, user2);
+        //     await subscribeForCurrentMonth(subsc, id2, profile2, 3 * value, user1);
+        //
+        //     nextMonthValues = [nextMonthValue, 20 * nextMonthValue2, 3 * nextMonthValue2];
+        //     await subscribeForNextMonth(subsc, id, profile, nextMonthValues[0], user1);
+        //     await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
+        //     await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
+        //
+        //     fees[2].total = currentMonthValues.reduce((res, i) => new BN(res).add(new BN(i)));
+        //     fees[2].fee = fees[2].total.div(new BN(spec.federationMembers.length));
+        //     fees[2].remainder = fees[2].total.mod(new BN(spec.federationMembers.length));
+        //     await checkTotal(subsc, fees[2].year, fees[2].month, fees[2].total.toNumber());
+        //
+        //     await goToNextMonth();
+        //
+        //     // Distribute the monthly fees.
+        //     for (const fee of fees) {
+        //       const balances = {};
+        //       for (const member of spec.federationMembers) {
+        //         balances[member] = await token.balanceOf.call(member);
+        //       }
+        //
+        //       await subsc.distributeFeesByTime(fee.year, fee.month);
+        //
+        //       for (const member of spec.federationMembers) {
+        //         let memberBalance = balances[member].add(new BN(fee.fee));
+        //         if (member === spec.federationMembers[0]) {
+        //           memberBalance = memberBalance.add(new BN(fee.remainder));
+        //         }
+        //
+        //         expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(memberBalance);
+        //       }
+        //
+        //       await checkTotal(subsc, fee.year, fee.month, 0);
+        //
+        //       // Make sure that distributed again fees, since there are no active subscriptions present.
+        //       await expectRevert(subsc.distributeFeesByTime(fee.year, fee.month));
+        //     }
+        //   });
+        // });
       });
     });
   });
