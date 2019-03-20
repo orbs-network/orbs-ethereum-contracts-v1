@@ -40,7 +40,7 @@ module.exports = async function (done) {
 
         let txs = validators.map(address => {
             return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, accounts[0]).then(() => {
-                return validatorsInstance.addValidator(address).on("transactionHash", hash => {
+                return validatorsInstance.approve(address).on("transactionHash", hash => {
                     console.error("TxHash (OrbsValidators registration): " + hash);
                 });
             });
@@ -53,7 +53,7 @@ module.exports = async function (done) {
 
         txs = validators.map((address, i) => {
             return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, accounts[0]).then(() => {
-                return validatorsRegInstance.register(`Validator ${i}`, ips[i], `https://www.validator${i}.com`, orbsAddresses[i], {from: address})
+                return validatorsRegInstance.register(`Validator ${i}`, ips[i], `https://www.validator${i}.com`, orbsAddresses[i], web3.utils.randomHex(32), {from: address})
                     .on("transactionHash", hash => {
                         console.error("TxHash (OrbsValidatorsRegistry registration): " + hash);
                     });

@@ -34,7 +34,7 @@ interface IOrbsValidatorsRegistry {
             bytes20 orbsAddress,
             bytes memory declarationHash
         );
-    function getRegistrationBlockHeight(address validator)
+    function getRegistrationBlockNumber(address validator)
         external
         view
         returns (uint registeredOn, uint lastUpdatedOn);

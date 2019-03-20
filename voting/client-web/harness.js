@@ -16,10 +16,10 @@ const addGuardians = async (guardians, contract) => {
     .send({ from: address, gas: 6721975 })));
 };
 
-const addValidators = async (validators, contract, registryContract) => {
+const approves = async (validators, contract, registryContract) => {
   await Promise.all(validators.map(address => contract
     .methods
-    .addValidator(address)
+    .approve(address)
     .send({ from })))
 
   await Promise.all(validators.map((address, idx) => registryContract
@@ -55,7 +55,7 @@ const addValidators = async (validators, contract, registryContract) => {
   );
 
   await addGuardians(guardians, guardiansContract);
-  await addValidators(validators, validatorsContract, validatorsRegistryContract);
+  await approves(validators, validatorsContract, validatorsRegistryContract);
 
   process.exit();
 })();

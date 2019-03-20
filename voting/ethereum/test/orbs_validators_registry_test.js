@@ -79,12 +79,12 @@ contract('OrbsValidatorsRegistry', accounts => {
             });
         });
 
-        describe('and then getRegistrationBlockHeight() is called', () => {
+        describe('and then getRegistrationBlockNumber() is called', () => {
             it('should return the correct the registration block height', async () => {
                 await driver.deployRegistry();
 
                 const regRes = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash, {from: accounts[1]});
-                const regBlk = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
+                const regBlk = await driver.OrbsRegistry.getRegistrationBlockNumber(accounts[1]);
 
                 const blockNumber = regRes.receipt.blockNumber;
                 assert.equal(regBlk.registeredOn.toNumber(), blockNumber);
@@ -168,7 +168,7 @@ contract('OrbsValidatorsRegistry', accounts => {
                 const regRes1 = await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), "0xCCDD", {from: accounts[1]});
                 const regRes2 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash, {from: accounts[1]});
                 
-                const regBlck = await driver.OrbsRegistry.getRegistrationBlockHeight(accounts[1]);
+                const regBlck = await driver.OrbsRegistry.getRegistrationBlockNumber(accounts[1]);
                 const registrationHeight = regRes1.receipt.blockNumber;
                 const updateHeight = regRes2.receipt.blockNumber;
                 assert(registrationHeight < updateHeight, "expected registration block height to be less than updating block height");
