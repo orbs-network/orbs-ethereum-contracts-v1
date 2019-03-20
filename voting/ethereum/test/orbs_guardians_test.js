@@ -22,7 +22,7 @@ contract('OrbsGuardians', accounts => {
     });
 
     describe('when calling the register() function', () => {
-        it('should reflect registration in calls to: getGuardianData(), isGuardian(), getGuardians(), getRegistrationBlockHeight()', async () => {
+        it('should reflect registration in calls to: getGuardianData(), isGuardian(), getGuardians(), getRegistrationBlockNumber()', async () => {
             await driver.deployGuardians();
 
             await assertReject(driver.OrbsGuardians.getGuardianData(accounts[1]), "expected getting data before registration to fail");
@@ -42,7 +42,7 @@ contract('OrbsGuardians', accounts => {
             const retrievedGuardianList = await driver.OrbsGuardians.getGuardians(0, 10);
             assert.deepEqual(retrievedGuardianList, [accounts[1]], "expected list with the registered account address");
 
-            const regBlk = await driver.OrbsGuardians.getRegistrationBlockHeight(accounts[1]);
+            const regBlk = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
             const blockNumber = regRes.receipt.blockNumber;
             assert.equal(regBlk.registeredOn.toNumber(), blockNumber);
             assert.equal(regBlk.lastUpdatedOn.toNumber(), blockNumber);
@@ -189,7 +189,7 @@ contract('OrbsGuardians', accounts => {
                 const regRes1 = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
                 const regRes2 = await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
 
-                const regBlck = await driver.OrbsGuardians.getRegistrationBlockHeight(accounts[1]);
+                const regBlck = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
                 const registrationHeight = regRes1.receipt.blockNumber;
                 const updateHeight = regRes2.receipt.blockNumber;
                 assert(registrationHeight < updateHeight, "expected registration block height to be less than updating block height");

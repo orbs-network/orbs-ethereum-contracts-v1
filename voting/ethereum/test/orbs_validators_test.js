@@ -61,18 +61,18 @@ contract('OrbsValidators', accounts => {
         });
     });
 
-    describe('when calling getAdditionBlockHeight() function', () => {
+    describe('when calling getAdditionBlockNumber() function', () => {
         it('returns the block height when the validator was last added, or 0 if never added', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
-            const zeroBlockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
-            assert.equal(zeroBlockHeight, 0, "expected addition block height to be 0 before addition");
+            const zeroBlockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
+            assert.equal(zeroBlockNumber, 0, "expected addition block height to be 0 before addition");
 
             const additionResult = await driver.OrbsValidators.addValidator(accounts[0]);
-            const additionBlockHeight = additionResult.receipt.blockNumber;
+            const additionBlockNumber = additionResult.receipt.blockNumber;
 
-            const blockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
-            assert.equal(blockHeight, additionBlockHeight, "expected addition block height to reflect the block height of addition tx");
+            const blockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
+            assert.equal(blockNumber, additionBlockNumber, "expected addition block height to reflect the block height of addition tx");
         });
     });
 
@@ -142,8 +142,8 @@ contract('OrbsValidators', accounts => {
             await driver.OrbsValidators.addValidator(accounts[0]);
 
             await driver.OrbsValidators.remove(accounts[0]);
-            const blockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
-            assert.equal(blockHeight, 0, "expected addition block height to be cleared after removal");
+            const blockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
+            assert.equal(blockNumber, 0, "expected addition block height to be cleared after removal");
         });
 
         it('removes only the correct validator', async () => {

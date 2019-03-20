@@ -96,7 +96,7 @@
           "type": "address"
         }
       ],
-      "name": "getRegistrationBlockHeight",
+      "name": "getRegistrationBlockNumber",
       "outputs": [
         {
           "name": "registeredOn",
@@ -145,7 +145,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-20T08:26:33.923Z",
+  "updatedAt": "2019-03-20T14:22:35.205Z",
   "devdoc": {
     "methods": {}
   },

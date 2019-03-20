@@ -118,7 +118,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         return getValidatorData(msg.sender);
     }
 
-    function getRegistrationBlockHeight(address validator)
+    function getRegistrationBlockNumber(address validator)
         external
         view
         returns (uint registeredOn, uint lastUpdatedOn)

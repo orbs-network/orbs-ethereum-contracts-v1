@@ -11,10 +11,10 @@ interface IOrbsVoting {
 
     function voteOut(address[] calldata validators) external;
     function delegate(address to) external;
-    function getLastVote(address guardian)
+    function getCurrentVote(address guardian)
         external
         view
-        returns (address[] memory validators, uint blockHeight);
+        returns (address[] memory validators, uint blockNumber);
     function getCurrentDelegation(address delegator)
         external
         view

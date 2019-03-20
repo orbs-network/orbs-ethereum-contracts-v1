@@ -19,7 +19,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     IOrbsValidatorsRegistry public orbsValidatorsRegistry;
 
     address[] internal approvedValidators;
-    mapping(address => uint) internal approvalBlockHeight;
+    mapping(address => uint) internal approvalBlockNumber;
 
     constructor(address registry_, uint validatorLimit_) public {
         require(registry_ != address(0), "Registry contract address 0");
@@ -41,7 +41,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         require(!isApproved(validator), "Address must not be already approved");
 
         approvedValidators.push(validator);
-        approvalBlockHeight[validator] = block.number;
+        approvalBlockNumber[validator] = block.number;
         emit ValidatorAdded(validator);
     }
 
@@ -49,10 +49,14 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         uint approvedLength = approvedValidators.length;
         for (uint i = 0; i < approvedLength; ++i) {
             if (approvedValidators[i] == validator) {
+
+                // replace with last element and remove from end
                 approvedValidators[i] = approvedValidators[approvedLength - 1];
                 delete approvedValidators[approvedLength - 1];
                 approvedValidators.length--;
-                delete approvalBlockHeight[validator];
+
+                // clear approval block height
+                delete approvalBlockNumber[validator];
 
                 emit ValidatorRemoved(validator);
                 return;
@@ -80,12 +84,12 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         return validators;
     }
 
-    function getApprovalBockHeight(address validator)
+    function getApprovalBlockNumber(address validator)
         external
         view
         returns (uint)
     {
-        return approvalBlockHeight[validator];
+        return approvalBlockNumber[validator];
     }
 
     function getNetworkTopology()
@@ -108,7 +112,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     }
 
     function isApproved(address m) internal view returns (bool) {
-        return approvalBlockHeight[m] > 0;
+        return approvalBlockNumber[m] > 0;
     }
 
     function countRegisteredValidators() internal view returns (uint) {

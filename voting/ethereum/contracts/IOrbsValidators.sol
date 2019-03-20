@@ -9,7 +9,7 @@ interface IOrbsValidators {
     function remove(address validator) external;
     function isValidator(address validator) external view returns (bool);
     function getValidators() external view returns (bytes20[] memory);
-    function getApprovalBockHeight(address validator)
+    function getApprovalBlockNumber(address validator)
         external
         view
         returns (uint);
