@@ -57,7 +57,7 @@ async function registerValidator(v, vr, account, bank) {
     }
 
     if (!await v.isValidator(account)) {
-        await v.addValidator(account);
+        await v.approve(account);
         message = message + "added to permitted validators, "
     }
     message = message + "done.";

@@ -30,7 +30,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         orbsValidatorsRegistry = IOrbsValidatorsRegistry(registry_);
     }
 
-    function addValidator(address validator) public onlyOwner {
+    function approve(address validator) public onlyOwner {
         require(validator != address(0), "Address must not be 0!");
         require(
             approvedValidators.length <= validatorLimit - 1 &&

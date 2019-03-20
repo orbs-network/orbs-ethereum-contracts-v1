@@ -21,12 +21,12 @@ contract('OrbsValidators', accounts => {
         });
     });
 
-    describe('when calling the addValidator() function', () => {
+    describe('when calling the approve() function', () => {
         it('should add the member to the list and emit event', async () => {
             await driver.deployValidators(100);
 
             const validatorAddr  = numToAddress(1);
-            let r = await driver.OrbsValidators.addValidator(validatorAddr);
+            let r = await driver.OrbsValidators.approve(validatorAddr);
             assert.equal(r.logs[0].event, "ValidatorAdded");
 
             let approved = await driver.OrbsValidators.isApproved(validatorAddr);
@@ -35,7 +35,7 @@ contract('OrbsValidators', accounts => {
 
         it('should not allow address 0', async () => {
             await driver.deployValidators(100);
-            await assertReject(driver.OrbsValidators.addValidator(numToAddress(0)));
+            await assertReject(driver.OrbsValidators.approve(numToAddress(0)));
         });
 
         it('does not allow initializing with validator limit out of range', async () => {
@@ -48,13 +48,13 @@ contract('OrbsValidators', accounts => {
         it('enforces validator limit', async () => {
             await driver.deployValidators(1);
 
-            await assertResolve(driver.OrbsValidators.addValidator(numToAddress(1)));
-            await assertReject(driver.OrbsValidators.addValidator(numToAddress(2)));
+            await assertResolve(driver.OrbsValidators.approve(numToAddress(1)));
+            await assertReject(driver.OrbsValidators.approve(numToAddress(2)));
         });
 
         it('allows only owner to add validators', async () => {
             await driver.deployValidators(100);
-            await assertReject(driver.OrbsValidators.addValidator(numToAddress(22234), {from: accounts[1]}));
+            await assertReject(driver.OrbsValidators.approve(numToAddress(22234), {from: accounts[1]}));
         });
     });
 
@@ -65,7 +65,7 @@ contract('OrbsValidators', accounts => {
             const zeroBlockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
             assert.equal(zeroBlockNumber, 0, "expected addition block height to be 0 before addition");
 
-            const additionResult = await driver.OrbsValidators.addValidator(accounts[0]);
+            const additionResult = await driver.OrbsValidators.approve(accounts[0]);
             const additionBlockNumber = additionResult.receipt.blockNumber;
 
             const blockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
@@ -93,8 +93,8 @@ contract('OrbsValidators', accounts => {
                     const validatorAddr1  = accounts[1];
                     const validatorAddr2  = accounts[2];
 
-                    await driver.addValidatorWithData(validatorAddr1);
-                    await driver.addValidatorWithData(validatorAddr2);
+                    await driver.approveAndRegister(validatorAddr1);
+                    await driver.approveAndRegister(validatorAddr2);
 
                     members = await functionUnderTest()
 
@@ -110,7 +110,7 @@ contract('OrbsValidators', accounts => {
             const validatorAddr  = accounts[3];
             const nonValidatorAddr  = numToAddress(894);
 
-            await driver.addValidatorWithData(validatorAddr);
+            await driver.approveAndRegister(validatorAddr);
 
             assert.isOk(await driver.OrbsValidators.isValidator(validatorAddr));
             assert.isNotOk(await driver.OrbsValidators.isValidator(nonValidatorAddr));
@@ -121,7 +121,7 @@ contract('OrbsValidators', accounts => {
         it('should fail for non owner but succeed for owner', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
-            await driver.addValidatorWithData(accounts[1]); // add validator and set data
+            await driver.approveAndRegister(accounts[1]); // add validator and set data
             assert.isOk(await driver.OrbsValidators.isValidator(accounts[1]));
 
             await assertReject(driver.OrbsValidators.remove(accounts[1], {from: accounts[1]}), "expected failure when called by non owner");
@@ -129,7 +129,7 @@ contract('OrbsValidators', accounts => {
             assert.equal(r1.logs[0].event, "ValidatorRemoved");
             assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[1]));
 
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[2])); // add validator but don't set data
+            await assertResolve(driver.OrbsValidators.approve(accounts[2])); // add validator but don't set data
             const r2 = await driver.OrbsValidators.remove(accounts[2]);
             assert.equal(r2.logs[0].event, "ValidatorRemoved");
 
@@ -139,7 +139,7 @@ contract('OrbsValidators', accounts => {
         it('fails if not by owner', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
-            await driver.OrbsValidators.addValidator(accounts[0]);
+            await driver.OrbsValidators.approve(accounts[0]);
 
             const r = await driver.OrbsValidators.remove(accounts[0]);
             assert.equal(r.logs[0].event, "ValidatorRemoved");
@@ -148,7 +148,7 @@ contract('OrbsValidators', accounts => {
         it('clears addition block height', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
-            await driver.OrbsValidators.addValidator(accounts[0]);
+            await driver.OrbsValidators.approve(accounts[0]);
 
             await driver.OrbsValidators.remove(accounts[0]);
             const blockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
@@ -158,10 +158,10 @@ contract('OrbsValidators', accounts => {
         it('removes only the correct validator', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
-            await driver.addValidatorWithData(accounts[1]); // add validator and set data
-            await driver.addValidatorWithData(accounts[2]); // add validator and set data
-            await driver.addValidatorWithData(accounts[3]); // add validator and set data
-            await driver.addValidatorWithData(accounts[4]); // add validator and set data
+            await driver.approveAndRegister(accounts[1]); // add validator and set data
+            await driver.approveAndRegister(accounts[2]); // add validator and set data
+            await driver.approveAndRegister(accounts[3]); // add validator and set data
+            await driver.approveAndRegister(accounts[4]); // add validator and set data
             assert.isOk(await driver.OrbsValidators.isValidator(accounts[1]));
             assert.isOk(await driver.OrbsValidators.isValidator(accounts[2]));
             assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
@@ -215,9 +215,9 @@ contract('OrbsValidators', accounts => {
             let addresses = [numToAddress(12345), numToAddress(6789), numToAddress(34657)];
             let ips = ["0xaabbccdd", "0x11223344", "0x1122AAFF"];
 
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[0]));
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[1])); // decoy - this guy never sets his data
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[2]));
+            await assertResolve(driver.OrbsValidators.approve(accounts[0]));
+            await assertResolve(driver.OrbsValidators.approve(accounts[1])); // decoy - this guy never sets his data
+            await assertResolve(driver.OrbsValidators.approve(accounts[2]));
 
             await driver.OrbsRegistry.register("test0", ips[0], "url0", addresses[0], "0xF1", {from: accounts[0]});
             await driver.OrbsRegistry.register("test1", ips[1], "url1", addresses[1], "0xF2", {from: accounts[2]});
@@ -237,7 +237,7 @@ contract('OrbsValidators', accounts => {
 
             assert.isNotOk(await driver.OrbsValidators.isApproved(accounts[4]), "expected validator to not be approved before it was approved");
 
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[4]));
+            await assertResolve(driver.OrbsValidators.approve(accounts[4]));
 
             assert.isOk(await driver.OrbsValidators.isApproved(accounts[4]), "expected validator to  be approved after it was approved");
 
