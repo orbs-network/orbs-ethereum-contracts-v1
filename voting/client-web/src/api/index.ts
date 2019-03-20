@@ -56,4 +56,10 @@ export class ApiService implements IApiStrategy {
   getTotalStake() {
     return this.remote.getTotalStake();
   }
+  getCurrentDelegation() {
+    return this.metamask.getCurrentDelegation();
+  }
+  getLastVote() {
+    return this.metamask.getLastVote();
+  }
 }

@@ -42,4 +42,10 @@ export class ApiStrategyStub implements IApiStrategy {
   getTotalStake() {
     return Promise.resolve('totally-fake-stake');
   }
+  getCurrentDelegation() {
+    return Promise.resolve('');
+  }
+  getLastVote() {
+    return Promise.resolve({ validators: [] });
+  }
 }

@@ -26,4 +26,6 @@ export interface IApiStrategy {
   ): Promise<{}>;
   getRewards(address: string): Promise<any>;
   getTotalStake(): Promise<string>;
+  getCurrentDelegation(): Promise<address>;
+  getLastVote(): Promise<{ validators: string[] }>;
 }

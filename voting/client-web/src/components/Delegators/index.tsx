@@ -20,6 +20,7 @@ const DelegatorsPage = ({ apiService }) => {
   ] = useState(false);
 
   const [totalStake, setTotalStake] = useState('0');
+  const [delegatedTo, setDelegatedTo] = useState('');
 
   const fetchTotalStake = async () => {
     const totalStake = await apiService.getTotalStake();
@@ -43,13 +44,22 @@ const DelegatorsPage = ({ apiService }) => {
     setGuardians(guardiansStateObject);
   };
 
+  const fetchDelegatedTo = async () => {
+    if (hasMetamask()) {
+      const res = await apiService.getCurrentDelegation();
+      setDelegatedTo(res);
+    }
+  };
+
   useEffect(() => {
     fetchTotalStake();
     fetchGuardians();
+    fetchDelegatedTo();
   }, []);
 
   const delegate = async candidate => {
     const receipt = await apiService.delegate(candidate);
+    fetchDelegatedTo();
     console.log(receipt);
   };
 
@@ -103,9 +113,15 @@ const DelegatorsPage = ({ apiService }) => {
         </Typography>
       )}
 
-      <Typography paragraph variant="body1" color="textPrimary">
-        Delegation Status: Your vote is going to `0x`
-      </Typography>
+      {hasMetamask() && delegatedTo.length > 0 ? (
+        <Typography paragraph variant="body1" color="textPrimary">
+          Delegation Status: Your vote is going to `{delegatedTo}`.
+        </Typography>
+      ) : (
+        <Typography paragraph variant="body1" color="textPrimary">
+          Delegation Status: You have not delegated to anyone yet.
+        </Typography>
+      )}
 
       <GuardianDialog
         readOnly={!hasMetamask()}

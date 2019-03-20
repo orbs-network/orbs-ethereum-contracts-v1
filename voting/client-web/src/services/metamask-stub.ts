@@ -29,4 +29,15 @@ export class MetamaskServiceStub {
     );
     return Promise.reject();
   }
+
+  getCurrentDelegation() {
+    console.warn(
+      'Method "getCurrentDelegation" is not available in read-only mode'
+    );
+    return Promise.reject();
+  }
+  getLastVote() {
+    console.warn('Method "getLastVote" is not available in read-only mode');
+    return Promise.reject();
+  }
 }

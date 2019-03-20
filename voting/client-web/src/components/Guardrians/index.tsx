@@ -65,6 +65,8 @@ const GuardianPage = ({ classes, apiService }) => {
     };
   });
 
+  const [lastVote, setLastVote] = useState([]);
+
   const fetchValidators = async () => {
     const validatorsInState = await apiService.getValidators();
 
@@ -100,6 +102,17 @@ const GuardianPage = ({ classes, apiService }) => {
     setValidators(resultValidators);
   };
 
+  const fetchLastVote = async () => {
+    try {
+      if (hasMetamask()) {
+        const { validators } = await apiService.getLastVote();
+        setLastVote(validators);
+      }
+    } catch (err) {
+      console.warn('Guardian did not vote before');
+    }
+  };
+
   const commitVote = async () => {
     const from = await apiService.getCurrentAddress();
     const stagedValidators = Object.keys(validators).filter(
@@ -107,6 +120,7 @@ const GuardianPage = ({ classes, apiService }) => {
     );
     const receipt = await apiService.voteOut(stagedValidators);
     save(from, stagedValidators);
+    fetchLastVote();
     console.log(receipt);
   };
 
@@ -122,6 +136,7 @@ const GuardianPage = ({ classes, apiService }) => {
 
   useEffect(() => {
     fetchValidators();
+    fetchLastVote();
   }, []);
 
   return (
@@ -159,9 +174,25 @@ const GuardianPage = ({ classes, apiService }) => {
         )}
       </div>
 
-      <Typography paragraph variant="body1" color="textPrimary">
-        Your most recent vote was against: `0x`
-      </Typography>
+      {hasMetamask() && lastVote.length > 0 ? (
+        <Typography variant="body1" color="textPrimary">
+          Your most recent vote was against:
+          {lastVote.map(address => (
+            <Typography
+              style={{ lineHeight: 1.7 }}
+              variant="overline"
+              key={address}
+              color="textSecondary"
+            >
+              {address}
+            </Typography>
+          ))}
+        </Typography>
+      ) : (
+        <Typography variant="body1" color="textPrimary">
+          You have not voted yet
+        </Typography>
+      )}
     </>
   );
 };
