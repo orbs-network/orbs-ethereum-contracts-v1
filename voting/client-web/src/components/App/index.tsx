@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core/styles';
 import theme from './theme';
 import styles from './style';
-import ReadOnlyBanner from '../ReadOnlyBanner';
 import { ApiService } from '../../api';
 import { Mode } from '../../api/interface';
 
@@ -27,9 +26,8 @@ class App extends Component<WithStyles> {
         <MuiThemeProvider theme={theme}>
           <CssBaseline />
           <div className={classes.root} data-testid="container">
-            <Header />
+            <Header isReadOnly={this.apiService.mode === Mode.ReadOnly} />
             <Main apiService={this.apiService} />
-            {this.apiService.mode === Mode.ReadOnly ? <ReadOnlyBanner /> : null}
           </div>
         </MuiThemeProvider>
       </Router>
