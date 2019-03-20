@@ -40,8 +40,8 @@ module.exports.Driver = class {
         await this.deployValidators(maxValidators)
     };
 
-    async addValidatorWithData(validatorAddress) {
-        await this.OrbsValidators.addValidator(validatorAddress);
+    async approveAndRegister(validatorAddress) {
+        await this.OrbsValidators.approve(validatorAddress);
         await this.register(validatorAddress);
     };
 

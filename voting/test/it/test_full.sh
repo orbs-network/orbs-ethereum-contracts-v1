@@ -6,7 +6,6 @@ fi
 
 cp ../../build/ethereum/*.json ./build/contracts
 
-gamma-cli stop-local
 gamma_server_env="experimental"
 [[ "$@" =~ "local" ]] && gamma_server_env="local"
 

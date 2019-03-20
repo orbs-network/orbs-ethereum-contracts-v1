@@ -96,7 +96,7 @@
           "type": "address"
         }
       ],
-      "name": "getRegistrationBlockHeight",
+      "name": "getRegistrationBlockNumber",
       "outputs": [
         {
           "name": "registeredOn",
@@ -133,6 +133,29 @@
       "payable": false,
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "offset",
+          "type": "uint256"
+        },
+        {
+          "name": "limit",
+          "type": "uint256"
+        }
+      ],
+      "name": "getGuardiansBytes20",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes20[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
   "bytecode": "0x",
@@ -145,7 +168,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-20T08:26:33.923Z",
+  "updatedAt": "2019-03-20T16:09:50.270Z",
   "devdoc": {
     "methods": {}
   },

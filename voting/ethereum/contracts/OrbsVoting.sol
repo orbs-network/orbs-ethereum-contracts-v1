@@ -6,7 +6,7 @@ import "./IOrbsVoting.sol";
 
 contract OrbsVoting is IOrbsVoting {
     struct VotingRecord {
-        uint blockHeight;
+        uint blockNumber;
         address[] validators;
     }
 
@@ -28,9 +28,9 @@ contract OrbsVoting is IOrbsVoting {
     }
 
     function voteOut(address[] memory validators) public {
-        require(validators.length <= maxVoteOutLength, "Validators list is over the allowed length");
-
         uint validatorsLength = validators.length;
+        require(validatorsLength <= maxVoteOutLength, "Validators list is over the allowed length");
+
         bytes20[] memory addressesAsBytes20 = new bytes20[](validatorsLength);
         for (uint i=0; i < validatorsLength; i++) {
             require(validators[i] != address(0), "All validator addresses must be non 0");
@@ -54,16 +54,16 @@ contract OrbsVoting is IOrbsVoting {
         emit Delegate(msg.sender, to, delegationCounter);
     }
 
-    function getLastVote(address guardian)
+    function getCurrentVote(address guardian)
         public
         view
-        returns (address[] memory validators, uint blockHeight)
+        returns (address[] memory validators, uint blockNumber)
     {
         VotingRecord storage lastVote = lastVotes[guardian];
 
-        require(lastVote.blockHeight > 0, "Guardian never voted");
+        require(lastVote.blockNumber > 0, "Guardian never voted");
 
-        blockHeight = lastVote.blockHeight;
+        blockNumber = lastVote.blockNumber;
         validators = lastVote.validators;
     }
 
