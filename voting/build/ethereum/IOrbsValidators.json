@@ -33,7 +33,7 @@
           "type": "address"
         }
       ],
-      "name": "addValidator",
+      "name": "approve",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
@@ -74,8 +74,41 @@
     },
     {
       "constant": true,
+      "inputs": [
+        {
+          "name": "validator",
+          "type": "address"
+        }
+      ],
+      "name": "isApproved",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
       "inputs": [],
       "name": "getValidators",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getValidatorsBytes20",
       "outputs": [
         {
           "name": "",
@@ -116,7 +149,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-20T14:22:35.204Z",
+  "updatedAt": "2019-03-20T16:09:50.269Z",
   "devdoc": {
     "methods": {}
   },
