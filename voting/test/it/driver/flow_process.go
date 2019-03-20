@@ -19,7 +19,7 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	logStageDone("Wait for mirror period to end")
 
 	logStage("Running processing...")
-	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
+	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 3
 	na.Process(config.OrbsVotingContractName, maxSteps, orbs.GetOrbsEnvironment())
 	logStageDone("Running processing")
 
