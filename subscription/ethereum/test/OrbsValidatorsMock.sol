@@ -10,21 +10,37 @@ contract OrbsValidatorsMock is IOrbsValidators {
         approvedValidators = validators_;
     }
 
-    function addValidator(address) public {
-        //approvedValidators.push(validator);
+    function approve(address) public
+    {
     }
-    function remove(address) public {
+    
+    function remove(address) public
+    {
 
     }
-    function isValidator(address) public view returns (bool) {
-        return true;
+    function isValidator(address validator) public view returns (bool)
+    {
+        for (uint i = 0; i < approvedValidators.length; i++) {
+            if (approvedValidators[i] == validator) {
+                return true;
+            }
+        }
+        return false;
     }
-
-    function getValidators() public view returns (bytes20[] memory) {
+    function isApproved(address) public view returns (bool)
+    {
+        return false;
+    }
+    function getValidators() public view returns (address[] memory)
+    {
+        return approvedValidators;
+    }
+    function getValidatorsBytes20() public view returns (bytes20[] memory)
+    {
         return new bytes20[](0);
     }
-    function getApprovalBockHeight(address)
-        external
+    function getApprovalBlockNumber(address)
+        public
         view
         returns (uint)
     {

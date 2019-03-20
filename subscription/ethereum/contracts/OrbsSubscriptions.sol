@@ -112,13 +112,8 @@ contract OrbsSubscriptions is ISubscriptionChecker {
         require(DateTime.toTimestamp(currentYear, currentMonth) >= DateTime.toTimestamp(_year, _month),
             "Can't distribute future fees!");
 
-        bytes20[] memory validatorsBytes20 = validators.getValidators();
-        uint validatorCount = validatorsBytes20.length;
-
-        address[] memory validatorsAddress = new address[](validatorCount);
-        for (uint i = 0; i < validatorCount; i++) {
-            validatorsAddress[i] = address(validatorsBytes20[i]);
-        }
+        address[] memory validatorsAddress = validators.getValidators();
+        uint validatorCount = validatorsAddress.length;
 
         MonthlySubscriptions storage monthlySubscription = subscriptions[_year][_month];
         uint256 fee = monthlySubscription.totalTokens.div(validatorCount);
