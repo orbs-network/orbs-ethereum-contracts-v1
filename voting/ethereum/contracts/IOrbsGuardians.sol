@@ -11,6 +11,10 @@ interface IOrbsGuardians {
         external
         view
         returns (string memory name, string memory website);
+    function reviewRegistration()
+        external
+        view
+        returns (string memory name, string memory website);
     function getRegistrationBlockHeight(address guardian)
         external
         view

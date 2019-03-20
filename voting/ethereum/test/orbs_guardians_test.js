@@ -319,4 +319,20 @@ contract('OrbsGuardians', accounts => {
             );
         });
     });
+
+    describe('when calling the reviewRegistration() function', () => {
+        it('should return the same as getGuardianData(from)', async () => {
+            await driver.deployGuardians();
+
+            await assertReject(driver.OrbsGuardians.reviewRegistration({from: accounts[1]}), "expected review registration to fail before registration");
+
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+
+            const getterData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
+            const reviewData = await driver.OrbsGuardians.reviewRegistration({from: accounts[1]});
+
+            assert.deepEqual(getterData, reviewData, "expected ")
+        });
+    });
+
 });

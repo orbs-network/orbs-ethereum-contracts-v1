@@ -23,13 +23,16 @@ contract('OrbsValidators', accounts => {
 
     describe('when calling the addValidator() function', () => {
         it('should add the member to the list and emit event', async () => {
-            await driver.deployValidators(100);
+            await driver.deployRegistry();
+
+            const OrbsValidatorsStateView = artifacts.require('OrbsValidatorsStateView');
+            const stateView = await OrbsValidatorsStateView.new(driver.OrbsRegistry.address, 100);
 
             const validatorAddr  = numToAddress(1);
-            let r = await driver.OrbsValidators.addValidator(validatorAddr);
+            let r = await stateView.addValidator(validatorAddr);
             assert.equal(r.logs[0].event, "ValidatorAdded");
 
-            let member1 = await driver.OrbsValidators.approvedValidators(0);
+            let member1 = await stateView.getApprovedValidatorAt(0);
             assert.equal(member1, validatorAddr);
         });
 
@@ -142,29 +145,80 @@ contract('OrbsValidators', accounts => {
             const blockHeight = await driver.OrbsValidators.getApprovalBockHeight(accounts[0]);
             assert.equal(blockHeight, 0, "expected addition block height to be cleared after removal");
         });
+
+        it('removes only the correct validator', async () => {
+            await driver.deployValidatorsWithRegistry(100);
+
+            await driver.addValidatorWithData(accounts[1]); // add validator and set data
+            await driver.addValidatorWithData(accounts[2]); // add validator and set data
+            await driver.addValidatorWithData(accounts[3]); // add validator and set data
+            await driver.addValidatorWithData(accounts[4]); // add validator and set data
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsBeforeRemove = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsBeforeRemove, [accounts[1], accounts[2], accounts[3], accounts[4]]);
+
+            // remove in the middle
+            const r1 = await driver.OrbsValidators.remove(accounts[2]);
+            assert.equal(r1.logs[0].event, "ValidatorRemoved");
+
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsAfterRemove1 = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsAfterRemove1, [accounts[1], accounts[4], accounts[3]]);
+
+            // remove first
+            const r2 = await driver.OrbsValidators.remove(accounts[1]);
+            assert.equal(r2.logs[0].event, "ValidatorRemoved");
+
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsAfterRemove2 = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsAfterRemove2, [accounts[3], accounts[4]]);
+
+            // remove last
+            const r3 = await driver.OrbsValidators.remove(accounts[4]);
+            assert.equal(r3.logs[0].event, "ValidatorRemoved");
+
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[1]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[2]));
+            assert.isOk(await driver.OrbsValidators.isValidator(accounts[3]));
+            assert.isNotOk(await driver.OrbsValidators.isValidator(accounts[4]));
+
+            const validatorsAfterRemove3 = (await driver.OrbsValidators.getValidators()).map(raw => web3.utils.toChecksumAddress(raw));
+            assert.deepEqual(validatorsAfterRemove3, [accounts[3]]);
+        });
     });
 
     describe('when getNetworkTopology() is called', () => {
         it('should return the all the addresses of validators that were set', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
-            let addresses = [numToAddress(12345), numToAddress(6789)];
-            let ips = ["0xaabbccdd", "0x11223344"];
-
+            let addresses = [numToAddress(12345), numToAddress(6789), numToAddress(34657)];
+            let ips = ["0xaabbccdd", "0x11223344", "0x1122AAFF"];
 
             await assertResolve(driver.OrbsValidators.addValidator(accounts[0]));
-            await assertResolve(driver.OrbsValidators.addValidator(accounts[1])); // decoy - this guy never sets its data
+            await assertResolve(driver.OrbsValidators.addValidator(accounts[1])); // decoy - this guy never sets his data
             await assertResolve(driver.OrbsValidators.addValidator(accounts[2]));
 
-            // set data only for the first and the last
-            await driver.OrbsRegistry.register("test0", ips[0], "url0", addresses[0], {from: accounts[0]});
-            await driver.OrbsRegistry.register("test1", ips[1], "url1", addresses[1], {from: accounts[2]});
+            await driver.OrbsRegistry.register("test0", ips[0], "url0", addresses[0], "0xF1", {from: accounts[0]});
+            await driver.OrbsRegistry.register("test1", ips[1], "url1", addresses[1], "0xF2", {from: accounts[2]});
+            await driver.OrbsRegistry.register("test2", ips[2], "url2", addresses[2], "0xF3", {from: accounts[3]}); // decoy - this guy was never approved
 
             const networkTopology = await driver.OrbsValidators.getNetworkTopology();
 
-            assert(networkTopology.nodeAddresses.length !== 3, "expected network topology to exclude added validators  with no data set");
-            assert.deepEqual(networkTopology.nodeAddresses, addresses, "expected the array of addresses to return");
-            assert.deepEqual(networkTopology.ipAddresses, ips, "expected the array of ips to return");
+            assert.equal(networkTopology.nodeAddresses.length, 2, "expected network topology to include two validators");
+            assert.deepEqual(networkTopology.nodeAddresses, [addresses[0], addresses[1]], "expected the array of addresses to return");
+            assert.deepEqual(networkTopology.ipAddresses,  [ips[0], ips[1]], "expected the array of ips to return");
         });
     });
 });

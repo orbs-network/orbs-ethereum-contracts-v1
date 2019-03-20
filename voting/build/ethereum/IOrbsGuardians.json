@@ -72,6 +72,24 @@
     },
     {
       "constant": true,
+      "inputs": [],
+      "name": "reviewRegistration",
+      "outputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "website",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
       "inputs": [
         {
           "name": "guardian",
@@ -127,7 +145,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-17T11:09:32.565Z",
+  "updatedAt": "2019-03-20T08:26:33.923Z",
   "devdoc": {
     "methods": {}
   },

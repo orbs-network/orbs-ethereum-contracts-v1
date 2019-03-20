@@ -34,7 +34,7 @@
         },
         {
           "name": "ipAddress",
-          "type": "bytes"
+          "type": "bytes4"
         },
         {
           "name": "website",
@@ -43,6 +43,10 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
+        },
+        {
+          "name": "declarationHash",
+          "type": "bytes"
         }
       ],
       "name": "register",
@@ -76,7 +80,7 @@
         },
         {
           "name": "ipAddress",
-          "type": "bytes"
+          "type": "bytes4"
         },
         {
           "name": "website",
@@ -85,6 +89,40 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
+        },
+        {
+          "name": "declarationHash",
+          "type": "bytes"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "reviewRegistration",
+      "outputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ipAddress",
+          "type": "bytes4"
+        },
+        {
+          "name": "website",
+          "type": "string"
+        },
+        {
+          "name": "orbsAddress",
+          "type": "bytes20"
+        },
+        {
+          "name": "declarationHash",
+          "type": "bytes"
         }
       ],
       "payable": false,
@@ -163,7 +201,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-17T16:41:49.105Z",
+  "updatedAt": "2019-03-20T08:26:33.930Z",
   "devdoc": {
     "methods": {}
   },
