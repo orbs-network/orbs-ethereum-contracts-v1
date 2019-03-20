@@ -85,7 +85,8 @@ contract OrbsGuardians is IOrbsGuardians {
 
     function getGuardians(uint offset, uint limit)
         public
-        view returns (address[] memory)
+        view
+        returns (address[] memory)
     {
         if (offset >= guardians.length) { // offset out of bounds
             return new address[](0);
@@ -102,6 +103,23 @@ contract OrbsGuardians is IOrbsGuardians {
         uint resultLength = result.length;
         for (uint i = 0; i < resultLength; i++) {
             result[i] = guardians[offset.add(i)];
+        }
+
+        return result;
+    }
+
+    function getGuardiansBytes20(uint offset, uint limit)
+        public
+        view
+        returns (bytes20[] memory)
+    {
+        address[] memory guardianAddresses = getGuardians(offset, limit);
+        uint guardianAddressesLength = guardianAddresses.length;
+
+        bytes20[] memory result = new bytes20[](guardianAddressesLength);
+
+        for (uint i = 0; i < guardianAddressesLength; i++) {
+            result[i] = bytes20(guardianAddresses[i]);
         }
 
         return result;

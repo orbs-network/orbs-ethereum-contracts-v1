@@ -20,7 +20,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
     mapping(address => ValidatorData) internal validatorsData;
 
-    mapping(bytes32 => address) public lookupByIp;
+    mapping(bytes4 => address) public lookupByIp;
     mapping(bytes20 => address) public lookupByOrbsAddr;
 
     function register(

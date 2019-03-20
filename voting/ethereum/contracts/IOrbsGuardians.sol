@@ -23,4 +23,8 @@ interface IOrbsGuardians {
         external
         view
         returns (address[] memory);
+    function getGuardiansBytes20(uint offset, uint limit)
+        external
+        view
+        returns (bytes20[] memory);
 }

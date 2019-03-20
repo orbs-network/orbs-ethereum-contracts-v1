@@ -28,9 +28,9 @@ contract OrbsVoting is IOrbsVoting {
     }
 
     function voteOut(address[] memory validators) public {
-        require(validators.length <= maxVoteOutLength, "Validators list is over the allowed length");
-
         uint validatorsLength = validators.length;
+        require(validatorsLength <= maxVoteOutLength, "Validators list is over the allowed length");
+
         bytes20[] memory addressesAsBytes20 = new bytes20[](validatorsLength);
         for (uint i=0; i < validatorsLength; i++) {
             require(validators[i] != address(0), "All validator addresses must be non 0");

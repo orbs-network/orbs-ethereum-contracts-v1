@@ -23,17 +23,14 @@ contract('OrbsValidators', accounts => {
 
     describe('when calling the addValidator() function', () => {
         it('should add the member to the list and emit event', async () => {
-            await driver.deployRegistry();
-
-            const OrbsValidatorsStateView = artifacts.require('OrbsValidatorsStateView');
-            const stateView = await OrbsValidatorsStateView.new(driver.OrbsRegistry.address, 100);
+            await driver.deployValidators(100);
 
             const validatorAddr  = numToAddress(1);
-            let r = await stateView.addValidator(validatorAddr);
+            let r = await driver.OrbsValidators.addValidator(validatorAddr);
             assert.equal(r.logs[0].event, "ValidatorAdded");
 
-            let member1 = await stateView.getApprovedValidatorAt(0);
-            assert.equal(member1, validatorAddr);
+            let approved = await driver.OrbsValidators.isApproved(validatorAddr);
+            assert.isOk(approved);
         });
 
         it('should not allow address 0', async () => {
@@ -76,22 +73,34 @@ contract('OrbsValidators', accounts => {
         });
     });
 
-    describe('when calling the getValidators() function', () => {
-        it('should return all validators with set data', async () => {
-            await driver.deployValidatorsWithRegistry(100);
+    describe('when fetching all Validators', () => {
+        [
+            "getValidators",
+            "getValidatorsBytes20"
+        ].forEach((validatorGetterFunctionName) => {
 
-            let members = await driver.OrbsValidators.getValidators();
-            assert.lengthOf(members, 0);
+            context(`with ${validatorGetterFunctionName}()`, async () => {
+                let functionUnderTest;
+                beforeEach(async () => {
+                    await driver.deployValidatorsWithRegistry(100);
+                    functionUnderTest = driver.OrbsValidators[validatorGetterFunctionName];
+                });
 
-            const validatorAddr1  = accounts[1];
-            const validatorAddr2  = accounts[2];
+                it('should return all validators with set data', async () => {
+                    let members = await functionUnderTest();
+                    assert.lengthOf(members, 0);
 
-            await driver.addValidatorWithData(validatorAddr1);
-            await driver.addValidatorWithData(validatorAddr2);
+                    const validatorAddr1  = accounts[1];
+                    const validatorAddr2  = accounts[2];
 
-            members = await driver.OrbsValidators.getValidators();
+                    await driver.addValidatorWithData(validatorAddr1);
+                    await driver.addValidatorWithData(validatorAddr2);
 
-            assert.deepEqual(members, [validatorAddr1.toLowerCase(), validatorAddr2.toLowerCase()]);
+                    members = await functionUnderTest()
+
+                    assert.deepEqual(members.map(a => web3.utils.toChecksumAddress(a)), [validatorAddr1, validatorAddr2]);
+                });
+            });
         });
     });
 
@@ -219,6 +228,22 @@ contract('OrbsValidators', accounts => {
             assert.equal(networkTopology.nodeAddresses.length, 2, "expected network topology to include two validators");
             assert.deepEqual(networkTopology.nodeAddresses, [addresses[0], addresses[1]], "expected the array of addresses to return");
             assert.deepEqual(networkTopology.ipAddresses,  [ips[0], ips[1]], "expected the array of ips to return");
+        });
+    });
+
+    describe('when isApproved() is called', () => {
+        it('should return iff validator is currently approved', async () => {
+            await driver.deployValidators(100);
+
+            assert.isNotOk(await driver.OrbsValidators.isApproved(accounts[4]), "expected validator to not be approved before it was approved");
+
+            await assertResolve(driver.OrbsValidators.addValidator(accounts[4]));
+
+            assert.isOk(await driver.OrbsValidators.isApproved(accounts[4]), "expected validator to  be approved after it was approved");
+
+            await assertResolve(driver.OrbsValidators.remove(accounts[4]));
+
+            assert.isNotOk(await driver.OrbsValidators.isApproved(accounts[4]), "expected validator to not be approved after it was removed");
         });
     });
 });

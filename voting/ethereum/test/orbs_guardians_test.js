@@ -211,50 +211,72 @@ contract('OrbsGuardians', accounts => {
         });
     });
 
-    describe('when calling the getGuardians() function', () => {
-        it('returns an empty array if offset is out of range', async () => {
-            await driver.deployGuardians();
+    describe('when fetching all Guardians', () => {
+        [
+            "getGuardians",
+            "getGuardiansBytes20"
+        ].forEach((guardiansGetterFunctionName) => {
 
-            const empty1 = await driver.OrbsGuardians.getGuardians(0, 10);
-            assert.deepEqual(empty1, [], "expected an empty array before anyone registered");
+            context(`with ${guardiansGetterFunctionName}()`, async () => {
+                let functionUnderTest;
+                beforeEach(async () => {
+                    await driver.deployGuardians();
+                    functionUnderTest = driver.OrbsGuardians[guardiansGetterFunctionName];
+                });
 
-            // register one guardian
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+                it('returns an empty array if offset is out of range', async () => {
+                    const empty1 = await functionUnderTest(0, 10);
+                    assert.deepEqual(empty1, [], "expected an empty array before anyone registered");
 
-            const empty2 = await driver.OrbsGuardians.getGuardians(1, 10); // first unavailable offset
-            assert.deepEqual(empty2, [], "expected an empty array when requested unavailable offset");
+                    // register one guardian
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[1],
+                        value: driver.registrationDeposit
+                    });
 
-            const empty3 = await driver.OrbsGuardians.getGuardians(100, 10); // far unavailable offset
-            assert.deepEqual(empty3, [], "expected an empty array when requested unavailable offset");
-        });
+                    const empty2 = await functionUnderTest(1, 10); // first unavailable offset
+                    assert.deepEqual(empty2, [], "expected an empty array when requested unavailable offset");
 
-        it('should return the requested page', async () => {
-            await driver.deployGuardians();
+                    const empty3 = await functionUnderTest(100, 10); // far unavailable offset
+                    assert.deepEqual(empty3, [], "expected an empty array when requested unavailable offset");
+                });
 
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[2], value: driver.registrationDeposit});
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[3], value: driver.registrationDeposit});
+                it('should return the requested page', async () => {
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[1],
+                        value: driver.registrationDeposit
+                    });
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[2],
+                        value: driver.registrationDeposit
+                    });
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[3],
+                        value: driver.registrationDeposit
+                    });
 
-            const fullList = await driver.OrbsGuardians.getGuardians(0, 10);
-            assert.deepEqual(fullList, [accounts[1], accounts[2], accounts[3]], "expected three elements");
+                    const fullList = await functionUnderTest(0, 10);
+                    assert.deepEqual(fullList.map(a => web3.utils.toChecksumAddress(a)), [accounts[1], accounts[2], accounts[3]], "expected three elements");
 
-            const lastTwo = await driver.OrbsGuardians.getGuardians(1, 10);
-            assert.deepEqual(lastTwo, [accounts[2], accounts[3]], "expected last two elements");
+                    const lastTwo = await functionUnderTest(1, 10);
+                    assert.deepEqual(lastTwo.map(a => web3.utils.toChecksumAddress(a)), [accounts[2], accounts[3]], "expected last two elements");
 
-            const lastOne = await driver.OrbsGuardians.getGuardians(2, 10);
-            assert.deepEqual(lastOne, [accounts[3]], "expected last element");
+                    const lastOne = await functionUnderTest(2, 10);
+                    assert.deepEqual(lastOne.map(a => web3.utils.toChecksumAddress(a)), [accounts[3]], "expected last element");
 
-            const firstTwo = await driver.OrbsGuardians.getGuardians(0, 2);
-            assert.deepEqual(firstTwo, [accounts[1], accounts[2]], "expected first two elements");
+                    const firstTwo = await functionUnderTest(0, 2);
+                    assert.deepEqual(firstTwo.map(a => web3.utils.toChecksumAddress(a)), [accounts[1], accounts[2]], "expected first two elements");
 
-            const firstOne = await driver.OrbsGuardians.getGuardians(0, 1);
-            assert.deepEqual(firstOne, [accounts[1]], "expected first element");
+                    const firstOne = await functionUnderTest(0, 1);
+                    assert.deepEqual(firstOne.map(a => web3.utils.toChecksumAddress(a)), [accounts[1]], "expected first element");
 
-            const middle = await driver.OrbsGuardians.getGuardians(1, 1);
-            assert.deepEqual(middle, [accounts[2]], "expected middle element");
+                    const middle = await functionUnderTest(1, 1);
+                    assert.deepEqual(middle.map(a => web3.utils.toChecksumAddress(a)), [accounts[2]], "expected middle element");
 
-            const empty = await driver.OrbsGuardians.getGuardians(1, 0);
-            assert.deepEqual(empty, [], "expected empty list");
+                    const empty = await functionUnderTest(1, 0);
+                    assert.deepEqual(empty, [], "expected empty list");
+                });
+            });
         });
     });
 
@@ -334,5 +356,4 @@ contract('OrbsGuardians', accounts => {
             assert.deepEqual(getterData, reviewData, "expected ")
         });
     });
-
 });
