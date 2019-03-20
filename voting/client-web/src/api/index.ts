@@ -44,7 +44,22 @@ export class ApiService implements IApiStrategy {
   getValidatorData(address: string) {
     return this.remote.getValidatorData(address);
   }
+  getElectedValidatorData(address: string) {
+    return this.remote.getElectedValidatorData(address);
+  }
   registerValidator(info) {
     return this.metamask.registerValidator(info);
+  }
+  getRewards(address: string) {
+    return this.remote.getRewards(address);
+  }
+  getTotalStake() {
+    return this.remote.getTotalStake();
+  }
+  getCurrentDelegation() {
+    return this.metamask.getCurrentDelegation();
+  }
+  getLastVote() {
+    return this.metamask.getLastVote();
   }
 }

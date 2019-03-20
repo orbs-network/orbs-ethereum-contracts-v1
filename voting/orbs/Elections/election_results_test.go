@@ -1,4 +1,4 @@
-package main
+package elections_systemcontract
 
 import (
 	. "github.com/orbs-network/orbs-contract-sdk/go/testing/unit"
@@ -175,4 +175,30 @@ func setPastElection(index uint32, blockNumber uint64, blockHeight uint64, elect
 	_setElectedValidatorsBlockHeightAtIndex(index, blockHeight)
 	_setElectedValidatorsOrbsAddressAtIndex(index, electedOrbs)
 	_setElectedValidatorsEthereumAddressAtIndex(index, elected)
+}
+
+func TestOrbsVotingContract_initCurrentElectionBlockNumber(t *testing.T) {
+	t.Skip() // TODO v1 fix the fake sdk
+	tests := []struct {
+		name                     string
+		expectCurrentBlockNumber uint64
+		ethereumBlockNumber      uint64
+	}{
+		{"before is 0", FIRST_ELECTION_BLOCK, 0},
+		{"before is a small number", FIRST_ELECTION_BLOCK, 5000000},
+		{"before is after first but before second", FIRST_ELECTION_BLOCK + ELECTION_PERIOD_LENGTH_IN_BLOCKS, 7480969},
+		{"before is after second", FIRST_ELECTION_BLOCK + 2*ELECTION_PERIOD_LENGTH_IN_BLOCKS, 7495969},
+	}
+	for i := range tests {
+		cTest := tests[i]
+		t.Run(cTest.name, func(t *testing.T) {
+			InServiceScope(nil, nil, func(m Mockery) {
+				_init()
+				_setCurrentElectionBlockNumber(0)
+				m.MockEthereumGetBlockNumber(int(cTest.ethereumBlockNumber))
+				after := _getCurrentElectionBlockNumber()
+				require.EqualValues(t, cTest.expectCurrentBlockNumber, after, "'%s' failed ", cTest.name)
+			})
+		})
+	}
 }

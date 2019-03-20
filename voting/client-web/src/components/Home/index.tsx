@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles';
-import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
+import { NavLink } from 'react-router-dom';
+import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import content from './content';
@@ -10,7 +10,7 @@ const Home = ({ classes }) => {
   return (
     <div className={classes.container}>
       <header className={classes.header}>
-        <Typography variant="h3" color="textPrimary" noWrap>
+        <Typography variant="h2" color="textPrimary" noWrap>
           Who are you?
         </Typography>
       </header>
@@ -22,13 +22,16 @@ const Home = ({ classes }) => {
                 {passage.text}
               </Typography>
             </div>
-            <Button variant="outlined" color="secondary">
-              <Link to={passage.cta.url}>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {passage.cta.label}
-                </Typography>
-              </Link>
-            </Button>
+            <Link
+              // @ts-ignore
+              component={NavLink}
+              to={passage.cta.url}
+              className={classes.ctaButton}
+              variant="body1"
+              underline="none"
+            >
+              {passage.cta.label}
+            </Link>
           </article>
         ))}
       </section>

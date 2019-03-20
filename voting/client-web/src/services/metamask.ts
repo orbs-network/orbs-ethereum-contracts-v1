@@ -63,4 +63,16 @@ export class MetamaskService {
       .register(name, ipHex, website, orbsAddress)
       .send({ from });
   }
+
+  async getCurrentDelegation(): Promise<string> {
+    const from = await this.enableMetamask();
+    return this.votingContract.methods
+      .getCurrentDelegation(from)
+      .call({ from });
+  }
+
+  async getLastVote() {
+    const from = await this.enableMetamask();
+    return this.votingContract.methods.getLastVote(from).call({ from });
+  }
 }

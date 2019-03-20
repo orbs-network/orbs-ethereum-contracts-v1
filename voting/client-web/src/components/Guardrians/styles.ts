@@ -1,6 +1,6 @@
 export default () => ({
   voteButton: {
     textAlign: 'center' as any,
-    marginTop: 30
+    margin: '30px 0'
   }
 });

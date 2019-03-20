@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
-import GuardianDialog from '../GuardianDetails';
-import ManualDelegationDialog from '../ManualDelegation';
-
-import { Mode } from '../../api/interface';
-import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import { Mode } from '../../api/interface';
+import GuardianDialog from '../GuardianDetails';
+import Typography from '@material-ui/core/Typography';
+import ManualDelegationDialog from '../ManualDelegation';
 
 const DelegatorsPage = ({ apiService }) => {
   const [guardians, setGuardians] = useState({} as {
@@ -20,6 +19,14 @@ const DelegatorsPage = ({ apiService }) => {
     setManualDelegationDialogState
   ] = useState(false);
 
+  const [totalStake, setTotalStake] = useState('0');
+  const [delegatedTo, setDelegatedTo] = useState('');
+
+  const fetchTotalStake = async () => {
+    const totalStake = await apiService.getTotalStake();
+    setTotalStake(totalStake);
+  };
+
   const fetchGuardians = async () => {
     const addresses = await apiService.getGuardians();
     const details = await Promise.all(
@@ -30,19 +37,29 @@ const DelegatorsPage = ({ apiService }) => {
       acc[curr] = {
         name: details[idx]['name'],
         url: details[idx]['website'],
-        balance: details[idx]['balance']
+        stake: details[idx]['stake']
       };
       return acc;
     }, {});
     setGuardians(guardiansStateObject);
   };
 
+  const fetchDelegatedTo = async () => {
+    if (hasMetamask()) {
+      const res = await apiService.getCurrentDelegation();
+      setDelegatedTo(res);
+    }
+  };
+
   useEffect(() => {
+    fetchTotalStake();
     fetchGuardians();
+    fetchDelegatedTo();
   }, []);
 
   const delegate = async candidate => {
     const receipt = await apiService.delegate(candidate);
+    fetchDelegatedTo();
     console.log(receipt);
   };
 
@@ -76,7 +93,7 @@ const DelegatorsPage = ({ apiService }) => {
       </Typography>
 
       <Typography align="right" variant="overline">
-        Total stake: 100,000,000 Orbs
+        Total stake: {totalStake} Orbs
       </Typography>
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
@@ -96,9 +113,15 @@ const DelegatorsPage = ({ apiService }) => {
         </Typography>
       )}
 
-      <Typography paragraph variant="body1" color="textPrimary">
-        Delegation Status: Your vote is going to `0x`
-      </Typography>
+      {hasMetamask() && delegatedTo.length > 0 ? (
+        <Typography paragraph variant="body1" color="textPrimary">
+          Delegation Status: Your vote is going to `{delegatedTo}`.
+        </Typography>
+      ) : (
+        <Typography paragraph variant="body1" color="textPrimary">
+          Delegation Status: You have not delegated to anyone yet.
+        </Typography>
+      )}
 
       <GuardianDialog
         readOnly={!hasMetamask()}

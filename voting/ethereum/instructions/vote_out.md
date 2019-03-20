@@ -1,11 +1,12 @@
 ## Voting
 
-During each election period, Guardians vote to approve or remove validators from the active Orbs committee.
-Gaurdians may vote several times in each election period, the latest vote transaction in each election period is the one that counts.
+Guardians vote to approve or vote out validators. A Validator that was voted out can not be elected in the election. A Guardian may update her vote at any time where the latest vote recorded prior to the election event is considered for the election. A Guardian vote remains valid for up to one week / 40320 Ethereum blocks.
 
 Voting is performed via a transaction sent to OrbsVoting contract. The transaction includes
-a list of validators deemed unwanted as Orbs block signers. By sending an empty list, the 
+a list of validators to vote out and may include up to 3 Valdiaotors. By sending an empty list, the 
 Guardian expresses consent to include all listed validators in the signing committee.
+
+A Guardian voting weight for an election equals to the total voting weight that was delegated to her, directly or indirectly including her own, based on the Delegators stake at the time of the election event.
 
 For a more detailed account of delegation, voting, and rewards see [here](???)
 

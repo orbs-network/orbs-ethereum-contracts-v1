@@ -15,4 +15,8 @@ interface IOrbsVoting {
         external
         view
         returns (address[] memory validators, uint blockHeight);
+    function getCurrentDelegation(address delegator)
+        external
+        view
+        returns (address to);
 }

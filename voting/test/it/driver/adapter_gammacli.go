@@ -8,37 +8,33 @@ import (
 	"time"
 )
 
-func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
-	return &gammaCliAdapter{
-		debug:                   config.DebugLogs,
-		env:                     "experimental", // use "local" for the stable local gamma-cli ... or for client tests
-		stakeFactor:             10000,
-		voteMirrorPeriod:        10,
-		voteValidPeriod:         500,
-		electionPeriod:          200,
-		maxElectedValidators:    5,
-		minElectedValidators:    3,
-		finalityBlocksComponent: 1,
-		finalityTimeComponent:   10 * time.Second,
+func NewGammaCliAdapter(
+	debug bool,
+	env string,
+	stakeFactor uint64,
+	voteMirrorPeriod uint64,
+	voteValidPeriod uint64,
+	electionPeriod uint64,
+	maxElectedValidators int,
+	minElectedValidators int,
+	finalityBlocksComponent int,
+	finalityTimeComponent time.Duration,
+) *GammaCliAdapter {
+	return &GammaCliAdapter{
+		debug:                   debug,
+		env:                     env,
+		stakeFactor:             stakeFactor,
+		voteMirrorPeriod:        voteMirrorPeriod,
+		voteValidPeriod:         voteValidPeriod,
+		electionPeriod:          electionPeriod,
+		maxElectedValidators:    maxElectedValidators,
+		minElectedValidators:    minElectedValidators,
+		finalityBlocksComponent: finalityBlocksComponent,
+		finalityTimeComponent:   finalityTimeComponent,
 	}
 }
 
-func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
-	return &gammaCliAdapter{
-		debug: config.DebugLogs,
-		env:   "integrative",
-		stakeFactor:             10000,
-		voteMirrorPeriod:        30,
-		voteValidPeriod:         500,
-		electionPeriod:          200,
-		maxElectedValidators:    10,
-		minElectedValidators:    7,
-		finalityBlocksComponent: 10,
-		finalityTimeComponent:   2 * time.Minute + 5 * time.Second,
-	}
-}
-
-type gammaCliAdapter struct {
+type GammaCliAdapter struct {
 	debug                   bool
 	env                     string
 	stakeFactor             uint64
@@ -51,7 +47,7 @@ type gammaCliAdapter struct {
 	finalityTimeComponent   time.Duration
 }
 
-func (gamma *gammaCliAdapter) DeployContract(orbsVotingContractName string) string {
+func (gamma *GammaCliAdapter) DeployContract(orbsVotingContractName string) string {
 	if orbsVotingContractName == "" {
 		orbsVotingContractName = fmt.Sprintf("OrbsVoting_%d", time.Now().Unix())
 	}
@@ -59,7 +55,7 @@ func (gamma *gammaCliAdapter) DeployContract(orbsVotingContractName string) stri
 	return orbsVotingContractName
 }
 
-func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string) {
+func (gamma *GammaCliAdapter) SetContractConstants(orbsVotingContractName string) {
 	gamma.run("send-tx ./gammacli-jsons/set-variables.json -signer user1 -name " + orbsVotingContractName +
 		" -arg1 " + fmt.Sprintf("%d", gamma.stakeFactor) +
 		" -arg2 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
@@ -69,31 +65,31 @@ func (gamma *gammaCliAdapter) SetContractConstants(orbsVotingContractName string
 		" -arg6 " + fmt.Sprintf("%d", gamma.minElectedValidators))
 }
 
-func (gamma *gammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
+func (gamma *GammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
 	gamma.run("send-tx ./gammacli-jsons/set-token-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumErc20Address)
 }
 
-func (gamma *gammaCliAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
+func (gamma *GammaCliAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-validators-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
 }
 
-func (gamma *gammaCliAdapter) BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string) {
+func (gamma *GammaCliAdapter) BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-validators-registry-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsRegistryAddress)
 }
 
-func (gamma *gammaCliAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
+func (gamma *GammaCliAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-voting-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
 }
 
-func (gamma *gammaCliAdapter) BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string) {
+func (gamma *GammaCliAdapter) BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-guardians-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumGuardiansAddress)
 }
 
-func (gamma *gammaCliAdapter) SetElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
+func (gamma *GammaCliAdapter) SetElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
 	gamma.run("send-tx ./gammacli-jsons/set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
 }
 
-func (gamma *gammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []string {
+func (gamma *GammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []string {
 	bytes := gamma.run("run-query ./gammacli-jsons/get-elected.json -signer user1 -name " + orbsVotingContractName)
 	out := struct {
 		OutputArguments []*struct {
@@ -114,7 +110,7 @@ func (gamma *gammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []s
 	return respose
 }
 
-func (gamma *gammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAddresses []string) {
+func (gamma *GammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAddresses []string) {
 	joinedAddresses := "0x"
 	for _, address := range electedValidatorAddresses {
 		if strings.HasPrefix(address, "0x") {
@@ -129,7 +125,7 @@ func (gamma *gammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAdd
 	gamma.run("send-tx ./gammacli-jsons/forward-results-to-system.json -signer user1 -arg1 " + joinedAddresses)
 }
 
-func (gamma *gammaCliAdapter) GetCurrentSystemBlockSigners() []string {
+func (gamma *GammaCliAdapter) GetCurrentSystemBlockSigners() []string {
 	bytes := gamma.run("send-tx ./gammacli-jsons/generic-transaction.json -signer user1")
 	out := struct {
 		TxId string
@@ -153,15 +149,15 @@ func (gamma *gammaCliAdapter) GetCurrentSystemBlockSigners() []string {
 	return out2.ProofSigners
 }
 
-func (gamma *gammaCliAdapter) GetFinalityBlocksComponent() int {
+func (gamma *GammaCliAdapter) GetFinalityBlocksComponent() int {
 	return gamma.finalityBlocksComponent
 }
 
-func (gamma *gammaCliAdapter) GetFinalityTimeComponent() time.Duration {
+func (gamma *GammaCliAdapter) GetFinalityTimeComponent() time.Duration {
 	return gamma.finalityTimeComponent
 }
 
-func (gamma *gammaCliAdapter) run(args string, env ...string) []byte {
+func (gamma *GammaCliAdapter) run(args string, env ...string) []byte {
 	args += " -env " + gamma.env
 	if gamma.debug {
 		fmt.Println("\n  ### RUNNING: gamma-cli " + args)
@@ -186,14 +182,14 @@ func (gamma *gammaCliAdapter) run(args string, env ...string) []byte {
 	return out
 }
 
-func (gamma *gammaCliAdapter) GetStakeFactor() uint64 {
+func (gamma *GammaCliAdapter) GetStakeFactor() uint64 {
 	return gamma.stakeFactor
 }
 
-func (gamma *gammaCliAdapter) GetMirrorVotingPeriod() int {
+func (gamma *GammaCliAdapter) GetMirrorVotingPeriod() int {
 	return int(gamma.voteMirrorPeriod)
 }
 
-func (gamma *gammaCliAdapter) GetOrbsEnvironment() string {
+func (gamma *GammaCliAdapter) GetOrbsEnvironment() string {
 	return gamma.env
 }

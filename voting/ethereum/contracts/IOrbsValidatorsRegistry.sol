@@ -7,9 +7,10 @@ interface IOrbsValidatorsRegistry {
 
     function register(
         string calldata name,
-        bytes calldata ipAddress,
+        bytes4 ipAddress,
         string calldata website,
-        bytes20 orbsAddress
+        bytes20 orbsAddress,
+        bytes calldata declarationHash
     )
         external;
     function leave() external;
@@ -18,9 +19,20 @@ interface IOrbsValidatorsRegistry {
         view
         returns (
             string memory name,
-            bytes memory ipAddress,
+            bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress
+            bytes20 orbsAddress,
+            bytes memory declarationHash
+        );
+    function reviewRegistration()
+        external
+        view
+        returns (
+            string memory name,
+            bytes4 ipAddress,
+            string memory website,
+            bytes20 orbsAddress,
+            bytes memory declarationHash
         );
     function getRegistrationBlockHeight(address validator)
         external

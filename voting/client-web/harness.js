@@ -1,9 +1,9 @@
 const Web3 = require('web3');
 const Chance = require('chance');
-const OrbsContractsInfo = require('./src/contracts-info');
-const OrbsGuardiansContractJSON = require('./src/contracts/OrbsGuardians.json');
-const OrbsValidatorsContractJSON = require('./src/contracts/OrbsValidators.json');
-const OrbsValidatorsRegistryContractJSON = require('./src/contracts/OrbsValidatorsRegistry.json');
+const contractsInfo = require('./src/contracts-info');
+const EthereumGuardiansContractJSON = require('./src/contracts/OrbsGuardians.json');
+const EthereumValidatorsContractJSON = require('./src/contracts/OrbsValidators.json');
+const EthreumValidatorsRegistryContractJSON = require('./src/contracts/OrbsValidatorsRegistry.json');
 
 const from = '0x9D4dB91AaA3573A67Ff7604EAcfC73d03e2C9c7A';
 const web3 = new Web3('http://localhost:7545');
@@ -40,18 +40,18 @@ const addValidators = async (validators, contract, registryContract) => {
   const validators = accounts.slice(5);
 
   const guardiansContract = new web3.eth.Contract(
-    OrbsGuardiansContractJSON.abi,
-    OrbsContractsInfo.OrbsGuardians.address, { gas: 6721975 }
+    EthereumGuardiansContractJSON.abi,
+    contractsInfo.EthereumGuardiansContract.address, { gas: 6721975 }
   );
 
   const validatorsContract = new web3.eth.Contract(
-    OrbsValidatorsContractJSON.abi,
-    OrbsContractsInfo.OrbsValidators.address, { gas: 6721975 }
+    EthereumValidatorsContractJSON.abi,
+    contractsInfo.EthereumValidatorsContract.address, { gas: 6721975 }
   );
 
   const validatorsRegistryContract = new web3.eth.Contract(
-    OrbsValidatorsRegistryContractJSON.abi,
-    OrbsContractsInfo.OrbsValidatorsRegistry.address, { gas: 6721975 }
+    EthreumValidatorsRegistryContractJSON.abi,
+    contractsInfo.EthereumValidatorsRegistryContract.address, { gas: 6721975 }
   );
 
   await addGuardians(guardians, guardiansContract);

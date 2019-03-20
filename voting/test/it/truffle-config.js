@@ -8,15 +8,17 @@ const mnemonic_mainnet = process.env.MAINNET_SECRET;
 const mainnet_url = process.env.MAINNET_URL;
 const ropsten_url = process.env.ROPSTEN_URL;
 
+const accounts = 25;
+
 module.exports = {
   networks: {
     mainnet: {
-      provider: () => new HDWalletProvider(mnemonic_mainnet, mainnet_url, 0, 25),
+      provider: () => new HDWalletProvider(mnemonic_mainnet, mainnet_url, 0, accounts),
       network_id: '1',
       gasPrice: helpers.GAS_PRICE,
     },
     ropsten: {
-      provider: () => new HDWalletProvider(mnemonic_ropsten, ropsten_url, 0, 25),
+      provider: () => new HDWalletProvider(mnemonic_ropsten, ropsten_url, 0, accounts),
       network_id: '3',
       gasPrice: helpers.GAS_PRICE
     },
@@ -24,7 +26,7 @@ module.exports = {
       host: 'localhost',
       port: 7545,
       network_id: '5777',
-      accounts: 25,
+      accounts: accounts,
       gasPrice: helpers.GAS_PRICE,
     },
   },

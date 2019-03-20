@@ -23,8 +23,8 @@ contract OrbsGuardians is IOrbsGuardians {
 
     uint public registrationDeposit = 1 ether;
 
-    address[] public guardians;
-    mapping(address => GuardianData) public guardiansData;
+    address[] internal guardians;
+    mapping(address => GuardianData) internal guardiansData;
 
     constructor(uint registrationDeposit_) public {
         registrationDeposit = registrationDeposit_;
@@ -110,6 +110,14 @@ contract OrbsGuardians is IOrbsGuardians {
     {
         require(isGuardian(guardian), "Please provide a listed Guardian");
         return (guardiansData[guardian].name, guardiansData[guardian].website);
+    }
+
+    function reviewRegistration()
+        public
+        view
+        returns (string memory name, string memory website)
+    {
+        return getGuardianData(msg.sender);
     }
 
     function getRegistrationBlockHeight(address guardian)

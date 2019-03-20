@@ -1,51 +1,66 @@
 import React from 'react';
-import logo from './logo.svg';
-import { Link } from 'react-router-dom';
+import logo from './logo-white.svg';
+import Link from '@material-ui/core/Link';
+import { NavLink } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+
+const HOVER_COLOR = '#16faff';
 
 const styles = theme => ({
   logo: {
-    width: 140
+    width: 70
   },
   nav: {
-    marginLeft: 30,
     display: 'inherit'
   },
-  navItem: {
-    padding: '0 13px'
+  toolbar: {
+    justifyContent: 'space-between'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    padding: 8
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 30}px`
+  },
+  link: {
+    color: '#ffffffb3',
+    marginLeft: 30,
+    transition: 'color 0.4s ease-in-out',
+    '&:hover': {
+      color: HOVER_COLOR
+    }
   }
 });
 
 const Header = ({ classes }) => {
+  const links = [
+    { label: 'Delegates', url: '/delegator' },
+    { label: 'Guardians', url: '/guardian' },
+    { label: 'Validators', url: '/validator' },
+    { label: 'Rewards', url: '/reward' }
+  ];
   return (
     <AppBar position="fixed" className={classes.appBar} data-testid="header">
-      <Toolbar>
-        <Link to="/">
+      <Toolbar className={classes.toolbar}>
+        <NavLink to="/">
           <img className={classes.logo} src={logo} alt="Orbs" />
-        </Link>
+        </NavLink>
         <nav className={classes.nav}>
-          <Link to="/delegator" className={classes.navItem}>
-            <Typography variant="h6" color="secondary" noWrap>
-              DELEGATORS
-            </Typography>
-          </Link>
-          <Link to="/guardian" className={classes.navItem}>
-            <Typography variant="h6" color="secondary" noWrap>
-              GUARDIANS
-            </Typography>
-          </Link>
-          <Link to="/validator" className={classes.navItem}>
-            <Typography variant="h6" color="secondary" noWrap>
-              VALIDATORS
-            </Typography>
-          </Link>
+          {links.map(({ label, url }, idx) => (
+            <Link
+              // @ts-ignore
+              component={NavLink}
+              key={idx}
+              className={classes.link}
+              activeStyle={{ color: HOVER_COLOR }}
+              underline="none"
+              to={url}
+              variant="h6"
+              noWrap
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
       </Toolbar>
     </AppBar>
