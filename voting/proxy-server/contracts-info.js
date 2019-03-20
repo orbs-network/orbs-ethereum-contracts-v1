@@ -12,6 +12,6 @@ module.exports = {
     address: '0x7E7e6Aa3EC44711A0d609A0939317B1E37781f09'
   },
   OrbsVotingContract: {
-    name: 'OrbsVoting_1552865801'
+    name: 'OrbsVoting_1553075546'
   }
 };
