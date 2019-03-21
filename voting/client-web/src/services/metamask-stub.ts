@@ -3,7 +3,7 @@ export class MetamaskServiceStub {
     console.warn(
       'Method "getCurrentAddress" is not available in read-only mode'
     );
-    return '';
+    return Promise.resolve('');
   }
 
   delegate() {

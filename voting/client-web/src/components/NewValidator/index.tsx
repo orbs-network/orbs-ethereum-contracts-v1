@@ -2,8 +2,15 @@ import styles from './styles';
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, TextField, Button } from '@material-ui/core';
+import { ApiService } from '../../api';
 
-const NewValidator = ({ classes, apiService }) => {
+const NewValidator = ({
+  classes,
+  apiService
+}: {
+  classes: any;
+  apiService: ApiService;
+}) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
   const [ipAddress, setIpAddress] = useState('');

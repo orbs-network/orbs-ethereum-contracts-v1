@@ -2,8 +2,15 @@ import styles from './styles';
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, TextField, Button } from '@material-ui/core';
+import { ApiService } from '../../api';
 
-const NewGuardian = ({ classes, apiService }) => {
+const NewGuardian = ({
+  classes,
+  apiService
+}: {
+  classes: any;
+  apiService: ApiService;
+}) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
 
@@ -19,6 +26,7 @@ const NewGuardian = ({ classes, apiService }) => {
       <FormControl className={classes.form} variant="standard" margin="normal">
         <TextField
           required
+          data-testid="name"
           placeholder="Your name"
           value={name}
           onChange={ev => setName(ev.target.value)}
@@ -27,6 +35,7 @@ const NewGuardian = ({ classes, apiService }) => {
         />
         <TextField
           required
+          data-testid="website"
           placeholder="Your website"
           value={website}
           onChange={ev => setWebsite(ev.target.value)}
@@ -34,6 +43,7 @@ const NewGuardian = ({ classes, apiService }) => {
           variant="standard"
         />
         <Button
+          data-testid="submit"
           className={classes.add}
           variant="outlined"
           color="secondary"

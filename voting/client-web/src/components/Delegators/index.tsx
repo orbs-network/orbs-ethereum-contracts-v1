@@ -5,8 +5,9 @@ import { Mode } from '../../api/interface';
 import GuardianDialog from '../GuardianDetails';
 import Typography from '@material-ui/core/Typography';
 import ManualDelegationDialog from '../ManualDelegation';
+import { ApiService } from '../../api';
 
-const DelegatorsPage = ({ apiService }) => {
+const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
     [address: string]: { name: string; url: string };
   });
