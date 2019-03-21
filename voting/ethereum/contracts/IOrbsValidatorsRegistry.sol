@@ -10,16 +10,14 @@ interface IOrbsValidatorsRegistry {
         string calldata name,
         bytes4 ipAddress,
         string calldata website,
-        bytes20 orbsAddress,
-        bytes calldata declarationHash
+        bytes20 orbsAddress
     )
         external;
     function update(
         string calldata name,
         bytes4 ipAddress,
         string calldata website,
-        bytes20 orbsAddress,
-        bytes calldata declarationHash
+        bytes20 orbsAddress
     )
         external;
     function leave() external;
@@ -30,8 +28,7 @@ interface IOrbsValidatorsRegistry {
             string memory name,
             bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress,
-            bytes memory declarationHash
+            bytes20 orbsAddress
         );
     function reviewRegistration()
         external
@@ -40,8 +37,7 @@ interface IOrbsValidatorsRegistry {
             string memory name,
             bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress,
-            bytes memory declarationHash
+            bytes20 orbsAddress
         );
     function getRegistrationBlockNumber(address validator)
         external

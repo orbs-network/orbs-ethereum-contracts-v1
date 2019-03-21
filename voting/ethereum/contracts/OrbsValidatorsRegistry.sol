@@ -11,7 +11,6 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         bytes4 ipAddress;
         string website;
         bytes20 orbsAddress;
-        bytes declarationHash;
         uint registeredOnBlock;
         uint lastUpdatedOnBlock;
     }
@@ -27,8 +26,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         string memory name,
         bytes4 ipAddress,
         string memory website,
-        bytes20 orbsAddress,
-        bytes memory declarationHash
+        bytes20 orbsAddress
     )
         public
     {
@@ -48,7 +46,6 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             ipAddress,
             website,
             orbsAddress,
-            declarationHash,
             block.number,
             block.number
         );
@@ -60,8 +57,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         string memory name,
         bytes4 ipAddress,
         string memory website,
-        bytes20 orbsAddress,
-        bytes memory declarationHash
+        bytes20 orbsAddress
     )
         public
     {
@@ -85,7 +81,6 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         data.ipAddress = ipAddress;
         data.website = website;
         data.orbsAddress = orbsAddress;
-        data.declarationHash = declarationHash;
         data.lastUpdatedOnBlock = block.number;
 
         emit ValidatorUpdated(msg.sender);
@@ -111,8 +106,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             string memory name,
             bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress,
-            bytes memory declarationHash
+            bytes20 orbsAddress
         )
     {
         require(isValidator(validator), "Unlisted Validator");
@@ -122,8 +116,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             entry.name,
             entry.ipAddress,
             entry.website,
-            entry.orbsAddress,
-            entry.declarationHash
+            entry.orbsAddress
         );
     }
 
@@ -134,8 +127,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
             string memory name,
             bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress,
-            bytes memory declarationHash
+            bytes20 orbsAddress
         )
     {
         return getValidatorData(msg.sender);

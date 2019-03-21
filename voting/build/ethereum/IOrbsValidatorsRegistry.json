@@ -55,10 +55,6 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
-        },
-        {
-          "name": "declarationHash",
-          "type": "bytes"
         }
       ],
       "name": "register",
@@ -85,10 +81,6 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
-        },
-        {
-          "name": "declarationHash",
-          "type": "bytes"
         }
       ],
       "name": "update",
@@ -131,10 +123,6 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
-        },
-        {
-          "name": "declarationHash",
-          "type": "bytes"
         }
       ],
       "payable": false,
@@ -161,10 +149,6 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
-        },
-        {
-          "name": "declarationHash",
-          "type": "bytes"
         }
       ],
       "payable": false,
@@ -243,7 +227,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-21T16:10:25.667Z",
+  "updatedAt": "2019-03-21T17:29:17.223Z",
   "devdoc": {
     "methods": {}
   },
