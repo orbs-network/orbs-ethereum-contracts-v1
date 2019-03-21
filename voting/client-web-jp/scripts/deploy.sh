@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 git clone https://github.com/orbs-network/voting-jp
-cd voting/
+cd voting-jp/
 git rm -rf *
 cp -R ../build/* ./
 touch .nojekyll
