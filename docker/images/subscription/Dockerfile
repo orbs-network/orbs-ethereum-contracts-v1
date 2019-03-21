@@ -3,15 +3,17 @@ ENV GAMMA_HOST="gamma"
 
 COPY docker/images/subscription/bring-gamma.sh /tmp/bring-gamma.sh
 
-WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/subscription
+WORKDIR ./orbs-ethereum-contracts
 
-COPY subscription/ .
+COPY subscription/ ./subscription/
+# required because subscription depends on IOrbsValidators
+COPY voting/ethereum/ ./voting/ethereum/
 
-WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/subscription/ethereum
+WORKDIR ./subscription/ethereum
 RUN npm install
 RUN truffle compile
 
-WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/subscription/test
+WORKDIR ../test
 COPY docker/images/subscription/entrypoint.sh .
 
 RUN rm -f orbs-gamma-config.json && \
