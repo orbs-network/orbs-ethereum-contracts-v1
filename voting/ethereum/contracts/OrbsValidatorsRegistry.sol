@@ -26,12 +26,11 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     mapping(bytes4 => address) public lookupByIp;
     mapping(bytes20 => address) public lookupByOrbsAddr;
 
-    /// @dev register a new guardian. You will need to transfer registrationDeposit amount of ether.
-    /// @param name string The name of the guardian
-    /// @param ipAddress bytes4 The website of the guardian
-    /// @param website string The website of the guardian
-    /// @param orbsAddress bytes20 The website of the guardian
-    /// @param website string The website of the guardian
+    /// @dev register validator metadata.
+    /// @param name string The name of the validator
+    /// @param ipAddress bytes4 The validator node ip address
+    /// @param website string The website of the validator
+    /// @param orbsAddress bytes20 The validator node orbs public address
     function register(
         string memory name,
         bytes4 ipAddress,
@@ -63,6 +62,11 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         emit ValidatorRegistered(msg.sender);
     }
 
+    /// @dev update validator metadata. only msg.sender can update the validator details.
+    /// @param name string The name of the validator
+    /// @param ipAddress bytes4 The validator node ip address
+    /// @param website string The website of the validator
+    /// @param orbsAddress bytes20 The validator node orbs public address
     function update(
         string memory name,
         bytes4 ipAddress,
@@ -96,6 +100,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         emit ValidatorUpdated(msg.sender);
     }
 
+    /// @dev delete the validator metadata. only msg.sender can leave.
     function leave() public {
         require(isValidator(msg.sender), "Sender is not a listed Validator");
 
@@ -109,6 +114,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         emit ValidatorLeft(msg.sender);
     }
 
+    /// @dev returns validator metadata.
+    /// @param validator address address of the validator
     function getValidatorData(address validator)
         public
         view
@@ -130,6 +137,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         );
     }
 
+    /// @dev Convenience method to check if you are a validator and what are your details.
     function reviewRegistration()
         public
         view
@@ -143,6 +151,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         return getValidatorData(msg.sender);
     }
 
+    /// @dev returns in which block the validator was registered and last updated.
+    /// @param validator address address of the validator
     function getRegistrationBlockNumber(address validator)
         external
         view
@@ -157,6 +167,8 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         );
     }
 
+    /// @dev returns the orbs node public address of a specific validator.
+    /// @param validator address address of the validator
     function getOrbsAddress(address validator)
         public
         view
@@ -167,16 +179,22 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         return validatorsData[validator].orbsAddress;
     }
 
+    /// @dev returns if the address belongs to a validator
+    /// @param validator address address of the validator
     function isValidator(address addr) public view returns (bool) {
         return validatorsData[addr].registeredOnBlock > 0;
     }
 
+    /// @dev INTERNAL. Checks if the IP address is either unique Or belongs to the msg.sender
+    /// @param ipAddress bytes4 ip address to check for uniqueness
     function isUniqueIp(bytes4 ipAddress) internal view returns (bool) {
         return
             lookupByIp[ipAddress] == address(0) ||
             lookupByIp[ipAddress] == msg.sender;
     }
 
+    /// @dev INTERNAL. Checks if the Orbs node address is either unique Or belongs to the msg.sender
+    /// @param orbsAddress bytes20 ip address to check for uniqueness
     function isUniqueOrbsAddress(bytes20 orbsAddress) internal view returns (bool) {
         return
             lookupByOrbsAddr[orbsAddress] == address(0) ||
