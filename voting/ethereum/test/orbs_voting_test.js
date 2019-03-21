@@ -125,6 +125,11 @@ contract('Voting', accounts => {
             await driver.OrbsVoting.delegate(to[1], {from: delegator});
             const readDelegation2 = await driver.OrbsVoting.getCurrentDelegation(delegator);
             assert.equal(readDelegation2, to[1], "current delegation should be the last delegated to after additional delegations");
+
+            await driver.OrbsVoting.delegate(delegator, {from: delegator});
+            const readDelegation3 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation3, numToAddress(0), "current delegation should be zero after delegation to self");
+
         });
     });
 
@@ -134,7 +139,7 @@ contract('Voting', accounts => {
             {funcName: "getCurrentVoteBytes20", fieldName: "validatorsBytes20"}
         ].forEach((getlastVoteVariation) => {
 
-            context(`with ${getlastVoteVariation}()`, async () => {
+            context(`with ${getlastVoteVariation.funcName}()`, async () => {
                 let functionUnderTest;
                 let validatorsReturnFieldName;
                 beforeEach(async () => {
