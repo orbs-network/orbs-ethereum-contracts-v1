@@ -31,17 +31,15 @@ contract OrbsVoting is IOrbsVoting {
         uint validatorsLength = validators.length;
         require(validatorsLength <= maxVoteOutLength, "Validators list is over the allowed length");
 
-        bytes20[] memory addressesAsBytes20 = new bytes20[](validatorsLength);
         for (uint i=0; i < validatorsLength; i++) {
             require(validators[i] != address(0), "All validator addresses must be non 0");
-            addressesAsBytes20[i] = bytes20(validators[i]);
         }
 
         voteCounter++;
 
         lastVotes[msg.sender] = VotingRecord(block.number, validators);
 
-        emit VoteOut(msg.sender, addressesAsBytes20, voteCounter);
+        emit VoteOut(msg.sender, validators, voteCounter);
     }
 
     function delegate(address to) public {
@@ -67,10 +65,27 @@ contract OrbsVoting is IOrbsVoting {
         validators = lastVote.validators;
     }
 
+    function getCurrentVoteBytes20(address guardian)
+        public
+        view
+        returns (bytes20[] memory validatorsBytes20, uint blockNumber)
+    {
+        address[] memory validatorAddresses;
+        (validatorAddresses, blockNumber) = getCurrentVote(guardian);
+
+        uint validatorAddressesLength = validatorAddresses.length;
+
+        validatorsBytes20 = new bytes20[](validatorAddressesLength);
+
+        for (uint i = 0; i < validatorAddressesLength; i++) {
+            validatorsBytes20[i] = bytes20(validatorAddresses[i]);
+        }
+    }
+
     function getCurrentDelegation(address delegator)
     public
     view
-    returns (address to)
+    returns (address)
     {
         return lastDelegations[delegator];
     }
