@@ -54,4 +54,19 @@ module.exports.Driver = class {
 
         await this.OrbsRegistry.register(name, ip, url, orbsAddr, {from: validatorAddress});
     };
+
+    depositOptions(address) {
+        return {
+            from: address,
+            value: this.registrationDeposit
+        }
+    };
+
+    noDepositOptions(address) {
+        return {
+            from: address,
+            value: 0
+        }
+    };
+
 };
