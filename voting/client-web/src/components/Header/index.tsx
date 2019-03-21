@@ -11,7 +11,7 @@ import styles, { HOVER_COLOR } from './styles';
 
 const Header = ({ classes, isReadOnly }) => {
   const links = [
-    { label: 'Delegates', url: '/delegator' },
+    { label: 'Delegators', url: '/delegator' },
     { label: 'Guardians', url: '/guardian' },
     { label: 'Validators', url: '/validator' },
     { label: 'Rewards', url: '/reward' }
