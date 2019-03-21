@@ -909,11 +909,11 @@ func _readValidatorsFromEthereumToState() {
 
 func _readGuardiansFromEthereumToState() {
 	var guardians [][20]byte
-	pos := 0
-	pageSize := 50
+	pos := int64(0)
+	pageSize := int64(50)
 	for {
 		var gs [][20]byte
-		ethereum.CallMethodAtBlock(_getCurrentElectionBlockNumber(), getGuardiansEthereumContractAddress(), getGuardiansAbi(), "getGuardiansBytes20", &gs, pos, pageSize)
+		ethereum.CallMethodAtBlock(_getCurrentElectionBlockNumber(), getGuardiansEthereumContractAddress(), getGuardiansAbi(), "getGuardiansBytes20", &gs, big.NewInt(pos), big.NewInt(pageSize))
 		guardians = append(guardians, gs...)
 		if len(gs) < 50 {
 			break

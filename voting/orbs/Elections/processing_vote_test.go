@@ -921,7 +921,7 @@ func mockValidGuardiansInEthereum(m Mockery, blockNumber uint64, guardians []*gu
 		} else {
 			panic(fmt.Sprintf("wrong type %s", out))
 		}
-	}, 0, 50)
+	}, big.NewInt(0), big.NewInt(50))
 	if len(addresses) > 50 {
 		m.MockEthereumCallMethodAtBlock(blockNumber, getGuardiansEthereumContractAddress(), getGuardiansAbi(), "getGuardiansBytes20", func(out interface{}) {
 			ethAddresses, ok := out.(*[][20]byte)
@@ -930,7 +930,7 @@ func mockValidGuardiansInEthereum(m Mockery, blockNumber uint64, guardians []*gu
 			} else {
 				panic(fmt.Sprintf("wrong type %s", out))
 			}
-		}, 50, 50)
+		}, big.NewInt(50), big.NewInt(50))
 	}
 }
 
