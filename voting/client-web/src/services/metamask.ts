@@ -73,6 +73,6 @@ export class MetamaskService {
 
   async getLastVote() {
     const from = await this.enableMetamask();
-    return this.votingContract.methods.getLastVote(from).call({ from });
+    return this.votingContract.methods.getCurrentVote(from).call({ from });
   }
 }
