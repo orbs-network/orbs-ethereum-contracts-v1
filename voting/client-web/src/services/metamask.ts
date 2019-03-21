@@ -54,9 +54,12 @@ export class MetamaskService {
   async registerGuardian(info) {
     const { name, website } = info;
     const from = await this.enableMetamask();
+    const requiredDeposit = await this.guardiansContract.methods
+      .registrationDeposit()
+      .call();
     return this.guardiansContract.methods
       .register(name, website)
-      .send({ from, value: '1000000000000000000' });
+      .send({ from, value: requiredDeposit });
   }
 
   async registerValidator(info) {
