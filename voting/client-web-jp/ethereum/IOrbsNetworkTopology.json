@@ -1,0 +1,40 @@
+{
+  "contractName": "IOrbsNetworkTopology",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getNetworkTopology",
+      "outputs": [
+        {
+          "name": "nodeAddresses",
+          "type": "bytes20[]"
+        },
+        {
+          "name": "ipAddresses",
+          "type": "bytes4[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.3+commit.10d17f24.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.2",
+  "updatedAt": "2019-03-20T08:26:33.915Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
