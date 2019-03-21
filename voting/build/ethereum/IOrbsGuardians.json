@@ -2,6 +2,42 @@
   "contractName": "IOrbsGuardians",
   "abi": [
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "guardian",
+          "type": "address"
+        }
+      ],
+      "name": "GuardianRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "guardian",
+          "type": "address"
+        }
+      ],
+      "name": "GuardianLeft",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "guardian",
+          "type": "address"
+        }
+      ],
+      "name": "GuardianUpdated",
+      "type": "event"
+    },
+    {
       "constant": false,
       "inputs": [
         {
@@ -17,6 +53,24 @@
       "outputs": [],
       "payable": true,
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "website",
+          "type": "string"
+        }
+      ],
+      "name": "update",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -168,7 +222,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-21T09:52:23.759Z",
+  "updatedAt": "2019-03-21T16:10:25.666Z",
   "devdoc": {
     "methods": {}
   },

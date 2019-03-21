@@ -10,7 +10,7 @@
           "type": "address"
         }
       ],
-      "name": "ValidatorAdded",
+      "name": "ValidatorApproved",
       "type": "event"
     },
     {
@@ -149,7 +149,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-21T09:52:23.758Z",
+  "updatedAt": "2019-03-21T16:10:25.665Z",
   "devdoc": {
     "methods": {}
   },
