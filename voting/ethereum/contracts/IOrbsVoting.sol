@@ -2,7 +2,7 @@ pragma solidity 0.5.3;
 
 
 interface IOrbsVoting {
-    event VoteOut(address indexed voter, bytes20[] validators, uint voteCounter);
+    event VoteOut(address indexed voter, address[] validators, uint voteCounter);
     event Delegate(
         address indexed delegator,
         address indexed to,
@@ -15,8 +15,12 @@ interface IOrbsVoting {
         external
         view
         returns (address[] memory validators, uint blockNumber);
+    function getCurrentVoteBytes20(address guardian)
+        external
+        view
+        returns (bytes20[] memory validatorsBytes20, uint blockNumber);
     function getCurrentDelegation(address delegator)
         external
         view
-        returns (address to);
+        returns (address);
 }

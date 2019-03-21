@@ -12,7 +12,7 @@
         {
           "indexed": false,
           "name": "validators",
-          "type": "bytes20[]"
+          "type": "address[]"
         },
         {
           "indexed": false,
@@ -100,6 +100,29 @@
       "constant": true,
       "inputs": [
         {
+          "name": "guardian",
+          "type": "address"
+        }
+      ],
+      "name": "getCurrentVoteBytes20",
+      "outputs": [
+        {
+          "name": "validatorsBytes20",
+          "type": "bytes20[]"
+        },
+        {
+          "name": "blockNumber",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
           "name": "delegator",
           "type": "address"
         }
@@ -107,7 +130,7 @@
       "name": "getCurrentDelegation",
       "outputs": [
         {
-          "name": "to",
+          "name": "",
           "type": "address"
         }
       ],
@@ -126,7 +149,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-20T14:22:35.206Z",
+  "updatedAt": "2019-03-21T09:52:23.759Z",
   "devdoc": {
     "methods": {}
   },

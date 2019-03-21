@@ -32,7 +32,7 @@ contract('Voting', accounts => {
             assert.equal(e.event, "VoteOut");
             assert.equal(e.args.voter, accounts[0]);
             assert.equal(e.args.voteCounter, 1);
-            assert.deepEqual(e.args.validators, suspiciousNodes.map(a => a.toLowerCase()));
+            assert.deepEqual(e.args.validators, suspiciousNodes);
         });
 
         it('should increment voteCounter', async () => {
@@ -128,32 +128,45 @@ contract('Voting', accounts => {
         });
     });
 
-    describe('when calling the getCurrentVote() function', () => {
-        it('returns the last vote made by a voter', async () => {
-            await driver.deployVoting();
+    describe('when fetching current vote', () => {
+        [
+            {funcName: "getCurrentVote", fieldName: "validators"},
+            {funcName: "getCurrentVoteBytes20", fieldName: "validatorsBytes20"}
+        ].forEach((getlastVoteVariation) => {
 
-            const firstVote = [numToAddress(6), numToAddress(7)];
-            const secondVote = [numToAddress(8), numToAddress(9)];
+            context(`with ${getlastVoteVariation}()`, async () => {
+                let functionUnderTest;
+                let validatorsReturnFieldName;
+                beforeEach(async () => {
+                    await driver.deployVoting();
+                    functionUnderTest = driver.OrbsVoting[getlastVoteVariation.funcName];
+                    validatorsReturnFieldName = getlastVoteVariation.fieldName;
+                });
 
-            const firstVoteBlockNumber = await driver.OrbsVoting.voteOut(firstVote).then(r => r.receipt.blockNumber);
-            const reportedFirstVote = await driver.OrbsVoting.getCurrentVote(accounts[0]);
+                it('returns the last vote made by a voter', async () => {
+                    const firstVote = [numToAddress(6), numToAddress(7)];
+                    const secondVote = [numToAddress(8), numToAddress(9)];
 
-            assert.deepEqual(reportedFirstVote[0], firstVote);
-            assert.equal(reportedFirstVote[1].toNumber(), firstVoteBlockNumber);
+                    const firstVoteBlockNumber = await driver.OrbsVoting.voteOut(firstVote).then(r => r.receipt.blockNumber);
+                    const reportedFirstVote = await functionUnderTest(accounts[0]);
 
-            assert.deepEqual(reportedFirstVote[0], reportedFirstVote.validators, "expected first item in tuple to be nodes");
-            assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockNumber.toNumber(), "expected second item in tuple to be block height");
+                    assert.deepEqual(reportedFirstVote[0].map(a => web3.utils.toChecksumAddress(a)), firstVote);
+                    assert.equal(reportedFirstVote[1].toNumber(), firstVoteBlockNumber);
 
-            const secondVoteBlockNumber = await driver.OrbsVoting.voteOut(secondVote).then(r => r.receipt.blockNumber);
-            const reportedSecondVote = await driver.OrbsVoting.getCurrentVote(accounts[0]);
+                    assert.deepEqual(reportedFirstVote[0].map(a => web3.utils.toChecksumAddress(a)), reportedFirstVote[validatorsReturnFieldName], "expected first item in tuple to be nodes");
+                    assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockNumber.toNumber(), "expected second item in tuple to be block height");
 
-            assert.deepEqual(reportedSecondVote[0], secondVote);
-            assert.equal(reportedSecondVote[1].toNumber(), secondVoteBlockNumber);
-        });
+                    const secondVoteBlockNumber = await driver.OrbsVoting.voteOut(secondVote).then(r => r.receipt.blockNumber);
+                    const reportedSecondVote = await functionUnderTest(accounts[0]);
 
-        it('fails if guardian never voted', async () => {
-            await driver.deployVoting();
-            await assertReject(driver.OrbsVoting.getCurrentVote(numToAddress(654)));
+                    assert.deepEqual(reportedSecondVote[0].map(a => web3.utils.toChecksumAddress(a)), secondVote);
+                    assert.equal(reportedSecondVote[1].toNumber(), secondVoteBlockNumber);
+                });
+
+                it('fails if guardian never voted', async () => {
+                    await assertReject(functionUnderTest(numToAddress(654)));
+                });
+            });
         });
     });
 });
