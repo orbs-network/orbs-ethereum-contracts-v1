@@ -77,22 +77,22 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   return (
     <>
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        保護者リスト
+        ガーディアンリスト
       </Typography>
 
       <Typography align="right" variant="overline">
-        トータルステーク: {totalStake} Orbs
+        合計ステーク: {totalStake} Orbs
       </Typography>
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
       {hasMetamask() && delegatedTo.length > 0 ? (
         <Typography paragraph variant="body1" color="textPrimary">
-          委任ステータス: Your vote is going to `{delegatedTo}`.
+          投票状況: Your vote is going to `{delegatedTo}`.
         </Typography>
       ) : (
         <Typography paragraph variant="body1" color="textPrimary">
-          委任ステータス: You have not delegated to anyone yet.
+          投票状況: まだ投票が完了していません.
         </Typography>
       )}
 

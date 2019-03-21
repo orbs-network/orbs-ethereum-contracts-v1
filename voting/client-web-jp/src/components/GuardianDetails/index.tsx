@@ -60,7 +60,7 @@ const GuardianDialog = ({
         <ul>
           <Typography variant="body1" color="textPrimary">
             <li>
-              Url:{' '}
+              ウェブサイト:{' '}
               <Link
                 href={guardian.url}
                 target="_blank"

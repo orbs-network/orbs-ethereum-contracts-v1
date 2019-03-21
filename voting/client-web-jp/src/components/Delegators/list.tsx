@@ -19,9 +19,9 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
       <TableHead>
         <TableRow>
           <TableCell>名前</TableCell>
-          <TableCell>住所</TableCell>
+          <TableCell>アドレス</TableCell>
           <TableCell>ウェブサイト</TableCell>
-          <TableCell>前回の選挙への参加</TableCell>
+          <TableCell>前回投票時のステーク</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="guardians-list">
