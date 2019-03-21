@@ -26,6 +26,18 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "validator",
+          "type": "address"
+        }
+      ],
+      "name": "ValidatorUpdated",
+      "type": "event"
+    },
+    {
       "constant": false,
       "inputs": [
         {
@@ -43,13 +55,35 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
-        },
-        {
-          "name": "declarationHash",
-          "type": "bytes"
         }
       ],
       "name": "register",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ipAddress",
+          "type": "bytes4"
+        },
+        {
+          "name": "website",
+          "type": "string"
+        },
+        {
+          "name": "orbsAddress",
+          "type": "bytes20"
+        }
+      ],
+      "name": "update",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
@@ -89,10 +123,6 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
-        },
-        {
-          "name": "declarationHash",
-          "type": "bytes"
         }
       ],
       "payable": false,
@@ -119,10 +149,6 @@
         {
           "name": "orbsAddress",
           "type": "bytes20"
-        },
-        {
-          "name": "declarationHash",
-          "type": "bytes"
         }
       ],
       "payable": false,
@@ -201,7 +227,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-21T09:52:23.760Z",
+  "updatedAt": "2019-03-21T17:29:17.223Z",
   "devdoc": {
     "methods": {}
   },

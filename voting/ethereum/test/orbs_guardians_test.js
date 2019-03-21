@@ -21,8 +21,8 @@ contract('OrbsGuardians', accounts => {
         });
     });
 
-    describe('when calling the register() function', () => {
-        it('should reflect registration in calls to: getGuardianData(), isGuardian(), getGuardians(), getRegistrationBlockNumber()', async () => {
+    describe('when registering', () => {
+        it('should reflect registration in calls to: getGuardianData(), isGuardian(), getGuardians()', async () => {
             await driver.deployGuardians();
 
             await assertReject(driver.OrbsGuardians.getGuardianData(accounts[1]), "expected getting data before registration to fail");
@@ -41,13 +41,6 @@ contract('OrbsGuardians', accounts => {
 
             const retrievedGuardianList = await driver.OrbsGuardians.getGuardians(0, 10);
             assert.deepEqual(retrievedGuardianList, [accounts[1]], "expected list with the registered account address");
-
-            const regBlk = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
-            const blockNumber = regRes.receipt.blockNumber;
-            assert.equal(regBlk.registeredOn.toNumber(), blockNumber);
-            assert.equal(regBlk.lastUpdatedOn.toNumber(), blockNumber);
-            assert.equal(regBlk.registeredOn.toNumber(), regBlk[0].toNumber());
-            assert.equal(regBlk.lastUpdatedOn.toNumber(), regBlk[1].toNumber());
         });
 
         it('should reject empty data entries', async () => {
@@ -160,44 +153,77 @@ contract('OrbsGuardians', accounts => {
         });
 
         describe('twice for the same guardian', () => {
-            it('fails to override existing records, if a second deposit is sent', async () => {
+            it('fails to register once registered', async () => {
                 await driver.deployGuardians();
 
-                const depositOptions = {
-                    from: accounts[1],
-                    value: driver.registrationDeposit
-                };
-                await driver.OrbsGuardians.register("some name", "some website", depositOptions);
-                const p = driver.OrbsGuardians.register("other name", "other website", depositOptions);
-                await assertReject(p, "expected a second deposit to be rejected");
+                await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+                const p = driver.OrbsGuardians.register("other name", "other website", driver.depositOptions(accounts[1]));
+                await assertReject(p, "expected a second registration to be rejected");
             });
+        });
+    });
 
-            it('override existing records, with no additional deposit', async () => {
-                await driver.deployGuardians();
+    describe('when updating registration', () => {
+        it('fails if a second deposit is sent', async () => {
+            await driver.deployGuardians();
 
-                await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-                await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
+            await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+            const p = driver.OrbsGuardians.update("other name", "other website", driver.depositOptions(accounts[1]));
+            await assertReject(p, "expected an update with deposit to be rejected");
+        });
 
-                const guardData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
-                assert.equal(guardData.name, "other name", "expected name to be overridden");
-                assert.equal(guardData.website, "other website", "expected website to be overridden");
-            });
+        it('override existing records, with no additional deposit, and remain a registered guardian', async () => {
+            await driver.deployGuardians();
+            
+            await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+            await driver.OrbsGuardians.update("other name", "other website", driver.noDepositOptions(accounts[1]));
 
-            it('returns correct block heights after a successful override', async () => {
-                await driver.deployGuardians();
+            const guardData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
+            assert.equal(guardData.name, "other name", "expected name to be overridden");
+            assert.equal(guardData.website, "other website", "expected website to be overridden");
 
-                const regRes1 = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-                const regRes2 = await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
+            assert.isOk(await driver.OrbsGuardians.isGuardian(accounts[1]), "expected isGuardian to return true after update");
 
-                const regBlck = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
-                const registrationHeight = regRes1.receipt.blockNumber;
-                const updateHeight = regRes2.receipt.blockNumber;
-                assert(registrationHeight < updateHeight, "expected registration block height to be less than updating block height");
-                assert.equal(regBlck.registeredOn.toNumber(), registrationHeight);
-                assert.equal(regBlck.lastUpdatedOn.toNumber(), updateHeight);
-                assert.equal(regBlck.registeredOn.toNumber(), regBlck[0].toNumber());
-                assert.equal(regBlck.lastUpdatedOn.toNumber(), regBlck[1].toNumber());
-            });
+            const retrievedGuardianList = await driver.OrbsGuardians.getGuardians(0, 10);
+            assert.deepEqual(retrievedGuardianList, [accounts[1]], "expected address to appear in guardians list after update");
+        });
+
+        it('should reject empty data entries', async () => {
+            await driver.deployGuardians();
+
+            await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+            await assertReject(driver.OrbsGuardians.update("", "some website", driver.noDepositOptions(accounts[1])), "expected empty name to fail registration");
+            await assertReject(driver.OrbsGuardians.update(undefined, "some website", driver.noDepositOptions(accounts[1])), "expected undefined name to fail registration");
+
+            await assertReject(driver.OrbsGuardians.update("some name", "", driver.noDepositOptions(accounts[1])), "expected empty website to fail registration");
+            await assertReject(driver.OrbsGuardians.update("some name", undefined, driver.noDepositOptions(accounts[1])), "expected undefined website to fail registration");
+
+            await assertResolve(driver.OrbsGuardians.update("some name1", "some website1", driver.noDepositOptions(accounts[1])), "expected update values to succeed");
+        });
+    });
+
+    describe('when getRegistrationBlockNumber() is called', () => {
+        it('should return the correct the registration block height', async () => {
+            await driver.deployGuardians();
+
+            const regRes1 = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+            const registrationBlockNum = regRes1.receipt.blockNumber;
+
+            const regBlockNums1 = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
+            assert.equal(regBlockNums1.registeredOn.toNumber(), registrationBlockNum);
+            assert.equal(regBlockNums1.lastUpdatedOn.toNumber(), registrationBlockNum);
+            assert.equal(regBlockNums1.registeredOn.toNumber(), regBlockNums1[0].toNumber());
+            assert.equal(regBlockNums1.lastUpdatedOn.toNumber(), regBlockNums1[1].toNumber());
+
+            const regRes2 = await driver.OrbsGuardians.update("other name", "other website", {from: accounts[1]});
+
+            const regBlockNums2 = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
+            const updateBlockNum = regRes2.receipt.blockNumber;
+            assert(registrationBlockNum < updateBlockNum, "expected registration block height to be less than updating block height");
+            assert.equal(regBlockNums2.registeredOn.toNumber(), registrationBlockNum);
+            assert.equal(regBlockNums2.lastUpdatedOn.toNumber(), updateBlockNum);
+            assert.equal(regBlockNums2.registeredOn.toNumber(), regBlockNums2[0].toNumber());
+            assert.equal(regBlockNums2.lastUpdatedOn.toNumber(), regBlockNums2[1].toNumber());
         });
     });
 

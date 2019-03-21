@@ -4,13 +4,20 @@ pragma solidity 0.5.3;
 interface IOrbsValidatorsRegistry {
     event ValidatorLeft(address indexed validator);
     event ValidatorRegistered(address indexed validator);
+    event ValidatorUpdated(address indexed validator);
 
     function register(
         string calldata name,
         bytes4 ipAddress,
         string calldata website,
-        bytes20 orbsAddress,
-        bytes calldata declarationHash
+        bytes20 orbsAddress
+    )
+        external;
+    function update(
+        string calldata name,
+        bytes4 ipAddress,
+        string calldata website,
+        bytes20 orbsAddress
     )
         external;
     function leave() external;
@@ -21,8 +28,7 @@ interface IOrbsValidatorsRegistry {
             string memory name,
             bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress,
-            bytes memory declarationHash
+            bytes20 orbsAddress
         );
     function reviewRegistration()
         external
@@ -31,8 +37,7 @@ interface IOrbsValidatorsRegistry {
             string memory name,
             bytes4 ipAddress,
             string memory website,
-            bytes20 orbsAddress,
-            bytes memory declarationHash
+            bytes20 orbsAddress
         );
     function getRegistrationBlockNumber(address validator)
         external

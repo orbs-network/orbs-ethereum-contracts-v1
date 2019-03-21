@@ -2,7 +2,7 @@ pragma solidity 0.5.3;
 
 
 interface IOrbsValidators {
-    event ValidatorAdded(address indexed validator);
+    event ValidatorApproved(address indexed validator);
     event ValidatorRemoved(address indexed validator);
 
     function approve(address validator) external;

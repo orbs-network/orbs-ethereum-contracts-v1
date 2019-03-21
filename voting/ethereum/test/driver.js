@@ -51,8 +51,22 @@ module.exports.Driver = class {
         const url = "http://somedomain.com/?" + this.runningCounter;
         const orbsAddr = exports.numToAddress(8765 + this.runningCounter);
         const ip = ("0x" + this.runningCounter +"00000000").slice(0, 10);
-        const declarationHash = web3.utils.randomHex(32);
 
-        await this.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash, {from: validatorAddress});
+        await this.OrbsRegistry.register(name, ip, url, orbsAddr, {from: validatorAddress});
     };
+
+    depositOptions(address) {
+        return {
+            from: address,
+            value: this.registrationDeposit
+        }
+    };
+
+    noDepositOptions(address) {
+        return {
+            from: address,
+            value: 0
+        }
+    };
+
 };

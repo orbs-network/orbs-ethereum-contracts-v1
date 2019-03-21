@@ -27,7 +27,7 @@ contract('OrbsValidators', accounts => {
 
             const validatorAddr  = numToAddress(1);
             let r = await driver.OrbsValidators.approve(validatorAddr);
-            assert.equal(r.logs[0].event, "ValidatorAdded");
+            assert.equal(r.logs[0].event, "ValidatorApproved");
 
             let approved = await driver.OrbsValidators.isApproved(validatorAddr);
             assert.isOk(approved);
@@ -219,9 +219,9 @@ contract('OrbsValidators', accounts => {
             await assertResolve(driver.OrbsValidators.approve(accounts[1])); // decoy - this guy never sets his data
             await assertResolve(driver.OrbsValidators.approve(accounts[2]));
 
-            await driver.OrbsRegistry.register("test0", ips[0], "url0", addresses[0], "0xF1", {from: accounts[0]});
-            await driver.OrbsRegistry.register("test1", ips[1], "url1", addresses[1], "0xF2", {from: accounts[2]});
-            await driver.OrbsRegistry.register("test2", ips[2], "url2", addresses[2], "0xF3", {from: accounts[3]}); // decoy - this guy was never approved
+            await driver.OrbsRegistry.register("test0", ips[0], "url0", addresses[0], {from: accounts[0]});
+            await driver.OrbsRegistry.register("test1", ips[1], "url1", addresses[1], {from: accounts[2]});
+            await driver.OrbsRegistry.register("test2", ips[2], "url2", addresses[2], {from: accounts[3]}); // decoy - this guy was never approved
 
             const networkTopology = await driver.OrbsValidators.getNetworkTopology();
 

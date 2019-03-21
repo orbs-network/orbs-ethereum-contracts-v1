@@ -2,9 +2,14 @@ pragma solidity 0.5.3;
 
 
 interface IOrbsGuardians {
+    event GuardianRegistered(address indexed guardian);
+    event GuardianLeft(address indexed guardian);
+    event GuardianUpdated(address indexed guardian);
+
     function register(string calldata name, string calldata website)
         external
         payable;
+    function update(string calldata name, string calldata website) external;
     function leave() external;
     function isGuardian(address guardian) external view returns (bool);
     function getGuardianData(address validator)
