@@ -24,6 +24,8 @@ Voting/test/it/build/
 Voting/test/it/package-lock.json
 Voting/orbs/mergetool
 
+subscription/ethereum/build/
+
 **/node_modules/
 # **/build/
 
