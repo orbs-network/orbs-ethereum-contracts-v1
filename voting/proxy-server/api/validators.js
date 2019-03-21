@@ -18,10 +18,14 @@ const validatorsApiFactory = (ethereumClient, orbsClientService) => {
         orbsClientService.getTotalStake()
       ]);
 
-      data['votesAgainst'] = (
-        (100n * validatorVotesResults) /
-        totalStakeResults
-      ).toString();
+      if (totalStakeResults === 0n) {
+        data['votesAgainst'] = '0';
+      } else {
+        data['votesAgainst'] = (
+          (100n * validatorVotesResults) /
+          totalStakeResults
+        ).toString();
+      }
 
       res.json(data);
     } catch (err) {
