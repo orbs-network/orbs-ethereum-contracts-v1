@@ -82,25 +82,6 @@ async function delegateEvents() {
     }
 }
 
-async function voteEvents() {
-    let voteEvents = await require('./node-scripts/findVoteEvents')();
-    if (verbose) {
-        console.log('\x1b[34m%s\x1b[0m', `\nFound ${voteEvents.length} Vote events`);
-    }
-
-    for (let i = 0;i < voteEvents.length;i++) {
-        try {
-            if (verbose) {
-                console.log('\x1b[32m%s\x1b[0m', `Voting event ${i + 1}:`);
-                console.log(voteEvents[i]);
-            }
-            await gamma.sendTransaction('mirror-vote.json', [voteEvents[i].txHash], orbsVotingContractName, orbsEnvironment);
-        } catch (e){
-            console.log(`Could not mirror event. Error OUTPUT:\n` + e);
-        }
-    }
-}
-
 async function getMirrorEndingBlockNumber() {
     let blockNumber = 0;
     try {
@@ -131,13 +112,11 @@ async function isMirroringAllowed() {
     if (currentBlockNumber >= mirrorStartingBlockNumber && currentBlockNumber < mirrorEndingBlockNumber) {
         return true;
     } else {
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is after mirror vote ending block number: ${mirrorEndingBlockNumber}.
+        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber}\nElection block number: ${mirrorStartingBlockNumber}\nMirror ending  block number: ${mirrorEndingBlockNumber}.
          Mirroring is not needed please try again later!!\n`);
         return false;
     }
 }
-
-
 
 async function main() {
     validateInput();
@@ -145,10 +124,10 @@ async function main() {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
 
-    if (isMirroringAllowed()) {
+    isAllowed = await isMirroringAllowed();
+    if (isAllowed) {
         await transferEvents();
         await delegateEvents();
-        await voteEvents();
     }
 }
 

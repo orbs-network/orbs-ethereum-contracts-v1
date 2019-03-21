@@ -82,7 +82,8 @@ async function main() {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
 
-    if (isProcessingAllowed()) {
+    isAllowed = await isProcessingAllowed();
+    if (isAllowed) {
         await processCall();
     }
 }
