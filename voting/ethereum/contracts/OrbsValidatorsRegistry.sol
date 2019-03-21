@@ -180,7 +180,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     }
 
     /// @dev returns if the address belongs to a validator
-    /// @param validator address address of the validator
+    /// @param addr address address of the validator
     function isValidator(address addr) public view returns (bool) {
         return validatorsData[addr].registeredOnBlock > 0;
     }
