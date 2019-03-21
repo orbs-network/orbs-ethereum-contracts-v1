@@ -11,9 +11,9 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         bytes4 ipAddress;
         string website;
         bytes20 orbsAddress;
+        bytes declarationHash;
         uint registeredOnBlock;
         uint lastUpdatedOnBlock;
-        bytes declarationHash;
     }
 
     uint public constant VERSION = 1;
@@ -34,44 +34,67 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
+        require(!isValidator(msg.sender), "Validator already exists");
         require(ipAddress != bytes4(0), "Please pass a valid ip address represented as an array of exactly 4 bytes");
         require(orbsAddress != bytes20(0), "Please provide a valid Orbs Address");
-
-        require(
-            lookupByIp[ipAddress] == address(0) ||
-            lookupByIp[ipAddress] == msg.sender,
-                "IP Address is already in use by another validator"
-        );
-        require(
-            lookupByOrbsAddr[orbsAddress] == address(0) ||
-            lookupByOrbsAddr[orbsAddress] == msg.sender,
-                "Orbs Address is already in use by another validator"
-        );
+        require(lookupByIp[ipAddress] == address(0), "IP address already in use");
+        require(lookupByOrbsAddr[orbsAddress] == address(0), "Orbs Address is already in use by another validator");
 
         lookupByIp[ipAddress] = msg.sender;
         lookupByOrbsAddr[orbsAddress] = msg.sender;
-
-        uint registeredOnBlock = validatorsData[msg.sender].registeredOnBlock;
-        if (registeredOnBlock == 0) {
-            registeredOnBlock = block.number;
-        }
 
         validatorsData[msg.sender] = ValidatorData(
             name,
             ipAddress,
             website,
             orbsAddress,
-            registeredOnBlock,
+            declarationHash,
             block.number,
-            declarationHash
+            block.number
         );
+
+        emit ValidatorRegistered(msg.sender);
+    }
+
+    function update(
+        string memory name,
+        bytes4 ipAddress,
+        string memory website,
+        bytes20 orbsAddress,
+        bytes memory declarationHash
+    )
+        public
+    {
+        require(bytes(name).length > 0, "Please provide a valid name");
+        require(bytes(website).length > 0, "Please provide a valid website");
+        require(isValidator(msg.sender), "Validator doesnt exist");
+        require(ipAddress != bytes4(0), "Please pass a valid ip address represented as an array of exactly 4 bytes");
+        require(orbsAddress != bytes20(0), "Please provide a valid Orbs Address");
+        require(isUniqueIp(ipAddress), "IP Address is already in use by another validator");
+        require(isUniqueOrbsAddress(orbsAddress), "Orbs Address is already in use by another validator");
+
+        ValidatorData storage data = validatorsData[msg.sender];
+
+        delete lookupByIp[data.ipAddress];
+        delete lookupByOrbsAddr[data.orbsAddress];
+
+        lookupByIp[ipAddress] = msg.sender;
+        lookupByOrbsAddr[orbsAddress] = msg.sender;
+
+        data.name = name;
+        data.ipAddress = ipAddress;
+        data.website = website;
+        data.orbsAddress = orbsAddress;
+        data.declarationHash = declarationHash;
+        data.lastUpdatedOnBlock = block.number;
+
         emit ValidatorRegistered(msg.sender);
     }
 
     function leave() public {
         require(isValidator(msg.sender), "Sender is not a listed Validator");
 
-        ValidatorData storage data = validatorsData[msg.sender];
+        ValidatorData memory data = validatorsData[msg.sender];
 
         delete lookupByIp[data.ipAddress];
         delete lookupByOrbsAddr[data.orbsAddress];
@@ -94,7 +117,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(isValidator(validator), "Unlisted Validator");
 
-        ValidatorData storage entry = validatorsData[validator];
+        ValidatorData memory entry = validatorsData[validator];
         return (
             entry.name,
             entry.ipAddress,
@@ -125,7 +148,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(isValidator(validator), "Unlisted Validator");
 
-        ValidatorData storage entry = validatorsData[validator];
+        ValidatorData memory entry = validatorsData[validator];
         return (
             entry.registeredOnBlock,
             entry.lastUpdatedOnBlock
@@ -143,6 +166,19 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     }
 
     function isValidator(address addr) public view returns (bool) {
-        return bytes(validatorsData[addr].name).length > 0;
+        return validatorsData[addr].registeredOnBlock > 0;
     }
+
+    function isUniqueIp(bytes4 ipAddress) internal view returns (bool) {
+        return
+            lookupByIp[ipAddress] == address(0) ||
+            lookupByIp[ipAddress] == msg.sender;
+    }
+
+    function isUniqueOrbsAddress(bytes20 orbsAddress) internal view returns (bool) {
+        return
+            lookupByOrbsAddr[orbsAddress] == address(0) ||
+            lookupByOrbsAddr[orbsAddress] == msg.sender;
+    }
+
 }

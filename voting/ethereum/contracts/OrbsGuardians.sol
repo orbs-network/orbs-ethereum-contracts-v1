@@ -14,11 +14,7 @@ contract OrbsGuardians is IOrbsGuardians {
         uint lastUpdatedOnBlock;
     }
 
-    event GuardianAdded(address indexed validator);
-    event GuardianLeft(address indexed validator);
-    event GuardianModified(address indexed validator);
-
-    // The version of the current federation smart contract.
+    // The version of the current Guardian smart contract.
     uint public constant VERSION = 1;
 
     uint public registrationDeposit = 1 ether;
@@ -37,27 +33,33 @@ contract OrbsGuardians is IOrbsGuardians {
         require(tx.origin == msg.sender, "Only EOA may register as Guardian");
         require(bytes(name).length > 0, "Please provide a valid name");
         require(bytes(website).length > 0, "Please provide a valid website");
+        require(!isGuardian(msg.sender), "Cannot be a guardian");
+        require(msg.value == registrationDeposit, "Please provide the exact registration deposit");
 
-        bool adding = !isGuardian(msg.sender);
-        uint registeredOnBlock;
-        uint index;
-        if (adding) {
-            require(msg.value == registrationDeposit, "Please provide the exact registration deposit");
-            index = guardians.length;
-            registeredOnBlock = block.number;
-            guardians.push(msg.sender);
-            emit GuardianAdded(msg.sender);
-        } else {
-            require(msg.value == 0, "Guardian is already registered, no need for a second deposit");
-            registeredOnBlock = guardiansData[msg.sender].registeredOnBlock;
-            index = guardiansData[msg.sender].index;
-            emit GuardianModified(msg.sender);
-        }
+        uint index = guardians.length;
+        guardians.push(msg.sender);
+        guardiansData[msg.sender] = GuardianData(name, website, index , block.number, block.number);
 
-        guardiansData[msg.sender] = GuardianData(name, website, index, registeredOnBlock, block.number);
+        emit GuardianAdded(msg.sender);
+    }
+
+    function update(string memory name, string memory website)
+        public
+    {
+        require(tx.origin == msg.sender, "Only EOA may register as Guardian");
+        require(bytes(name).length > 0, "Please provide a valid name");
+        require(bytes(website).length > 0, "Please provide a valid website");
+        require(isGuardian(msg.sender), "You must be a registered guardian");
+
+        guardiansData[msg.sender].name = name;
+        guardiansData[msg.sender].website = website;
+        guardiansData[msg.sender].lastUpdatedOnBlock = block.number;
+
+        emit GuardianModified(msg.sender);
     }
 
     function leave() public {
+        require(tx.origin == msg.sender, "Only EOA may register as Guardian");
         require(isGuardian(msg.sender), "Sender is not a Guardian");
 
         uint i = guardiansData[msg.sender].index;
@@ -80,7 +82,7 @@ contract OrbsGuardians is IOrbsGuardians {
     }
 
     function isGuardian(address guardian) public view returns (bool) {
-        return bytes(guardiansData[guardian].name).length > 0;
+        return guardiansData[guardian].registeredOnBlock > 0;
     }
 
     function getGuardians(uint offset, uint limit)
@@ -91,8 +93,6 @@ contract OrbsGuardians is IOrbsGuardians {
         if (offset >= guardians.length) { // offset out of bounds
             return new address[](0);
         }
-
-        require(limit <= 100, "Page size may not exceed 100");
 
         if (offset.add(limit) > guardians.length) { // clip limit to array size
             limit = guardians.length.sub(offset);
@@ -149,7 +149,7 @@ contract OrbsGuardians is IOrbsGuardians {
     {
         require(isGuardian(guardian), "Please provide a listed Guardian");
 
-        GuardianData storage entry = guardiansData[guardian];
+        GuardianData memory entry = guardiansData[guardian];
         return (
             entry.registeredOnBlock,
             entry.lastUpdatedOnBlock

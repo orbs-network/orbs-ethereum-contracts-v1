@@ -164,7 +164,8 @@ contract('Voting', accounts => {
                 });
 
                 it('fails if guardian never voted', async () => {
-                    await assertReject(functionUnderTest(numToAddress(654)));
+                    const defaults = await functionUnderTest(numToAddress(654));
+                    assert.equal(defaults.blockNumber,0,"expected to get never voted");
                 });
             });
         });

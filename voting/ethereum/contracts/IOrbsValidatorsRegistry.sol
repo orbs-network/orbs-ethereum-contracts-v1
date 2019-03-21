@@ -13,6 +13,14 @@ interface IOrbsValidatorsRegistry {
         bytes calldata declarationHash
     )
         external;
+    function update(
+        string calldata name,
+        bytes4 ipAddress,
+        string calldata website,
+        bytes20 orbsAddress,
+        bytes calldata declarationHash
+    )
+        external;
     function leave() external;
     function getValidatorData(address validator)
         external

@@ -9,35 +9,31 @@ import "./OrbsValidatorsRegistry.sol";
 
 contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
-    // The version of the current federation smart contract.
+    // The version of the current Validators smart contract.
     uint public constant VERSION = 1;
 
     // Maximum number of the federation members.
     uint internal constant MAX_VALIDATOR_LIMIT = 100;
-    uint public validatorLimit;
+    uint public validatorsLimit;
 
     IOrbsValidatorsRegistry public orbsValidatorsRegistry;
 
     address[] internal approvedValidators;
     mapping(address => uint) internal approvalBlockNumber;
 
-    constructor(address registry_, uint validatorLimit_) public {
+    constructor(address registry_, uint validatorsLimit_) public {
         require(registry_ != address(0), "Registry contract address 0");
-        require(validatorLimit_ > 0, "Limit must be positive");
-        require(validatorLimit_ <= MAX_VALIDATOR_LIMIT, "Limit is too high");
+        require(validatorsLimit_ > 0, "Limit must be positive");
+        require(validatorsLimit_ <= MAX_VALIDATOR_LIMIT, "Limit is too high");
 
-        validatorLimit = validatorLimit_;
+        validatorsLimit = validatorsLimit_;
         orbsValidatorsRegistry = IOrbsValidatorsRegistry(registry_);
     }
 
     function approve(address validator) public onlyOwner {
         require(validator != address(0), "Address must not be 0!");
-        require(
-            approvedValidators.length <= validatorLimit - 1 &&
-            approvedValidators.length <= MAX_VALIDATOR_LIMIT - 1,
-                "Can't add more members!"
-        );
-
+        require(approvedValidators.length < MAX_VALIDATOR_LIMIT, "Can't add more members!");
+        require(approvedValidators.length < validatorsLimit, "Can't add more members!");
         require(!isApproved(validator), "Address must not be already approved");
 
         approvedValidators.push(validator);
@@ -75,18 +71,18 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     }
 
     function getValidators() public view returns (address[] memory) {
-        uint activeValidatorCount = countRegisteredValidators();
-        address[] memory validators = new address[](activeValidatorCount);
+        uint approvedLength = approvedValidators.length;
+        address[] memory validators = new address[](approvedLength);
 
         uint pushAt = 0;
-        uint approvedLength = approvedValidators.length;
         for (uint i = 0; i < approvedLength; i++) {
             if (orbsValidatorsRegistry.isValidator(approvedValidators[i])) {
                 validators[pushAt] = approvedValidators[i];
                 pushAt++;
             }
         }
-        return validators;
+
+        return sliceArray(validators,pushAt);
     }
 
     function getValidatorsBytes20() public view returns (bytes20[] memory) {
@@ -129,14 +125,17 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         }
     }
 
-    function countRegisteredValidators() internal view returns (uint) {
-        uint registeredCount = 0;
-        uint approvedLength = approvedValidators.length;
-        for (uint i = 0; i < approvedLength; i++) {
-            if (orbsValidatorsRegistry.isValidator(approvedValidators[i])) {
-                registeredCount++;
-            }
+    function sliceArray(address[] memory arr, uint len)
+        internal
+        pure
+        returns (address[] memory)
+    {
+        require (len <= arr.length, "sub array must be longer then array");
+
+        address[] memory result = new address[](len);
+        for(uint i=0; i<len; i++){
+            result[i] = arr[i];
         }
-        return registeredCount;
+        return result;
     }
 }

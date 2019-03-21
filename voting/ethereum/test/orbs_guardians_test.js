@@ -176,7 +176,7 @@ contract('OrbsGuardians', accounts => {
                 await driver.deployGuardians();
 
                 await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-                await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
+                await driver.OrbsGuardians.update("other name", "other website", {from: accounts[1]});
 
                 const guardData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
                 assert.equal(guardData.name, "other name", "expected name to be overridden");
@@ -187,7 +187,7 @@ contract('OrbsGuardians', accounts => {
                 await driver.deployGuardians();
 
                 const regRes1 = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-                const regRes2 = await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
+                const regRes2 = await driver.OrbsGuardians.update("other name", "other website", {from: accounts[1]});
 
                 const regBlck = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
                 const registrationHeight = regRes1.receipt.blockNumber;

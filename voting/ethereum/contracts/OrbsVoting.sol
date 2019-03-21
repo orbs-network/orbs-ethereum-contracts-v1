@@ -10,26 +10,26 @@ contract OrbsVoting is IOrbsVoting {
         address[] validators;
     }
 
-    // The version of the current federation smart contract.
+    // The version of the current Voting smart contract.
     uint public constant VERSION = 1;
 
     uint internal voteCounter;
     uint internal delegationCounter;
-    uint public maxVoteOutLength;
+    uint public maxVoteOutCount;
 
-    mapping(address => VotingRecord) internal lastVotes;
-    mapping(address => address) internal lastDelegations;
+    mapping(address => VotingRecord) internal votes;
+    mapping(address => address) internal delegations;
 
 
-    constructor(uint maxVoteOutLength_) public {
+    constructor(uint maxVoteOutCount_) public {
         voteCounter = 0;
         delegationCounter = 0;
-        maxVoteOutLength = maxVoteOutLength_;
+        maxVoteOutCount = maxVoteOutCount_;
     }
 
     function voteOut(address[] memory validators) public {
         uint validatorsLength = validators.length;
-        require(validatorsLength <= maxVoteOutLength, "Validators list is over the allowed length");
+        require(validatorsLength <= maxVoteOutCount, "Validators list is over the allowed length");
 
         for (uint i=0; i < validatorsLength; i++) {
             require(validators[i] != address(0), "All validator addresses must be non 0");
@@ -37,17 +37,22 @@ contract OrbsVoting is IOrbsVoting {
 
         voteCounter++;
 
-        lastVotes[msg.sender] = VotingRecord(block.number, validators);
+        votes[msg.sender] = VotingRecord(block.number, validators);
 
         emit VoteOut(msg.sender, validators, voteCounter);
     }
 
+    //If you want to cancel delegation - delegate to yourself
     function delegate(address to) public {
         require(to != address(0), "must delegate to non 0");
 
         delegationCounter++;
 
-        lastDelegations[msg.sender] = to;
+        delegations[msg.sender] = to;
+
+        if (msg.sender == to) {
+            delete delegations[msg.sender];
+        }
 
         emit Delegate(msg.sender, to, delegationCounter);
     }
@@ -57,9 +62,7 @@ contract OrbsVoting is IOrbsVoting {
         view
         returns (address[] memory validators, uint blockNumber)
     {
-        VotingRecord storage lastVote = lastVotes[guardian];
-
-        require(lastVote.blockNumber > 0, "Guardian never voted");
+        VotingRecord memory lastVote = votes[guardian];
 
         blockNumber = lastVote.blockNumber;
         validators = lastVote.validators;
@@ -87,6 +90,6 @@ contract OrbsVoting is IOrbsVoting {
     view
     returns (address)
     {
-        return lastDelegations[delegator];
+        return delegations[delegator];
     }
 }

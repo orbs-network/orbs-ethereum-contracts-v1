@@ -99,18 +99,12 @@ contract('OrbsValidatorsRegistry', accounts => {
 
             await assertReject(driver.OrbsRegistry.register("", ip, url, orbsAddr, declarationHash));
             await assertReject(driver.OrbsRegistry.register(undefined, ip, url, orbsAddr, declarationHash));
-
-            await assertResolve(driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash));
-
             await assertReject(driver.OrbsRegistry.register(name, ip, "", orbsAddr, declarationHash));
             await assertReject(driver.OrbsRegistry.register(name, ip, undefined, orbsAddr, declarationHash));
-
-            await assertResolve(driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash));
-
             await assertReject(driver.OrbsRegistry.register(name, ip, url, "0x0", declarationHash));
             await assertReject(driver.OrbsRegistry.register(name, ip, url, undefined, declarationHash));
-
             await assertResolve(driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash));
+
         });
 
         it('should reject duplicate IP and Orbs Address only', async () => {
@@ -125,14 +119,14 @@ contract('OrbsValidatorsRegistry', accounts => {
             await assertResolve(driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash, {from: accounts[0]}), 'expected one account to receive value set #1');
 
             await assertResolve(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr2, declarationHash2, {from: accounts[1]}), 'expected another account to succeed in setting value set #2');
-            await assertResolve(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr2, declarationHash2, {from: accounts[1]}), 'expected setting the same values twice to succeed (duplicate values for same account)');
+            await assertResolve(driver.OrbsRegistry.update(name2, ip2, url2, orbsAddr2, declarationHash2, {from: accounts[1]}), 'expected setting the same values twice to succeed (duplicate values for same account)');
 
-            await assertResolve(driver.OrbsRegistry.register(name, ip2, url2, orbsAddr2, declarationHash2, {from: accounts[1]}), "expected setting duplicate name to succeed");
-            await assertResolve(driver.OrbsRegistry.register(name2, ip2, url, orbsAddr2, declarationHash2, {from: accounts[1]}), "expected setting duplicate url to succeed");
-            await assertResolve(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr2, declarationHash, {from: accounts[1]}), "expected setting duplicate declarationHash to succeed");
+            await assertResolve(driver.OrbsRegistry.update(name, ip2, url2, orbsAddr2, declarationHash2, {from: accounts[1]}), "expected setting duplicate name to succeed");
+            await assertResolve(driver.OrbsRegistry.update(name2, ip2, url, orbsAddr2, declarationHash2, {from: accounts[1]}), "expected setting duplicate url to succeed");
+            await assertResolve(driver.OrbsRegistry.update(name2, ip2, url2, orbsAddr2, declarationHash, {from: accounts[1]}), "expected setting duplicate declarationHash to succeed");
 
-            await assertReject(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr, declarationHash2, {from: accounts[1]}), "expected setting duplicate orbsAddress to fail");
-            await assertReject(driver.OrbsRegistry.register(name2, ip, url2, orbsAddr2, declarationHash2, {from: accounts[1]}), "expected setting duplicate ip to fail");
+            await assertReject(driver.OrbsRegistry.register(name2, ip2, url2, orbsAddr, declarationHash2, {from: accounts[2]}), "expected setting duplicate orbsAddress to fail");
+            await assertReject(driver.OrbsRegistry.register(name2, ip, url2, orbsAddr2, declarationHash2, {from: accounts[3]}), "expected setting duplicate ip to fail");
         });
 
         it('should reject zero ip address longer than 4 bytes', async () => {
@@ -147,7 +141,7 @@ contract('OrbsValidatorsRegistry', accounts => {
                 await driver.deployRegistry();
 
                 await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), "0xCCDD", {from: accounts[1]});
-                await driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash, {from: accounts[1]});
+                await driver.OrbsRegistry.update(name, ip, url, orbsAddr, declarationHash, {from: accounts[1]});
 
                 const valData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
                 assert.equal(valData.name, name);
@@ -166,7 +160,7 @@ contract('OrbsValidatorsRegistry', accounts => {
                 await driver.deployRegistry();
 
                 const regRes1 = await driver.OrbsRegistry.register("XX", "0xFFEEDDCC", "XX", numToAddress(999), "0xCCDD", {from: accounts[1]});
-                const regRes2 = await driver.OrbsRegistry.register(name, ip, url, orbsAddr, declarationHash, {from: accounts[1]});
+                const regRes2 = await driver.OrbsRegistry.update(name, ip, url, orbsAddr, declarationHash, {from: accounts[1]});
                 
                 const regBlck = await driver.OrbsRegistry.getRegistrationBlockNumber(accounts[1]);
                 const registrationHeight = regRes1.receipt.blockNumber;
