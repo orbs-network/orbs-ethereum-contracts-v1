@@ -6,6 +6,7 @@ import "./IOrbsValidatorsRegistry.sol";
 
 contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
 
+    // The validators metadata object.
     struct ValidatorData {
         string name;
         bytes4 ipAddress;
@@ -16,13 +17,22 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         uint lastUpdatedOnBlock;
     }
 
+    // The version of the current validators metadata registration smart contract.
     uint public constant VERSION = 1;
 
+    // A mapping between validator address and metadata.
     mapping(address => ValidatorData) internal validatorsData;
 
+    // Lookups for IP Address & Orbs Address for uniqueness tests. Could be used for external lookups as well.
     mapping(bytes4 => address) public lookupByIp;
     mapping(bytes20 => address) public lookupByOrbsAddr;
 
+    /// @dev register a new guardian. You will need to transfer registrationDeposit amount of ether.
+    /// @param name string The name of the guardian
+    /// @param ipAddress bytes4 The website of the guardian
+    /// @param website string The website of the guardian
+    /// @param orbsAddress bytes20 The website of the guardian
+    /// @param website string The website of the guardian
     function register(
         string memory name,
         bytes4 ipAddress,

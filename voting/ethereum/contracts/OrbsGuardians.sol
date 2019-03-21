@@ -17,15 +17,24 @@ contract OrbsGuardians is IOrbsGuardians {
     // The version of the current Guardian smart contract.
     uint public constant VERSION = 1;
 
+    //Amount of Ether need to be locked when registering - this will be set to 1.
     uint public registrationDeposit;
 
+    //Iterable array to get a list of all guardians
     address[] internal guardians;
+
+    //Mapping between address and the guardian data.
     mapping(address => GuardianData) internal guardiansData;
 
+    /// @dev Constructor that initializes the amount of ether needed to lock when registering. This will be set to 1.
+    /// @param registrationDeposit_ uint the amount of ether needed to lock when registering.
     constructor(uint registrationDeposit_) public {
         registrationDeposit = registrationDeposit_;
     }
 
+    /// @dev register a new guardian. You will need to transfer registrationDeposit amount of ether.
+    /// @param name string The name of the guardian
+    /// @param website string The website of the guardian
     function register(string memory name, string memory website)
         public
         payable
@@ -43,6 +52,10 @@ contract OrbsGuardians is IOrbsGuardians {
         emit GuardianRegistered(msg.sender);
     }
 
+
+    /// @dev update guardian details. only msg.sender can update it's own guardian details.
+    /// @param name string The name of the guardian
+    /// @param website string The website of the guardian
     function update(string memory name, string memory website)
         public
     {
@@ -58,6 +71,8 @@ contract OrbsGuardians is IOrbsGuardians {
         emit GuardianUpdated(msg.sender);
     }
 
+
+    /// @dev delete the guardian and take back the locked ether. only msg.sender can leave.
     function leave() public {
         require(tx.origin == msg.sender, "Only EOA may register as Guardian");
         require(isGuardian(msg.sender), "Sender is not a Guardian");
@@ -80,10 +95,15 @@ contract OrbsGuardians is IOrbsGuardians {
         emit GuardianLeft(msg.sender);
     }
 
+    /// @dev returns if the address belongs to a guardian
+    /// @param guardian address the guardian address
     function isGuardian(address guardian) public view returns (bool) {
         return guardiansData[guardian].registeredOnBlock > 0;
     }
 
+    /// @dev returns an array of guardians.
+    /// @param offset uint offset from which to start getting guardians from the array
+    /// @param limit uint limit of guardians to be returned.
     function getGuardians(uint offset, uint limit)
         public
         view
@@ -107,6 +127,10 @@ contract OrbsGuardians is IOrbsGuardians {
         return result;
     }
 
+    /// @dev returns an array of guardians as Bytes20 - similar to getGuardians, but returns byte20 which is
+    ///      more compatible in some cases.
+    /// @param offset uint offset from which to start getting guardians from the array
+    /// @param limit uint limit of guardians to be returned.
     function getGuardiansBytes20(uint offset, uint limit)
         public
         view
@@ -124,6 +148,8 @@ contract OrbsGuardians is IOrbsGuardians {
         return result;
     }
 
+    /// @dev returns name and website for  a specific guardian.
+    /// @param guardian address the guardian address
     function getGuardianData(address guardian)
         public
         view
@@ -133,6 +159,7 @@ contract OrbsGuardians is IOrbsGuardians {
         return (guardiansData[guardian].name, guardiansData[guardian].website);
     }
 
+    /// @dev Convenience method to check if you are a guardian.
     function reviewRegistration()
         public
         view
@@ -141,8 +168,10 @@ contract OrbsGuardians is IOrbsGuardians {
         return getGuardianData(msg.sender);
     }
 
+    /// @dev returns in which block the guardian was register, and in which block it was last updated.
+    /// @param guardian address the guardian address
     function getRegistrationBlockNumber(address guardian)
-        external
+        public
         view
         returns (uint registeredOn, uint lastUpdatedOn)
     {
