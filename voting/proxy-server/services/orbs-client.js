@@ -39,14 +39,14 @@ class OrbsClientService {
   }
 
   getValidatorVotes(address) {
-    const query = this.buildQuery('getValidValidatorVote', [
+    const query = this.buildQuery('getValidatorVote', [
       Orbs.argAddress(address.toLowerCase())
     ]);
     return this.sendQuery(query);
   }
 
   getValidatorStake(address) {
-    const query = this.buildQuery('getValidValidatorStake', [
+    const query = this.buildQuery('getValidatorStake', [
       Orbs.argAddress(address.toLowerCase())
     ]);
     return this.sendQuery(query);
