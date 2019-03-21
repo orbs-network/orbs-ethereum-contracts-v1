@@ -33,6 +33,10 @@ export class MetamaskService {
       );
   }
 
+  isMainNet() {
+    return ethereum['networkVersion'] === '1';
+  }
+
   getCurrentAddress() {
     return this.enableMetamask();
   }

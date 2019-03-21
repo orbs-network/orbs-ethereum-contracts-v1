@@ -40,4 +40,7 @@ export class MetamaskServiceStub {
     console.warn('Method "getLastVote" is not available in read-only mode');
     return Promise.reject();
   }
+  isMainNet() {
+    return true;
+  }
 }

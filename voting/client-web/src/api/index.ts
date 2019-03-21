@@ -62,4 +62,7 @@ export class ApiService implements IApiStrategy {
   getLastVote() {
     return this.metamask!.getLastVote();
   }
+  isMainNet() {
+    return this.metamask!.isMainNet();
+  }
 }
