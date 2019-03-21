@@ -2,9 +2,9 @@ pragma solidity 0.5.3;
 
 
 interface IOrbsGuardians {
-    event GuardianAdded(address indexed guardian);
+    event GuardianRegistered(address indexed guardian);
     event GuardianLeft(address indexed guardian);
-    event GuardianModified(address indexed guardian);
+    event GuardianUpdated(address indexed guardian);
 
     function register(string calldata name, string calldata website)
         external

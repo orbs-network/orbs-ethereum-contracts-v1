@@ -62,7 +62,7 @@ contract OrbsVoting is IOrbsVoting {
         view
         returns (address[] memory validators, uint blockNumber)
     {
-        VotingRecord memory lastVote = votes[guardian];
+        VotingRecord storage lastVote = votes[guardian];
 
         blockNumber = lastVote.blockNumber;
         validators = lastVote.validators;

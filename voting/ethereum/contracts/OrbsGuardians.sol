@@ -17,7 +17,7 @@ contract OrbsGuardians is IOrbsGuardians {
     // The version of the current Guardian smart contract.
     uint public constant VERSION = 1;
 
-    uint public registrationDeposit = 1 ether;
+    uint public registrationDeposit;
 
     address[] internal guardians;
     mapping(address => GuardianData) internal guardiansData;
@@ -40,7 +40,7 @@ contract OrbsGuardians is IOrbsGuardians {
         guardians.push(msg.sender);
         guardiansData[msg.sender] = GuardianData(name, website, index , block.number, block.number);
 
-        emit GuardianAdded(msg.sender);
+        emit GuardianRegistered(msg.sender);
     }
 
     function update(string memory name, string memory website)
@@ -55,7 +55,7 @@ contract OrbsGuardians is IOrbsGuardians {
         guardiansData[msg.sender].website = website;
         guardiansData[msg.sender].lastUpdatedOnBlock = block.number;
 
-        emit GuardianModified(msg.sender);
+        emit GuardianUpdated(msg.sender);
     }
 
     function leave() public {
@@ -69,8 +69,7 @@ contract OrbsGuardians is IOrbsGuardians {
         // replace with last element and remove from end
         guardians[i] = guardians[guardians.length - 1]; // switch with last
         guardiansData[guardians[i]].index = i; // update it's lookup index
-        delete guardians[guardians.length - 1]; // remove the last one
-        guardians.length--;
+        guardians.length--; // remove the last one
 
         // clear data
         delete guardiansData[msg.sender];
@@ -149,7 +148,7 @@ contract OrbsGuardians is IOrbsGuardians {
     {
         require(isGuardian(guardian), "Please provide a listed Guardian");
 
-        GuardianData memory entry = guardiansData[guardian];
+        GuardianData storage entry = guardiansData[guardian];
         return (
             entry.registeredOnBlock,
             entry.lastUpdatedOnBlock

@@ -163,9 +163,16 @@ contract('Voting', accounts => {
                     assert.equal(reportedSecondVote[1].toNumber(), secondVoteBlockNumber);
                 });
 
-                it('fails if guardian never voted', async () => {
+                it('returns defaults if guardian never voted', async () => {
                     const defaults = await functionUnderTest(numToAddress(654));
-                    assert.equal(defaults.blockNumber,0,"expected to get never voted");
+                    assert.equal(defaults[validatorsReturnFieldName].length,0,"expected to get empty nodes array if never voted");
+                    assert.equal(defaults.blockNumber,0,"expected to get zero block number if never voted");
+                });
+
+                it('returns defaults if guardian is address zero', async () => {
+                    const defaults = await functionUnderTest(numToAddress(0));
+                    assert.equal(defaults[validatorsReturnFieldName].length,0,"expected to get empty nodes array for guardian 0");
+                    assert.equal(defaults.blockNumber,0,"expected to get zero block number for guardian zero");
                 });
             });
         });

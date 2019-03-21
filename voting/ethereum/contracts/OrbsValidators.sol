@@ -21,13 +21,13 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     address[] internal approvedValidators;
     mapping(address => uint) internal approvalBlockNumber;
 
-    constructor(address registry_, uint validatorsLimit_) public {
-        require(registry_ != address(0), "Registry contract address 0");
+    constructor(IOrbsValidatorsRegistry registry_, uint validatorsLimit_) public {
+        require(registry_ != IOrbsValidatorsRegistry(0), "Registry contract address 0");
         require(validatorsLimit_ > 0, "Limit must be positive");
         require(validatorsLimit_ <= MAX_VALIDATOR_LIMIT, "Limit is too high");
 
         validatorsLimit = validatorsLimit_;
-        orbsValidatorsRegistry = IOrbsValidatorsRegistry(registry_);
+        orbsValidatorsRegistry = registry_;
     }
 
     function approve(address validator) public onlyOwner {
@@ -38,7 +38,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
         approvedValidators.push(validator);
         approvalBlockNumber[validator] = block.number;
-        emit ValidatorAdded(validator);
+        emit ValidatorApproved(validator);
     }
 
     function remove(address validator) public onlyOwner {
@@ -50,7 +50,6 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
                 // replace with last element and remove from end
                 approvedValidators[i] = approvedValidators[approvedLength - 1];
-                delete approvedValidators[approvedLength - 1];
                 approvedValidators.length--;
 
                 // clear approval block height

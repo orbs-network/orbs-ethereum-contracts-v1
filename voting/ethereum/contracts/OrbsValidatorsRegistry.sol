@@ -88,13 +88,13 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         data.declarationHash = declarationHash;
         data.lastUpdatedOnBlock = block.number;
 
-        emit ValidatorRegistered(msg.sender);
+        emit ValidatorUpdated(msg.sender);
     }
 
     function leave() public {
         require(isValidator(msg.sender), "Sender is not a listed Validator");
 
-        ValidatorData memory data = validatorsData[msg.sender];
+        ValidatorData storage data = validatorsData[msg.sender];
 
         delete lookupByIp[data.ipAddress];
         delete lookupByOrbsAddr[data.orbsAddress];
@@ -117,7 +117,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(isValidator(validator), "Unlisted Validator");
 
-        ValidatorData memory entry = validatorsData[validator];
+        ValidatorData storage entry = validatorsData[validator];
         return (
             entry.name,
             entry.ipAddress,
@@ -148,7 +148,7 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     {
         require(isValidator(validator), "Unlisted Validator");
 
-        ValidatorData memory entry = validatorsData[validator];
+        ValidatorData storage entry = validatorsData[validator];
         return (
             entry.registeredOnBlock,
             entry.lastUpdatedOnBlock

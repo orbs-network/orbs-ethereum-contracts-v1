@@ -4,6 +4,7 @@ pragma solidity 0.5.3;
 interface IOrbsValidatorsRegistry {
     event ValidatorLeft(address indexed validator);
     event ValidatorRegistered(address indexed validator);
+    event ValidatorUpdated(address indexed validator);
 
     function register(
         string calldata name,

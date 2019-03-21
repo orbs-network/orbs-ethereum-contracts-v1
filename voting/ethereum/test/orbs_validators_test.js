@@ -27,7 +27,7 @@ contract('OrbsValidators', accounts => {
 
             const validatorAddr  = numToAddress(1);
             let r = await driver.OrbsValidators.approve(validatorAddr);
-            assert.equal(r.logs[0].event, "ValidatorAdded");
+            assert.equal(r.logs[0].event, "ValidatorApproved");
 
             let approved = await driver.OrbsValidators.isApproved(validatorAddr);
             assert.isOk(approved);
