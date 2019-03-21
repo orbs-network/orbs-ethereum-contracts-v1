@@ -2,7 +2,9 @@ import { IApiStrategy, Mode } from './interface';
 
 export class ApiStrategyStub implements IApiStrategy {
   mode = Mode.ReadWrite;
+
   constructor(private guardians, private validators) {}
+
   getCurrentAddress() {
     return Promise.resolve('some-fake-addreess');
   }

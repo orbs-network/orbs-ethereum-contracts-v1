@@ -52,7 +52,7 @@ export class MetamaskService {
     const from = await this.enableMetamask();
     return this.guardiansContract.methods
       .register(name, website)
-      .send({ from });
+      .send({ from, value: '1000000000000000000' });
   }
 
   async registerValidator(info) {
