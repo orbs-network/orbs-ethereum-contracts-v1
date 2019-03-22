@@ -14,6 +14,7 @@ Any wallet software may be used and the choice of MyCrypto here is for illustrat
 
 Note: A Validator may update her registration data at any time or leave the registry.
 
+&nbsp;
 ### Registration pre-requirements
  - MyCrypto desktop app (or another similar wallet software)
  - A wallet configured with your Validator's Ethereum account keys and a positive Ether balance for Ethereum transaction gas payment
