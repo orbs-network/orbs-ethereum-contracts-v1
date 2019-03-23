@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 
 import "./IOrbsVoting.sol";
@@ -35,7 +35,7 @@ contract OrbsVoting is IOrbsVoting {
 
     /// @dev Voting method to select which validators you want to vote out in this election period.
     /// @param validators address[] an array of validators addresses you want to vote out. In case you want to vote, but not vote out anyone, send an empty array.
-    function voteOut(address[] memory validators) public {
+    function voteOut(address[] validators) external {
         uint validatorsLength = validators.length;
         require(validatorsLength <= maxVoteOutCount, "Validators list is over the allowed length");
 
@@ -52,7 +52,7 @@ contract OrbsVoting is IOrbsVoting {
 
     /// @dev Delegation method to select who you would like to delegate your stake to.
     /// @param to address the address, you want to delegate your stake to. If you want to cancel a delegation - delegate to yourself to yourself.
-    function delegate(address to) public {
+    function delegate(address to) external {
         require(to != address(0), "must delegate to non 0");
 
         delegationCounter++;
@@ -64,19 +64,6 @@ contract OrbsVoting is IOrbsVoting {
         }
 
         emit Delegate(msg.sender, to, delegationCounter);
-    }
-
-    /// @dev returns vote pair - validators list and the block number the vote was set.
-    /// @param guardian address the address of the guardian
-    function getCurrentVote(address guardian)
-        public
-        view
-        returns (address[] memory validators, uint blockNumber)
-    {
-        VotingRecord storage lastVote = votes[guardian];
-
-        blockNumber = lastVote.blockNumber;
-        validators = lastVote.validators;
     }
 
     /// @dev returns vote pair - validators list and the block number the vote was set.
@@ -101,10 +88,23 @@ contract OrbsVoting is IOrbsVoting {
     /// @dev returns the address to which the delegator has delegated the stake
     /// @param delegator address the address of the delegator
     function getCurrentDelegation(address delegator)
-    public
-    view
-    returns (address)
+        public
+        view
+        returns (address)
     {
         return delegations[delegator];
+    }
+
+    /// @dev returns vote pair - validators list and the block number the vote was set.
+    /// @param guardian address the address of the guardian
+    function getCurrentVote(address guardian)
+        public
+        view
+        returns (address[] memory validators, uint blockNumber)
+    {
+        VotingRecord storage lastVote = votes[guardian];
+
+        blockNumber = lastVote.blockNumber;
+        validators = lastVote.validators;
     }
 }

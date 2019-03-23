@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./IOrbsGuardians.sol";
@@ -35,8 +35,8 @@ contract OrbsGuardians is IOrbsGuardians {
     /// @dev register a new guardian. You will need to transfer registrationDeposit amount of ether.
     /// @param name string The name of the guardian
     /// @param website string The website of the guardian
-    function register(string memory name, string memory website)
-        public
+    function register(string name, string website)
+        external
         payable
     {
         require(tx.origin == msg.sender, "Only EOA may register as Guardian");
@@ -56,8 +56,8 @@ contract OrbsGuardians is IOrbsGuardians {
     /// @dev update guardian details. only msg.sender can update it's own guardian details.
     /// @param name string The name of the guardian
     /// @param website string The website of the guardian
-    function update(string memory name, string memory website)
-        public
+    function update(string name, string website)
+        external
     {
         require(tx.origin == msg.sender, "Only EOA may register as Guardian");
         require(bytes(name).length > 0, "Please provide a valid name");
@@ -73,7 +73,7 @@ contract OrbsGuardians is IOrbsGuardians {
 
 
     /// @dev delete the guardian and take back the locked ether. only msg.sender can leave.
-    function leave() public {
+    function leave() external {
         require(tx.origin == msg.sender, "Only EOA may register as Guardian");
         require(isGuardian(msg.sender), "Sender is not a Guardian");
 
@@ -95,10 +95,50 @@ contract OrbsGuardians is IOrbsGuardians {
         emit GuardianLeft(msg.sender);
     }
 
-    /// @dev returns if the address belongs to a guardian
+    /// @dev returns an array of guardians as Bytes20 - similar to getGuardians, but returns byte20 which is
+    ///      more compatible in some cases.
+    /// @param offset uint offset from which to start getting guardians from the array
+    /// @param limit uint limit of guardians to be returned.
+    function getGuardiansBytes20(uint offset, uint limit)
+        external
+        view
+        returns (bytes20[])
+    {
+        address[] memory guardianAddresses = getGuardians(offset, limit);
+        uint guardianAddressesLength = guardianAddresses.length;
+
+        bytes20[] memory result = new bytes20[](guardianAddressesLength);
+
+        for (uint i = 0; i < guardianAddressesLength; i++) {
+            result[i] = bytes20(guardianAddresses[i]);
+        }
+
+        return result;
+    }
+
+    /// @dev Convenience method to check if you are a guardian.
+    function reviewRegistration()
+        external
+        view
+        returns (string name, string website)
+    {
+        return getGuardianData(msg.sender);
+    }
+
+    /// @dev returns in which block the guardian was register, and in which block it was last updated.
     /// @param guardian address the guardian address
-    function isGuardian(address guardian) public view returns (bool) {
-        return guardiansData[guardian].registeredOnBlock > 0;
+    function getRegistrationBlockNumber(address guardian)
+        external
+        view
+        returns (uint registeredOn, uint lastUpdatedOn)
+    {
+        require(isGuardian(guardian), "Please provide a listed Guardian");
+
+        GuardianData storage entry = guardiansData[guardian];
+        return (
+        entry.registeredOnBlock,
+        entry.lastUpdatedOnBlock
+        );
     }
 
     /// @dev returns an array of guardians.
@@ -127,27 +167,6 @@ contract OrbsGuardians is IOrbsGuardians {
         return result;
     }
 
-    /// @dev returns an array of guardians as Bytes20 - similar to getGuardians, but returns byte20 which is
-    ///      more compatible in some cases.
-    /// @param offset uint offset from which to start getting guardians from the array
-    /// @param limit uint limit of guardians to be returned.
-    function getGuardiansBytes20(uint offset, uint limit)
-        public
-        view
-        returns (bytes20[] memory)
-    {
-        address[] memory guardianAddresses = getGuardians(offset, limit);
-        uint guardianAddressesLength = guardianAddresses.length;
-
-        bytes20[] memory result = new bytes20[](guardianAddressesLength);
-
-        for (uint i = 0; i < guardianAddressesLength; i++) {
-            result[i] = bytes20(guardianAddresses[i]);
-        }
-
-        return result;
-    }
-
     /// @dev returns name and website for  a specific guardian.
     /// @param guardian address the guardian address
     function getGuardianData(address guardian)
@@ -159,28 +178,9 @@ contract OrbsGuardians is IOrbsGuardians {
         return (guardiansData[guardian].name, guardiansData[guardian].website);
     }
 
-    /// @dev Convenience method to check if you are a guardian.
-    function reviewRegistration()
-        public
-        view
-        returns (string memory name, string memory website)
-    {
-        return getGuardianData(msg.sender);
-    }
-
-    /// @dev returns in which block the guardian was register, and in which block it was last updated.
+    /// @dev returns if the address belongs to a guardian
     /// @param guardian address the guardian address
-    function getRegistrationBlockNumber(address guardian)
-        public
-        view
-        returns (uint registeredOn, uint lastUpdatedOn)
-    {
-        require(isGuardian(guardian), "Please provide a listed Guardian");
-
-        GuardianData storage entry = guardiansData[guardian];
-        return (
-            entry.registeredOnBlock,
-            entry.lastUpdatedOnBlock
-        );
+    function isGuardian(address guardian) public view returns (bool) {
+        return guardiansData[guardian].registeredOnBlock > 0;
     }
 }

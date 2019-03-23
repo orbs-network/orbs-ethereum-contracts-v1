@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 
 interface IOrbsValidators {
@@ -9,8 +9,8 @@ interface IOrbsValidators {
     function remove(address validator) external;
     function isValidator(address validator) external view returns (bool);
     function isApproved(address validator) external view returns (bool);
-    function getValidators() external view returns (address[] memory);
-    function getValidatorsBytes20() external view returns (bytes20[] memory);
+    function getValidators() external view returns (address[]);
+    function getValidatorsBytes20() external view returns (bytes20[]);
     function getApprovalBlockNumber(address validator)
         external
         view

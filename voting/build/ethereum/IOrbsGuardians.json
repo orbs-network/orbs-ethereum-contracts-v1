@@ -218,11 +218,11 @@
   "deployedSourceMap": "",
   "compiler": {
     "name": "solc",
-    "version": "0.5.3+commit.10d17f24.Emscripten.clang"
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-22T06:00:30.837Z",
+  "updatedAt": "2019-03-23T13:59:46.807Z",
   "devdoc": {
     "methods": {}
   },

@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -40,7 +40,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
     /// @dev Adds a validator to participate in network
     /// @param validator address The address of the validators.
-    function approve(address validator) public onlyOwner {
+    function approve(address validator) external onlyOwner {
         require(validator != address(0), "Address must not be 0!");
         require(approvedValidators.length < MAX_VALIDATOR_LIMIT, "Can't add more members!");
         require(approvedValidators.length < validatorsLimit, "Can't add more members!");
@@ -53,7 +53,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
     /// @dev Remove a validator from the List based on Guardians votes.
     /// @param validator address The address of the validators.
-    function remove(address validator) public onlyOwner {
+    function remove(address validator) external onlyOwner {
         require(isApproved(validator), "Not an approved validator");
 
         uint approvedLength = approvedValidators.length;
@@ -103,7 +103,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
     /// @dev returns a list of all validators that have been approved and exist in the validator registration
     ///      database like getValidators but returns byte20 which is more compatible in some cases.
-    function getValidatorsBytes20() public view returns (bytes20[] memory) {
+    function getValidatorsBytes20() external view returns (bytes20[]) {
         address[] memory validatorAddresses = getValidators();
         uint validatorAddressesLength = validatorAddresses.length;
 
@@ -119,7 +119,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     /// @dev returns the block number in which the validator was approved.
     /// @param validator address The address of the validators.
     function getApprovalBlockNumber(address validator)
-        external
+        public
         view
         returns (uint)
     {
@@ -128,7 +128,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
 
     /// @dev returns an array of pairs with node addresses and ip addresses.
     function getNetworkTopology()
-        public
+        external
         view
         returns (bytes20[] memory nodeAddresses, bytes4[] memory ipAddresses)
     {
@@ -160,4 +160,6 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         }
         return result;
     }
+
+
 }

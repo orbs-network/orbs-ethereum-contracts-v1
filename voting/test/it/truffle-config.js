@@ -32,7 +32,11 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: '0.5.3',
+      optimizer: {
+        enabled: true,
+        runs: 200
+      },
+      version: '0.4.25',       // Fetch exact version from solc-bin (default: truffle's version)
     },
   },
 };

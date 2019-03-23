@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 
 interface IOrbsVoting {
@@ -9,16 +9,16 @@ interface IOrbsVoting {
         uint delegationCounter
     );
 
-    function voteOut(address[] calldata validators) external;
+    function voteOut(address[] validators) external;
     function delegate(address to) external;
     function getCurrentVote(address guardian)
         external
         view
-        returns (address[] memory validators, uint blockNumber);
+        returns (address[] validators, uint blockNumber);
     function getCurrentVoteBytes20(address guardian)
         external
         view
-        returns (bytes20[] memory validatorsBytes20, uint blockNumber);
+        returns (bytes20[] validatorsBytes20, uint blockNumber);
     function getCurrentDelegation(address delegator)
         external
         view

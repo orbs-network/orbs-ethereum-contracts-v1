@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 import "./IOrbsNetworkTopology.sol";
 
@@ -20,9 +20,9 @@ bytes4[] ips = [
 ];
 
     function getNetworkTopology()
-        public
+        external
         view
-        returns (bytes20[] memory nodeAddresses, bytes4[] memory ipAddresses)
+        returns (bytes20[] nodeAddresses, bytes4[] ipAddresses)
     {
         return (nodes, ips);
     }
