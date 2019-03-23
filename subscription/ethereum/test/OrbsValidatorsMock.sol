@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 import "./../../../voting/ethereum/contracts/IOrbsValidators.sol";
 
