@@ -227,7 +227,7 @@
     }
   },
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T13:37:09.491Z",
+  "updatedAt": "2019-03-24T14:46:24.934Z",
   "devdoc": {
     "methods": {
       "delegate(address)": {
