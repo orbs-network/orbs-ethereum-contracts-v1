@@ -26,7 +26,7 @@ const DelegateButton = ({ onDelegate }) => {
 
 const DisabledDelegateButton = () => {
   return (
-    <Tooltip title="Install Metamask extension to have access to voting capabilities">
+    <Tooltip title="投票ができるようにMetamaskブラウザーエクステンションをインストールしてください">
       <div>
         <Button
           data-testid="delegate-button"
@@ -60,7 +60,7 @@ const GuardianDialog = ({
         <ul>
           <Typography variant="body1" color="textPrimary">
             <li>
-              Url:{' '}
+              ウェブサイト:{' '}
               <Link
                 href={guardian.url}
                 target="_blank"

@@ -20,11 +20,11 @@ const styles = () => ({
 const buildMessage = () => {
   return (
     <span>
-      Attention! You are in <b>Read Only</b> mode. Please, install{' '}
+      注意！現在読み取り専用モードです。全ての機能をオンにするためには
       <Link href="https://metamask.io" target="_blank" rel="noreferrer">
         <b>Metamask</b>
-      </Link>{' '}
-      extensions to unlock full functionality.
+      </Link>
+      ブラウザーエクステンションをインストールしてください。
     </span>
   );
 };
