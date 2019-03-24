@@ -55,7 +55,7 @@ func adapterFactory(env string) (orbs driver.OrbsAdapter, ethereum driver.Ethere
 			10,
 			7,
 			10,
-			2*time.Minute+5*time.Second,
+			10*time.Minute+5*time.Second,
 		)
 	default:
 		panic(fmt.Sprintf("Unsupported env %s", env))
