@@ -31,6 +31,18 @@ contract OrbsGuardians is IOrbsGuardians {
     // Mapping between address and the guardian data.
     mapping(address => GuardianData) internal guardiansData;
 
+    /// @dev Check that the caller is a guardian.
+    modifier onlyGuardian() {
+        require(isGuardian(msg.sender), "You must be a registered guardian");
+        _;
+    }
+
+    /// @dev Check that the caller is not a contract.
+    modifier onlyEOA() {
+        require(!Address.isContract(msg.sender),"Only EOA may register as Guardian");
+        _;
+    }
+
     /// @dev Constructor that initializes the amount of ether needed to lock when registering. This will be set to 1.
     /// @param registrationDepositWei_ uint the amount of ether needed to lock when registering.
     /// @param registrationMinTime_ uint the amount of time needed to wait until a guardian can leave and get registrationDepositWei_
@@ -63,7 +75,7 @@ contract OrbsGuardians is IOrbsGuardians {
             index: index ,
             registeredOnBlock: block.number,
             lastUpdatedOnBlock: block.number,
-            registeredOn: block.timestamp
+            registeredOn: now
         });
 
         emit GuardianRegistered(sender);
@@ -92,7 +104,7 @@ contract OrbsGuardians is IOrbsGuardians {
     /// @dev Delete the guardian and take back the locked ether. only msg.sender can leave.
     function leave() external onlyGuardian onlyEOA {
         address sender = msg.sender;
-        require(block.timestamp >= guardiansData[sender].registeredOn.add(registrationMinTime), "Minimal guardian time didnt pass");
+        require(now >= guardiansData[sender].registeredOn.add(registrationMinTime), "Minimal guardian time didnt pass");
 
         uint i = guardiansData[sender].index;
 
@@ -198,17 +210,5 @@ contract OrbsGuardians is IOrbsGuardians {
     /// @param guardian address the guardian address
     function isGuardian(address guardian) public view returns (bool) {
         return guardiansData[guardian].registeredOnBlock > 0;
-    }
-
-    /// @dev Check that the caller is a guardian.
-    modifier onlyGuardian() {
-        require(isGuardian(msg.sender), "You must be a registered guardian");
-        _;
-    }
-
-    /// @dev Check that the caller is not a contract.
-    modifier onlyEOA() {
-        require(!Address.isContract(msg.sender),"Only EOA may register as Guardian");
-        _;
     }
 }
