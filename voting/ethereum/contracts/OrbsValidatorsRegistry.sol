@@ -26,6 +26,12 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     mapping(bytes4 => address) public lookupByIp;
     mapping(bytes20 => address) public lookupByOrbsAddr;
 
+    /// @dev check that the caller is a validator.
+    modifier onlyValidator() {
+        require(isValidator(msg.sender), "You must be a registered validator");
+        _;
+    }
+
     /// @dev register a validator and provide registration data.
     /// the new validator entry will be owned and identified by msg.sender.
     /// if msg.sender is already registered as a validator in this registry the
@@ -167,14 +173,14 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     /// @dev returns validator registration data.
     /// @param validator address address of the validator.
     function getValidatorData(address validator)
-    public
-    view
-    returns (
-        string memory name,
-        bytes4 ipAddress,
-        string memory website,
-        bytes20 orbsAddress
-    )
+        public
+        view
+        returns (
+            string memory name,
+            bytes4 ipAddress,
+            string memory website,
+            bytes20 orbsAddress
+        )
     {
         ValidatorData storage entry = validatorsData[validator];
         name = entry.name;
@@ -202,17 +208,13 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
     /// @dev INTERNAL. Checks if orbsAddress is currently available to msg.sender.
     /// @param orbsAddress bytes20 ip address to check for uniqueness
     /// @return true iff orbsAddress is currently not registered for a validator other than msg.sender.
-    function isOrbsAddressFreeToUse(bytes20 orbsAddress) internal view returns (bool) {
+    function isOrbsAddressFreeToUse(bytes20 orbsAddress)
+        internal
+        view
+        returns (bool)
+    {
         return
             lookupByOrbsAddr[orbsAddress] == address(0) ||
             lookupByOrbsAddr[orbsAddress] == msg.sender;
     }
-
-    /// @dev check that the caller is a validator.
-    modifier onlyValidator() {
-        require(isValidator(msg.sender), "You must be a registered validator");
-        _;
-    }
-
-
 }

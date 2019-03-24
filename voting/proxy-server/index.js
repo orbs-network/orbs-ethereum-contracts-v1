@@ -9,7 +9,7 @@ const { OrbsClientService } = require('./services/orbs-client');
 const { EthereumClientService } = require('./services/ethereum-client');
 
 const port = process.env.PORT || 5678;
-const virtualChainId = 1008;
+const virtualChainId = 1009;
 const orbsNodeAddress = '18.219.51.57';
 
 const app = express();
