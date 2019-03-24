@@ -46,6 +46,23 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "delegator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "delegationCounter",
+          "type": "uint256"
+        }
+      ],
+      "name": "Undelegate",
+      "type": "event"
+    },
+    {
       "constant": false,
       "inputs": [
         {
@@ -68,6 +85,15 @@
         }
       ],
       "name": "delegate",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "undelegate",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
@@ -149,7 +175,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-23T13:59:46.779Z",
+  "updatedAt": "2019-03-24T13:37:09.484Z",
   "devdoc": {
     "methods": {}
   },
