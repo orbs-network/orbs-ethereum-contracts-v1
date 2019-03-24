@@ -101,12 +101,12 @@ var guardiansAccounts = []int{4, 6, 10, 11}
 var validatorAccounts = []int{20, 21, 22, 23, 24}
 var config = &driver.Config{
 	DebugLogs:                    true,                                                            // shows detailed responses for every command
-	OrbsVotingContractName: "_Elections",
-	EthereumErc20Address: "0xeD0Aa9A4F9e5ae9092994f4B86F6AAa89944939b",
-	EthereumVotingAddress: "0x4070273454A2474FE81782256198AD4538D4C74a",
-	EthereumValidatorsAddress: "0x92900753DaD31a387636b898C36e0ca56CBE2BEf",
-	EthereumValidatorsRegAddress: "0xe5Dc553c6BC06F2aCBDc1A17F87CD4e6F6F01ac7",
-	EthereumGuardiansAddress: "0x3A41BDcd02924D01f6cdd9D71E4dD0F6014B5736",
+	OrbsVotingContractName:       "",                                                    // by default use the system contract for elections, put "" to deploy with a random name
+	EthereumErc20Address:         "",                                                              // update after deploy with the resulting value
+	EthereumVotingAddress:        "",                                                              // update after deploy with the resulting value
+	EthereumValidatorsAddress:    "",                                                              // update after deploy with the resulting value
+	EthereumValidatorsRegAddress: "",                                                              // update after deploy with the resulting value
+	EthereumGuardiansAddress:     "",                                                              // update after deploy with the resulting value
 	UserAccountOnOrbs:            "user1",                                                         // one of the IDs in orbs-test-keys.json
 	DelegatorsNumber:             delegatorsNumber,                                                // upto 20
 	DelegatorStakeValues:         []int{100, 100, 80, 80, 60, 60, 40, 0, 200, 50, 50, 0, 0, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
