@@ -102,7 +102,7 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 	}
 
 	//for i, stake := range stakes {
-	//	fmt.Printf("after stake %d is %d\n", i, stake)
+	//	fmt.Printf("after stake of %d is %d\n", i, stake)
 	//}
 
 	guardianVote := make(map[int]int)
@@ -112,10 +112,10 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 		totalVotes += stakes[guardian]
 	}
 	voteThreshhold := totalVotes * 7 / 10
-	//for key, value := range guardianVote {
-	//	fmt.Printf("Guardiand %d all vote %d\n", key, value)
-	//}
-	//fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
+	for key, value := range guardianVote {
+		fmt.Printf("Guardiand %d all vote %d\n", key, value)
+	}
+	fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
 
 	guardians := make(map[int]bool)
 	for _, guardian := range config.GuardiansAccounts {
@@ -131,8 +131,9 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 
 	candidateVote := make(map[int]int)
 	for guardian, candidates := range guardianToCandidate {
+		//fmt.Printf("Guardiand %d voted for %v\n", guardian, candidates)
 		for _, candidate := range candidates {
-			candidateVote[candidate] = candidateVote[candidate] + config.DelegatorStakeValues[guardian]
+			candidateVote[candidate] = candidateVote[candidate] + guardianVote[guardian]
 		}
 	}
 
