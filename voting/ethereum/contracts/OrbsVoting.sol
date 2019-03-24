@@ -6,7 +6,8 @@ import "./IOrbsVoting.sol";
 
 contract OrbsVoting is IOrbsVoting {
 
-    // A vote is a pair of block number and list of validators since a vote is only valid for X blocks (X is initially 40,320 blocks, but this can change in the future)
+    // A vote is a pair of block number and list of validators. The vote's block
+    // number is used to determine the vote qualification for an election event.
     struct VotingRecord {
         uint blockNumber;
         address[] validators;
