@@ -46,6 +46,23 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "delegator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "delegationCounter",
+          "type": "uint256"
+        }
+      ],
+      "name": "Undelegate",
+      "type": "event"
+    },
+    {
       "constant": false,
       "inputs": [
         {
@@ -149,7 +166,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-23T13:59:46.779Z",
+  "updatedAt": "2019-03-24T12:26:05.533Z",
   "devdoc": {
     "methods": {}
   },

@@ -64,6 +64,27 @@ contract('Voting', accounts => {
             await assertReject(driver.OrbsVoting.voteOut(suspiciousNodes), "voting for too many nodes should fail");
         });
 
+        it('should disallow voting to same address twice', async () => {
+            await driver.deployVoting(5);
+            const duplicateNodes1 = [accounts[1], accounts[1], accounts[3]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes1), "Should not vote for the same node twice");
+
+            const duplicateNodes2 = [accounts[3], accounts[1], accounts[1]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes2), "Should not vote for the same node twice");
+
+            const duplicateNodes3 = [accounts[1], accounts[3], accounts[1]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes3), "Should not vote for the same node twice");
+
+            const duplicateNodes4 = [accounts[1], accounts[2], accounts[3], accounts[3]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes4), "Should not vote for the same node twice");
+
+            const duplicateNodes5 = [accounts[1], accounts[2], accounts[3], accounts[4], accounts[3]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes5), "Should not vote for the same node twice");
+
+            const duplicateNodes6 = [accounts[1], accounts[2], accounts[3], accounts[3], accounts[4]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes6), "Should not vote for the same node twice");
+        });
+
         it('should reject calls with 0 address', async () => {
             await driver.deployVoting();
 
@@ -126,7 +147,10 @@ contract('Voting', accounts => {
             const readDelegation2 = await driver.OrbsVoting.getCurrentDelegation(delegator);
             assert.equal(readDelegation2, to[1], "current delegation should be the last delegated to after additional delegations");
 
-            await driver.OrbsVoting.delegate(delegator, {from: delegator});
+
+            await assertReject(driver.OrbsVoting.delegate(delegator, {from: delegator}),"expect self delegation to fail");
+
+            await driver.OrbsVoting.undelegate({from: delegator});
             const readDelegation3 = await driver.OrbsVoting.getCurrentDelegation(delegator);
             assert.equal(readDelegation3, numToAddress(0), "current delegation should be zero after delegation to self");
 

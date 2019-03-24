@@ -9,7 +9,12 @@ interface IOrbsVoting {
         uint delegationCounter
     );
 
-    function voteOut(address[] validators) external;
+    event Undelegate(
+        address indexed delegator,
+        uint delegationCounter
+    );
+
+function voteOut(address[] validators) external;
     function delegate(address to) external;
     function getCurrentVote(address guardian)
         external

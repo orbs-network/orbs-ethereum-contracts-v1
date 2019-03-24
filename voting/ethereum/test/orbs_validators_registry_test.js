@@ -39,6 +39,10 @@ contract('OrbsValidatorsRegistry', accounts => {
         it('should emit event or fail for non members', async () => {
             await driver.deployRegistry();
 
+            //Get the "empty" validator
+            const emptyValidatorData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+            const emptyOrbsAddress = await driver.OrbsRegistry.getOrbsAddress(accounts[1]);
+
             await driver.register(accounts[1]);
             assert.isOk(await driver.OrbsRegistry.isValidator(accounts[1]));
 
@@ -47,8 +51,8 @@ contract('OrbsValidatorsRegistry', accounts => {
             assert.isNotOk(await driver.OrbsRegistry.isValidator(accounts[1]), "expected leaving to be reflected in isValidator");
 
             await assertReject(driver.OrbsRegistry.leave({from: accounts[1]}), "expected leave to fail after leaving once");
-            await assertReject(driver.OrbsRegistry.getValidatorData(accounts[1]), "expected getValidatorData to fail after leaving");
-            await assertReject(driver.OrbsRegistry.getOrbsAddress(accounts[1]), "expected getOrbsAddress to fail after leaving");
+            assert.deepEqual(await driver.OrbsRegistry.getValidatorData(accounts[1]), emptyValidatorData, "expected getValidatorData to return empty data after leave");
+            assert.deepEqual(await driver.OrbsRegistry.getOrbsAddress(accounts[1]), emptyOrbsAddress, "expected getOrbsAddress to fail after leaving");
         });
 
         it('should be unlisted from the lookup mappaings', async () => {
@@ -238,7 +242,12 @@ contract('OrbsValidatorsRegistry', accounts => {
     describe('when getValidatorData() is called', () => {
         it('should return an error if no data was previously set', async () => {
             await driver.deployRegistry();
-            await assertReject(driver.OrbsRegistry.getValidatorData(accounts[0]));
+            const validatorData = await driver.OrbsRegistry.getValidatorData(accounts[0]);
+
+            assert.equal(validatorData.name, "","Name should be empty");
+            assert.equal(validatorData.ipAddress, "0x00000000","ipAddress should be empty");
+            assert.equal(validatorData.website, "","website should be empty");
+            assert.equal(validatorData.orbsAddress, numToAddress(0),"orbsAddress should be empty");
         });
     });
 
@@ -248,7 +257,7 @@ contract('OrbsValidatorsRegistry', accounts => {
 
             const orbsAddress = numToAddress(12345);
 
-            await assertReject(driver.OrbsRegistry.getOrbsAddress(accounts[0]));
+            assert.equal(await driver.OrbsRegistry.getOrbsAddress(accounts[0]),numToAddress(0));
 
             await driver.OrbsRegistry.register("test", "0xaabbccdd", "url", orbsAddress);
             const fetchedAddress = await driver.OrbsRegistry.getOrbsAddress(accounts[0]);
@@ -260,15 +269,15 @@ contract('OrbsValidatorsRegistry', accounts => {
     describe('when calling the reviewRegistration() function', () => {
         it('should return the same as getValidatorData(from)', async () => {
             await driver.deployRegistry();
-
-            await assertReject(driver.OrbsRegistry.reviewRegistration({from: accounts[1]}), "expected review registration to fail before registration");
+            const emptyValidatorData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
+            assert.deepEqual(await driver.OrbsRegistry.reviewRegistration({from: accounts[1]}), emptyValidatorData , "expected review registration to return empty validator");
 
             await driver.OrbsRegistry.register("test", "0xaabbccdd", "url", numToAddress(12345), {from: accounts[1]});
 
             const getterData = await driver.OrbsRegistry.getValidatorData(accounts[1]);
             const reviewData = await driver.OrbsRegistry.reviewRegistration({from: accounts[1]});
 
-            assert.deepEqual(getterData, reviewData, "expected ")
+            assert.deepEqual(getterData, reviewData, "expected review data to be equal to registration data");
         });
     });
 });

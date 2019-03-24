@@ -19,10 +19,10 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     // The validators metadata registration database smart contract
     IOrbsValidatorsRegistry public orbsValidatorsRegistry;
 
-    //Array of approved validators addresses
+    // Array of approved validators addresses
     address[] internal approvedValidators;
 
-    //Mapping of address and in which block it was approved.
+    // Mapping of address and in which block it was approved.
     mapping(address => uint) internal approvalBlockNumber;
 
     /// @dev Constructor that initializes the validators smart contract with the validators metadata registration
@@ -42,7 +42,6 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     /// @param validator address The address of the validators.
     function approve(address validator) external onlyOwner {
         require(validator != address(0), "Address must not be 0!");
-        require(approvedValidators.length < MAX_VALIDATOR_LIMIT, "Can't add more members!");
         require(approvedValidators.length < validatorsLimit, "Can't add more members!");
         require(!isApproved(validator), "Address must not be already approved");
 
@@ -98,7 +97,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
             }
         }
 
-        return sliceArray(validators,pushAt);
+        return sliceArray(validators, pushAt);
     }
 
     /// @dev returns a list of all validators that have been approved and exist in the validator registration
@@ -152,10 +151,10 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         pure
         returns (address[] memory)
     {
-        require (len <= arr.length, "sub array must be longer then array");
+        require(len <= arr.length, "sub array must be longer then array");
 
         address[] memory result = new address[](len);
-        for(uint i=0; i<len; i++){
+        for(uint i = 0; i < len; i++) {
             result[i] = arr[i];
         }
         return result;
