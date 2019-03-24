@@ -12,6 +12,7 @@ func NewGammaCliAdapter(
 	debug bool,
 	env string,
 	stakeFactor uint64,
+	trasferValue int,
 	voteMirrorPeriod uint64,
 	voteValidPeriod uint64,
 	electionPeriod uint64,
@@ -24,6 +25,7 @@ func NewGammaCliAdapter(
 		debug:                   debug,
 		env:                     env,
 		stakeFactor:             stakeFactor,
+		transferValue:           trasferValue,
 		voteMirrorPeriod:        voteMirrorPeriod,
 		voteValidPeriod:         voteValidPeriod,
 		electionPeriod:          electionPeriod,
@@ -38,6 +40,7 @@ type GammaCliAdapter struct {
 	debug                   bool
 	env                     string
 	stakeFactor             uint64
+	transferValue           int
 	voteMirrorPeriod        uint64
 	voteValidPeriod         uint64
 	electionPeriod          uint64
@@ -58,11 +61,12 @@ func (gamma *GammaCliAdapter) DeployContract(orbsVotingContractName string) stri
 func (gamma *GammaCliAdapter) SetContractConstants(orbsVotingContractName string) {
 	gamma.run("send-tx ./gammacli-jsons/set-variables.json -signer user1 -name " + orbsVotingContractName +
 		" -arg1 " + fmt.Sprintf("%d", gamma.stakeFactor) +
-		" -arg2 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
-		" -arg3 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
-		" -arg4 " + fmt.Sprintf("%d", gamma.electionPeriod) +
-		" -arg5 " + fmt.Sprintf("%d", gamma.maxElectedValidators) +
-		" -arg6 " + fmt.Sprintf("%d", gamma.minElectedValidators))
+		" -arg2 " + fmt.Sprintf("%d", gamma.transferValue) +
+		" -arg3 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
+		" -arg4 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
+		" -arg5 " + fmt.Sprintf("%d", gamma.electionPeriod) +
+		" -arg6 " + fmt.Sprintf("%d", gamma.maxElectedValidators) +
+		" -arg7 " + fmt.Sprintf("%d", gamma.minElectedValidators))
 }
 
 func (gamma *GammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
