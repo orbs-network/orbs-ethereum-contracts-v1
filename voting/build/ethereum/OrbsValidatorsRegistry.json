@@ -319,7 +319,7 @@
     }
   },
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T12:26:05.565Z",
+  "updatedAt": "2019-03-24T13:37:09.509Z",
   "devdoc": {
     "methods": {
       "getOrbsAddress(address)": {

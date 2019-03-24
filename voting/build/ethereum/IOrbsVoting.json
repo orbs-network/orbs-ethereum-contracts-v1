@@ -91,6 +91,15 @@
       "type": "function"
     },
     {
+      "constant": false,
+      "inputs": [],
+      "name": "undelegate",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "constant": true,
       "inputs": [
         {
@@ -166,7 +175,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T12:26:05.533Z",
+  "updatedAt": "2019-03-24T13:37:09.484Z",
   "devdoc": {
     "methods": {}
   },

@@ -395,7 +395,7 @@
     }
   },
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T12:26:05.546Z",
+  "updatedAt": "2019-03-24T13:37:09.500Z",
   "devdoc": {
     "methods": {
       "approve(address)": {
