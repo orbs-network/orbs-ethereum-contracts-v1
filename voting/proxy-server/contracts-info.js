@@ -1,17 +1,17 @@
 module.exports = {
   EthereumGuardiansContract: {
-    address: '0x922864534F31153E182172e1a9cbf55064a19fc2'
+    address: '0x3A41BDcd02924D01f6cdd9D71E4dD0F6014B5736'
   },
   EthereumValidatorsContract: {
-    address: '0xba6D4dfb4C2a9C68473F00D533e4A203BF133d49'
+    address: '0x92900753DaD31a387636b898C36e0ca56CBE2BEf'
   },
   EthereumValidatorsRegistryContract: {
-    address: '0x56FeA58d6Af7571ded986003C592FF9558b6FEB6'
+    address: '0xe5Dc553c6BC06F2aCBDc1A17F87CD4e6F6F01ac7'
   },
   EthereumVotingContract: {
-    address: '0x3d08B99d1fB18A18Dd303C46fAB064c394f96f1c'
+    address: '0x4070273454A2474FE81782256198AD4538D4C74a'
   },
   OrbsVotingContract: {
-    name: 'OrbsVoting_1553162341'
+    name: '_Elections'
   }
 };
