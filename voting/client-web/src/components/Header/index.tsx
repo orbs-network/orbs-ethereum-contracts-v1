@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import ReadOnlyBanner from '../ReadOnlyBanner';
 import styles, { HOVER_COLOR } from './styles';
+import Languages from './languages';
 
 const Header = ({ classes, isReadOnly }) => {
   const links = [
@@ -27,6 +28,7 @@ const Header = ({ classes, isReadOnly }) => {
       data-testid="header"
     >
       {isReadOnly ? <ReadOnlyBanner /> : null}
+      <Languages />
       <Toolbar className={classes.toolbar}>
         <NavLink to="/">
           <img className={classes.logo} src={logo} alt="Orbs" />
