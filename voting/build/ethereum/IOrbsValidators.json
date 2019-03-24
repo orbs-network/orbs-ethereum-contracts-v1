@@ -149,9 +149,46 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-23T13:59:46.778Z",
+  "updatedAt": "2019-03-24T18:25:48.978Z",
   "devdoc": {
-    "methods": {}
+    "methods": {
+      "approve(address)": {
+        "details": "Adds a validator to participate in network",
+        "params": {
+          "validator": "address The address of the validators."
+        }
+      },
+      "getApprovalBlockNumber(address)": {
+        "details": "returns the block number in which the validator was approved.",
+        "params": {
+          "validator": "address The address of the validators."
+        }
+      },
+      "getValidators()": {
+        "details": "returns a list of all validators that have been approved and exist in the validator registration database."
+      },
+      "getValidatorsBytes20()": {
+        "details": "returns a list of all validators that have been approved and exist in the validator registration      database. same as getValidators but returns addresses represented as byte20."
+      },
+      "isApproved(address)": {
+        "details": "returns if an address belongs to the approved list",
+        "params": {
+          "validator": "address The address of the validators."
+        }
+      },
+      "isValidator(address)": {
+        "details": "returns if an address belongs to the approved list & exists in the validators metadata registration database.",
+        "params": {
+          "validator": "address The address of the validators."
+        }
+      },
+      "remove(address)": {
+        "details": "Remove a validator from the List based on Guardians votes.",
+        "params": {
+          "validator": "address The address of the validators."
+        }
+      }
+    }
   },
   "userdoc": {
     "methods": {}

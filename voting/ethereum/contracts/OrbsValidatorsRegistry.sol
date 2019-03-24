@@ -189,11 +189,11 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         orbsAddress = entry.orbsAddress;
     }
 
-    /// @dev Checks if addr is currently registered as a validator.
-    /// @param addr address address of the validator
-    /// @return true iff addr belongs to a registered validator
-    function isValidator(address addr) public view returns (bool) {
-        return validatorsData[addr].registeredOnBlock > 0;
+    /// @dev Checks if validator is currently registered as a validator.
+    /// @param validator address address of the validator
+    /// @return true iff validator belongs to a registered validator
+    function isValidator(address validator) public view returns (bool) {
+        return validatorsData[validator].registeredOnBlock > 0;
     }
 
     /// @dev INTERNAL. Checks if ipAddress is currently available to msg.sender.

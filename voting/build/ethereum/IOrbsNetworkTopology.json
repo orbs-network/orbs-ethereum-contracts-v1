@@ -30,9 +30,13 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-23T13:59:46.776Z",
+  "updatedAt": "2019-03-24T18:25:48.977Z",
   "devdoc": {
-    "methods": {}
+    "methods": {
+      "getNetworkTopology()": {
+        "details": "returns an array of pairs with node addresses and ip addresses."
+      }
+    }
   },
   "userdoc": {
     "methods": {}

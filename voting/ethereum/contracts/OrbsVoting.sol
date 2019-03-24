@@ -77,7 +77,7 @@ contract OrbsVoting is IOrbsVoting {
     }
 
     /// @dev returns vote pair - validators list and the block number the vote was set.
-    ///      like getCurrentVote but returns byte20 which is more compatible in some cases.
+    ///      same as getCurrentVote but returns addresses represented as byte20.
     function getCurrentVoteBytes20(address guardian)
         public
         view

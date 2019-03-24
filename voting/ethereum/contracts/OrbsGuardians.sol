@@ -124,8 +124,7 @@ contract OrbsGuardians is IOrbsGuardians {
         emit GuardianLeft(sender);
     }
 
-    /// @dev returns an array of guardians as Bytes20 - similar to getGuardians, but returns byte20 which is
-    ///      more compatible in some cases.
+    /// @dev Similar to getGuardians, but returns addresses represented as byte20.
     /// @param offset uint offset from which to start getting guardians from the array
     /// @param limit uint limit of guardians to be returned.
     function getGuardiansBytes20(uint offset, uint limit)
@@ -154,7 +153,7 @@ contract OrbsGuardians is IOrbsGuardians {
         return getGuardianData(msg.sender);
     }
 
-    /// @dev Returns in which block the guardian was register, and in which block it was last updated.
+    /// @dev Returns in which block the guardian registered, and in which block it was last updated.
     /// @param guardian address the guardian address
     function getRegistrationBlockNumber(address guardian)
         external
