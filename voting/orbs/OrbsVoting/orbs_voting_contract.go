@@ -268,8 +268,9 @@ var SYSTEM = sdk.Export(_init)
 /***
  * unsafetests functions
  */
-func unsafetests_setVariables(stakeFactor uint64, voteMirrorPeriod uint64, voteValidPeriod uint64, electionPeriod uint64, maxElectedValidators uint32, minElectedValidators uint32) {
+func unsafetests_setVariables(stakeFactor uint64, transferValue uint32, voteMirrorPeriod uint64, voteValidPeriod uint64, electionPeriod uint64, maxElectedValidators uint32, minElectedValidators uint32) {
 	ETHEREUM_STAKE_FACTOR = big.NewInt(int64(stakeFactor))
+	DELEGATION_BY_TRANSFER_VALUE = big.NewInt(int64(transferValue))
 	VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = voteMirrorPeriod
 	VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = voteValidPeriod
 	ELECTION_PERIOD_LENGTH_IN_BLOCKS = electionPeriod
@@ -462,7 +463,7 @@ const METHOD_GET_ELECTED_VALIDATORS = "getElectedValidatorsOrbsAddress"
 // parameters
 var DELEGATION_NAME = "Delegate"
 var DELEGATION_BY_TRANSFER_NAME = "Transfer"
-var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(7)
+var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(70000000000000000)
 var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
 var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(480)
 var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(40320)
