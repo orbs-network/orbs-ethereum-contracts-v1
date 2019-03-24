@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 
 interface IOrbsGuardians {
@@ -6,20 +6,20 @@ interface IOrbsGuardians {
     event GuardianLeft(address indexed guardian);
     event GuardianUpdated(address indexed guardian);
 
-    function register(string calldata name, string calldata website)
+    function register(string name, string website)
         external
         payable;
-    function update(string calldata name, string calldata website) external;
+    function update(string name, string website) external;
     function leave() external;
     function isGuardian(address guardian) external view returns (bool);
     function getGuardianData(address validator)
         external
         view
-        returns (string memory name, string memory website);
+        returns (string name, string website);
     function reviewRegistration()
         external
         view
-        returns (string memory name, string memory website);
+        returns (string name, string website);
     function getRegistrationBlockNumber(address guardian)
         external
         view
@@ -27,9 +27,9 @@ interface IOrbsGuardians {
     function getGuardians(uint offset, uint limit)
         external
         view
-        returns (address[] memory);
+        returns (address[]);
     function getGuardiansBytes20(uint offset, uint limit)
         external
         view
-        returns (bytes20[] memory);
+        returns (bytes20[]);
 }

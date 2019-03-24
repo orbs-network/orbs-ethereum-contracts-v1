@@ -136,7 +136,8 @@ contract('OrbsGuardians', accounts => {
             const url = "url";
 
             const GuardianRegisteringContract = artifacts.require('GuardianRegisteringContract');
-            await assertReject(GuardianRegisteringContract.new(
+            const impersonatingContract = await GuardianRegisteringContract.new();
+            await assertReject(impersonatingContract.tryToRegister(
                 driver.OrbsGuardians.address,
                 name,
                 url,
@@ -365,6 +366,16 @@ contract('OrbsGuardians', accounts => {
                 '0',
                 "expected contract to have no balance left after refund"
             );
+        });
+
+        it('should fail if leaving before min registration time', async () => {
+            const oneSeconds = 1;
+            await driver.deployGuardians(oneSeconds);
+
+            await driver.OrbsGuardians.register("some name", "some website", {value: driver.registrationDeposit});
+            await assertReject(driver.OrbsGuardians.leave(), "expected to fail when min time didnt pass");
+            await new Promise(resolve => setTimeout(resolve, (oneSeconds+1)*1000));
+            await assertResolve(driver.OrbsGuardians.leave(),"should succeed after min time passes");
         });
     });
 
