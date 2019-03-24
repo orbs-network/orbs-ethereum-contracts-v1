@@ -52,19 +52,6 @@ interface IOrbsValidatorsRegistry {
             bytes20 orbsAddress
         );
 
-    /// @dev Convenience method to retrieve the registration data associated
-    /// with msg.sender - typically for review after a successful registration.
-    /// same as calling getValidatorData(msg.sender)
-    function reviewRegistration()
-        external
-        view
-        returns (
-            string name,
-            bytes4 ipAddress,
-            string website,
-            bytes20 orbsAddress
-        );
-
     /// @dev returns the blocks in which a validator was registered and last updated.
     /// if validator does not designate a registered validator this method returns zero values.
     /// @param validator address of a validator

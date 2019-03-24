@@ -144,15 +144,6 @@ contract OrbsGuardians is IOrbsGuardians {
         return result;
     }
 
-    /// @dev Convenience method to check if you are a guardian.
-    function reviewRegistration()
-        external
-        view
-        returns (string name, string website)
-    {
-        return getGuardianData(msg.sender);
-    }
-
     /// @dev Returns in which block the guardian registered, and in which block it was last updated.
     /// @param guardian address the guardian address
     function getRegistrationBlockNumber(address guardian)

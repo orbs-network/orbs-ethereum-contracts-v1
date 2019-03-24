@@ -131,32 +131,6 @@
     },
     {
       "constant": true,
-      "inputs": [],
-      "name": "reviewRegistration",
-      "outputs": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "ipAddress",
-          "type": "bytes4"
-        },
-        {
-          "name": "website",
-          "type": "string"
-        },
-        {
-          "name": "orbsAddress",
-          "type": "bytes20"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
       "inputs": [
         {
           "name": "validator",
@@ -227,7 +201,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T18:25:48.988Z",
+  "updatedAt": "2019-03-24T19:52:39.199Z",
   "devdoc": {
     "methods": {
       "getOrbsAddress(address)": {
@@ -267,9 +241,6 @@
           "orbsAddress": "bytes20 The validator node orbs public address. If another validator previously registered this orbsAddress the transaction will fail",
           "website": "string The website of the validator"
         }
-      },
-      "reviewRegistration()": {
-        "details": "Convenience method to retrieve the registration data associated with msg.sender - typically for review after a successful registration. same as calling getValidatorData(msg.sender)"
       },
       "update(string,bytes4,string,bytes20)": {
         "details": "update the validator registration data entry associated with msg.sender. msg.sender must be registered in this registry contract.",

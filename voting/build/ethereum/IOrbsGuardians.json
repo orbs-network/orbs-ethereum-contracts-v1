@@ -126,24 +126,6 @@
     },
     {
       "constant": true,
-      "inputs": [],
-      "name": "reviewRegistration",
-      "outputs": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "website",
-          "type": "string"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
       "inputs": [
         {
           "name": "guardian",
@@ -222,7 +204,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T18:25:48.986Z",
+  "updatedAt": "2019-03-24T19:52:39.198Z",
   "devdoc": {
     "methods": {
       "getGuardianData(address)": {
@@ -266,9 +248,6 @@
           "name": "string The name of the guardian",
           "website": "string The website of the guardian"
         }
-      },
-      "reviewRegistration()": {
-        "details": "Convenience method to check if you are a guardian."
       },
       "update(string,string)": {
         "details": "update guardian details. only msg.sender can update it's own guardian details.",
