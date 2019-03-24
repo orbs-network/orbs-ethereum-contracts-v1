@@ -4,6 +4,7 @@ import { Mode } from '../../api/interface';
 import GuardianDialog from '../GuardianDetails';
 import Typography from '@material-ui/core/Typography';
 import { ApiService } from '../../api';
+import Explanations from './explanations';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
@@ -80,6 +81,8 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         ガーディアンリスト
       </Typography>
 
+      <Explanations />
+
       <Typography align="right" variant="overline">
         合計ステーク: {totalStake} Orbs
       </Typography>
@@ -88,7 +91,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
       {hasMetamask() && delegatedTo.length > 0 ? (
         <Typography paragraph variant="body1" color="textPrimary">
-          投票状況: Your vote is going to `{delegatedTo}`.
+          投票状況: 投票先 `{delegatedTo}`.
         </Typography>
       ) : (
         <Typography paragraph variant="body1" color="textPrimary">

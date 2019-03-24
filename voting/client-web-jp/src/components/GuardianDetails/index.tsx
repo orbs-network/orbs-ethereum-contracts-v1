@@ -26,7 +26,7 @@ const DelegateButton = ({ onDelegate }) => {
 
 const DisabledDelegateButton = () => {
   return (
-    <Tooltip title="Install Metamask extension to have access to voting capabilities">
+    <Tooltip title="投票ができるようにMetamaskブラウザーエクステンションをインストールしてください">
       <div>
         <Button
           data-testid="delegate-button"
