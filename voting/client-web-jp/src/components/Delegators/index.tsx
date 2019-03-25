@@ -89,13 +89,9 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
-      {hasMetamask() && delegatedTo.length > 0 ? (
+      {hasMetamask() && delegatedTo.length > 0 && (
         <Typography paragraph variant="body1" color="textPrimary">
           投票状況: 投票先 `{delegatedTo}`.
-        </Typography>
-      ) : (
-        <Typography paragraph variant="body1" color="textPrimary">
-          投票状況: まだ投票が完了していません.
         </Typography>
       )}
 
