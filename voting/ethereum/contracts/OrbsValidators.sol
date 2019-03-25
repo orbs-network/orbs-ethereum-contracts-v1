@@ -4,7 +4,7 @@ pragma solidity 0.4.25;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IOrbsNetworkTopology.sol";
 import "./IOrbsValidators.sol";
-import "./OrbsValidatorsRegistry.sol";
+import "./IOrbsValidatorsRegistry.sol";
 
 
 contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
@@ -59,11 +59,11 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
         for (uint i = 0; i < approvedLength; ++i) {
             if (approvedValidators[i] == validator) {
 
-                // replace with last element and remove from end
+                // Replace with last element and remove from end
                 approvedValidators[i] = approvedValidators[approvedLength - 1];
                 approvedValidators.length--;
 
-                // clear approval block height
+                // Clear approval block height
                 delete approvalBlockNumber[validator];
 
                 emit ValidatorRemoved(validator);
@@ -101,7 +101,7 @@ contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
     }
 
     /// @dev returns a list of all validators that have been approved and exist in the validator registration
-    ///      database like getValidators but returns byte20 which is more compatible in some cases.
+    ///      database. same as getValidators but returns addresses represented as byte20.
     function getValidatorsBytes20() external view returns (bytes20[]) {
         address[] memory validatorAddresses = getValidators();
         uint validatorAddressesLength = validatorAddresses.length;

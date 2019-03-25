@@ -175,9 +175,40 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T14:46:24.926Z",
+  "updatedAt": "2019-03-25T00:37:37.778Z",
   "devdoc": {
-    "methods": {}
+    "methods": {
+      "delegate(address)": {
+        "details": "Delegation method to select who you would like to delegate your stake to.",
+        "params": {
+          "to": "address the address, you want to delegate your stake to. If you want to cancel a delegation - delegate to yourself to yourself."
+        }
+      },
+      "getCurrentDelegation(address)": {
+        "details": "returns the address to which the delegator has delegated the stake",
+        "params": {
+          "delegator": "address the address of the delegator"
+        }
+      },
+      "getCurrentVote(address)": {
+        "details": "returns vote pair - validators list and the block number the vote was set.",
+        "params": {
+          "guardian": "address the address of the guardian"
+        }
+      },
+      "getCurrentVoteBytes20(address)": {
+        "details": "returns vote pair - validators list and the block number the vote was set.      same as getCurrentVote but returns addresses represented as byte20."
+      },
+      "undelegate()": {
+        "details": "Delegation method to select who you would like to delegate your stake to."
+      },
+      "voteOut(address[])": {
+        "details": "Voting method to select which validators you want to vote out in this election period.",
+        "params": {
+          "validators": "address[] an array of validators addresses you want to vote out. In case you want to vote, but not vote out anyone, send an empty array."
+        }
+      }
+    }
   },
   "userdoc": {
     "methods": {}

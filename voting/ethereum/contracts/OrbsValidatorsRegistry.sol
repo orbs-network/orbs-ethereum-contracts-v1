@@ -128,22 +128,6 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         emit ValidatorLeft(sender);
     }
 
-    /// @dev Convenience method to retrieve the registration data associated
-    /// with msg.sender - typically for review after a successful registration.
-    /// same as calling getValidatorData(msg.sender)
-    function reviewRegistration()
-        external
-        view
-        returns (
-            string name,
-            bytes4 ipAddress,
-            string website,
-            bytes20 orbsAddress
-        )
-    {
-        return getValidatorData(msg.sender);
-    }
-
     /// @dev returns the blocks in which a validator was registered and last updated.
     /// if validator does not designate a registered validator this method returns zero values.
     /// @param validator address of a validator
@@ -189,11 +173,11 @@ contract OrbsValidatorsRegistry is IOrbsValidatorsRegistry {
         orbsAddress = entry.orbsAddress;
     }
 
-    /// @dev Checks if addr is currently registered as a validator.
-    /// @param addr address address of the validator
-    /// @return true iff addr belongs to a registered validator
-    function isValidator(address addr) public view returns (bool) {
-        return validatorsData[addr].registeredOnBlock > 0;
+    /// @dev Checks if validator is currently registered as a validator.
+    /// @param validator address address of the validator
+    /// @return true iff validator belongs to a registered validator
+    function isValidator(address validator) public view returns (bool) {
+        return validatorsData[validator].registeredOnBlock > 0;
     }
 
     /// @dev INTERNAL. Checks if ipAddress is currently available to msg.sender.

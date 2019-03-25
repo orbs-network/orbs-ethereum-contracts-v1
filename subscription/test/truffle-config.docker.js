@@ -18,11 +18,13 @@ module.exports = {
   },
   compilers: {
     solc: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      },
-      version: '0.5.3',
+      version: '0.4.25',
+      settings: {          // See the solidity docs for advice about optimization and evmVersion
+        optimizer: {
+          enabled: true,
+          runs: 200
+        }
+      }
     },
   },
 };
