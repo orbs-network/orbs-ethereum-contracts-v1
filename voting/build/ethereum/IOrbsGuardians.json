@@ -204,7 +204,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T19:52:39.198Z",
+  "updatedAt": "2019-03-25T00:37:37.767Z",
   "devdoc": {
     "methods": {
       "getGuardianData(address)": {

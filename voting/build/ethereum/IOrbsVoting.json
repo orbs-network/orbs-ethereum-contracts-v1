@@ -175,7 +175,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T18:25:48.980Z",
+  "updatedAt": "2019-03-25T00:37:37.778Z",
   "devdoc": {
     "methods": {
       "delegate(address)": {

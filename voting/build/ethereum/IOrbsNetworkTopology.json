@@ -30,7 +30,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-24T18:25:48.977Z",
+  "updatedAt": "2019-03-25T00:37:37.762Z",
   "devdoc": {
     "methods": {
       "getNetworkTopology()": {
