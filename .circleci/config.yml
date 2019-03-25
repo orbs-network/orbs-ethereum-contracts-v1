@@ -55,6 +55,22 @@ jobs:
           path: _out
           destination: test-output
 
+  voting-samaritan-mirror:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: ./.circleci/bring-gamma.sh
+      - run: ./.circleci/voting-samaritan-mirror.sh
+
+  voting-samaritan-process:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: ./.circleci/bring-gamma.sh
+      - run: ./.circleci/voting-samaritan-process.sh
+
   subscription-solidity-tests:
     docker:
       - image: circleci/node:11.2.0
@@ -82,3 +98,14 @@ workflows:
     jobs:
       - subscription-solidity-tests
       - subscription-e2e
+  samaritan:
+    triggers:
+      - schedule:
+          cron: "*/10 * * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - voting-samaritan-mirror
+      - voting-samaritan-process
