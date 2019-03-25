@@ -114,13 +114,9 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         </Typography>
       )}
 
-      {hasMetamask() && delegatedTo.length > 0 ? (
+      {hasMetamask() && delegatedTo.length > 0 && (
         <Typography paragraph variant="body1" color="textPrimary">
           Delegation Status: Your vote is going to `{delegatedTo}`.
-        </Typography>
-      ) : (
-        <Typography paragraph variant="body1" color="textPrimary">
-          Delegation Status: You have not delegated to anyone yet.
         </Typography>
       )}
 
