@@ -76,8 +76,9 @@ with your Validator's registration data.
 
 1. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
-In this example we choose to provide a mnemonic to open our wallet:
+In this example we choose to work with a HW Ledger:
 ![](../instructions/enroll_validator_5.png)
+
 Proceed to *Choose Address*. 
 
 1. Select your Validator's Ethereum address. 
