@@ -131,32 +131,6 @@
     },
     {
       "constant": true,
-      "inputs": [],
-      "name": "reviewRegistration",
-      "outputs": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "ipAddress",
-          "type": "bytes4"
-        },
-        {
-          "name": "website",
-          "type": "string"
-        },
-        {
-          "name": "orbsAddress",
-          "type": "bytes20"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
       "inputs": [
         {
           "name": "validator",
@@ -223,13 +197,61 @@
   "deployedSourceMap": "",
   "compiler": {
     "name": "solc",
-    "version": "0.5.3+commit.10d17f24.Emscripten.clang"
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-22T06:00:30.838Z",
+  "updatedAt": "2019-03-25T00:37:37.789Z",
   "devdoc": {
-    "methods": {}
+    "methods": {
+      "getOrbsAddress(address)": {
+        "details": "returns the orbs node public address of a specific validator.",
+        "params": {
+          "validator": "address address of the validator"
+        },
+        "return": "an Orbs node address"
+      },
+      "getRegistrationBlockNumber(address)": {
+        "details": "returns the blocks in which a validator was registered and last updated. if validator does not designate a registered validator this method returns zero values.",
+        "params": {
+          "validator": "address of a validator"
+        }
+      },
+      "getValidatorData(address)": {
+        "details": "returns validator registration data.",
+        "params": {
+          "validator": "address address of the validator."
+        }
+      },
+      "isValidator(address)": {
+        "details": "Checks if validator is currently registered as a validator.",
+        "params": {
+          "validator": "address address of the validator"
+        },
+        "return": "true iff validator belongs to a registered validator"
+      },
+      "leave()": {
+        "details": "deletes a validator registration entry associated with msg.sender."
+      },
+      "register(string,bytes4,string,bytes20)": {
+        "details": "register a validator and provide registration data. the new validator entry will be owned and identified by msg.sender. if msg.sender is already registered as a validator in this registry the transaction will fail.",
+        "params": {
+          "ipAddress": "bytes4 The validator node ip address. If another validator previously registered this ipAddress the transaction will fail",
+          "name": "string The name of the validator",
+          "orbsAddress": "bytes20 The validator node orbs public address. If another validator previously registered this orbsAddress the transaction will fail",
+          "website": "string The website of the validator"
+        }
+      },
+      "update(string,bytes4,string,bytes20)": {
+        "details": "update the validator registration data entry associated with msg.sender. msg.sender must be registered in this registry contract.",
+        "params": {
+          "ipAddress": "bytes4 The validator node ip address. If another validator previously registered this ipAddress the transaction will fail",
+          "name": "string The name of the validator",
+          "orbsAddress": "bytes20 The validator node orbs public address. If another validator previously registered this orbsAddress the transaction will fail",
+          "website": "string The website of the validator"
+        }
+      }
+    }
   },
   "userdoc": {
     "methods": {}

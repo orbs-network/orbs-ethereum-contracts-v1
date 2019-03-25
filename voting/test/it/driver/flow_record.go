@@ -27,7 +27,7 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
 	require.Len(t, balances, len(config.DelegatorStakeValues))
 	for i, conifgBalance := range config.DelegatorStakeValues {
-		require.EqualValues(t, conifgBalance, balances[i])
+		require.InDeltaf(t, conifgBalance, balances[i], 0.001, "balance of account %d in ethereum after transfer different from calculated one", i)
 	}
 	logStageDone("Stakes on Ethereum after transfers = %v", balances)
 

@@ -19,7 +19,7 @@ type Config struct {
 	EthereumGuardiansAddress     string
 	UserAccountOnOrbs            string
 	DelegatorsNumber             int
-	DelegatorStakeValues         []int
+	DelegatorStakeValues         []float32
 	GuardiansAccounts            []int
 	ValidatorsAccounts           []int
 	ValidatorsOrbsAddresses      []string
@@ -56,7 +56,7 @@ func (config *Config) Validate(isDeploy bool) error {
 	if config.UserAccountOnOrbs == "" {
 		return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "UserAccountOnOrbs")
 	}
-	// TODO v1 add array checks ?
+
 	if config.DelegatorsNumber < 10 {
 		return errors.Errorf("configuration field '%s' has invalid value '%d'", "DelegatorsNumber", config.DelegatorsNumber)
 	}
@@ -83,7 +83,7 @@ type DelegateEvent struct {
 type TransferEvent struct {
 	FromIndex int
 	ToIndex   int
-	Amount    int
+	Amount    float32
 }
 
 type VoteEvent struct {

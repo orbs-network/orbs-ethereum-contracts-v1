@@ -1,4 +1,4 @@
-pragma solidity 0.5.3;
+pragma solidity 0.4.25;
 
 
 import "./IOrbsVoting.sol";
@@ -6,7 +6,8 @@ import "./IOrbsVoting.sol";
 
 contract OrbsVoting is IOrbsVoting {
 
-    // A vote is a pair of block number and list of validators since a vote is only valid for X blocks (X is initially 40,320 blocks, but this can change in the future)
+    // A vote is a pair of block number and list of validators. The vote's block
+    // number is used to determine the vote qualification for an election event.
     struct VotingRecord {
         uint blockNumber;
         address[] validators;
@@ -15,7 +16,8 @@ contract OrbsVoting is IOrbsVoting {
     // The version of the current Voting smart contract.
     uint public constant VERSION = 1;
 
-    // vars to see that voting and delegating is moving forward.
+    // Vars to see that voting and delegating is moving forward. Is used to emit
+    // events to test for completeness.
     uint internal voteCounter;
     uint internal delegationCounter;
 
@@ -28,59 +30,54 @@ contract OrbsVoting is IOrbsVoting {
 
     /// @dev Constructor that initializes the Voting contract. maxVoteOutCount will be set to 3.
     constructor(uint maxVoteOutCount_) public {
-        voteCounter = 0;
-        delegationCounter = 0;
+        require(maxVoteOutCount_ > 0, "maxVoteOutCount_ must be positive");
         maxVoteOutCount = maxVoteOutCount_;
     }
 
     /// @dev Voting method to select which validators you want to vote out in this election period.
     /// @param validators address[] an array of validators addresses you want to vote out. In case you want to vote, but not vote out anyone, send an empty array.
-    function voteOut(address[] memory validators) public {
-        uint validatorsLength = validators.length;
-        require(validatorsLength <= maxVoteOutCount, "Validators list is over the allowed length");
-
-        for (uint i=0; i < validatorsLength; i++) {
-            require(validators[i] != address(0), "All validator addresses must be non 0");
-        }
+    function voteOut(address[] validators) external {
+        address sender = msg.sender;
+        require(validators.length <= maxVoteOutCount, "Validators list is over the allowed length");
+        sanitizeValidators(validators);
 
         voteCounter++;
 
-        votes[msg.sender] = VotingRecord(block.number, validators);
+        votes[sender] = VotingRecord({
+            blockNumber: block.number,
+            validators: validators
+        });
 
-        emit VoteOut(msg.sender, validators, voteCounter);
+        emit VoteOut(sender, validators, voteCounter);
     }
 
     /// @dev Delegation method to select who you would like to delegate your stake to.
     /// @param to address the address, you want to delegate your stake to. If you want to cancel a delegation - delegate to yourself to yourself.
-    function delegate(address to) public {
+    function delegate(address to) external {
+        address sender = msg.sender;
         require(to != address(0), "must delegate to non 0");
+        require(sender != to , "cant delegate to yourself");
 
         delegationCounter++;
 
-        delegations[msg.sender] = to;
+        delegations[sender] = to;
 
-        if (msg.sender == to) {
-            delete delegations[msg.sender];
-        }
+        emit Delegate(sender, to, delegationCounter);
+    }
 
-        emit Delegate(msg.sender, to, delegationCounter);
+    /// @dev Delegation method to select who you would like to delegate your stake to.
+    function undelegate() external {
+        address sender = msg.sender;
+        delegationCounter++;
+
+        delete delegations[sender];
+
+        emit Delegate(sender, sender, delegationCounter);
+        emit Undelegate(sender, delegationCounter);
     }
 
     /// @dev returns vote pair - validators list and the block number the vote was set.
-    /// @param guardian address the address of the guardian
-    function getCurrentVote(address guardian)
-        public
-        view
-        returns (address[] memory validators, uint blockNumber)
-    {
-        VotingRecord storage lastVote = votes[guardian];
-
-        blockNumber = lastVote.blockNumber;
-        validators = lastVote.validators;
-    }
-
-    /// @dev returns vote pair - validators list and the block number the vote was set.
-    ///      like getCurrentVote but returns byte20 which is more compatible in some cases.
+    ///      same as getCurrentVote but returns addresses represented as byte20.
     function getCurrentVoteBytes20(address guardian)
         public
         view
@@ -101,10 +98,38 @@ contract OrbsVoting is IOrbsVoting {
     /// @dev returns the address to which the delegator has delegated the stake
     /// @param delegator address the address of the delegator
     function getCurrentDelegation(address delegator)
-    public
-    view
-    returns (address)
+        public
+        view
+        returns (address)
     {
         return delegations[delegator];
+    }
+
+    /// @dev returns vote pair - validators list and the block number the vote was set.
+    /// @param guardian address the address of the guardian
+    function getCurrentVote(address guardian)
+        public
+        view
+        returns (address[] memory validators, uint blockNumber)
+    {
+        VotingRecord storage lastVote = votes[guardian];
+
+        blockNumber = lastVote.blockNumber;
+        validators = lastVote.validators;
+    }
+
+    /// @dev check that the validators array is unique and non zero.
+    /// @param validators address[]
+    function sanitizeValidators(address[] validators)
+        private
+        pure
+    {
+        uint validatorsLength = validators.length;
+        for (uint i = 0; i < validatorsLength; i++) {
+            require(validators[i] != address(0), "All validator addresses must be non 0");
+            for (uint j = i + 1; j < validatorsLength; j++) {
+                require(validators[j] != validators[i], "Duplicate Validators");
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@ module.exports.Driver = class {
     constructor(){
         this.runningCounter = 0;
         this.registrationDeposit = web3.utils.toWei("0.01", "ether");
+        this.registrationMinTime = 0;
     }
 
     async deployVoting(maxVoteOutNodes) {
@@ -39,8 +40,11 @@ module.exports.Driver = class {
         this.OrbsValidators = await OrbsValidators.new(this.OrbsRegistry.address, maxValidators);
     };
 
-    async deployGuardians() {
-        this.OrbsGuardians = await OrbsGuardians.new(this.registrationDeposit);
+    async deployGuardians(registrationMinTime) {
+        if (isNaN(registrationMinTime)) {
+            registrationMinTime = this.registrationMinTime;
+        }
+        this.OrbsGuardians = await OrbsGuardians.new(this.registrationDeposit,registrationMinTime);
     };
 
     async deployValidatorsWithRegistry(maxValidators) {

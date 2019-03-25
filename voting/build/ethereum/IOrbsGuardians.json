@@ -105,29 +105,11 @@
       "constant": true,
       "inputs": [
         {
-          "name": "validator",
+          "name": "guardian",
           "type": "address"
         }
       ],
       "name": "getGuardianData",
-      "outputs": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "website",
-          "type": "string"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "reviewRegistration",
       "outputs": [
         {
           "name": "name",
@@ -218,13 +200,63 @@
   "deployedSourceMap": "",
   "compiler": {
     "name": "solc",
-    "version": "0.5.3+commit.10d17f24.Emscripten.clang"
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-22T06:00:30.837Z",
+  "updatedAt": "2019-03-25T00:37:37.767Z",
   "devdoc": {
-    "methods": {}
+    "methods": {
+      "getGuardianData(address)": {
+        "details": "Returns name and website for  a specific guardian.",
+        "params": {
+          "guardian": "address the guardian address"
+        }
+      },
+      "getGuardians(uint256,uint256)": {
+        "details": "Returns an array of guardians.",
+        "params": {
+          "limit": "uint limit of guardians to be returned.",
+          "offset": "uint offset from which to start getting guardians from the array"
+        }
+      },
+      "getGuardiansBytes20(uint256,uint256)": {
+        "details": "Similar to getGuardians, but returns addresses represented as byte20.",
+        "params": {
+          "limit": "uint limit of guardians to be returned.",
+          "offset": "uint offset from which to start getting guardians from the array"
+        }
+      },
+      "getRegistrationBlockNumber(address)": {
+        "details": "Returns in which block the guardian registered, and in which block it was last updated.",
+        "params": {
+          "guardian": "address the guardian address"
+        }
+      },
+      "isGuardian(address)": {
+        "details": "Returns if the address belongs to a guardian",
+        "params": {
+          "guardian": "address the guardian address"
+        }
+      },
+      "leave()": {
+        "details": "Delete the guardian and take back the locked ether. only msg.sender can leave."
+      },
+      "register(string,string)": {
+        "details": "register a new guardian. You will need to transfer registrationDepositWei amount of ether.",
+        "params": {
+          "name": "string The name of the guardian",
+          "website": "string The website of the guardian"
+        }
+      },
+      "update(string,string)": {
+        "details": "update guardian details. only msg.sender can update it's own guardian details.",
+        "params": {
+          "name": "string The name of the guardian",
+          "website": "string The website of the guardianfunction update(string name, string website) external;"
+        }
+      }
+    }
   },
   "userdoc": {
     "methods": {}

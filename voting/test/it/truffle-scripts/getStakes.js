@@ -27,7 +27,7 @@ module.exports = async function(done) {
     let txs = [];
     for (let i = 0;i < numberOfStakeHolders;i++) {
       txs.push(instance.balanceOf(accounts[i]).then(balance => {
-        return { Index: i, Balance: balance };
+        return { Index: i, Balance: "" + balance };
       }));
     }
 

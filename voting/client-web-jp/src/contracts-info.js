@@ -8,18 +8,18 @@
 
 module.exports = {
   EthereumGuardiansContract: {
-    address: '0x922864534F31153E182172e1a9cbf55064a19fc2'
+    address: '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711'
   },
   EthereumValidatorsContract: {
-    address: '0xba6D4dfb4C2a9C68473F00D533e4A203BF133d49'
+    address: '0x804c8336846d8206c95CEe24752D514210B5a240'
   },
   EthereumValidatorsRegistryContract: {
-    address: '0x56FeA58d6Af7571ded986003C592FF9558b6FEB6'
+    address: '0x56A6895FD37f358c17cbb3F14A864ea5Fe871F0a'
   },
   EthereumVotingContract: {
-    address: '0x3d08B99d1fB18A18Dd303C46fAB064c394f96f1c'
+    address: '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d'
   },
   OrbsVotingContract: {
-    name: 'OrbsVoting_1553162341'
+    name: ''
   }
 };
