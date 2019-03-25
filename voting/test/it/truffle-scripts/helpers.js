@@ -1,5 +1,4 @@
 
-// TODO move these consts to configuration object
 // numbers for mainnet tests. requires  > 0.6 ether available during the test and uses up ~0.0382:
 // don't for get to collect deposits (run reclaimEther flow and then `truffle exec drainAccountsToBank`) after execution
 const GUARDIAN_DEPOSIT = '0.01';
