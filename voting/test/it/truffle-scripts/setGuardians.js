@@ -29,7 +29,7 @@ module.exports = async function(done) {
         });
       } else { // already sent a deposit - just override the values
         return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, accounts[0]).then(() => {
-          return guardiansInstance.register(`guardianName${i}`, `https://www.guardian${i}.com`, {from: address}).on("transactionHash", hash => {
+          return guardiansInstance.update(`guardianName${i}`, `https://www.guardian${i}.com`, {from: address}).on("transactionHash", hash => {
             console.error("TxHash: " + hash);
           });
         });
