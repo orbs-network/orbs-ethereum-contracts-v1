@@ -70,11 +70,15 @@ func independantCaluculateGetWinners(config *Config, ethereum EthereumAdapter) [
 	return winnersOrbsAddresses
 }
 
-func runNaiveCalculations(config *Config, stakes map[int]int) []int {
-	relationship := make(map[int]int)
+func runNaiveCalculations(config *Config, stakesInFloat map[int]float32) []int {
+	stakes := make(map[int]int, len(stakesInFloat))
+	for k, v := range stakesInFloat {
+		stakes[k] = int(v)
+	}
 
+	relationship := make(map[int]int)
 	for _, transfer := range config.Transfers {
-		if transfer.Amount == 0 {
+		if transfer.Amount == DELEGATE_TRANSFER {
 			relationship[transfer.FromIndex] = transfer.ToIndex
 		}
 	}
@@ -83,27 +87,27 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 		relationship[delegate.FromIndex] = delegate.ToIndex
 	}
 
-	//for key, value := range relationship {
-	//	fmt.Printf("Delegator %d to agent %d : stake %d \n", key, value, config.DelegatorStakeValues[key])
-	//}
+	for key, value := range relationship {
+		fmt.Printf("Delegator %d to agent %d : stake %f \n", key, value, config.DelegatorStakeValues[key])
+	}
 
 	// run twice
 	for from, to := range relationship {
-		if config.DelegatorStakeValues[from] != 0 {
+		if stakes[from] != 0 {
 			stakes[to] = stakes[to] + stakes[from]
 			stakes[from] = 0
 		}
 	}
 	for from, to := range relationship {
-		if config.DelegatorStakeValues[from] != 0 {
+		if stakes[from] != 0 {
 			stakes[to] = stakes[to] + stakes[from]
 			stakes[from] = 0
 		}
 	}
 
-	//for i, stake := range stakes {
-	//	fmt.Printf("after stake of %d is %d\n", i, stake)
-	//}
+	for i, stake := range stakes {
+		fmt.Printf("after stake of %d is %d\n", i, stake)
+	}
 
 	guardianVote := make(map[int]int)
 	totalVotes := 0
@@ -142,9 +146,9 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 		vote, ok := candidateVote[validValidator]
 		if !ok || vote < voteThreshhold {
 			elected = append(elected, validValidator)
-			//	fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
-			//} else {
-			//	fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
+			fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
+		} else {
+			fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
 		}
 	}
 	return elected

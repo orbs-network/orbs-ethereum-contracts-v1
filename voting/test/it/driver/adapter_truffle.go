@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
+var ETHEREUM_STAKE_FACTOR = big.NewFloat(1000000000000000000)
+var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(70000000000000000)
 
 func NewTruffleAdapter(
 	debug bool,
@@ -19,7 +20,6 @@ func NewTruffleAdapter(
 	network string,
 	networkUrl string,
 	startBlock int,
-	stakeFactor uint64,
 ) *TruffleAdapter {
 	return &TruffleAdapter{
 		debug:       debug,
@@ -27,7 +27,6 @@ func NewTruffleAdapter(
 		network:     network,
 		networkUrl:  networkUrl,
 		startBlock:  startBlock,
-		stakeFactor: stakeFactor,
 	}
 }
 
@@ -37,7 +36,6 @@ type TruffleAdapter struct {
 	network     string
 	networkUrl  string
 	startBlock  int
-	stakeFactor uint64
 }
 
 func (ta *TruffleAdapter) GetStartOfHistoryBlock() int {
@@ -84,7 +82,7 @@ type accountStake struct {
 	Balance string
 }
 
-func (ta *TruffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) map[int]int {
+func (ta *TruffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes int) map[int]float32 {
 	bytes := ta.run("exec ./truffle-scripts/getStakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"NUMBER_OF_STAKEHOLDERS_ETHEREUM="+fmt.Sprintf("%d", numberOfStakes),
@@ -96,22 +94,22 @@ func (ta *TruffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes 
 	if err != nil {
 		panic(err.Error() + "\n" + string(bytes))
 	}
-	stakesData := make(map[int]int)
+	stakesData := make(map[int]float32)
 	value := big.NewInt(0)
 	for _, stake := range out.Balances {
 		err = value.UnmarshalText([]byte(stake.Balance))
 		if err != nil {
 			panic(err.Error() + "\n" + string(bytes))
 		}
-		stakesData[stake.Index] = int(value.Div(value, ETHEREUM_STAKE_FACTOR).Int64())
+		stakesData[stake.Index] = ta.fromEthereumToken(value)
 	}
 	return stakesData
 }
 
-func (ta *TruffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
+func (ta *TruffleAdapter) SetStakes(ethereumErc20Address string, stakes []float32) {
 	ethStakes := make([]*big.Int, len(stakes))
 	for i, v := range stakes {
-		ethStakes[i] = big.NewInt(0).Mul(big.NewInt(int64(v)), ETHEREUM_STAKE_FACTOR)
+		ethStakes[i] = ta.toEthereumToken(v)
 	}
 	out, _ := json.Marshal(ethStakes)
 	fmt.Printf("===> %s\n\n", string(out))
@@ -121,10 +119,10 @@ func (ta *TruffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
 	)
 }
 
-func (ta *TruffleAdapter) Transfer(ethereumErc20Address string, from int, to int, amount int) {
-	var tokens uint64
-	if amount == 0 {
-		tokens = STAKE_TOKEN_DELEGATE_VALUE
+func (ta *TruffleAdapter) Transfer(ethereumErc20Address string, from int, to int, amount float32) {
+	var tokens *big.Int
+	if amount == DELEGATE_TRANSFER {
+		tokens = DELEGATION_BY_TRANSFER_VALUE
 	} else {
 		tokens = ta.toEthereumToken(amount)
 	}
@@ -132,7 +130,7 @@ func (ta *TruffleAdapter) Transfer(ethereumErc20Address string, from int, to int
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"FROM_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", from),
 		"TO_ACCOUNT_INDEX_ON_ETHEREUM="+fmt.Sprintf("%d", to),
-		"TRANSFER_AMOUNT="+fmt.Sprintf("%d", tokens),
+		"TRANSFER_AMOUNT="+tokens.String(),
 	)
 }
 
@@ -313,12 +311,14 @@ func (ta *TruffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	return out[index:], nil
 }
 
-func (ta *TruffleAdapter) fromEthereumToken(tokenValue uint64) int {
-	return int(tokenValue / ta.stakeFactor)
+func (ta *TruffleAdapter) fromEthereumToken(tokenValue *big.Int) float32 {
+	tmp, _ := big.NewFloat(0).Quo(big.NewFloat(0).SetInt(tokenValue), ETHEREUM_STAKE_FACTOR).Float32()
+	return tmp
 }
 
-func (ta *TruffleAdapter) toEthereumToken(testValue int) uint64 {
-	return uint64(testValue) * ta.stakeFactor
+func (ta *TruffleAdapter) toEthereumToken(value float32) *big.Int {
+	tmpInt, _ := big.NewFloat(0).Mul(big.NewFloat(float64(value)), ETHEREUM_STAKE_FACTOR).Int(nil)
+	return tmpInt
 }
 
 func (ta *TruffleAdapter) GetConnectionUrl() string {

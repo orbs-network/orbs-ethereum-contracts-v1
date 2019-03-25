@@ -13,7 +13,7 @@ type Config struct {
 	EthereumGuardiansAddress     string
 	UserAccountOnOrbs            string
 	DelegatorsNumber             int
-	DelegatorStakeValues         []int
+	DelegatorStakeValues         []float32
 	GuardiansAccounts            []int
 	ValidatorsAccounts           []int
 	ValidatorsOrbsAddresses      []string
@@ -77,7 +77,7 @@ type DelegateEvent struct {
 type TransferEvent struct {
 	FromIndex int
 	ToIndex   int
-	Amount    int
+	Amount    float32
 }
 
 type VoteEvent struct {

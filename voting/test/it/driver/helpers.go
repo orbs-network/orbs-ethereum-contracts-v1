@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+const DELEGATE_TRANSFER = float32(0.07)
+
 func logStage(msg string, args ...interface{}) {
 	fmt.Printf("\x1b[34;1m\n##############################################################################################\x1b[0m")
 	fmt.Printf("\x1b[34;1m\n### "+msg+"\x1b[0m\n", args...)
@@ -38,12 +40,6 @@ func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
 	c.Stderr = w
 	err := c.Run()
 	return b.Bytes(), err
-}
-
-const STAKE_TOKEN_DELEGATE_VALUE = uint64(7)
-
-func IntToAddr(num int) string {
-	return fmt.Sprintf("0x%040d", num)
 }
 
 func IpToHexaBytes(ip string) string {

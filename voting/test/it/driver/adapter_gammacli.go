@@ -11,7 +11,6 @@ import (
 func NewGammaCliAdapter(
 	debug bool,
 	env string,
-	stakeFactor uint64,
 	voteMirrorPeriod uint64,
 	voteValidPeriod uint64,
 	electionPeriod uint64,
@@ -23,7 +22,6 @@ func NewGammaCliAdapter(
 	return &GammaCliAdapter{
 		debug:                   debug,
 		env:                     env,
-		stakeFactor:             stakeFactor,
 		voteMirrorPeriod:        voteMirrorPeriod,
 		voteValidPeriod:         voteValidPeriod,
 		electionPeriod:          electionPeriod,
@@ -37,7 +35,6 @@ func NewGammaCliAdapter(
 type GammaCliAdapter struct {
 	debug                   bool
 	env                     string
-	stakeFactor             uint64
 	voteMirrorPeriod        uint64
 	voteValidPeriod         uint64
 	electionPeriod          uint64
@@ -57,12 +54,11 @@ func (gamma *GammaCliAdapter) DeployContract(orbsVotingContractName string) stri
 
 func (gamma *GammaCliAdapter) SetContractConstants(orbsVotingContractName string) {
 	gamma.run("send-tx ./gammacli-jsons/set-variables.json -signer user1 -name " + orbsVotingContractName +
-		" -arg1 " + fmt.Sprintf("%d", gamma.stakeFactor) +
-		" -arg2 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
-		" -arg3 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
-		" -arg4 " + fmt.Sprintf("%d", gamma.electionPeriod) +
-		" -arg5 " + fmt.Sprintf("%d", gamma.maxElectedValidators) +
-		" -arg6 " + fmt.Sprintf("%d", gamma.minElectedValidators))
+		" -arg1 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
+		" -arg2 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
+		" -arg3 " + fmt.Sprintf("%d", gamma.electionPeriod) +
+		" -arg4 " + fmt.Sprintf("%d", gamma.maxElectedValidators) +
+		" -arg5 " + fmt.Sprintf("%d", gamma.minElectedValidators))
 }
 
 func (gamma *GammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
@@ -180,10 +176,6 @@ func (gamma *GammaCliAdapter) run(args string, env ...string) []byte {
 		panic(err.Error() + "\n" + string(out))
 	}
 	return out
-}
-
-func (gamma *GammaCliAdapter) GetStakeFactor() uint64 {
-	return gamma.stakeFactor
 }
 
 func (gamma *GammaCliAdapter) GetMirrorVotingPeriod() int {
