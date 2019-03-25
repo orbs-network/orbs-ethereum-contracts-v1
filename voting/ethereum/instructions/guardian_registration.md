@@ -99,8 +99,9 @@ With sufficient block confirmations.
 
 ##### Notes
 * The contract does not enforce uniqueness of name and website values between the different Guardians. Two Guardians may register with same name, or website url. It is up to the Delegators to vet their Guardians. 
-* To make changes to your registration, repeat the process providing new values. A deposit is not required when re-registering. If you send a second deposit the transaction will revert.
+* To make changes to your registration, repeat using the update() function instead of register(). A deposit is not required when re-registering.
 * To to be removed from the Guardians list, use the leave() function.
-  * Upon leave() the 1 Ether deposit is transferred back to the Guardian address.
+  - Upon leave() the 16 Ether deposit is transferred back to the Guardian address.
+  - Note: there is a 2-weeks minimal participation period and only after this period a Guardian can leave and receive her deposit back.
  
 
