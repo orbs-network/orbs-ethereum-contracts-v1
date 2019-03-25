@@ -6,17 +6,13 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import chai from 'chai';
-
-const { expect } = chai;
-
-const DateTimeWrapper = artifacts.require('./DateTimeWrapper.sol');
+const DateTimeLib = artifacts.require('./DateTime.sol');
 
 contract('DateTime', () => {
   let dateTime;
 
   beforeEach(async () => {
-    dateTime = await DateTimeWrapper.new();
+    dateTime = await DateTimeLib.new();
   });
 
   describe('getDay', async () => {
@@ -79,7 +75,7 @@ contract('DateTime', () => {
       const { input, res } = spec;
 
       it(`should return ${res} for ${input}`, async () => {
-        expect(await dateTime.getDay.call(input)).to.be.bignumber.equal(res);
+        expect((await dateTime.getDay.call(input)).toNumber()).to.be.equal(res);
       });
     });
   });
@@ -139,7 +135,7 @@ contract('DateTime', () => {
       const { input, res } = spec;
 
       it(`should return ${res} for ${input}`, async () => {
-        expect(await dateTime.getHour.call(input)).to.be.bignumber.equal(res);
+        expect((await dateTime.getHour.call(input)).toNumber()).to.be.equal(res);
       });
     });
   });
@@ -287,7 +283,7 @@ contract('DateTime', () => {
       const { input, res } = spec;
 
       it(`should return ${res} for ${input}`, async () => {
-        expect(await dateTime.getMinute.call(input)).to.be.bignumber.equal(res);
+        expect((await dateTime.getMinute.call(input)).toNumber()).to.be.equal(res);
       });
     });
   });
@@ -352,7 +348,7 @@ contract('DateTime', () => {
       const { input, res } = spec;
 
       it(`should return ${res} for ${input}`, async () => {
-        expect(await dateTime.getMonth.call(input)).to.be.bignumber.equal(res);
+        expect((await dateTime.getMonth.call(input)).toNumber()).to.be.equal(res);
       });
     });
   });
@@ -425,7 +421,7 @@ contract('DateTime', () => {
       const { input, res } = spec;
 
       it(`should return ${res} for ${input}`, async () => {
-        expect(await dateTime.getSecond.call(input)).to.be.bignumber.equal(res);
+        expect((await dateTime.getSecond.call(input)).toNumber()).to.be.equal(res);
       });
     });
   });
@@ -456,7 +452,7 @@ contract('DateTime', () => {
       const { date, res } = spec;
 
       it(`should return ${res} for ${JSON.stringify(date)}`, async () => {
-        expect(await dateTime.getBeginningOfMonth.call(date.year, date.month)).to.be.bignumber.equal(res);
+        expect((await dateTime.getBeginningOfMonth.call(date.year, date.month)).toNumber()).to.be.equal(res);
       });
     });
   });
@@ -488,8 +484,8 @@ contract('DateTime', () => {
 
       it(`should return ${JSON.stringify(res)} for ${JSON.stringify(date)}`, async () => {
         const nextMonth = await dateTime.getNextMonth.call(date.year, date.month);
-        expect(nextMonth[0]).to.be.bignumber.equal(res.year);
-        expect(nextMonth[1]).to.be.bignumber.equal(res.month);
+        expect((nextMonth[0]).toNumber()).to.be.equal(res.year);
+        expect((nextMonth[1]).toNumber()).to.be.equal(res.month);
       });
     });
   });
@@ -537,10 +533,9 @@ contract('DateTime', () => {
 
       it(`should return ${JSON.stringify(res)} for ${JSON.stringify(date)}`, async () => {
         if (!date.hours && !date.minutes && !date.seconds) {
-          expect(await dateTime.toTimestamp.call(date.year, date.month, date.day)).to.be.bignumber.equal(res);
+          expect((await dateTime.toTimestamp.call(date.year, date.month, date.day)).toNumber()).to.be.equal(res);
         } else {
-          expect(await dateTime.toTimestampFull.call(date.year, date.month, date.day, date.hours, date.minutes,
-            date.seconds)).to.be.bignumber.equal(res);
+          expect((await dateTime.toTimestampFull.call(date.year, date.month, date.day, date.hours, date.minutes, date.seconds)).toNumber()).to.be.equal(res);
         }
       });
     });
@@ -568,7 +563,7 @@ contract('DateTime', () => {
       const { input, res } = spec;
 
       it(`should return ${res} for ${input}`, async () => {
-        expect(await dateTime.getWeekday.call(input)).to.be.bignumber.equal(res);
+        expect((await dateTime.getWeekday.call(input)).toNumber()).to.be.equal(res);
       });
     });
   });
@@ -679,7 +674,7 @@ contract('DateTime', () => {
       const { input, res } = spec;
 
       it(`should return ${res} for ${input}`, async () => {
-        expect(await dateTime.getYear.call(input)).to.be.bignumber.equal(res);
+        expect((await dateTime.getYear.call(input)).toNumber()).to.be.equal(res);
       });
     });
   });
