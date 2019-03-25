@@ -70,11 +70,15 @@ func independantCaluculateGetWinners(config *Config, ethereum EthereumAdapter) [
 	return winnersOrbsAddresses
 }
 
-func runNaiveCalculations(config *Config, stakes map[int]int) []int {
-	relationship := make(map[int]int)
+func runNaiveCalculations(config *Config, stakesInFloat map[int]float32) []int {
+	stakes := make(map[int]int, len(stakesInFloat))
+	for k, v := range stakesInFloat {
+		stakes[k] = int(v)
+	}
 
+	relationship := make(map[int]int)
 	for _, transfer := range config.Transfers {
-		if transfer.Amount == 0 {
+		if transfer.Amount == DELEGATE_TRANSFER {
 			relationship[transfer.FromIndex] = transfer.ToIndex
 		}
 	}
@@ -84,18 +88,18 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 	}
 
 	//for key, value := range relationship {
-	//	fmt.Printf("Delegator %d to agent %d : stake %d \n", key, value, config.DelegatorStakeValues[key])
+	//	fmt.Printf("Delegator %d to agent %d : stake %f \n", key, value, stakes[key])
 	//}
 
 	// run twice
 	for from, to := range relationship {
-		if config.DelegatorStakeValues[from] != 0 {
+		if stakes[from] != 0 {
 			stakes[to] = stakes[to] + stakes[from]
 			stakes[from] = 0
 		}
 	}
 	for from, to := range relationship {
-		if config.DelegatorStakeValues[from] != 0 {
+		if stakes[from] != 0 {
 			stakes[to] = stakes[to] + stakes[from]
 			stakes[from] = 0
 		}
@@ -112,10 +116,10 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 		totalVotes += stakes[guardian]
 	}
 	voteThreshhold := totalVotes * 7 / 10
-	for key, value := range guardianVote {
-		fmt.Printf("Guardiand %d all vote %d\n", key, value)
-	}
-	fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
+	//for key, value := range guardianVote {
+	//	fmt.Printf("Guardiand %d all vote %d\n", key, value)
+	//}
+	//fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
 
 	guardians := make(map[int]bool)
 	for _, guardian := range config.GuardiansAccounts {
