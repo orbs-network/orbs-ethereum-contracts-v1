@@ -7,10 +7,6 @@
             "Value": "10000"
         },
         {
-            "Type": "uint32",
-            "Value": "7"
-        },
-        {
             "Type": "uint64",
             "Value": "3"
         },

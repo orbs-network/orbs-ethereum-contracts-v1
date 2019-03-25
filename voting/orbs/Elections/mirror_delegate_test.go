@@ -225,7 +225,8 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 	txHex := "0xabcd"
 	delegatorAddr := [20]byte{0x01}
 	agentAddr := [20]byte{0x02}
-	value := big.NewInt(70000000000000000)
+	// value := big.NewInt(70000000000000000) TODO
+	value := big.NewInt(7)
 	BlockNumber := 100
 	txIndex := 10
 
