@@ -33,7 +33,7 @@ In order to register a Validator with OrbsValidatorsRegistry contract follow the
 
 1. Select an existing custom contact amd enter the `OrbsValidatorsRegistry` contract address. 
    
-    **OrbsValidatorsRegistry Contract Address**: `0xF5Ae25B2A6346cE532E8B0A0Ce14C1BAdf96D6E7`
+    **OrbsValidatorsRegistry Contract Address**: `0x56a6895fd37f358c17cbb3f14a864ea5fe871f0a`
   
     The contract address and ABI are also available on [Etherscan][2].
 
@@ -110,8 +110,7 @@ With sufficient block confirmations.
 
 1. Review your registration data by calling getValidatorData() with your Ethereum address.
 
-[2]: https://etherscan.io/address/0xF5Ae25B2A6346cE532E8B0A0Ce14C1BAdf96D6E7#code
-[3]: 0xF5Ae25B2A6346cE532E8B0A0Ce14C1BAdf96D6E7
+[2]: https://etherscan.io/address/0x56a6895fd37f358c17cbb3f14a864ea5fe871f0a#code
 
 ##### Notes
 * The IP Address and Orbs public address must be unique among the different Validators. An attempt to register a Validator with an IP address or Orbs address identical to another registered Validator, will fail the registration.
