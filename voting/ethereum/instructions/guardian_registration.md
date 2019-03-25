@@ -1,6 +1,6 @@
 ## Guardian Registration
 In order to participate in voting, a Guardian must first register. 
-An Orbs Guardian is identified, and delegated to, by her Ethereum address. 
+An Orbs Guardian is identified by her Ethereum address. Delegation to the Guardian are done by delegating to her Ethereum address. 
 
 This document walks you through the Guardian registration process using the MyCrypto desktop wallet application.
 Any wallet software may be used and the choice of MyCrypto here is for illustration only.
