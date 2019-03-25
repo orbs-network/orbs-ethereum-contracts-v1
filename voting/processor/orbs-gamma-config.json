@@ -12,6 +12,12 @@
         "http://localhost:8080"
       ]
     },
+    "andrey": {
+      "VirtualChain": 0,
+      "Endpoints": [
+        "http://18.219.247.226/vchains/0"
+      ]
+    },
     "testnet": {
       "VirtualChain": 42,
       "Endpoints": [
