@@ -87,9 +87,9 @@ func runNaiveCalculations(config *Config, stakesInFloat map[int]float32) []int {
 		relationship[delegate.FromIndex] = delegate.ToIndex
 	}
 
-	for key, value := range relationship {
-		fmt.Printf("Delegator %d to agent %d : stake %f \n", key, value, config.DelegatorStakeValues[key])
-	}
+	//for key, value := range relationship {
+	//	fmt.Printf("Delegator %d to agent %d : stake %f \n", key, value, stakes[key])
+	//}
 
 	// run twice
 	for from, to := range relationship {
@@ -105,9 +105,9 @@ func runNaiveCalculations(config *Config, stakesInFloat map[int]float32) []int {
 		}
 	}
 
-	for i, stake := range stakes {
-		fmt.Printf("after stake of %d is %d\n", i, stake)
-	}
+	//for i, stake := range stakes {
+	//	fmt.Printf("after stake of %d is %d\n", i, stake)
+	//}
 
 	guardianVote := make(map[int]int)
 	totalVotes := 0
@@ -116,10 +116,10 @@ func runNaiveCalculations(config *Config, stakesInFloat map[int]float32) []int {
 		totalVotes += stakes[guardian]
 	}
 	voteThreshhold := totalVotes * 7 / 10
-	for key, value := range guardianVote {
-		fmt.Printf("Guardiand %d all vote %d\n", key, value)
-	}
-	fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
+	//for key, value := range guardianVote {
+	//	fmt.Printf("Guardiand %d all vote %d\n", key, value)
+	//}
+	//fmt.Printf("total votes : %d . threshhold %d\n", totalVotes, voteThreshhold)
 
 	guardians := make(map[int]bool)
 	for _, guardian := range config.GuardiansAccounts {
@@ -146,9 +146,9 @@ func runNaiveCalculations(config *Config, stakesInFloat map[int]float32) []int {
 		vote, ok := candidateVote[validValidator]
 		if !ok || vote < voteThreshhold {
 			elected = append(elected, validValidator)
-			fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
-		} else {
-			fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
+			//	fmt.Printf("validator %d , elected with %d\n", validValidator, vote)
+			//} else {
+			//	fmt.Printf("candidate %d , voted out by %d\n", validValidator, vote)
 		}
 	}
 	return elected

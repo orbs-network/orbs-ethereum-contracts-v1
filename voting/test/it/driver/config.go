@@ -50,7 +50,7 @@ func (config *Config) Validate(isDeploy bool) error {
 	if config.UserAccountOnOrbs == "" {
 		return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "UserAccountOnOrbs")
 	}
-	// TODO v1 add array checks ?
+
 	if config.DelegatorsNumber < 10 {
 		return errors.Errorf("configuration field '%s' has invalid value '%d'", "DelegatorsNumber", config.DelegatorsNumber)
 	}

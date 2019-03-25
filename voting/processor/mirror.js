@@ -125,10 +125,10 @@ async function main() {
     }
 
     isAllowed = await isMirroringAllowed();
-    //if (isAllowed) {
+    if (isAllowed) {
         await transferEvents();
         await delegateEvents();
-    //}
+    }
 }
 
 main()

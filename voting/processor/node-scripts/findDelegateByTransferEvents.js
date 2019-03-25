@@ -43,8 +43,6 @@ async function getAllPastTransferEvents(tokenContract, web3) {
 }
 
 function isTransferADelegateAction(event, web3) {
-//    console.log("value of 7", web3.utils.toBN('70000000000000000').toString(10));
-//    console.log("value of raw ", web3.utils.toBN(event.raw.data).toString(10));
     return web3.utils.toBN(event.raw.data).eq(web3.utils.toBN('70000000000000000')); // 0.07 orbs
 }
 
