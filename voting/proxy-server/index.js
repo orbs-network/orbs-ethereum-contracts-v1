@@ -11,12 +11,13 @@ const { EthereumClientService } = require('./services/ethereum-client');
 const port = process.env.PORT || 5678;
 const virtualChainId = 1009;
 const orbsNodeAddress = '18.219.51.57';
+const ethereumProviderUrl =
+  process.env.ETHEREUM_PROVIDER_URL || 
+  'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141';
 
 const app = express();
 
-const ethereumClient = new EthereumClientService(
-  'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141'
-);
+const ethereumClient = new EthereumClientService(ethereumProviderUrl);
 
 const orbsClientService = new OrbsClientService(
   orbsNodeAddress,
