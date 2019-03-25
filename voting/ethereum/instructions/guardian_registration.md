@@ -30,6 +30,7 @@ Note: A Guardian may update her registration data at any time or leave the regis
    The contract address and ABI are also available on [Etherscan][1].
 
    Paste the address in the **Contract Address** box.
+![](../instructions/MyCrypto_guardian1.png)
 
 4. Enter the `OrbsGuardians` contract ABI.
    
@@ -41,21 +42,21 @@ Note: A Guardian may update her registration data at any time or leave the regis
   
     Paste the ABI in the **ABI / JSON Interface** box.
 
-![](../instructions/enroll_guardian_2.png)
+![](../instructions/MyCrypto_guardian2.png)
 5. Click *Access*.
    * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
 6. Select `register` in the drop down list *Read / Write Contract*
-![](../instructions/enroll_guardian_3.png)
+![](../instructions/MyCrypto_guardian3.png)
 The function parameters for the `register` call will appear in the form.
 
 7. Fill the fields labeled `name` and `website` with your Guardian details.
-![](../instructions/enroll_guardian_4.png)
+![](../instructions/MyCrypto_guardian4.png)
 
 8. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
 In this example we choose to work with a HW Ledger:
 
-![](../instructions/enroll_validator_5.png)
+![](../instructions/MyCrypto_guardian5.png)
 
 Proceed to *Choose Address*. 
 
@@ -67,23 +68,23 @@ Click *Unlock*
 Enter `16` in the *Value* field. This will send 16 Ether with your registration request as a deposit. `OrbsGuardian` contract will refund you the deposit if you later request to leave. 
 Note: there is a 2-weeks minimal participation period and only after this period a Guardian can leave and receive her deposit back.
 Exactly 16 Ether deposit is required for registration. You may not send more than exactly 16 Ether.
-![](../instructions/enroll_guardian_7.png)
+![](../instructions/MyCrypto_guardian7.png)
 
 11. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
 `500,000` should be more than enough (at the time this is being written a successful registration uses 
 ~115000 gas). You will not be charged for unused gas. Please update the Gas Price to a reasonable value, for example according to https://ethgasstation.info/
-![](../instructions/enroll_guardian_8.png)
+
 Click *Write* 
-![](../instructions/enroll_guardian_9.png)
+
 Click *Sign Transaction*
-![](../instructions/enroll_guardian_10.png)
+
 Click *Send Transaction*
-![](../instructions/enroll_guardian_11.png)
+
 Review, then click *Send*
 
 12. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
 Navigate to *Etherscan* by clicking *Verify (Etherscan)*
-![](../instructions/enroll_guardian_12.png)
+
 
 13. Confirm the transaction has been accepted successfully.
 ![](../instructions/etherscan_confirmation_2.png)
@@ -101,7 +102,7 @@ With sufficient block confirmations.
 * The contract does not enforce uniqueness of name and website values between the different Guardians. Two Guardians may register with same name, or website url. It is up to the Delegators to vet their Guardians. 
 * To make changes to your registration, repeat using the update() function instead of register(). A deposit is not required when re-registering.
 * To to be removed from the Guardians list, use the leave() function.
-  - Upon leave() the 16 Ether deposit is transferred back to the Guardian address.
+  - Upon leave() the 16 ETH deposit is transferred back to the Guardian address.
   - Note: there is a 2-weeks minimal participation period and only after this period a Guardian can leave and receive her deposit back.
  
 
