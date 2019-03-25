@@ -19,7 +19,7 @@ module.exports = async function(done) {
     let indexToAddressMap = []
     let txs = [];
     for(let i = 0;i < stakes.length;i++) {
-      txs.push(tokenInstance.assign(accounts[i], stakes[i]/*, {from: accounts[i]}*/)
+      txs.push(tokenInstance.assign(accounts[i], web3.utils.toBN(stakes[i])/*, {from: accounts[i]}*/)
           .on("transactionHash", hash => {console.error("TxHash: " + hash);}
       ));
       indexToAddressMap.push({Index: i, Address: accounts[i]});

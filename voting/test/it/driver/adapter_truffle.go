@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 )
+
+var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
 
 func NewTruffleAdapter(
 	debug bool,
@@ -95,20 +97,24 @@ func (ta *TruffleAdapter) GetStakes(ethereumErc20Address string, numberOfStakes 
 		panic(err.Error() + "\n" + string(bytes))
 	}
 	stakesData := make(map[int]int)
+	value := big.NewInt(0)
 	for _, stake := range out.Balances {
-		n, _ := strconv.ParseUint(stake.Balance, 16, 32)
-		stakesData[stake.Index] = ta.fromEthereumToken(n)
+		err = value.UnmarshalText([]byte(stake.Balance))
+		if err != nil {
+			panic(err.Error() + "\n" + string(bytes))
+		}
+		stakesData[stake.Index] = int(value.Div(value, ETHEREUM_STAKE_FACTOR).Int64())
 	}
 	return stakesData
 }
 
 func (ta *TruffleAdapter) SetStakes(ethereumErc20Address string, stakes []int) {
-	ethStakes := make([]uint64, len(stakes))
+	ethStakes := make([]*big.Int, len(stakes))
 	for i, v := range stakes {
-		ethStakes[i] = ta.toEthereumToken(v) + 10*STAKE_TOKEN_DELEGATE_VALUE
+		ethStakes[i] = big.NewInt(0).Mul(big.NewInt(int64(v)), ETHEREUM_STAKE_FACTOR)
 	}
 	out, _ := json.Marshal(ethStakes)
-
+	fmt.Printf("===> %s\n\n", string(out))
 	ta.run("exec ./truffle-scripts/fundStakes.js",
 		"ERC20_CONTRACT_ADDRESS="+ethereumErc20Address,
 		"ACCOUNT_STAKES_ON_ETHEREUM="+string(out),
