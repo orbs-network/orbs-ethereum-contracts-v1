@@ -16,7 +16,6 @@ type OrbsAdapter interface {
 	ForwardElectionResultsToSystem(electedValidatorAddresses []string)
 	GetCurrentSystemBlockSigners() []string
 
-	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int
 	GetOrbsEnvironment() string
 	GetFinalityBlocksComponent() int
@@ -28,9 +27,9 @@ type EthereumAdapter interface {
 	GetCurrentBlock() int
 
 	DeployERC20Contract() (ethereumErc20Address string)
-	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes map[int]int)
-	SetStakes(ethereumErc20Address string, stakes []int)
-	Transfer(ethereumErc20Address string, from int, to int, amount int)
+	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes map[int]float32)
+	SetStakes(ethereumErc20Address string, stakes []float32)
+	Transfer(ethereumErc20Address string, from int, to int, amount float32)
 	TopUpEther(accountIndexes []int)
 	PrintBalances()
 

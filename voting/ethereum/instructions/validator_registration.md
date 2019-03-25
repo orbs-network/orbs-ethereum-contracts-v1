@@ -26,7 +26,7 @@ Note: A Validator may update her registration data at any time or leave the regi
 
 In order to register a Validator with OrbsValidatorsRegistry contract follow these steps:
 
-1. **Verify you are on the correct network - Ethereum Mainnet ** (See [Choosing the relevant Ethereum Network](./choosing_the_network.md))
+1. **Verify you are on the correct network - Ethereum Mainnet** (See [Choosing the relevant Ethereum Network](./choosing_the_network.md))
    
 2. Navigate to *Contracts*, under the *Interact* tab.
 ![](../instructions/enroll_validator_1.png)
