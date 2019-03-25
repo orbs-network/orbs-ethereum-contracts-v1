@@ -30,7 +30,7 @@ Note: A Guardian may update her registration data at any time or leave the regis
    The contract address and ABI are also available on [Etherscan][1].
 
    Paste the address in the **Contract Address** box.
-![](../instructions/MyCrypto_guardian1.png)
+![](../instructions/MyCrypto_guardian_1.png)
 
 4. Enter the `OrbsGuardians` contract ABI.
    
