@@ -20,6 +20,6 @@ module.exports = {
     address: '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d'
   },
   OrbsVotingContract: {
-    name: ''
+    name: '_Elections'
   }
 };
