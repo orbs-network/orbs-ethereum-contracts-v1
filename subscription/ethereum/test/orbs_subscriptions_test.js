@@ -30,7 +30,7 @@ contract('OrbsSubscriptions', (accounts) => {
 
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
   const VERSION = 2;
-  const MAX_FEDERATION_MEMBERS = 100;
+  const MAX_VALIDATORS = 100;
   const TIME_ERROR_MARGIN = 60; // 60 seconds
 
   let now;
@@ -122,8 +122,8 @@ contract('OrbsSubscriptions', (accounts) => {
     const minimalMonthlySubscription = 100;
 
     beforeEach(async () => {
-      const federationMembers = accounts.slice(7, 10);
-      validators = await OrbsValidatorsMock.new(federationMembers, { from: owner });
+      const validatorAccounts = accounts.slice(7, 10);
+      validators = await OrbsValidatorsMock.new(validatorAccounts, { from: owner });
     });
 
     beforeEach(async () => {
@@ -164,22 +164,22 @@ contract('OrbsSubscriptions', (accounts) => {
 
   describe('subscription and fees', async () => {
     [
-      { federationMembers: [accounts[7]] },
-      { federationMembers: [accounts[3], accounts[5]] },
-      { federationMembers: accounts.slice(3, 6) },
-      { federationMembers: accounts.slice(3, 7) },
-      { federationMembers: accounts.slice(3, 8) },
-      { federationMembers: accounts.slice(3, 10) },
-      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(30, 50) },
-      { federationMembers: TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_FEDERATION_MEMBERS) },
+      { validatorAccounts: [accounts[7]] },
+      { validatorAccounts: [accounts[3], accounts[5]] },
+      { validatorAccounts: accounts.slice(3, 6) },
+      { validatorAccounts: accounts.slice(3, 7) },
+      { validatorAccounts: accounts.slice(3, 8) },
+      { validatorAccounts: accounts.slice(3, 10) },
+      { validatorAccounts: TEST_ACCOUNTS_ADDRESSES.slice(30, 50) },
+      { validatorAccounts: TEST_ACCOUNTS_ADDRESSES.slice(0, MAX_VALIDATORS) },
     ].forEach((spec) => {
       let validators;
 
       beforeEach(async () => {
-        validators = await OrbsValidatorsMock.new(spec.federationMembers, { from: owner });
+        validators = await OrbsValidatorsMock.new(spec.validatorAccounts, { from: owner });
       });
 
-      context(`with ${spec.federationMembers.length} validators `, async () => {
+      context(`with ${spec.validatorAccounts.length} validators `, async () => {
         const minimalMonthlySubscription = 100;
         const initialValue = 100000000;
         const user1 = accounts[1];
@@ -363,25 +363,25 @@ contract('OrbsSubscriptions', (accounts) => {
             await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
             await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
 
-            for (const member of spec.federationMembers) {
-              expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(0);
+            for (const validator of spec.validatorAccounts) {
+              expect((await token.balanceOf.call(validator)).toNumber()).to.be.equal(0);
             }
 
             const total = values.reduce((res, i) => new BN(res).add(new BN(i)));
             await checkTotal(subsc, currentTime.year, currentTime.month, total.toNumber());
 
-            const fee = total.div(new BN(spec.federationMembers.length));
-            const remainder = total.mod(new BN(spec.federationMembers.length));
+            const fee = total.div(new BN(spec.validatorAccounts.length));
+            const remainder = total.mod(new BN(spec.validatorAccounts.length));
 
             await subsc.distributeFees();
 
-            for (const member of spec.federationMembers) {
-              let memberFee = fee;
-              if (member === spec.federationMembers[0]) {
-                memberFee = memberFee.add(new BN(remainder));
+            for (const validator of spec.validatorAccounts) {
+              let validatorFee = fee;
+              if (validator === spec.validatorAccounts[0]) {
+                validatorFee = validatorFee.add(new BN(remainder));
               }
 
-              expect((await token.balanceOf.call(member))).to.be.bignumber.equal(memberFee);
+              expect((await token.balanceOf.call(validator))).to.be.bignumber.equal(validatorFee);
             }
 
             await checkTotal(subsc, currentTime.year, currentTime.month, 0);
@@ -394,18 +394,18 @@ contract('OrbsSubscriptions', (accounts) => {
             const total2 = new BN(value);
             await checkTotal(subsc, currentTime.year, currentTime.month, total2.toNumber());
 
-            const fee2 = total2.div(new BN(spec.federationMembers.length));
-            const remainder2 = total2.mod(new BN(spec.federationMembers.length));
+            const fee2 = total2.div(new BN(spec.validatorAccounts.length));
+            const remainder2 = total2.mod(new BN(spec.validatorAccounts.length));
 
             await subsc.distributeFees();
 
-            for (const member of spec.federationMembers) {
-              let memberFee = fee.add(new BN(fee2));
-              if (member === spec.federationMembers[0]) {
-                memberFee = memberFee.add(new BN(remainder).add(remainder2));
+            for (const validator of spec.validatorAccounts) {
+              let validatorFee = fee.add(new BN(fee2));
+              if (validator === spec.validatorAccounts[0]) {
+                validatorFee = validatorFee.add(new BN(remainder).add(remainder2));
               }
 
-              expect((await token.balanceOf.call(member))).to.be.bignumber.equal(memberFee);
+              expect((await token.balanceOf.call(validator))).to.be.bignumber.equal(validatorFee);
             }
 
             await checkTotal(subsc, currentTime.year, currentTime.month, 0);
@@ -484,28 +484,28 @@ contract('OrbsSubscriptions', (accounts) => {
             await subscribeForNextMonth(subsc, id, profile, nextMonthValues[1], user2);
             await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
 
-            for (const member of spec.federationMembers) {
-              expect((await token.balanceOf.call(member)).toNumber()).to.be.equal(0);
+            for (const validator of spec.validatorAccounts) {
+              expect((await token.balanceOf.call(validator)).toNumber()).to.be.equal(0);
             }
 
             const total = nextMonthValues.reduce((res, i) => new BN(res).add(new BN(i)));
             await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, total.toNumber());
 
-            const fee = total.div(new BN(spec.federationMembers.length));
-            const remainder = total.mod(new BN(spec.federationMembers.length));
+            const fee = total.div(new BN(spec.validatorAccounts.length));
+            const remainder = total.mod(new BN(spec.validatorAccounts.length));
 
             // It's shouldn't be possible to distribute future funds.
             await expectRevert(subsc.distributeFeesByTime(beginningOfNextMonth.year, beginningOfNextMonth.month));
             await goToNextMonth();
             await subsc.distributeFees();
 
-            for (const member of spec.federationMembers) {
-              let memberFee = fee;
-              if (member === spec.federationMembers[0]) {
-                memberFee = memberFee.add(new BN(remainder));
+            for (const validator of spec.validatorAccounts) {
+              let validatorFee = fee;
+              if (validator === spec.validatorAccounts[0]) {
+                validatorFee = validatorFee.add(new BN(remainder));
               }
 
-              expect((await token.balanceOf.call(member))).to.be.bignumber.equal(memberFee);
+              expect((await token.balanceOf.call(validator))).to.be.bignumber.equal(validatorFee);
             }
 
             await checkTotal(subsc, beginningOfNextMonth.year, beginningOfNextMonth.month, 0);
@@ -557,8 +557,8 @@ contract('OrbsSubscriptions', (accounts) => {
             await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
 
             fees[0].total = currentMonthValues.reduce((res, i) => new BN(res).add(new BN(i)));
-            fees[0].fee = fees[0].total.div(new BN(spec.federationMembers.length));
-            fees[0].remainder = fees[0].total.mod(new BN(spec.federationMembers.length));
+            fees[0].fee = fees[0].total.div(new BN(spec.validatorAccounts.length));
+            fees[0].remainder = fees[0].total.mod(new BN(spec.validatorAccounts.length));
             await checkTotal(subsc, fees[0].year, fees[0].month, fees[0].total.toNumber());
 
             await goToNextMonth();
@@ -575,8 +575,8 @@ contract('OrbsSubscriptions', (accounts) => {
 
             fees[1].total = currentMonthValues.reduce((res, i) => new BN(res).add(new BN(i)))
               .add(nextMonthValues.reduce((res, i) => new BN(res).add(new BN(i))));
-            fees[1].fee = fees[1].total.div(new BN(spec.federationMembers.length));
-            fees[1].remainder = fees[1].total.mod(new BN(spec.federationMembers.length));
+            fees[1].fee = fees[1].total.div(new BN(spec.validatorAccounts.length));
+            fees[1].remainder = fees[1].total.mod(new BN(spec.validatorAccounts.length));
             await checkTotal(subsc, fees[1].year, fees[1].month, fees[1].total.toNumber());
 
             await goToNextMonth();
@@ -597,8 +597,8 @@ contract('OrbsSubscriptions', (accounts) => {
             await subscribeForNextMonth(subsc, id2, profile2, nextMonthValues[2], user1);
 
             fees[2].total = currentMonthValues.reduce((res, i) => new BN(res).add(new BN(i)));
-            fees[2].fee = fees[2].total.div(new BN(spec.federationMembers.length));
-            fees[2].remainder = fees[2].total.mod(new BN(spec.federationMembers.length));
+            fees[2].fee = fees[2].total.div(new BN(spec.validatorAccounts.length));
+            fees[2].remainder = fees[2].total.mod(new BN(spec.validatorAccounts.length));
             await checkTotal(subsc, fees[2].year, fees[2].month, fees[2].total.toNumber());
 
             await goToNextMonth();
@@ -606,19 +606,19 @@ contract('OrbsSubscriptions', (accounts) => {
             // Distribute the monthly fees.
             for (const fee of fees) {
               const balances = {};
-              for (const member of spec.federationMembers) {
-                balances[member] = await token.balanceOf.call(member);
+              for (const validator of spec.validatorAccounts) {
+                balances[validator] = await token.balanceOf.call(validator);
               }
 
               await subsc.distributeFeesByTime(fee.year, fee.month);
 
-              for (const member of spec.federationMembers) {
-                let memberBalance = balances[member].add(new BN(fee.fee));
-                if (member === spec.federationMembers[0]) {
+              for (const validator of spec.validatorAccounts) {
+                let memberBalance = balances[validator].add(new BN(fee.fee));
+                if (validator === spec.validatorAccounts[0]) {
                   memberBalance = memberBalance.add(new BN(fee.remainder));
                 }
 
-                expect((await token.balanceOf.call(member))).to.be.bignumber.equal(memberBalance);
+                expect((await token.balanceOf.call(validator))).to.be.bignumber.equal(memberBalance);
               }
 
               await checkTotal(subsc, fee.year, fee.month, 0);

@@ -20,7 +20,7 @@ contract OrbsSubscriptions is ISubscriptionChecker {
     // The Orbs token smart contract.
     IERC20 public orbs;
 
-    // The federation smart contract.
+    // The Orbs Validators smart contract.
     IOrbsValidators public validators;
 
     // The minimal monthly subscription allocation.
@@ -46,7 +46,7 @@ contract OrbsSubscriptions is ISubscriptionChecker {
     bytes32 constant public EMPTY = bytes32(0);
 
     event Subscribed(address indexed subscriber, bytes32 indexed id, uint256 value, uint256 startFrom);
-    event DistributedFees(address indexed federationMember, uint256 value);
+    event DistributedFees(address indexed validator, uint256 value);
 
     /// @dev Constructor that initializes the Subscription Manager.
     /// @param orbs_ IERC20 The address of the OrbsToken contract.
@@ -93,7 +93,7 @@ contract OrbsSubscriptions is ISubscriptionChecker {
         tokens = subscription.tokens;
     }
 
-    /// @dev Distributes monthly fees to federation members.
+    /// @dev Distributes monthly fees to validators.
     function distributeFees() public {
         // Get the current year and month.
         uint16 currentYear;
@@ -103,7 +103,7 @@ contract OrbsSubscriptions is ISubscriptionChecker {
         distributeFees(currentYear, currentMonth);
     }
 
-    /// @dev Distributes monthly fees to federation members.
+    /// @dev Distributes monthly fees to validators.
     function distributeFees(uint16 _year, uint8 _month) public {
         uint16 currentYear;
         uint8 currentMonth;
@@ -121,18 +121,18 @@ contract OrbsSubscriptions is ISubscriptionChecker {
         require(fee > 0, "Fee must be greater than 0!");
 
         for (uint i = 0; i < validatorCount; ++i) {
-            address member = validatorsAddress[i];
-            uint256 memberFee = fee;
+            address validator = validatorsAddress[i];
+            uint256 validatorFee = fee;
 
             // Distribute the remainder to the first node.
             if (i == 0) {
-                memberFee = memberFee.add(monthlySubscription.totalTokens % validatorCount);
+                validatorFee = validatorFee.add(monthlySubscription.totalTokens % validatorCount);
             }
 
-            monthlySubscription.totalTokens = monthlySubscription.totalTokens.sub(memberFee);
+            monthlySubscription.totalTokens = monthlySubscription.totalTokens.sub(validatorFee);
 
-            require(orbs.transfer(member, memberFee));
-            emit DistributedFees(member, memberFee);
+            require(orbs.transfer(validator, validatorFee));
+            emit DistributedFees(validator, validatorFee);
         }
     }
 
