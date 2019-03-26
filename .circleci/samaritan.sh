@@ -10,7 +10,17 @@ export ORBS_ENVIRONMENT="ropstentest"
 export VERBOSE=1
 
 cd voting/processor
-npm install >/dev/null
+echo "running npm install (buffered into npm.log)"
+npm install &> npm.log
+
+EXITCODE=$?
+
+if [ $EXITCODE != 0 ]; then
+    echo "npm install failed!"
+    cat npm.log
+    exit 1
+fi
+
 echo "**************** MIRRORING JOB STARTING **************"
 node mirror.js
 echo "**************** MIRRORING JOB FINISHED **************"
