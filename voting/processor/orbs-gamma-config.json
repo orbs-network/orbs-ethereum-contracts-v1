@@ -12,6 +12,12 @@
         "http://localhost:8080"
       ]
     },
+    "ropstentest": {
+      "VirtualChain": 1,
+      "Endpoints": [
+        "http://18.219.247.226/vchains/1"
+      ]
+    },
     "testnet": {
       "VirtualChain": 42,
       "Endpoints": [

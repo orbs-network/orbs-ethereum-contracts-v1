@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 module.exports = {
   EthereumGuardiansContract: {
     address: '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711'
@@ -12,6 +20,6 @@ module.exports = {
     address: '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d'
   },
   OrbsVotingContract: {
-    name: ''
+    name: '_Elections'
   }
 };
