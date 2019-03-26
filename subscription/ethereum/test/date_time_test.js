@@ -1,12 +1,14 @@
 
-
-const DateTimeLib = artifacts.require('./DateTime.sol');
+const DateTime = artifacts.require('./DateTime.sol');
+const DateTimeCoverageWrapper = artifacts.require('./DateTimeCoverageWrapper.sol');
 
 contract('DateTime', () => {
   let dateTime;
 
   beforeEach(async () => {
-    dateTime = await DateTimeLib.new();
+    const lib = await DateTime.new();
+    await DateTimeCoverageWrapper.link(DateTime, lib.address);
+    dateTime = await DateTimeCoverageWrapper.new();
   });
 
   describe('getDay', async () => {

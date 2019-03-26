@@ -1,6 +1,6 @@
 pragma solidity 0.4.25;
 
-import "./../../../voting/ethereum/contracts/IOrbsValidators.sol";
+import "orbs-voting/contracts/IOrbsValidators.sol";
 
 contract OrbsValidatorsMock is IOrbsValidators {
 

@@ -4,9 +4,10 @@ pragma solidity 0.4.25;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
+import "orbs-voting/contracts/IOrbsValidators.sol";
+
 import "./DateTime.sol";
 import "./ISubscriptionChecker.sol";
-import "./../../../voting/ethereum/contracts/IOrbsValidators.sol";
 
 
 /// @title Orbs billing and subscription smart contract.

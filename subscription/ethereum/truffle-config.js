@@ -87,6 +87,14 @@ module.exports = {
       network_id: '5777',
       accounts: 25,
     },
+    coverage: {
+      host: 'localhost',
+      network_id: '*',
+      port: 7555,
+      gas: 0xfffffffffff,
+      gasPrice: 0x01,
+      accounts: 25,
+    },
     e2e: {
       host: 'localhost',
       port: 8545,

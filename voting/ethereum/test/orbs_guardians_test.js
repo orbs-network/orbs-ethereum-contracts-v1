@@ -99,7 +99,7 @@ contract('OrbsGuardians', accounts => {
             );
 
             const accountBalanceBeforeReg = await web3.eth.getBalance(accounts[1]);
-            const gasPrice = await web3.eth.getGasPrice(); // the current going price
+            const gasPrice = 1; // to accommodate coverage use the lowest possible
 
             // register and deposit
             const result = await assertResolve(driver.OrbsGuardians.register(
@@ -353,7 +353,7 @@ contract('OrbsGuardians', accounts => {
 
             await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
 
-            const gasPrice = await web3.eth.getGasPrice(); // the current going price
+            const gasPrice = 1; // to accommodate coverage use the lowest possible
             const accountBalanceBeforeLeave = await web3.eth.getBalance(accounts[1]);
 
             // leave

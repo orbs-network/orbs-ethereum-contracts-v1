@@ -1,6 +1,6 @@
-const DateTime = artifacts.require('./DateTime.sol');
+const DateTime = artifacts.require('./DateTime');
 const OrbsSubscriptions = artifacts.require('OrbsSubscriptions');
-const ERC20 = artifacts.require('./TestingERC20.sol');
+const ERC20 = artifacts.require('TestingERC20');
 
 module.exports = async (deployer, network) => {
   // We're only using these migrations during development and testing.
