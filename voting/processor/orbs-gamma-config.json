@@ -12,7 +12,7 @@
         "http://localhost:8080"
       ]
     },
-    "andrey": {
+    "samaritan": {
       "VirtualChain": 1,
       "Endpoints": [
         "http://18.219.247.226/vchains/1"
