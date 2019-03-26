@@ -74,7 +74,6 @@ jobs:
       - store_test_results:
           path: subscription/ethereum/_reports
 
-
 workflows:
   version: 2
   voting:
@@ -90,7 +89,7 @@ workflows:
     jobs:
       - subscription-solidity-tests
       - subscription-e2e
-  samaritan:
+  samaritan_every10_minutes:
     triggers:
       - schedule:
           cron: "*/10 * * * *"
