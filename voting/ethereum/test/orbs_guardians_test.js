@@ -1,5 +1,5 @@
 
-const {Driver, RE} = require('./driver');
+const {Driver} = require('./driver');
 const {assertResolve, assertReject} = require('./assertExtensions');
 
 contract('OrbsGuardians', accounts => {
@@ -29,7 +29,7 @@ contract('OrbsGuardians', accounts => {
             assert.isNotOk(await driver.OrbsGuardians.isGuardian(accounts[1]), "expected isGuardian to return false before registration");
             assert.deepEqual(await driver.OrbsGuardians.getGuardians(0, 10), [], "expected an empty guardian list before registration");
 
-            const regRes = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
 
             const retrievedData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
             assert.equal(retrievedData.name, "some name", "expected correct name to be returned");

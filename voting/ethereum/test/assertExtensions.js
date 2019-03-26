@@ -12,6 +12,6 @@ module.exports.assertResolve = async (promise, message) => {
     try{
         return await promise;
     }catch (e) {
-        assert.fail(message);
+        assert.fail(`${message}\n${e}`);
     }
 };
