@@ -10,7 +10,7 @@ export ORBS_ENVIRONMENT="ropstentest"
 export VERBOSE=1
 
 cd voting/processor
-npm install
+npm install >/dev/null
 echo "**************** MIRRORING JOB STARTING **************"
 node mirror.js
 echo "**************** MIRRORING JOB FINISHED **************"
