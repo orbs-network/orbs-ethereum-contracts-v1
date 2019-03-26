@@ -1,3 +1,9 @@
+// Copyright 2019 the orbs-ethereum-contracts authors
+// This file is part of the orbs-ethereum-contracts library in the Orbs project.
+//
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+// The above notice should be included in all copies or substantial portions of the software.
+
 package driver
 
 import (
@@ -10,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 )
+
+const DELEGATE_TRANSFER = float32(0.07)
 
 func logStage(msg string, args ...interface{}) {
 	fmt.Printf("\x1b[34;1m\n##############################################################################################\x1b[0m")
@@ -38,12 +46,6 @@ func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
 	c.Stderr = w
 	err := c.Run()
 	return b.Bytes(), err
-}
-
-const STAKE_TOKEN_DELEGATE_VALUE = uint64(7)
-
-func IntToAddr(num int) string {
-	return fmt.Sprintf("0x%040d", num)
 }
 
 func IpToHexaBytes(ip string) string {

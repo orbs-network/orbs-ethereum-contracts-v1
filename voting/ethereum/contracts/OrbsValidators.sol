@@ -4,7 +4,7 @@ pragma solidity 0.4.25;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IOrbsNetworkTopology.sol";
 import "./IOrbsValidators.sol";
-import "./OrbsValidatorsRegistry.sol";
+import "./IOrbsValidatorsRegistry.sol";
 
 
 contract OrbsValidators is Ownable, IOrbsValidators, IOrbsNetworkTopology {
