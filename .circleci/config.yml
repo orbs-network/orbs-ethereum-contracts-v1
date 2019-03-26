@@ -89,6 +89,9 @@ workflows:
     jobs:
       - subscription-solidity-tests
       - subscription-e2e
+  samaritan:
+    jobs:
+      - samaritan
   scheduled_samaritan:
     triggers:
       - schedule:
