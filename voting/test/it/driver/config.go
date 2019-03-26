@@ -1,3 +1,9 @@
+// Copyright 2019 the orbs-ethereum-contracts authors
+// This file is part of the orbs-ethereum-contracts library in the Orbs project.
+//
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+// The above notice should be included in all copies or substantial portions of the software.
+
 package driver
 
 import (
@@ -13,7 +19,7 @@ type Config struct {
 	EthereumGuardiansAddress     string
 	UserAccountOnOrbs            string
 	DelegatorsNumber             int
-	DelegatorStakeValues         []int
+	DelegatorStakeValues         []float32
 	GuardiansAccounts            []int
 	ValidatorsAccounts           []int
 	ValidatorsOrbsAddresses      []string
@@ -50,7 +56,7 @@ func (config *Config) Validate(isDeploy bool) error {
 	if config.UserAccountOnOrbs == "" {
 		return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "UserAccountOnOrbs")
 	}
-	// TODO v1 add array checks ?
+
 	if config.DelegatorsNumber < 10 {
 		return errors.Errorf("configuration field '%s' has invalid value '%d'", "DelegatorsNumber", config.DelegatorsNumber)
 	}
@@ -77,7 +83,7 @@ type DelegateEvent struct {
 type TransferEvent struct {
 	FromIndex int
 	ToIndex   int
-	Amount    int
+	Amount    float32
 }
 
 type VoteEvent struct {

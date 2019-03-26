@@ -1,20 +1,16 @@
 ## Voting
 
-Guardians vote to approve or vote out validators. A Validator that was voted out can not be elected in the election. A Guardian may update her vote at any time where the latest vote recorded prior to the election event is considered for the election. A Guardian vote remains valid for up to one week / 40320 Ethereum blocks.
+Guardians enforce the protocol by monitoring the network and vote to approve Validators accordingly. A Guardian that identifies Validators that do not follow the protocol can vote them out. In each vote, a Guardian can vote out up to 3 Validators, a Guardian may by voting with an empty list, express consent to include all the listed Validators. 
 
-Voting is performed via a transaction sent to OrbsVoting contract. The transaction includes
-a list of validators to vote out and may include up to 3 Valdiaotors. By sending an empty list, the 
-Guardian expresses consent to include all listed validators in the signing committee.
+A Guardian may cast a vote at any time which remains valid for up to 45,500 Ethereum blocks (approximately one week). In order to participate in an election, a guardian needs to have a valid vote at the time of the election event. When voting to vote out multiple Validators, the voting weight for each Validator equals to the Guardian’s total voting weight.
 
-A Guardian voting weight for an election equals to the total voting weight that was delegated to her, directly or indirectly including her own, based on the Delegators stake at the time of the election event.
-
-For a more detailed account of delegation, voting, and rewards see [here](???)
-
-This document walks you through the voting process using the MyCrypto desktop wallet application.
+This document provides instructions for voting process using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
 
+For voting using a voting UI see https://orbs-network.github.io/voting/guardian.
+
 ### Voting requires following data:
-- Ethereum Addresses of up to three Orbs Validators to vote for removal from active committee
+- Ethereum Addresses of up to three Orbs Validators to vote out
 
 ### Voting pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)

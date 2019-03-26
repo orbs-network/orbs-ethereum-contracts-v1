@@ -1,7 +1,7 @@
 pragma solidity 0.4.25;
 
+import "orbs-voting/contracts/IOrbsValidators.sol";
 import "../contracts/OrbsSubscriptions.sol";
-import "./../../../voting/ethereum/contracts/IOrbsValidators.sol";
 
 contract OrbsSubscriptionsMock is OrbsSubscriptions {
     struct UpgradeContext {
@@ -13,8 +13,8 @@ contract OrbsSubscriptionsMock is OrbsSubscriptions {
 
     UpgradeContext public upgradeContext;
 
-    constructor(IERC20 _orbs, IOrbsValidators _federation, uint256 _minimalMonthlySubscription) public
-        OrbsSubscriptions(_orbs, _federation, _minimalMonthlySubscription) {
+    constructor(IERC20 _orbs, IOrbsValidators _orbsValidators, uint256 _minimalMonthlySubscription) public
+        OrbsSubscriptions(_orbs, _orbsValidators, _minimalMonthlySubscription) {
     }
 
     function getTotalMonthlySubscriptionsTokens(uint16 _year, uint8 _month) public view returns (uint256) {

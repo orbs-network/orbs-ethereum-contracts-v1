@@ -1,3 +1,9 @@
+// Copyright 2019 the orbs-ethereum-contracts authors
+// This file is part of the orbs-ethereum-contracts library in the Orbs project.
+//
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+// The above notice should be included in all copies or substantial portions of the software.
+
 package driver
 
 import (
@@ -65,13 +71,14 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 		logStage("Deploying Ethereum Guardians contracts ...")
 		config.EthereumGuardiansAddress = ethereum.DeployGuardiansContract()
 		logStageDone("Ethereum Guardians contract Address=%s", config.EthereumGuardiansAddress)
+
+		logStage("Setting Ethereum Guardians accounts ...")
+		ethereum.SetGuardians(config.EthereumGuardiansAddress, config.GuardiansAccounts)
+		logStageDone("Set Guardians done")
 	} else {
 		logStage("Using existing Ethereum Guardians contract...")
 		logStageDone("Ethereum Guardians Address=%s", config.EthereumGuardiansAddress)
 	}
-	logStage("Setting Ethereum Guardians accounts ...")
-	ethereum.SetGuardians(config.EthereumGuardiansAddress, config.GuardiansAccounts)
-	logStageDone("Set Guardians done")
 
 	logStage("Binding Ethereum contracts to Orbs ...")
 	orbs.BindERC20ContractToEthereum(config.OrbsVotingContractName, config.EthereumErc20Address)

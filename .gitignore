@@ -34,3 +34,6 @@ logs/
 
 _out
 _reports
+
+coverage.json
+coverage/

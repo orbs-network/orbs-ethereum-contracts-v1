@@ -1,5 +1,13 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
 
-const {Driver, RE} = require('./driver');
+
+const {Driver} = require('./driver');
 const {assertResolve, assertReject} = require('./assertExtensions');
 
 contract('OrbsGuardians', accounts => {
@@ -29,7 +37,7 @@ contract('OrbsGuardians', accounts => {
             assert.isNotOk(await driver.OrbsGuardians.isGuardian(accounts[1]), "expected isGuardian to return false before registration");
             assert.deepEqual(await driver.OrbsGuardians.getGuardians(0, 10), [], "expected an empty guardian list before registration");
 
-            const regRes = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
 
             const retrievedData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
             assert.equal(retrievedData.name, "some name", "expected correct name to be returned");
@@ -99,7 +107,7 @@ contract('OrbsGuardians', accounts => {
             );
 
             const accountBalanceBeforeReg = await web3.eth.getBalance(accounts[1]);
-            const gasPrice = await web3.eth.getGasPrice(); // the current going price
+            const gasPrice = 1; // to accommodate coverage use the lowest possible
 
             // register and deposit
             const result = await assertResolve(driver.OrbsGuardians.register(
@@ -332,12 +340,28 @@ contract('OrbsGuardians', accounts => {
             assert.deepEqual(noneLeft, [], "expected an empty list after everyone left");
         });
 
+        it('should be able to register after leave', async () => {
+            await driver.deployGuardians();
+            await assertReject(driver.OrbsGuardians.leave(), "expected leave to fail if not registered");
+
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[2], value: driver.registrationDeposit});
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[3], value: driver.registrationDeposit});
+
+            await driver.OrbsGuardians.leave({from: accounts[2]});
+
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[2], value: driver.registrationDeposit});
+
+            const everyone = await driver.OrbsGuardians.getGuardians(0, 10);
+            assert.deepEqual(everyone, [accounts[1], accounts[3], accounts[2]], "expected register to succeed after leaving");
+        });
+
         it('should refund registration deposit', async () => {
             await driver.deployGuardians();
 
             await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
 
-            const gasPrice = await web3.eth.getGasPrice(); // the current going price
+            const gasPrice = 1; // to accommodate coverage use the lowest possible
             const accountBalanceBeforeLeave = await web3.eth.getBalance(accounts[1]);
 
             // leave

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 const helpers = require('./helpers');
 
 const guardiansContractAddress = process.env.GUARDIANS_CONTRACT_ADDRESS;
@@ -29,7 +37,7 @@ module.exports = async function(done) {
         });
       } else { // already sent a deposit - just override the values
         return helpers.verifyEtherBalance(web3, address, helpers.MIN_BALANCE_FEES, accounts[0]).then(() => {
-          return guardiansInstance.register(`guardianName${i}`, `https://www.guardian${i}.com`, {from: address}).on("transactionHash", hash => {
+          return guardiansInstance.update(`guardianName${i}`, `https://www.guardian${i}.com`, {from: address}).on("transactionHash", hash => {
             console.error("TxHash: " + hash);
           });
         });

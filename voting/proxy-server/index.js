@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 const cors = require('cors');
 const express = require('express');
 const stakeApiFactory = require('./api/stake');
@@ -11,12 +19,13 @@ const { EthereumClientService } = require('./services/ethereum-client');
 const port = process.env.PORT || 5678;
 const virtualChainId = 1009;
 const orbsNodeAddress = '18.219.51.57';
+const ethereumProviderUrl =
+  process.env.ETHEREUM_PROVIDER_URL || 
+  'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141';
 
 const app = express();
 
-const ethereumClient = new EthereumClientService(
-  'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141'
-);
+const ethereumClient = new EthereumClientService(ethereumProviderUrl);
 
 const orbsClientService = new OrbsClientService(
   orbsNodeAddress,

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 const erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
 const stakesStr = process.env.ACCOUNT_STAKES_ON_ETHEREUM;
 
@@ -16,10 +24,10 @@ module.exports = async function(done) {
 
     let accounts = await web3.eth.getAccounts();
     let stakes = JSON.parse(stakesStr);
-    let indexToAddressMap = []
+    let indexToAddressMap = [];
     let txs = [];
     for(let i = 0;i < stakes.length;i++) {
-      txs.push(tokenInstance.assign(accounts[i], stakes[i]/*, {from: accounts[i]}*/)
+      txs.push(tokenInstance.assign(accounts[i], web3.utils.toBN(stakes[i])/*, {from: accounts[i]}*/)
           .on("transactionHash", hash => {console.error("TxHash: " + hash);}
       ));
       indexToAddressMap.push({Index: i, Address: accounts[i]});

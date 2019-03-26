@@ -26,12 +26,12 @@ Note: A Validator may update her registration data at any time or leave the regi
 
 In order to register a Validator with OrbsValidatorsRegistry contract follow these steps:
 
-1. **Verify you are on the correct network** (See [Choosing the relevant Ethereum Network](./choosing_the_network.md))
+1. **Verify you are on the correct network - Ethereum Mainnet** (See [Choosing the relevant Ethereum Network](./choosing_the_network.md))
    
-1. Navigate to *Contracts*, under the *Interact* tab.
+2. Navigate to *Contracts*, under the *Interact* tab.
 ![](../instructions/enroll_validator_1.png)
 
-1. Select an existing custom contact amd enter the `OrbsValidatorsRegistry` contract address. 
+3. Select an existing custom contact and enter the `OrbsValidatorsRegistry` contract address. 
    
     **OrbsValidatorsRegistry Contract Address**: `0x56a6895fd37f358c17cbb3f14a864ea5fe871f0a`
   
@@ -39,9 +39,9 @@ In order to register a Validator with OrbsValidatorsRegistry contract follow the
 
     Paste the address in the **Contract Address** box.
 
-    ![](../instructions/enroll_validator_2a.png)
+    ![](../instructions/MyCrypto-contract.png)
 
-1. Enter the `OrbsValidatorsRegistry` contract ABI.
+4. Enter the `OrbsValidatorsRegistry` contract ABI.
    
    **Registration Interface ABI:**
 
@@ -53,14 +53,14 @@ In order to register a Validator with OrbsValidatorsRegistry contract follow the
 
     ![](../instructions/enroll_validator_2.png)
 
-1. Click *Access*.
+5. Click *Access*.
 * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
 
-1. Select `register` in the drop down list *Read / Write Contract*
-![](../instructions/enroll_validator_3.png)
+6. Select `register` in the drop down list *Read / Write Contract*
+![](../instructions/MyCrypto-register.png)
 The function parameters for the `register` call will appear in the form.
 
-1. Fill the fields labeled `name`, `ipAddress`, `website`, `OrbsAddress` 
+7. Fill the fields labeled `name`, `ipAddress`, `website`, `OrbsAddress` 
 with your Validator's registration data.
     - OrbsAddress must be formatted as a valid Ethereum address type.
     - IP address must first be converted to a hexadecimal number representation:
@@ -74,21 +74,21 @@ with your Validator's registration data.
         Copy the hexadecimal number representation contained within the parentheses. Don't forget to include the prefix `0x`       
 ![](../instructions/enroll_validator_4.png)
 
-1. Choose one of the options under *How would you like to access your wallet?*
+8. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
 In this example we choose to work with a HW Ledger:
 ![](../instructions/enroll_validator_5.png)
 
 Proceed to *Choose Address*. 
 
-1. Select your Validator's Ethereum address. 
+9. Select your Validator's Ethereum address. 
 The address you choose will be the Validator's identification for voting later on.
 ![](../instructions/enroll_validator_6.png)
 Make sure the account has a positive Ether balance for transaction fees. Then click *Unlock*.
 
-1. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
+10. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
 `500,000` should be more than enough (at the time this is being written a successful registration uses 
-~174000 gas). You will not be charged for unused gas.
+~174000 gas). You will not be charged for unused gas. Please update the Gas Price to a reasonable value, for example according to https://ethgasstation.info/
 ![](../instructions/enroll_validator_7.png)
 Click *Write*, then *Sign Transaction* 
 ![](../instructions/enroll_validator_8.png)
@@ -96,11 +96,11 @@ Click *Send Transaction*
 ![](../instructions/enroll_validator_9.png)
 Review, then click *Send*
 
-1. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
+11. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
 Navigate to *Etherscan* by clicking *Verify (Etherscan)*
 ![](../instructions/enroll_validator_10.png)
 
-1. Confirm the transaction has been accepted successfully.
+12. Confirm the transaction has been accepted successfully.
 ![](../instructions/etherscan_confirmation_1.png)
  
 Make sure you see 
@@ -108,7 +108,7 @@ Make sure you see
 
 With sufficient block confirmations.
 
-1. Review your registration data by calling getValidatorData() with your Ethereum address.
+13. Review your registration data by calling getValidatorData() with your Ethereum address.
 
 [2]: https://etherscan.io/address/0x56a6895fd37f358c17cbb3f14a864ea5fe871f0a#code
 
