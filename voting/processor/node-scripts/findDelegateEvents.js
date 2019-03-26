@@ -8,13 +8,9 @@
 
 const Web3 = require('web3');
 
-const networkConnectionUrl = process.env.NETWORK_URL_ON_ETHEREUM;
-const votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
-const startBlock = process.env.START_BLOCK_ON_ETHEREUM;
-const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
 const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"validators","type":"address[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Undelegate","type":"event"},{"constant":false,"inputs":[{"name":"validators","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"undelegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVote","outputs":[{"name":"validators","type":"address[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVoteBytes20","outputs":[{"name":"validatorsBytes20","type":"bytes20[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"delegator","type":"address"}],"name":"getCurrentDelegation","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
 
-async function getAllPastDelegateEvents(tokenContract) {
+async function getAllPastDelegateEvents(tokenContract, startBlock, endBlock) {
     let options = {
         fromBlock: startBlock,
         toBlock: endBlock
@@ -65,8 +61,8 @@ function generateDelegateObject(block, transactionIndex, txHash, delegatorAddres
     }
 }
 
-module.exports = async function () {
+module.exports = async function (networkConnectionUrl, votingContractAddress, startBlock, endBlock) {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let contract = await new web3.eth.Contract(VOTING_ABI, votingContractAddress);
-    return await getAllPastDelegateEvents(contract);
+    return await getAllPastDelegateEvents(contract, startBlock, endBlock);
 };
