@@ -11,7 +11,7 @@ module.exports = {
     address: '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711'
   },
   EthereumValidatorsContract: {
-    address: '0x804c8336846d8206c95CEe24752D514210B5a240'
+    address: '0x240fAa45557c61B6959162660E324Bb90984F00f'
   },
   EthereumValidatorsRegistryContract: {
     address: '0x56A6895FD37f358c17cbb3F14A864ea5Fe871F0a'
