@@ -23,7 +23,7 @@ const styles = () => ({
   item: {
     padding: '0 10px',
     '&:hover': {
-      opacity: .8
+      opacity: 0.8
     }
   }
 });

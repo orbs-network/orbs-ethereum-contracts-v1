@@ -15,6 +15,7 @@ import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
+import { normalizeUrl } from '../../services/urls';
 import { Link } from 'react-router-dom';
 
 const ReadOnlyVoteButton = () => {
@@ -87,7 +88,7 @@ const GuardianPage = ({ classes, apiService }) => {
         acc[currAddress] = {
           checked: false,
           name: validatorsInfo[idx]['name'],
-          url: validatorsInfo[idx]['website'],
+          url: normalizeUrl(validatorsInfo[idx]['website']),
           orbsAddress: validatorsInfo[idx]['orbsAddress'],
           votesAgainst: validatorsInfo[idx]['votesAgainst']
         };

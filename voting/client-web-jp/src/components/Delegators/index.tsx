@@ -13,6 +13,7 @@ import GuardianDialog from '../GuardianDetails';
 import Typography from '@material-ui/core/Typography';
 import { ApiService } from '../../api';
 import Explanations from './explanations';
+import { normalizeUrl } from '../../services/urls';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
@@ -40,7 +41,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
         name: details[idx]['name'],
-        url: details[idx]['website'],
+        url: normalizeUrl(details[idx]['website']),
         stake: details[idx]['stake']
       };
       return acc;
