@@ -21,7 +21,7 @@ export default () => ({
   },
   division: {
     border: '1px solid #192a44',
-    margin: '70px 0' 
+    margin: '70px 0'
   },
   links: {
     color: 'white',
