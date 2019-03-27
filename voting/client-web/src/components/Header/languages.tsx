@@ -8,6 +8,7 @@
 
 import React from 'react';
 import JP_FLAG from './jp.png';
+import KO_FLAG from './ko.png';
 import EN_FLAG from './en-us.png';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -38,6 +39,11 @@ const Languages = ({ classes }) => {
       <li className={classes.item}>
         <a href="https://orbs-network.github.io/voting-jp">
           <img src={JP_FLAG} alt="Japanese" />
+        </a>
+      </li>
+      <li className={classes.item}>
+        <a href="https://orbs-network.github.io/voting-ko">
+          <img src={KO_FLAG} alt="Korean" />
         </a>
       </li>
     </ul>
