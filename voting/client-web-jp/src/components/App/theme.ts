@@ -11,6 +11,20 @@ export default createMuiTheme({
     }
   },
   typography: {
-    useNextVariants: true
+    useNextVariants: true,
+    fontFamily: 'Montserrat'
+  },
+  overrides: {
+    MuiTypography: {
+      body1: {
+        fontWeight: 500
+      },
+      h4: {
+        fontWeight: 600
+      }
+    },
+    MuiTableCell: {
+      body: { fontWeight: 500 }
+    }
   }
 });

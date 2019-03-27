@@ -16,34 +16,48 @@ import content from './content';
 
 const Home = ({ classes }) => {
   return (
-    <div className={classes.container}>
-      <header className={classes.header}>
-        <Typography variant="h2" color="textPrimary" noWrap>
-          Who are you?
-        </Typography>
-      </header>
-      <section className={classes.columns}>
-        {content.map((passage, idx) => (
-          <article key={idx} className={classes.column}>
-            <div className={classes.columnText}>
-              <Typography variant="h6" color="textPrimary">
-                {passage.text}
-              </Typography>
-            </div>
-            <Link
-              // @ts-ignore
-              component={NavLink}
-              to={passage.cta.url}
-              className={classes.ctaButton}
-              variant="body1"
-              underline="none"
-            >
-              {passage.cta.label}
-            </Link>
-          </article>
+    <>
+      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
+        Participation Instructions
+      </Typography>
+      <article className={classes.article}>
+        {content.map((section, idx) => (
+          <React.Fragment key={section.title}>
+            <section className={classes.section}>
+              <div className={classes.imageBlock}>
+                <img className={classes.image} src={section.imageUrl} alt={section.title} />
+              </div>
+              <div>
+                <Typography variant="h4" gutterBottom color="textPrimary">
+                  {section.title}
+                </Typography>
+                <Typography variant="body1" gutterBottom color="textPrimary">
+                  {section.text}
+                </Typography>
+                <ul className={classes.links}>
+                  {section.links.map((link, idx) => (
+                    <li key={idx} className={classes.link}>
+                      <Link variant="body1" color="secondary" href={link.url} target="_blank" rel="noopener">{link.title}</Link>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  // @ts-ignore
+                  component={NavLink}
+                  to={section.cta.url}
+                  className={classes.ctaButton}
+                  variant="body1"
+                  underline="none"
+                >
+                  {section.cta.label}
+                </Link>
+              </div>
+            </section>
+            {idx === content.length - 1 ? null : <hr className={classes.division}/>}
+          </React.Fragment>
         ))}
-      </section>
-    </div>
+      </article>
+    </>
   );
 };
 

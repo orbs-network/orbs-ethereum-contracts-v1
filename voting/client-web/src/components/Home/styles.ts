@@ -1,32 +1,34 @@
 export default theme => ({
-  mainText: {
-    paddingTop: theme.spacing.unit * 10
+  article: {
+    marginTop: 90
   },
-  container: {
+  section: {
     display: 'flex',
-    width: '100%',
-    height: '80vh',
-    flexDirection: 'column' as any
+    flexDirection: 'row' as any,
+    marginBottom: 20
   },
-  header: {
-    textAlign: 'center' as any,
-    paddingBottom: 20
+  imageBlock: {
+    marginRight: 70
   },
-  columns: {
-    display: 'flex',
-    height: '100%'
+  image: {
+    width: 242
   },
-  column: {
-    flex: 1,
-    padding: 20,
-    textAlign: 'center' as any
+  content: {
+    marginLeft: 70
   },
-  columnText: {
-    height: '90%',
-    width: '90%',
-    margin: '0 auto'
+  division: {
+    border: '1px solid #192a44',
+    margin: '70px 0' 
+  },
+  links: {
+    color: 'white',
+    paddingLeft: 16
+  },
+  link: {
+    lineHeight: '1.8em'
   },
   ctaButton: {
+    display: 'inline-block',
     background: '#16faff',
     border: 0,
     borderRadius: '100px',
