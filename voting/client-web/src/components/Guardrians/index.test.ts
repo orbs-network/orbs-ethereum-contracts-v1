@@ -6,6 +6,11 @@ describe('Guardians Page', () => {
   let driver: GuardiansPageDriver, validatorsData;
 
   beforeEach(() => {
+    window['ethereum'] = {
+      _metamask: {
+        isEnabled: () => true
+      }
+    };
     validatorsData = generateValidatorsData();
     driver = new GuardiansPageDriver(validatorsData);
   });

@@ -17,6 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
 import { normalizeUrl } from '../../services/urls';
 import { Link } from 'react-router-dom';
+import { ApiService } from '../../api';
 
 const ReadOnlyVoteButton = () => {
   return (
@@ -64,7 +65,13 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-const GuardianPage = ({ classes, apiService }) => {
+const GuardianPage = ({
+  classes,
+  apiService
+}: {
+  classes: any;
+  apiService: ApiService;
+}) => {
   const [validators, setValidators] = useState({} as {
     [address: string]: {
       checked: boolean;
@@ -97,7 +104,7 @@ const GuardianPage = ({ classes, apiService }) => {
       {}
     );
 
-    if (hasMetamask()) {
+    if (hasMetamask() && isMetamaskActive()) {
       const from = await apiService.getCurrentAddress();
       const validatorsInStorage = get(from);
 
@@ -139,6 +146,7 @@ const GuardianPage = ({ classes, apiService }) => {
   };
 
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;
+  const isMetamaskActive = () => ethereum._metamask.isEnabled();
 
   const hasSomebodySelected = () =>
     Object.keys(validators).some(address => validators[address].checked);
