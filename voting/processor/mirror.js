@@ -11,9 +11,10 @@ const erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
 const votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
 const startBlock = process.env.START_BLOCK_ON_ETHEREUM;
 const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
+const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
-const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
+let force = false;
 
 const gamma = require('./gamma-calls');
 
@@ -50,10 +51,15 @@ function validateInput() {
         console.log('No ORBS environment found using default value "local"\n');
         orbsEnvironment = "local";
     }
+
+    if (process.env.FORCE_RUN) {
+        force = true;
+    }
 }
 
-async function transferEvents() {
-    let transferEvents = await require('./node-scripts/findDelegateByTransferEvents')();
+async function transferEvents(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock) {
+
+    let transferEvents = await require('./node-scripts/findDelegateByTransferEvents')(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock);
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `\nFound ${transferEvents.length} Transfer events:`);
     }
@@ -71,8 +77,8 @@ async function transferEvents() {
     }
 }
 
-async function delegateEvents() {
-    let delegateEvents = await require('./node-scripts/findDelegateEvents')();
+async function delegateEvents(ethereumConnectionURL, votingContractAddress, startBlock, endBlock) {
+    let delegateEvents = await require('./node-scripts/findDelegateEvents')(ethereumConnectionURL, votingContractAddress, startBlock, endBlock);
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `\nFound ${delegateEvents.length} Delegate events`);
     }
@@ -132,10 +138,19 @@ async function main() {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
 
-    isAllowed = await isMirroringAllowed();
+    let actualStartBlock = startBlock;
+    let isAllowed = false;
+    if (force) {
+        actualStartBlock = '7443302';
+        isAllowed = true;
+        console.log('\x1b[36m%s\x1b[0m', `\n\nRunning special mirror with start block: ${actualStartBlock}\n`);
+    } else {
+        isAllowed = await isMirroringAllowed();
+    }
+
     if (isAllowed) {
-        await transferEvents();
-        await delegateEvents();
+        await transferEvents(ethereumConnectionURL, erc20ContractAddress, actualStartBlock, endBlock);
+        await delegateEvents(ethereumConnectionURL, votingContractAddress, actualStartBlock, endBlock);
     }
 }
 

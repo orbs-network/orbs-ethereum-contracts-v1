@@ -7,14 +7,9 @@
  */
 
 const Web3 = require('web3');
-
-const networkConnectionUrl = process.env.NETWORK_URL_ON_ETHEREUM;
-const erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
-const startBlock = process.env.START_BLOCK_ON_ETHEREUM;
-const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
 const TOKEN_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
 
-async function getAllPastTransferEvents(tokenContract, web3) {
+async function getAllPastTransferEvents(tokenContract, web3, startBlock, endBlock) {
     let options = {
         fromBlock: startBlock,
         toBlock: endBlock
@@ -72,9 +67,9 @@ function generateDelegateObject(block, transactionIndex, txHash, delegatorAddres
     }
 }
 
-module.exports = async function () {
+module.exports = async function (networkConnectionUrl, erc20ContractAddress, startBlock, endBlock) {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let tokenContract = await new web3.eth.Contract(TOKEN_ABI, erc20ContractAddress);
 
-    return getAllPastTransferEvents(tokenContract, web3);
+    return getAllPastTransferEvents(tokenContract, web3, startBlock, endBlock);
 };
