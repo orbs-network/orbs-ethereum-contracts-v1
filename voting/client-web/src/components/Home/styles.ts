@@ -1,6 +1,9 @@
-export default theme => ({
+export default () => ({
   article: {
     marginTop: 90
+  },
+  explanations: {
+    width: '49em'
   },
   section: {
     display: 'flex',

@@ -6,7 +6,6 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';

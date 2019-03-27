@@ -7,7 +7,7 @@ export default () => ({
       'url(https://orbs.live.strattic.io/wp-content/uploads/2019/02/technology-background1.png)',
     backgroundAttachment: 'scroll',
     backgroundPosition: 'top center',
-    height: '100vh'
+    minHeight: '100vh'
   },
   glass: {
     backgroundColor: 'black',

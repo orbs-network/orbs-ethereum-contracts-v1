@@ -20,6 +20,9 @@ const Home = ({ classes }) => {
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
         Participation Instructions
       </Typography>
+      <Typography className={classes.explanations} variant="body1" gutterBottom color="textPrimary">
+        One of the unique features of Orbs, is that the administration of the network’s institutes is performed on another decentralized network. With this architecture, we can avoid letting network operators execute the procedures for their own election. This separation of powers provides simplicity and stability in the election processes, and a decentralized guarantee to all PoS votes and delegations. To make this possible, token balances, delegation of voting power to guardians, and voting on validators by the guardians are all managed by smart contracts on the Ethereum network. In accordance, the voting and staking process itself takes place on Ethereum contracts using standard Ethereum wallets.
+      </Typography>
       <article className={classes.article}>
         {content.map((section, idx) => (
           <React.Fragment key={section.title}>
@@ -53,7 +56,7 @@ const Home = ({ classes }) => {
                 </Link>
               </div>
             </section>
-            {idx === content.length - 1 ? null : <hr className={classes.division}/>}
+            {idx === content.length - 1 ? null : <hr className={classes.division} />}
           </React.Fragment>
         ))}
       </article>
