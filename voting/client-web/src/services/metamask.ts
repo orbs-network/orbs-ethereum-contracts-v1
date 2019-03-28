@@ -104,7 +104,6 @@ export class MetamaskService {
 
     if (currentDelegation === '0x0000000000000000000000000000000000000000') {
       const paddedAddress = this.web3.utils.padLeft(from, 64);
-      console.log(paddedAddress);
       const options = {
         fromBlock: OrbsTDEEthereumBlock,
         toBlock: 'latest',
@@ -114,7 +113,6 @@ export class MetamaskService {
         TransferEventSignature,
         options
       );
-      console.log(events);
       const entryWithTransaction = events.find(
         ({ raw }) => raw['data'] === delegationConstant
       );
