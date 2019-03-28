@@ -31,6 +31,11 @@ export default [
         url:
           'https://github.com/orbs-network/orbs-ethereum-contracts/blob/master/voting/ethereum/instructions/guardian_registration.md',
         title: 'Becoming a Guardian'
+      },
+      {
+        url:
+          'https://github.com/orbs-network/orbs-ethereum-contracts/blob/master/voting/ethereum/instructions/vote_out.md',
+        title: 'Voting using MyCrypto'
       }
     ],
     imageUrl: 'https://www.orbs.com/wp-content/uploads/2019/03/Orbs-Voting.png',
