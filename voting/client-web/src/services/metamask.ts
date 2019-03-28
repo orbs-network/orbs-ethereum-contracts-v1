@@ -4,6 +4,7 @@ import {
   votingContractFactory,
   validatorsRegistryContractFactory
 } from './contracts';
+import { Address4 } from 'ip-address';
 
 export class MetamaskService {
   private web3: Web3;
@@ -20,8 +21,9 @@ export class MetamaskService {
     this.votingContract = votingContractFactory(this.web3);
   }
 
-  private ipAddressToHex(address: string) {
-    return this.web3.utils.toHex(address.split('.').join(''));
+  private ipAddressToBytes(address: string) {
+    const formatted = new Address4(address).toHex();
+    return `0x${formatted.split(':').join('')}`;
   }
 
   private enableMetamask(): Promise<string> {
@@ -65,7 +67,7 @@ export class MetamaskService {
   async registerValidator(info) {
     const { name, ipAddress, website, orbsAddress } = info;
     const from = await this.enableMetamask();
-    const ipHex = this.ipAddressToHex(ipAddress);
+    const ipHex = this.ipAddressToBytes(ipAddress);
     return this.validatorsRegistryContract.methods
       .register(name, ipHex, website, orbsAddress)
       .send({ from });
