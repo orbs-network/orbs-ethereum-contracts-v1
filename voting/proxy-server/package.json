@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
+    "fake": "nodemon fake.js",
     "start": "node index.js",
     "lint": "prettier --single-quote --write '**/*.js'",
     "contracts:prod": "./scripts/copy-contracts.sh",
