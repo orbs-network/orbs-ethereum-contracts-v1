@@ -59,18 +59,30 @@ export class MetamaskService {
     const requiredDeposit = await this.guardiansContract.methods
       .registrationDepositWei()
       .call();
-    return this.guardiansContract.methods
-      .register(name, website)
-      .send({ from, value: requiredDeposit });
+    const isGuardian = await this.guardiansContract.methods
+      .isGuardian(from)
+      .call({ from });
+    const method = isGuardian ? 'update' : 'register';
+    return this.guardiansContract.methods[method](name, website).send({
+      from,
+      value: requiredDeposit
+    });
   }
 
   async registerValidator(info) {
     const { name, ipAddress, website, orbsAddress } = info;
     const from = await this.enableMetamask();
     const ipHex = this.ipAddressToBytes(ipAddress);
-    return this.validatorsRegistryContract.methods
-      .register(name, ipHex, website, orbsAddress)
-      .send({ from });
+    const isValidator = await this.validatorsRegistryContract.methods
+      .isValidator(from)
+      .call({ from });
+    const method = isValidator ? 'update' : 'register';
+    return this.validatorsRegistryContract.methods[method](
+      name,
+      ipHex,
+      website,
+      orbsAddress
+    ).send({ from });
   }
 
   async getCurrentDelegation(): Promise<string> {
