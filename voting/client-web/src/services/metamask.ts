@@ -55,7 +55,7 @@ export class MetamaskService {
     const { name, website } = info;
     const from = await this.enableMetamask();
     const requiredDeposit = await this.guardiansContract.methods
-      .registrationDeposit()
+      .registrationDepositWei()
       .call();
     return this.guardiansContract.methods
       .register(name, website)
