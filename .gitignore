@@ -16,7 +16,7 @@ Federation/scTopics
 Federation/Unified.sol
 
 #consider removing this at all
-TestingERC20/build
+orbs-solidity-mocks/build
 
 Voting/ethereum/build/
 Voting/mirror_process/package-lock.json

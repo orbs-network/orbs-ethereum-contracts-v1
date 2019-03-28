@@ -10,17 +10,20 @@
     "test": "./node_modules/.bin/truffle test",
     "coverage": "./node_modules/.bin/solidity-coverage",
     "migrate": "./node_modules/.bin/truffle migrate --reset",
-    "start-ganache": "ganache-cli -p 7545 -i 5777 > _out/ganache.log"
+    "start-ganache": "ganache-cli -p 7545 -i 5777 > _out/ganache.log",
+    "install": "mkdir -p ./build/contracts/ && cp -rv ./node_modules/orbs-solidity-mocks/build/contracts/*ERC20.json ./build/contracts/."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bn.js": "^4.11.8",
     "openzeppelin-solidity": "2.0.0",
-    "truffle-hdwallet-provider": "^1.0.3",
-    "orbs-voting": "file:../../voting/ethereum"
+    "orbs-solidity-mocks": "file:../../orbs-solidity-mocks",
+    "orbs-voting": "file:../../voting/ethereum",
+    "truffle": "^5.0.5",
+    "truffle-hdwallet-provider": "^1.0.3"
   },
   "devDependencies": {
+    "bn.js": "^4.11.8",
     "chai": "^4.2.0",
     "chai-arrays": "^2.0.0",
     "chai-as-promised": "^7.1.1",
@@ -29,7 +32,6 @@
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi-reporters": "^1.1.7",
     "moment": "^2.22.2",
-    "truffle": "^5.0.5",
     "solidity-coverage": "^0.5.11"
   }
 }

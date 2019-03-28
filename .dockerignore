@@ -1,5 +1,5 @@
 Federation/
-TestingERC20/
+orbs-solidity-mocks/
 .circleci/
 voting/test/it/package-lock.json
 voting/test/it/node_modules/
