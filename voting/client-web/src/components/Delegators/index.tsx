@@ -102,9 +102,9 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         Guardians List
       </Typography>
 
-      <Typography align="right" variant="overline">
+      {/* <Typography align="right" variant="overline">
         Total stake: {totalStake} Orbs
-      </Typography>
+      </Typography> */}
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
