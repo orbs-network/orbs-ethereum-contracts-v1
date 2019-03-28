@@ -82,6 +82,7 @@ const GuardianPage = ({
   });
 
   const [lastVote, setLastVote] = useState([]);
+  const [selectionDisabled, setSelectionDisabled] = useState(false);
 
   const fetchValidators = async () => {
     const validatorsInState = await apiService.getValidators();
@@ -140,9 +141,26 @@ const GuardianPage = ({
     console.log(receipt);
   };
 
+  const validateVoteOutAmount = (validators): boolean => {
+    const checkedAmount = Object.keys(validators).reduce((acc, key) => {
+      acc += Number(validators[key].checked);
+      return acc;
+    }, 0);
+    if (checkedAmount === 3) {
+      setSelectionDisabled(true);
+      return false;
+    } else {
+      setSelectionDisabled(false);
+      return true;
+    }
+  };
+
   const toggleCheck = (address: string) => {
-    validators[address].checked = !validators[address].checked;
-    setValidators(Object.assign({}, validators));
+    const update = Object.assign({}, validators);
+    update[address].checked = !update[address].checked;
+    if (validateVoteOutAmount(update)) {
+      setValidators(update);
+    }
   };
 
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;
@@ -171,6 +189,7 @@ const GuardianPage = ({
       )}
 
       <ValidatorsList
+        disableAll={selectionDisabled}
         readOnly={!hasMetamask()}
         validators={validators}
         onToggle={address => toggleCheck(address)}
