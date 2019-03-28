@@ -12,6 +12,8 @@ Any wallet software may be used, and the choice of MyCrypto here is for illustra
 
 ### [Delegation of stake to guardian](./instructions/delegate.md)
 
+-->
+
 ### [Guardian voting](./instructions/vote_out.md)
 
--->
+
