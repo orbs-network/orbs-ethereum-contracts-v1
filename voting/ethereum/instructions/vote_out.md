@@ -1,6 +1,6 @@
-## Voting
+## Voting Out Validatots
 
-Guardians enforce the protocol by monitoring the network and vote to approve Validators accordingly. A Guardian that identifies Validators that do not follow the protocol can vote them out. In each vote, a Guardian can vote out up to 3 Validators, a Guardian may by voting with an empty list, express consent to include all the listed Validators. 
+Guardians enforce the protocol by monitoring the network by voting out Validatots that do not follow the protocol. A Guardian that identifies Validators that do not follow the protocol can vote them out. In each vote, a Guardian can vote out up to 3 Validators, a Guardian may by voting with an empty list, express consent to include all the listed Validators. 
 
 A Guardian may cast a vote at any time which remains valid for up to 45,500 Ethereum blocks (approximately one week). In order to participate in an election, a guardian needs to have a valid vote at the time of the election event. When voting to vote out multiple Validators, the voting weight for each Validator equals to the Guardian’s total voting weight.
 
@@ -10,7 +10,7 @@ Any wallet software may be used, and the choice of MyCrypto here is for illustra
 For voting using a voting UI see https://orbs-network.github.io/voting/guardian.
 
 ### Voting requires following data:
-- Ethereum Addresses of up to three Orbs Validators to vote out
+- Ethereum Addresses of up to three Orbs Validators to **vote out / remove from the network**
 
 ### Voting pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)
@@ -54,7 +54,7 @@ In order to vote follow these steps:
 ![](./voting_3.png)
 The function parameter for the `voteOut` call will appear in the form.
 1. Fill the parameter field labeled `nodes address[]`
-with the Ethereum addresses of the Validators you wish to vote out.
+with the Ethereum addresses of the Validators that you wish to **vote out / remove from the network**
 An empty list implies all validators are approved by the voting guardians.
     - The list will be represented as a JSON array. for example:
     - `"["0x1234567890123456789012345678901234567890", "0x0987654321098765432109876543210987654321"]"`
