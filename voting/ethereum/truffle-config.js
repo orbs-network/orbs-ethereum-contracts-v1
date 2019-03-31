@@ -1,4 +1,12 @@
 /**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
+/**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
  * compilation and testing. Uncomment the ones you need or modify
@@ -87,6 +95,14 @@ module.exports = {
       network_id: '5777',
       accounts: 25,
     },
+    coverage: {
+      host: 'localhost',
+      network_id: '*',
+      port: 7555,
+      gas: 0xfffffffffff,
+      gasPrice: 0x01,
+      accounts: 25,
+    },
     e2e: {
       host: 'localhost',
       port: 8545,
@@ -104,15 +120,15 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: '0.5.3',       // Fetch exact version from solc-bin (default: truffle's version)
+      version: '0.4.25',       // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      // settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  },
-      //  evmVersion: "byzantium"
-    },
-  },
+      settings: {          // See the solidity docs for advice about optimization and evmVersion
+       optimizer: {
+         enabled: true,
+         runs: 200
+       }
+      }
+    }
+  }
 };
 

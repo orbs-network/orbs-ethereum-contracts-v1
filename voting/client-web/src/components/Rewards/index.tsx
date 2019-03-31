@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -30,12 +38,22 @@ const styles = theme => ({
 
 const RewardsPage = ({ classes, apiService }) => {
   const [address, setAddress] = useState('');
+  const [rewards, setRewards] = useState({});
+
+  const fetchRewards = address => {
+    apiService.getRewards(address).then(setRewards);
+  };
+
+  const submitHandler = () => {
+    fetchRewards(address);
+  };
 
   return (
     <>
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
         Total Reward
       </Typography>
+
       <FormControl className={classes.form} variant="standard" margin="normal">
         <TextField
           required
@@ -47,7 +65,9 @@ const RewardsPage = ({ classes, apiService }) => {
           variant="standard"
         />
         <div className={classes.submit}>
-          <Button variant="outlined">Submit</Button>
+          <Button onClick={submitHandler} variant="outlined">
+            Submit
+          </Button>
         </div>
       </FormControl>
 
@@ -55,21 +75,21 @@ const RewardsPage = ({ classes, apiService }) => {
         <TableBody>
           <TableRow>
             <TableCell>Delegator Reward</TableCell>
-            <TableCell>10,000</TableCell>
+            <TableCell>{rewards['delegatorReward']}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Guardian Excellency Reward</TableCell>
-            <TableCell>20,000</TableCell>
+            <TableCell>{rewards['guardianReward']}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Validator Reward</TableCell>
-            <TableCell>30,000</TableCell>
+            <TableCell>{rewards['validatorReward']}</TableCell>
           </TableRow>
         </TableBody>
         <TableFooter>
           <TableRow>
             <TableCell>Total Reward</TableCell>
-            <TableCell>60,000</TableCell>
+            <TableCell>{rewards['totalReward']}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>

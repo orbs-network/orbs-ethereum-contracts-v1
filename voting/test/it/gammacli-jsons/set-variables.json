@@ -4,10 +4,6 @@
     "Arguments": [
         {
             "Type": "uint64",
-            "Value": "10000"
-        },
-        {
-            "Type": "uint64",
             "Value": "3"
         },
         {

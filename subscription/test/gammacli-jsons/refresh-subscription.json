@@ -1,0 +1,9 @@
+{
+  "ContractName": "_GlobalPreOrder",
+  "MethodName": "refreshSubscription",
+  "Arguments": [
+    {
+      "Type": "string",
+      "Value": "0x0000000000000000000000000000000000000000"
+    }
+  ]}

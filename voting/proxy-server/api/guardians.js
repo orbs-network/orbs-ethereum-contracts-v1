@@ -1,21 +1,20 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 const express = require('express');
-const Orbs = require('orbs-client-sdk');
-const OrbsContractsInfo = require('../contracts-info');
-const OrbsGuardiansContractJSON = require('../contracts/OrbsGuardians.json');
 
-const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
+const guardiansApiFactory = (ethereumClient, orbsClientService) => {
   const router = express.Router();
-
-  const guardiansContract = new web3.eth.Contract(
-    OrbsGuardiansContractJSON.abi,
-    OrbsContractsInfo.OrbsGuardians.address
-  );
 
   router.get('/guardians', async (req, res) => {
     try {
-      const guardians = await guardiansContract.methods
-        .getGuardians(0, 100)
-        .call();
+      const { offset, limit } = req.query;
+      const guardians = await ethereumClient.getGuardians(offset, limit);
       res.json(guardians);
     } catch (err) {
       res.status(500).send(err.toString());
@@ -25,20 +24,21 @@ const guardiansApiFactory = (web3, orbsAccount, orbsClient) => {
   router.get('/guardians/:address', async (req, res) => {
     try {
       const address = req.params['address'];
-      const data = await guardiansContract.methods
-        .getGuardianData(address)
-        .call();
+      const data = await ethereumClient.getGuardianData(address);
 
-      const query = orbsClient.createQuery(
-        orbsAccount.publicKey,
-        'BenchmarkToken',
-        'getBalance',
-        [Orbs.argAddress(address.toLowerCase())]
-      );
+      const [votingWeightResults, totalStakeResults] = await Promise.all([
+        orbsClientService.getGuardianVoteWeight(address),
+        orbsClientService.getTotalStake()
+      ]);
 
-      const {outputArguments} = await orbsClient.sendQuery(query);
-
-      data['balance'] = outputArguments[0].value.toString();
+      if (totalStakeResults === 0n) {
+        data['stake'] = '0';
+      } else {
+        data['stake'] = (
+          (100n * votingWeightResults) /
+          totalStakeResults
+        ).toString();
+      }
 
       res.json(data);
     } catch (err) {

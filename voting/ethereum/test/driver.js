@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 
 const OrbsValidators = artifacts.require('OrbsValidators');
 const OrbsValidatorsRegistry = artifacts.require('OrbsValidatorsRegistry');
@@ -12,6 +20,7 @@ module.exports.Driver = class {
     constructor(){
         this.runningCounter = 0;
         this.registrationDeposit = web3.utils.toWei("0.01", "ether");
+        this.registrationMinTime = 0;
     }
 
     async deployVoting(maxVoteOutNodes) {
@@ -31,8 +40,11 @@ module.exports.Driver = class {
         this.OrbsValidators = await OrbsValidators.new(this.OrbsRegistry.address, maxValidators);
     };
 
-    async deployGuardians() {
-        this.OrbsGuardians = await OrbsGuardians.new(this.registrationDeposit);
+    async deployGuardians(registrationMinTime) {
+        if (isNaN(registrationMinTime)) {
+            registrationMinTime = this.registrationMinTime;
+        }
+        this.OrbsGuardians = await OrbsGuardians.new(this.registrationDeposit,registrationMinTime);
     };
 
     async deployValidatorsWithRegistry(maxValidators) {
@@ -40,8 +52,8 @@ module.exports.Driver = class {
         await this.deployValidators(maxValidators)
     };
 
-    async addValidatorWithData(validatorAddress) {
-        await this.OrbsValidators.addValidator(validatorAddress);
+    async approveAndRegister(validatorAddress) {
+        await this.OrbsValidators.approve(validatorAddress);
         await this.register(validatorAddress);
     };
 
@@ -54,4 +66,19 @@ module.exports.Driver = class {
 
         await this.OrbsRegistry.register(name, ip, url, orbsAddr, {from: validatorAddress});
     };
+
+    depositOptions(address) {
+        return {
+            from: address,
+            value: this.registrationDeposit
+        }
+    };
+
+    noDepositOptions(address) {
+        return {
+            from: address,
+            value: 0
+        }
+    };
+
 };

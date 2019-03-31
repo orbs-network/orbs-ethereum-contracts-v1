@@ -1,69 +1,92 @@
 ## Guardian Registration
-In order to participate in the voting, a Guardian must first register. 
-An Orbs Guardian is identified and delegated to by an Ethereum address. 
+In order to participate in voting, a Guardian must first register. 
+An Orbs Guardian is identified by an Ethereum address. Delegation to a Guardian is done by delegating to the Guardian's Ethereum address. 
 
-This document walks you through the registration process of Guardians using the MyCrypto desktop wallet application.
-Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
+This document walks you through the Guardian registration process using the MyCrypto desktop wallet application.
+Any wallet software may be used and the choice of MyCrypto here is for illustration only.
 
-### A Guardian registration requires to following data:
-- Name and website URL of the Guardian
+### A Guardian registration requires the following data:
+- Guardian name and website URL
 
 Note: A Guardian may update her registration data at any time or leave the registry.
 
 
 ### Registration pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)
- - A wallet setup with your Guardian's Ethereum account keys with a positive Ether balance for fees (transaction and deposit)
- - ABI and contract address available on Etherscan. For example, on Ropsten testnet the contract may be found [here][1] 
- - 1 Ether deposit required to resgister as a Guardian
- - Registration data
+ - A wallet configured with your Guardian's Ethereum account keys and a positive Ether balance to pay the Ethereum transaction fees (transaction and deposit)
+ - 16 ETH deposit is required to register as a Guardian
+ - Registration data (Guardian name + website URL)
+ - ABI and contract address available below in the Registration steps or on [Etherscan][1] 
 
 ### Registration steps
 
-1. **Verify you are on the correct network** ([Choosing the relevant Ethereum Network](./choosing_the_network.md))
+1. **Verify you are on the correct network - Ethereum Mainnet** ([Choosing the relevant Ethereum Network](./choosing_the_network.md))
 2. Navigate to *Contracts*, under the *Interact* tab.
-![](../instructions/enroll_guardian_1.png)
-1. Enter the `OrbsGuardians` contract address. For Ropsten testnet the address may be found [here][1]. Paste the address in the text 
-box labeled *Contract Address*.
-1. Extract the Contract ABI from the Etherscan *code* [tab][1] and paste it 
-in the test box labeled *ABI / JSON Interface*. 
-![](../instructions/enroll_guardian_2.png)
-1. Click *Access*.
-   * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
-1. Select `register` in the drop-down list *Read / Write Contract*
-![](../instructions/enroll_guardian_3.png)
-The function parameters for the `register` call will appear in the form.
-1. Fill the fields labeled `name` and `website` 
-with your guardian details.
-![](../instructions/enroll_guardian_4.png)
-1. Choose one of the options under *How would you like to access your wallet?*
-and provide your wallet information/credentials.
-![](../instructions/enroll_guardian_5.png)
-1. Proceed to *Select an Address*. Select your Guardians's Ethereum address. 
-The address you choose will be the Guardians's identification for purpose
- of delegation later on.
-![](../instructions/enroll_guardian_6.png)
-Click *Unlock*
-1. After unlocking an account, a new field labeled *Value* will appear after the website entry field (see below).
-Enter `1` in the *Value* field. This will send 1 Ether with your registration request as a deposit. `OrbsGuardian` contract
-will refund you the deposit if you later request to unregister.
-**Excatly** 1 Ether deposit is required for registration. You may not send more or less than exactly 1 Ether - it will fail the registration process.
-![](../instructions/enroll_guardian_7.png)
-1. Uncheck *Automatically Calculate Gas Limit* to avoid miscalculation by the wallet software and adjust the *Gas Limit* as required. `500,000` should be more than enough (at the time this is being written a successful registration uses 
-~115000 gas). You will not be charged for unused gas. Also adjust the *Gas Price* to something that will get the transaction processed in a timely manner.
-![](../instructions/enroll_guardian_8.png)
-Click *Write* 
-![](../instructions/enroll_guardian_9.png)
-Click *Sign Transaction*
-![](../instructions/enroll_guardian_10.png)
-Click *Send Transaction*
-![](../instructions/enroll_guardian_11.png)
-Review, then click *Send*
-1. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
-Navigate to *Etherscan* by clicking *Verify (Etherscan)*
-![](../instructions/enroll_guardian_12.png)
+![](../instructions/enroll_validator_1.png)
+3. Select an existing custom contact and enter the `OrbsGuardians` contract address. 
 
-1. Confirm the transaction has been accepted successfully.
+   **OrbsGuardians Contract Address**: `0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711`
+   
+   The contract address and ABI are also available on [Etherscan][1].
+
+   Paste the address in the **Contract Address** box.
+![](../instructions/MyCrypto_guardian_1.png)
+
+4. Enter the `OrbsGuardians` contract ABI.
+   
+   **Registration Interface ABI:**
+
+   [{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"register","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getGuardianData","outputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
+
+    Alternatively, the ABI may be extracted directly from [Etherscan][1], **Contract ABI** box.
+  
+    Paste the ABI in the **ABI / JSON Interface** box.
+
+![](../instructions/MyCrypto_guardian2.png)
+5. Click *Access*.
+   * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
+6. Select `register` in the drop-down list *Read / Write Contract*
+![](../instructions/MyCrypto_guardian3.png)
+The function parameters for the `register` call will appear in the form.
+
+7. Fill the fields labeled `name` and `website` with your Guardian details.
+![](../instructions/MyCrypto_guardian4.png)
+
+8. Choose one of the options under *How would you like to access your wallet?*
+and provide your wallet information/credentials.
+In this example we choose to work with a HW Ledger:
+
+![](../instructions/MyCrypto_guardian5.png)
+
+Proceed to *Choose Address*. 
+
+9. Select your Guardians's Ethereum address. 
+The address you choose will be the Guardians's identification for delegation and rewards calculation later on.
+![](../instructions/enroll_validator_6.png)
+Click *Unlock*
+10. After unlocking an account, a new field labeled *Value* will appear after the website entry field (see below).
+Enter `16` in the *Value* field. This will send 16 Ether with your registration request as a deposit. `OrbsGuardian` contract will refund you the deposit if you later request to leave. 
+Note: there is a 2-weeks minimal participation period and only after this period a Guardian can leave and receive her deposit back.
+Exactly 16 Ether deposit is required for registration. You may not send more than exactly 16 Ether.
+![](../instructions/MyCrypto_guardian7.png)
+
+11. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
+`500,000` should be more than enough (at the time this is being written a successful registration uses 
+~115000 gas). You will not be charged for unused gas. Please update the Gas Price to a reasonable value, for example according to https://ethgasstation.info/
+
+Click *Write* 
+
+Click *Sign Transaction*
+
+Click *Send Transaction*
+
+Review, then click *Send*
+
+12. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
+Navigate to *Etherscan* by clicking *Verify (Etherscan)*
+
+
+13. Confirm the transaction has been accepted successfully.
 ![](../instructions/etherscan_confirmation_2.png)
  
 Make sure you see 
@@ -71,11 +94,15 @@ Make sure you see
 
 With sufficient block confirmations.
 
-[1]: https://ropsten.etherscan.io/address/0x71715337C81a99F1B02c3467168d5d657CeE6bfc#code
+14. Review your registration data by calling getGuardianData() with your Ethereum address.
+
+[1]: https://etherscan.io/address/0xd64b1bf6fcab5add75041c89f61816c2b3d5e711#code
 
 ##### Notes
+* Only an externally owned account may register as a Guardian.
 * The contract does not enforce uniqueness of name and website values between the different Guardians. Two Guardians may register with same name, or website url. It is up to the Delegators to vet their Guardians. 
-* To make changes to your registration repeat the process providing new values. A deposit is not required when re-registering. If you send a second deposit the transaction will revert.
+* To make changes to your registration, repeat using the update() function instead of register(). There is no need for an additional deposit upon update(). 
 * To be removed from the Guardians list, use the leave() function.
-  * Upon leave() the 1 Ether deposit is transferred back to the Guardian address.
+  - Upon leave() the 16 ETH deposit is transferred back to the Guardian address.- Note: there is a 2-weeks minimal participation period and only after this period a Guardian can leave and receive her deposit back.
+ 
 

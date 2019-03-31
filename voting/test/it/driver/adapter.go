@@ -1,3 +1,9 @@
+// Copyright 2019 the orbs-ethereum-contracts authors
+// This file is part of the orbs-ethereum-contracts library in the Orbs project.
+//
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+// The above notice should be included in all copies or substantial portions of the software.
+
 package driver
 
 import "time"
@@ -16,7 +22,6 @@ type OrbsAdapter interface {
 	ForwardElectionResultsToSystem(electedValidatorAddresses []string)
 	GetCurrentSystemBlockSigners() []string
 
-	GetStakeFactor() uint64
 	GetMirrorVotingPeriod() int
 	GetOrbsEnvironment() string
 	GetFinalityBlocksComponent() int
@@ -28,9 +33,9 @@ type EthereumAdapter interface {
 	GetCurrentBlock() int
 
 	DeployERC20Contract() (ethereumErc20Address string)
-	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes map[int]int)
-	SetStakes(ethereumErc20Address string, stakes []int)
-	Transfer(ethereumErc20Address string, from int, to int, amount int)
+	GetStakes(ethereumErc20Address string, numberOfStakes int) (stakes map[int]float32)
+	SetStakes(ethereumErc20Address string, stakes []float32)
+	Transfer(ethereumErc20Address string, from int, to int, amount float32)
 	TopUpEther(accountIndexes []int)
 	PrintBalances()
 

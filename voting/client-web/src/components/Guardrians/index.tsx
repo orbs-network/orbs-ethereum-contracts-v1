@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 import styles from './styles';
 import ValidatorsList from './list';
 import Button from '@material-ui/core/Button';
@@ -7,7 +15,9 @@ import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
+import { normalizeUrl } from '../../services/urls';
 import { Link } from 'react-router-dom';
+import { ApiService } from '../../api';
 
 const ReadOnlyVoteButton = () => {
   return (
@@ -55,10 +65,24 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-const GuardianPage = ({ classes, apiService }) => {
+const GuardianPage = ({
+  classes,
+  apiService
+}: {
+  classes: any;
+  apiService: ApiService;
+}) => {
   const [validators, setValidators] = useState({} as {
-    [address: string]: { checked: boolean; name: string; url: string };
+    [address: string]: {
+      checked: boolean;
+      name: string;
+      url: string;
+      orbsAddress: string;
+    };
   });
+
+  const [lastVote, setLastVote] = useState([]);
+  const [selectionDisabled, setSelectionDisabled] = useState(false);
 
   const fetchValidators = async () => {
     const validatorsInState = await apiService.getValidators();
@@ -72,14 +96,16 @@ const GuardianPage = ({ classes, apiService }) => {
         acc[currAddress] = {
           checked: false,
           name: validatorsInfo[idx]['name'],
-          url: validatorsInfo[idx]['website']
+          url: normalizeUrl(validatorsInfo[idx]['website']),
+          orbsAddress: validatorsInfo[idx]['orbsAddress'],
+          votesAgainst: validatorsInfo[idx]['votesAgainst']
         };
         return acc;
       },
       {}
     );
 
-    if (hasMetamask()) {
+    if (hasMetamask() && isMetamaskActive()) {
       const from = await apiService.getCurrentAddress();
       const validatorsInStorage = get(from);
 
@@ -93,6 +119,17 @@ const GuardianPage = ({ classes, apiService }) => {
     setValidators(resultValidators);
   };
 
+  const fetchLastVote = async () => {
+    try {
+      if (hasMetamask()) {
+        const { validators } = await apiService.getLastVote();
+        setLastVote(validators);
+      }
+    } catch (err) {
+      console.warn('Guardian did not vote before');
+    }
+  };
+
   const commitVote = async () => {
     const from = await apiService.getCurrentAddress();
     const stagedValidators = Object.keys(validators).filter(
@@ -100,21 +137,41 @@ const GuardianPage = ({ classes, apiService }) => {
     );
     const receipt = await apiService.voteOut(stagedValidators);
     save(from, stagedValidators);
+    fetchLastVote();
     console.log(receipt);
   };
 
+  const validateVoteOutAmount = (validators): boolean => {
+    const checkedAmount = Object.keys(validators).reduce((acc, key) => {
+      acc += Number(validators[key].checked);
+      return acc;
+    }, 0);
+    if (checkedAmount === 3) {
+      setSelectionDisabled(true);
+      return false;
+    } else {
+      setSelectionDisabled(false);
+      return true;
+    }
+  };
+
   const toggleCheck = (address: string) => {
-    validators[address].checked = !validators[address].checked;
-    setValidators(Object.assign({}, validators));
+    const update = Object.assign({}, validators);
+    update[address].checked = !update[address].checked;
+    if (validateVoteOutAmount(update)) {
+      setValidators(update);
+    }
   };
 
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;
+  const isMetamaskActive = () => ethereum._metamask.isEnabled();
 
   const hasSomebodySelected = () =>
     Object.keys(validators).some(address => validators[address].checked);
 
   useEffect(() => {
     fetchValidators();
+    fetchLastVote();
   }, []);
 
   return (
@@ -132,6 +189,7 @@ const GuardianPage = ({ classes, apiService }) => {
       )}
 
       <ValidatorsList
+        disableAll={selectionDisabled}
         readOnly={!hasMetamask()}
         validators={validators}
         onToggle={address => toggleCheck(address)}
@@ -152,9 +210,25 @@ const GuardianPage = ({ classes, apiService }) => {
         )}
       </div>
 
-      <Typography paragraph variant="body1" color="textPrimary">
-        Your most recent vote was against: `0x`
-      </Typography>
+      {hasMetamask() && lastVote.length > 0 ? (
+        <Typography variant="body1" color="textPrimary">
+          Your most recent vote was against:
+          {lastVote.map(address => (
+            <Typography
+              style={{ lineHeight: 1.7 }}
+              variant="overline"
+              key={address}
+              color="textSecondary"
+            >
+              {address}
+            </Typography>
+          ))}
+        </Typography>
+      ) : (
+        <Typography variant="body1" color="textPrimary">
+          You have not voted yet
+        </Typography>
+      )}
     </>
   );
 };

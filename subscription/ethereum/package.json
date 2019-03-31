@@ -1,0 +1,35 @@
+{
+  "name": "subscriptions_contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": " ",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/truffle test",
+    "coverage": "./node_modules/.bin/solidity-coverage",
+    "migrate": "./node_modules/.bin/truffle migrate --reset",
+    "start-ganache": "ganache-cli -p 7545 -i 5777 > _out/ganache.log"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bn.js": "^4.11.8",
+    "openzeppelin-solidity": "2.0.0",
+    "truffle-hdwallet-provider": "^1.0.3",
+    "orbs-voting": "file:../../voting/ethereum"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-arrays": "^2.0.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-bn": "^0.1.1",
+    "ganache-cli": "6.2.3",
+    "mocha-junit-reporter": "^1.18.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "moment": "^2.22.2",
+    "truffle": "^5.0.5",
+    "solidity-coverage": "^0.5.11"
+  }
+}

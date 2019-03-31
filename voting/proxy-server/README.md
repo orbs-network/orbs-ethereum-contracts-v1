@@ -3,7 +3,7 @@
 
 ## Development
 1. Run `npm install`
-1. Run `npm start`
+1. Run `npm run dev`
 
 ## Deployment
 The current host of the docker image is Heroku.
@@ -14,6 +14,5 @@ The current host of the docker image is Heroku.
 1. Login to Heroku
 
 ### How to deploy?
-1. Run `npm run contracts:prod`
-1. Run `heroku container:push web -a orbs-voting-proxy-server`
-1. Run `heroku container:release web -a orbs-voting-proxy-server`
+1. Run `npm run contracts:prod` (Optional)
+1. Run `npm run deploy`

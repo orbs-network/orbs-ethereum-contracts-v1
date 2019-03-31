@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 var Guardians = artifacts.require("./OrbsGuardians.sol");
 var Validators = artifacts.require("./OrbsValidators.sol");
 var ValidatorsRegistry = artifacts.require("./OrbsValidatorsRegistry.sol");
@@ -57,7 +65,7 @@ async function registerValidator(v, vr, account, bank) {
     }
 
     if (!await v.isValidator(account)) {
-        await v.addValidator(account);
+        await v.approve(account);
         message = message + "added to permitted validators, "
     }
     message = message + "done.";

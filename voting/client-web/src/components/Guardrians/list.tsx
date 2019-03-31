@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 import React from 'react';
 import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
@@ -10,14 +18,21 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = () => ({});
 
-const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
+const ValidatorsList = ({
+  disableAll,
+  readOnly,
+  onToggle,
+  validators,
+  classes
+}) => {
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
           <TableCell padding="checkbox" />
           <TableCell>Name</TableCell>
-          <TableCell>Address</TableCell>
+          <TableCell>Ethereum Address</TableCell>
+          <TableCell>Orbs Address</TableCell>
           <TableCell>Website</TableCell>
           <TableCell>Last election votes against (%)</TableCell>
         </TableRow>
@@ -28,6 +43,7 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
             <TableCell padding="checkbox">
               {!readOnly && (
                 <Checkbox
+                  disabled={!validators[address].checked && disableAll}
                   data-testid={`validator-${address}-checkbox`}
                   defaultChecked={validators[address].checked}
                   onChange={() => onToggle(address)}
@@ -44,6 +60,9 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
             <TableCell data-testid={`validator-${address}-address`}>
               {address}
             </TableCell>
+            <TableCell data-testid={`validator-${address}-orbsAddress`}>
+              {validators[address].orbsAddress}
+            </TableCell>
             <TableCell>
               <Link
                 data-testid={`validator-${address}-url`}
@@ -56,7 +75,7 @@ const ValidatorsList = ({ readOnly, onToggle, validators, classes }) => {
                 {validators[address].url}
               </Link>
             </TableCell>
-            <TableCell>0</TableCell>
+            <TableCell>{validators[address].votesAgainst}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 import React from 'react';
 import logo from './logo-white.svg';
 import Link from '@material-ui/core/Link';
@@ -5,42 +13,30 @@ import { NavLink } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
+import ReadOnlyBanner from '../ReadOnlyBanner';
+import styles, { HOVER_COLOR } from './styles';
+import Languages from './languages';
 
-const HOVER_COLOR = '#16faff';
-
-const styles = theme => ({
-  logo: {
-    width: 70
-  },
-  nav: {
-    display: 'inherit'
-  },
-  toolbar: {
-    justifyContent: 'space-between'
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 30}px`
-  },
-  link: {
-    color: '#ffffffb3',
-    marginLeft: 30,
-    transition: 'color 0.4s ease-in-out',
-    '&:hover': {
-      color: HOVER_COLOR
-    }
-  }
-});
-
-const Header = ({ classes }) => {
+const Header = ({ classes, isReadOnly }) => {
   const links = [
-    { label: 'Delegates', url: '/delegator' },
+    { label: 'Delegators', url: '/delegator' },
     { label: 'Guardians', url: '/guardian' },
     { label: 'Validators', url: '/validator' },
     { label: 'Rewards', url: '/reward' }
   ];
+
   return (
-    <AppBar position="fixed" className={classes.appBar} data-testid="header">
+    <AppBar
+      position="fixed"
+      className={classNames({
+        [classes.appBar]: true,
+        [classes.movedDown]: isReadOnly
+      })}
+      data-testid="header"
+    >
+      {isReadOnly ? <ReadOnlyBanner /> : null}
+      <Languages />
       <Toolbar className={classes.toolbar}>
         <NavLink to="/">
           <img className={classes.logo} src={logo} alt="Orbs" />

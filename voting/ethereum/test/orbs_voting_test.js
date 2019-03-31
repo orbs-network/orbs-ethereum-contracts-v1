@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 
 const {Driver, numToAddress} = require('./driver');
 const {assertResolve, assertReject} = require('./assertExtensions');
@@ -32,7 +40,7 @@ contract('Voting', accounts => {
             assert.equal(e.event, "VoteOut");
             assert.equal(e.args.voter, accounts[0]);
             assert.equal(e.args.voteCounter, 1);
-            assert.deepEqual(e.args.validators, suspiciousNodes.map(a => a.toLowerCase()));
+            assert.deepEqual(e.args.validators, suspiciousNodes);
         });
 
         it('should increment voteCounter', async () => {
@@ -62,6 +70,27 @@ contract('Voting', accounts => {
             await driver.deployVoting(suspiciousNodes.length - 1);
 
             await assertReject(driver.OrbsVoting.voteOut(suspiciousNodes), "voting for too many nodes should fail");
+        });
+
+        it('should disallow voting to same address twice', async () => {
+            await driver.deployVoting(5);
+            const duplicateNodes1 = [accounts[1], accounts[1], accounts[3]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes1), "Should not vote for the same node twice");
+
+            const duplicateNodes2 = [accounts[3], accounts[1], accounts[1]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes2), "Should not vote for the same node twice");
+
+            const duplicateNodes3 = [accounts[1], accounts[3], accounts[1]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes3), "Should not vote for the same node twice");
+
+            const duplicateNodes4 = [accounts[1], accounts[2], accounts[3], accounts[3]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes4), "Should not vote for the same node twice");
+
+            const duplicateNodes5 = [accounts[1], accounts[2], accounts[3], accounts[4], accounts[3]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes5), "Should not vote for the same node twice");
+
+            const duplicateNodes6 = [accounts[1], accounts[2], accounts[3], accounts[3], accounts[4]];
+            await assertReject(driver.OrbsVoting.voteOut(duplicateNodes6), "Should not vote for the same node twice");
         });
 
         it('should reject calls with 0 address', async () => {
@@ -109,32 +138,80 @@ contract('Voting', accounts => {
         });
     });
 
-    describe('when calling the getLastVote() function', () => {
-        it('returns the last vote made by a voter', async () => {
+    describe('when calling the getCurrentDelegation(delegator) function', () => {
+        it('returns the last delegation made by delegator', async () => {
             await driver.deployVoting();
+            const delegator = accounts[3];
+            const to = [1,2].map(i => numToAddress(i));
 
-            const firstVote = [numToAddress(6), numToAddress(7)];
-            const secondVote = [numToAddress(8), numToAddress(9)];
+            const readDelegation0 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation0, numToAddress(0), "current delegation should be zero before delegating");
 
-            const firstVoteBlockHeight = await driver.OrbsVoting.voteOut(firstVote).then(r => r.receipt.blockNumber);
-            const reportedFirstVote = await driver.OrbsVoting.getLastVote(accounts[0]);
+            await driver.OrbsVoting.delegate(to[0], {from: delegator});
+            const readDelegation1 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation1, to[0], "current delegation should be the last delegated to after first delegation");
 
-            assert.deepEqual(reportedFirstVote[0], firstVote);
-            assert.equal(reportedFirstVote[1].toNumber(), firstVoteBlockHeight);
+            await driver.OrbsVoting.delegate(to[1], {from: delegator});
+            const readDelegation2 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation2, to[1], "current delegation should be the last delegated to after additional delegations");
 
-            assert.deepEqual(reportedFirstVote[0], reportedFirstVote.validators, "expected first item in tuple to be nodes");
-            assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockHeight.toNumber(), "expected second item in tuple to be block height");
 
-            const secondVoteBlockHeight = await driver.OrbsVoting.voteOut(secondVote).then(r => r.receipt.blockNumber);
-            const reportedSecondVote = await driver.OrbsVoting.getLastVote(accounts[0]);
+            await assertReject(driver.OrbsVoting.delegate(delegator, {from: delegator}),"expect self delegation to fail");
 
-            assert.deepEqual(reportedSecondVote[0], secondVote);
-            assert.equal(reportedSecondVote[1].toNumber(), secondVoteBlockHeight);
+            await driver.OrbsVoting.undelegate({from: delegator});
+            const readDelegation3 = await driver.OrbsVoting.getCurrentDelegation(delegator);
+            assert.equal(readDelegation3, numToAddress(0), "current delegation should be zero after delegation to self");
+
         });
+    });
 
-        it('fails if guardian never voted', async () => {
-            await driver.deployVoting();
-            await assertReject(driver.OrbsVoting.getLastVote(numToAddress(654)));
+    describe('when fetching current vote', () => {
+        [
+            {funcName: "getCurrentVote", fieldName: "validators"},
+            {funcName: "getCurrentVoteBytes20", fieldName: "validatorsBytes20"}
+        ].forEach((getlastVoteVariation) => {
+
+            context(`with ${getlastVoteVariation.funcName}()`, async () => {
+                let functionUnderTest;
+                let validatorsReturnFieldName;
+                beforeEach(async () => {
+                    await driver.deployVoting();
+                    functionUnderTest = driver.OrbsVoting[getlastVoteVariation.funcName];
+                    validatorsReturnFieldName = getlastVoteVariation.fieldName;
+                });
+
+                it('returns the last vote made by a voter', async () => {
+                    const firstVote = [numToAddress(6), numToAddress(7)];
+                    const secondVote = [numToAddress(8), numToAddress(9)];
+
+                    const firstVoteBlockNumber = await driver.OrbsVoting.voteOut(firstVote).then(r => r.receipt.blockNumber);
+                    const reportedFirstVote = await functionUnderTest(accounts[0]);
+
+                    assert.deepEqual(reportedFirstVote[0].map(a => web3.utils.toChecksumAddress(a)), firstVote);
+                    assert.equal(reportedFirstVote[1].toNumber(), firstVoteBlockNumber);
+
+                    assert.deepEqual(reportedFirstVote[0].map(a => web3.utils.toChecksumAddress(a)), reportedFirstVote[validatorsReturnFieldName], "expected first item in tuple to be nodes");
+                    assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockNumber.toNumber(), "expected second item in tuple to be block height");
+
+                    const secondVoteBlockNumber = await driver.OrbsVoting.voteOut(secondVote).then(r => r.receipt.blockNumber);
+                    const reportedSecondVote = await functionUnderTest(accounts[0]);
+
+                    assert.deepEqual(reportedSecondVote[0].map(a => web3.utils.toChecksumAddress(a)), secondVote);
+                    assert.equal(reportedSecondVote[1].toNumber(), secondVoteBlockNumber);
+                });
+
+                it('returns defaults if guardian never voted', async () => {
+                    const defaults = await functionUnderTest(numToAddress(654));
+                    assert.equal(defaults[validatorsReturnFieldName].length,0,"expected to get empty nodes array if never voted");
+                    assert.equal(defaults.blockNumber,0,"expected to get zero block number if never voted");
+                });
+
+                it('returns defaults if guardian is address zero', async () => {
+                    const defaults = await functionUnderTest(numToAddress(0));
+                    assert.equal(defaults[validatorsReturnFieldName].length,0,"expected to get empty nodes array for guardian 0");
+                    assert.equal(defaults.blockNumber,0,"expected to get zero block number for guardian zero");
+                });
+            });
         });
     });
 });

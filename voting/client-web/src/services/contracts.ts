@@ -1,41 +1,49 @@
-import * as OrbsContractsInfo from '../contracts-info';
-import votingAbiJson from '../contracts/OrbsVoting.json';
-import guardiansAbiJson from '../contracts/OrbsGuardians.json';
-import validatorsAbiJson from '../contracts/OrbsValidators.json';
-import validatorsRegistryAbiJson from '../contracts/OrbsValidatorsRegistry.json';
+import erc20Abi from '../constants/erc20-abi';
+import * as contractsInfo from '../contracts-info';
+import votingContractJson from '../contracts/OrbsVoting.json';
+import guardiansContractJson from '../contracts/OrbsGuardians.json';
+import validatorsContractJson from '../contracts/OrbsValidators.json';
+import validatorsRegistryContractJson from '../contracts/OrbsValidatorsRegistry.json';
 
 export const validatorsContractFactory = web3 => {
   return new web3.eth.Contract(
-    validatorsAbiJson.abi as any,
+    validatorsContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsValidators']['address']
-      : OrbsContractsInfo.OrbsValidators.address
+      : contractsInfo.EthereumValidatorsContract.address
   );
 };
 
 export const validatorsRegistryContractFactory = web3 => {
   return new web3.eth.Contract(
-    validatorsRegistryAbiJson.abi as any,
+    validatorsRegistryContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsValidatorsRegistry']['address']
-      : OrbsContractsInfo.OrbsValidatorsRegistry.address
+      : contractsInfo.EthereumValidatorsRegistryContract.address
   );
 };
 
 export const guardiansContractFactory = web3 => {
   return new web3.eth.Contract(
-    guardiansAbiJson.abi as any,
+    guardiansContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsGuardians']['address']
-      : OrbsContractsInfo.OrbsGuardians.address
+      : contractsInfo.EthereumGuardiansContract.address
   );
 };
 
 export const votingContractFactory = web3 => {
   return new web3.eth.Contract(
-    votingAbiJson.abi as any,
+    votingContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsVoting']['address']
-      : OrbsContractsInfo.OrbsVoting.address
+      : contractsInfo.EthereumVotingContract.address
+  );
+};
+
+export const erc20ContractFactory = web3 => {
+  return new web3.eth.Contract(
+    erc20Abi,
+    contractsInfo.EthereumErc20Address.address
   );
 };

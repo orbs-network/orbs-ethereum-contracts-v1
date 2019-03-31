@@ -1,0 +1,6 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "getCurrentElectionBlockNumber",
+    "Arguments": [
+    ]
+}

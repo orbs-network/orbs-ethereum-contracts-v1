@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 import React from 'react';
 import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
@@ -54,7 +62,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
                 {guardians[address].url}
               </Link>
             </TableCell>
-            <TableCell>{guardians[address].balance}</TableCell>
+            <TableCell>{guardians[address].stake}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -3,39 +3,64 @@
 Validator candidates may register to be elected as a Validator using OrbsValidatorsRegistry Ethereum Contract.  
 An Orbs Validator is identified and voted for by her Ethereum address. 
 
-This document walks you through the registration process of Validator and Guardian accounts using the MyCrypto desktop wallet application.
-Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
+This document walks you through the Validator registration process using the MyCrypto desktop wallet application.
+Any wallet software may be used and the choice of MyCrypto here is for illustration only.
 
-### A Validator registration requires to following data:
-- Name and website URL of the Validator
+### A Validator registration requires the following data:
+- Validator name and website URL
 - IP Address of the Orbs node
 - An Orbs node public address
-  - The Orbs node addressing scheme is equivalent to Ethereum.
+  - The Orbs node addressing scheme is similar to Ethereum.
 
 Note: A Validator may update her registration data at any time or leave the registry.
 
+&nbsp;
 ### Registration pre-requirements
- - MyCrypto desktop app (or another equivalent wallet software)
- - A wallet setup with your Validator's Ethereum account keys with a positive Ether balance for gas payment
- - ABI and contract address available on Etherscan. For example, on Ropsten testnet the contract may be found [here][2] 
- - Registration data
+ - MyCrypto desktop app (or another similar wallet software)
+ - A wallet configured with your Validator's Ethereum account keys and a positive Ether balance for Ethereum transaction gas payment
+ - Registration data (see above)
+ - ABI and contract address, available below in the **Registration** steps or on [Etherscan][2]
 
+&nbsp;
 ### Registration steps
 
 In order to register a Validator with OrbsValidatorsRegistry contract follow these steps:
 
-1. **Verify you are on the correct network** ([Choosing the relevant Ethereum Network](./choosing_the_network.md))
+1. **Verify you are on the correct network - Ethereum Mainnet** (See [Choosing the relevant Ethereum Network](./choosing_the_network.md))
+   
 2. Navigate to *Contracts*, under the *Interact* tab.
 ![](../instructions/enroll_validator_1.png)
-1. Enter the `OrbsValidatorsRegistry` contract address. For Ropsten testnet the address may be found [here][2]. Paste the address in the text box labeled *Contract Address*.
-1. Extract the Contract ABI from the Etherscan *code* [tab][2] and paste it in the test box labeled *ABI / JSON Interface*. 
-![](../instructions/enroll_validator_2.png)
-1. Click *Access*.
+
+3. Select an existing custom contact and enter the `OrbsValidatorsRegistry` contract address. 
+   
+    **OrbsValidatorsRegistry Contract Address**: `0x56a6895fd37f358c17cbb3f14a864ea5fe871f0a`
+  
+    The contract address and ABI are also available on [Etherscan][2].
+
+    Paste the address in the **Contract Address** box.
+
+    ![](../instructions/MyCrypto-contract.png)
+
+4. Enter the `OrbsValidatorsRegistry` contract ABI.
+   
+   **Registration Interface ABI:**
+
+   [{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"register","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getValidatorData","outputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
+
+    Alternatively, the ABI may be extracted directly from [Etherscan][2], **Contract ABI** box.
+  
+    Paste the ABI in the **ABI / JSON Interface** box.
+
+    ![](../instructions/enroll_validator_2.png)
+
+5. Click *Access*.
 * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
-1. Select `register` in the drop down list *Read / Write Contract*
-![](../instructions/enroll_validator_3.png)
+
+6. Select `register` in the drop down list *Read / Write Contract*
+![](../instructions/MyCrypto-register.png)
 The function parameters for the `register` call will appear in the form.
-1. Fill the fields labeled `name`, `ipAddress`, `website`, `OrbsAddress` 
+
+7. Fill the fields labeled `name`, `ipAddress`, `website`, `OrbsAddress` 
 with your Validator's registration data.
     - OrbsAddress must be formatted as a valid Ethereum address type.
     - IP address must first be converted to a hexadecimal number representation:
@@ -49,18 +74,21 @@ with your Validator's registration data.
         Copy the hexadecimal number representation contained within the parentheses. Don't forget to include the prefix `0x`       
 ![](../instructions/enroll_validator_4.png)
 
-1. Choose one of the options under *How would you like to access your wallet?*
+8. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
-In this example we choose to provide a mnemonic to open our wallet:
+In this example we choose to work with a HW Ledger:
 ![](../instructions/enroll_validator_5.png)
+
 Proceed to *Choose Address*. 
-1. Select your Validator's Ethereum address. 
+
+9. Select your Validator's Ethereum address. 
 The address you choose will be the Validator's identification for voting later on.
 ![](../instructions/enroll_validator_6.png)
 Make sure the account has a positive Ether balance for transaction fees. Then click *Unlock*.
-1. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
+
+10. Uncheck *Automatically Calculate Gas Limit* and adjust the *Gas Limit* as required. 
 `500,000` should be more than enough (at the time this is being written a successful registration uses 
-~174000 gas). You will not be charged for unused gas.
+~174000 gas). You will not be charged for unused gas. Please update the Gas Price to a reasonable value, for example according to https://ethgasstation.info/
 ![](../instructions/enroll_validator_7.png)
 Click *Write*, then *Sign Transaction* 
 ![](../instructions/enroll_validator_8.png)
@@ -68,11 +96,11 @@ Click *Send Transaction*
 ![](../instructions/enroll_validator_9.png)
 Review, then click *Send*
 
-1. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
+11. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
 Navigate to *Etherscan* by clicking *Verify (Etherscan)*
 ![](../instructions/enroll_validator_10.png)
 
-1. Confirm the transaction has been accepted successfully.
+12. Confirm the transaction has been accepted successfully.
 ![](../instructions/etherscan_confirmation_1.png)
  
 Make sure you see 
@@ -80,9 +108,11 @@ Make sure you see
 
 With sufficient block confirmations.
 
-[2]: https://ropsten.etherscan.io/address/0xd492757cee4c0e1159376aE7Da795fB6D949900a#code
+13. Review your registration data by calling getValidatorData() with your Ethereum address.
+
+[2]: https://etherscan.io/address/0x56a6895fd37f358c17cbb3f14a864ea5fe871f0a#code
 
 ##### Notes
-* The registration values, must be unique among the different Validators, an attempt to register a Validator with a name, website url, Orbs node public address, or Orbs node IP address that matches as existing one will fail the registration.
-* To make changes to your registration repeat the process providing new values.
+* The IP Address and Orbs public address must be unique among the different Validators. An attempt to register a Validator with an IP address or Orbs address identical to another registered Validator, will fail the registration.
+* To make changes to your registration repeat using the update() function instead of register().
 * To to be removed from the Validators Registry, use the leave() function.

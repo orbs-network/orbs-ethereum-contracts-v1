@@ -1,5 +1,13 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
 
-const {Driver, RE} = require('./driver');
+
+const {Driver} = require('./driver');
 const {assertResolve, assertReject} = require('./assertExtensions');
 
 contract('OrbsGuardians', accounts => {
@@ -21,15 +29,15 @@ contract('OrbsGuardians', accounts => {
         });
     });
 
-    describe('when calling the register() function', () => {
-        it('should reflect registration in calls to: getGuardianData(), isGuardian(), getGuardians(), getRegistrationBlockHeight()', async () => {
+    describe('when registering', () => {
+        it('should reflect registration in calls to: getGuardianData(), isGuardian(), getGuardians()', async () => {
             await driver.deployGuardians();
 
             await assertReject(driver.OrbsGuardians.getGuardianData(accounts[1]), "expected getting data before registration to fail");
             assert.isNotOk(await driver.OrbsGuardians.isGuardian(accounts[1]), "expected isGuardian to return false before registration");
             assert.deepEqual(await driver.OrbsGuardians.getGuardians(0, 10), [], "expected an empty guardian list before registration");
 
-            const regRes = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
 
             const retrievedData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
             assert.equal(retrievedData.name, "some name", "expected correct name to be returned");
@@ -41,13 +49,6 @@ contract('OrbsGuardians', accounts => {
 
             const retrievedGuardianList = await driver.OrbsGuardians.getGuardians(0, 10);
             assert.deepEqual(retrievedGuardianList, [accounts[1]], "expected list with the registered account address");
-
-            const regBlk = await driver.OrbsGuardians.getRegistrationBlockHeight(accounts[1]);
-            const blockNumber = regRes.receipt.blockNumber;
-            assert.equal(regBlk.registeredOn.toNumber(), blockNumber);
-            assert.equal(regBlk.lastUpdatedOn.toNumber(), blockNumber);
-            assert.equal(regBlk.registeredOn.toNumber(), regBlk[0].toNumber());
-            assert.equal(regBlk.lastUpdatedOn.toNumber(), regBlk[1].toNumber());
         });
 
         it('should reject empty data entries', async () => {
@@ -106,7 +107,7 @@ contract('OrbsGuardians', accounts => {
             );
 
             const accountBalanceBeforeReg = await web3.eth.getBalance(accounts[1]);
-            const gasPrice = await web3.eth.getGasPrice(); // the current going price
+            const gasPrice = 1; // to accommodate coverage use the lowest possible
 
             // register and deposit
             const result = await assertResolve(driver.OrbsGuardians.register(
@@ -143,7 +144,8 @@ contract('OrbsGuardians', accounts => {
             const url = "url";
 
             const GuardianRegisteringContract = artifacts.require('GuardianRegisteringContract');
-            await assertReject(GuardianRegisteringContract.new(
+            const impersonatingContract = await GuardianRegisteringContract.new();
+            await assertReject(impersonatingContract.tryToRegister(
                 driver.OrbsGuardians.address,
                 name,
                 url,
@@ -160,44 +162,77 @@ contract('OrbsGuardians', accounts => {
         });
 
         describe('twice for the same guardian', () => {
-            it('fails to override existing records, if a second deposit is sent', async () => {
+            it('fails to register once registered', async () => {
                 await driver.deployGuardians();
 
-                const depositOptions = {
-                    from: accounts[1],
-                    value: driver.registrationDeposit
-                };
-                await driver.OrbsGuardians.register("some name", "some website", depositOptions);
-                const p = driver.OrbsGuardians.register("other name", "other website", depositOptions);
-                await assertReject(p, "expected a second deposit to be rejected");
+                await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+                const p = driver.OrbsGuardians.register("other name", "other website", driver.depositOptions(accounts[1]));
+                await assertReject(p, "expected a second registration to be rejected");
             });
+        });
+    });
 
-            it('override existing records, with no additional deposit', async () => {
-                await driver.deployGuardians();
+    describe('when updating registration', () => {
+        it('fails if a second deposit is sent', async () => {
+            await driver.deployGuardians();
 
-                await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-                await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
+            await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+            const p = driver.OrbsGuardians.update("other name", "other website", driver.depositOptions(accounts[1]));
+            await assertReject(p, "expected an update with deposit to be rejected");
+        });
 
-                const guardData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
-                assert.equal(guardData.name, "other name", "expected name to be overridden");
-                assert.equal(guardData.website, "other website", "expected website to be overridden");
-            });
+        it('override existing records, with no additional deposit, and remain a registered guardian', async () => {
+            await driver.deployGuardians();
+            
+            await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+            await driver.OrbsGuardians.update("other name", "other website", driver.noDepositOptions(accounts[1]));
 
-            it('returns correct block heights after a successful override', async () => {
-                await driver.deployGuardians();
+            const guardData = await driver.OrbsGuardians.getGuardianData(accounts[1]);
+            assert.equal(guardData.name, "other name", "expected name to be overridden");
+            assert.equal(guardData.website, "other website", "expected website to be overridden");
 
-                const regRes1 = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-                const regRes2 = await driver.OrbsGuardians.register("other name", "other website", {from: accounts[1]});
+            assert.isOk(await driver.OrbsGuardians.isGuardian(accounts[1]), "expected isGuardian to return true after update");
 
-                const regBlck = await driver.OrbsGuardians.getRegistrationBlockHeight(accounts[1]);
-                const registrationHeight = regRes1.receipt.blockNumber;
-                const updateHeight = regRes2.receipt.blockNumber;
-                assert(registrationHeight < updateHeight, "expected registration block height to be less than updating block height");
-                assert.equal(regBlck.registeredOn.toNumber(), registrationHeight);
-                assert.equal(regBlck.lastUpdatedOn.toNumber(), updateHeight);
-                assert.equal(regBlck.registeredOn.toNumber(), regBlck[0].toNumber());
-                assert.equal(regBlck.lastUpdatedOn.toNumber(), regBlck[1].toNumber());
-            });
+            const retrievedGuardianList = await driver.OrbsGuardians.getGuardians(0, 10);
+            assert.deepEqual(retrievedGuardianList, [accounts[1]], "expected address to appear in guardians list after update");
+        });
+
+        it('should reject empty data entries', async () => {
+            await driver.deployGuardians();
+
+            await driver.OrbsGuardians.register("some name", "some website", driver.depositOptions(accounts[1]));
+            await assertReject(driver.OrbsGuardians.update("", "some website", driver.noDepositOptions(accounts[1])), "expected empty name to fail registration");
+            await assertReject(driver.OrbsGuardians.update(undefined, "some website", driver.noDepositOptions(accounts[1])), "expected undefined name to fail registration");
+
+            await assertReject(driver.OrbsGuardians.update("some name", "", driver.noDepositOptions(accounts[1])), "expected empty website to fail registration");
+            await assertReject(driver.OrbsGuardians.update("some name", undefined, driver.noDepositOptions(accounts[1])), "expected undefined website to fail registration");
+
+            await assertResolve(driver.OrbsGuardians.update("some name1", "some website1", driver.noDepositOptions(accounts[1])), "expected update values to succeed");
+        });
+    });
+
+    describe('when getRegistrationBlockNumber() is called', () => {
+        it('should return the correct the registration block height', async () => {
+            await driver.deployGuardians();
+
+            const regRes1 = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+            const registrationBlockNum = regRes1.receipt.blockNumber;
+
+            const regBlockNums1 = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
+            assert.equal(regBlockNums1.registeredOn.toNumber(), registrationBlockNum);
+            assert.equal(regBlockNums1.lastUpdatedOn.toNumber(), registrationBlockNum);
+            assert.equal(regBlockNums1.registeredOn.toNumber(), regBlockNums1[0].toNumber());
+            assert.equal(regBlockNums1.lastUpdatedOn.toNumber(), regBlockNums1[1].toNumber());
+
+            const regRes2 = await driver.OrbsGuardians.update("other name", "other website", {from: accounts[1]});
+
+            const regBlockNums2 = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
+            const updateBlockNum = regRes2.receipt.blockNumber;
+            assert(registrationBlockNum < updateBlockNum, "expected registration block height to be less than updating block height");
+            assert.equal(regBlockNums2.registeredOn.toNumber(), registrationBlockNum);
+            assert.equal(regBlockNums2.lastUpdatedOn.toNumber(), updateBlockNum);
+            assert.equal(regBlockNums2.registeredOn.toNumber(), regBlockNums2[0].toNumber());
+            assert.equal(regBlockNums2.lastUpdatedOn.toNumber(), regBlockNums2[1].toNumber());
         });
     });
 
@@ -211,50 +246,72 @@ contract('OrbsGuardians', accounts => {
         });
     });
 
-    describe('when calling the getGuardians() function', () => {
-        it('returns an empty array if offset is out of range', async () => {
-            await driver.deployGuardians();
+    describe('when fetching all Guardians', () => {
+        [
+            "getGuardians",
+            "getGuardiansBytes20"
+        ].forEach((guardiansGetterFunctionName) => {
 
-            const empty1 = await driver.OrbsGuardians.getGuardians(0, 10);
-            assert.deepEqual(empty1, [], "expected an empty array before anyone registered");
+            context(`with ${guardiansGetterFunctionName}()`, async () => {
+                let functionUnderTest;
+                beforeEach(async () => {
+                    await driver.deployGuardians();
+                    functionUnderTest = driver.OrbsGuardians[guardiansGetterFunctionName];
+                });
 
-            // register one guardian
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+                it('returns an empty array if offset is out of range', async () => {
+                    const empty1 = await functionUnderTest(0, 10);
+                    assert.deepEqual(empty1, [], "expected an empty array before anyone registered");
 
-            const empty2 = await driver.OrbsGuardians.getGuardians(1, 10); // first unavailable offset
-            assert.deepEqual(empty2, [], "expected an empty array when requested unavailable offset");
+                    // register one guardian
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[1],
+                        value: driver.registrationDeposit
+                    });
 
-            const empty3 = await driver.OrbsGuardians.getGuardians(100, 10); // far unavailable offset
-            assert.deepEqual(empty3, [], "expected an empty array when requested unavailable offset");
-        });
+                    const empty2 = await functionUnderTest(1, 10); // first unavailable offset
+                    assert.deepEqual(empty2, [], "expected an empty array when requested unavailable offset");
 
-        it('should return the requested page', async () => {
-            await driver.deployGuardians();
+                    const empty3 = await functionUnderTest(100, 10); // far unavailable offset
+                    assert.deepEqual(empty3, [], "expected an empty array when requested unavailable offset");
+                });
 
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[2], value: driver.registrationDeposit});
-            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[3], value: driver.registrationDeposit});
+                it('should return the requested page', async () => {
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[1],
+                        value: driver.registrationDeposit
+                    });
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[2],
+                        value: driver.registrationDeposit
+                    });
+                    await driver.OrbsGuardians.register("some name", "some website", {
+                        from: accounts[3],
+                        value: driver.registrationDeposit
+                    });
 
-            const fullList = await driver.OrbsGuardians.getGuardians(0, 10);
-            assert.deepEqual(fullList, [accounts[1], accounts[2], accounts[3]], "expected three elements");
+                    const fullList = await functionUnderTest(0, 10);
+                    assert.deepEqual(fullList.map(a => web3.utils.toChecksumAddress(a)), [accounts[1], accounts[2], accounts[3]], "expected three elements");
 
-            const lastTwo = await driver.OrbsGuardians.getGuardians(1, 10);
-            assert.deepEqual(lastTwo, [accounts[2], accounts[3]], "expected last two elements");
+                    const lastTwo = await functionUnderTest(1, 10);
+                    assert.deepEqual(lastTwo.map(a => web3.utils.toChecksumAddress(a)), [accounts[2], accounts[3]], "expected last two elements");
 
-            const lastOne = await driver.OrbsGuardians.getGuardians(2, 10);
-            assert.deepEqual(lastOne, [accounts[3]], "expected last element");
+                    const lastOne = await functionUnderTest(2, 10);
+                    assert.deepEqual(lastOne.map(a => web3.utils.toChecksumAddress(a)), [accounts[3]], "expected last element");
 
-            const firstTwo = await driver.OrbsGuardians.getGuardians(0, 2);
-            assert.deepEqual(firstTwo, [accounts[1], accounts[2]], "expected first two elements");
+                    const firstTwo = await functionUnderTest(0, 2);
+                    assert.deepEqual(firstTwo.map(a => web3.utils.toChecksumAddress(a)), [accounts[1], accounts[2]], "expected first two elements");
 
-            const firstOne = await driver.OrbsGuardians.getGuardians(0, 1);
-            assert.deepEqual(firstOne, [accounts[1]], "expected first element");
+                    const firstOne = await functionUnderTest(0, 1);
+                    assert.deepEqual(firstOne.map(a => web3.utils.toChecksumAddress(a)), [accounts[1]], "expected first element");
 
-            const middle = await driver.OrbsGuardians.getGuardians(1, 1);
-            assert.deepEqual(middle, [accounts[2]], "expected middle element");
+                    const middle = await functionUnderTest(1, 1);
+                    assert.deepEqual(middle.map(a => web3.utils.toChecksumAddress(a)), [accounts[2]], "expected middle element");
 
-            const empty = await driver.OrbsGuardians.getGuardians(1, 0);
-            assert.deepEqual(empty, [], "expected empty list");
+                    const empty = await functionUnderTest(1, 0);
+                    assert.deepEqual(empty, [], "expected empty list");
+                });
+            });
         });
     });
 
@@ -283,12 +340,28 @@ contract('OrbsGuardians', accounts => {
             assert.deepEqual(noneLeft, [], "expected an empty list after everyone left");
         });
 
+        it('should be able to register after leave', async () => {
+            await driver.deployGuardians();
+            await assertReject(driver.OrbsGuardians.leave(), "expected leave to fail if not registered");
+
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[2], value: driver.registrationDeposit});
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[3], value: driver.registrationDeposit});
+
+            await driver.OrbsGuardians.leave({from: accounts[2]});
+
+            await driver.OrbsGuardians.register("some name", "some website", {from: accounts[2], value: driver.registrationDeposit});
+
+            const everyone = await driver.OrbsGuardians.getGuardians(0, 10);
+            assert.deepEqual(everyone, [accounts[1], accounts[3], accounts[2]], "expected register to succeed after leaving");
+        });
+
         it('should refund registration deposit', async () => {
             await driver.deployGuardians();
 
             await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
 
-            const gasPrice = await web3.eth.getGasPrice(); // the current going price
+            const gasPrice = 1; // to accommodate coverage use the lowest possible
             const accountBalanceBeforeLeave = await web3.eth.getBalance(accounts[1]);
 
             // leave
@@ -317,6 +390,16 @@ contract('OrbsGuardians', accounts => {
                 '0',
                 "expected contract to have no balance left after refund"
             );
+        });
+
+        it('should fail if leaving before min registration time', async () => {
+            const oneSeconds = 1;
+            await driver.deployGuardians(oneSeconds);
+
+            await driver.OrbsGuardians.register("some name", "some website", {value: driver.registrationDeposit});
+            await assertReject(driver.OrbsGuardians.leave(), "expected to fail when min time didnt pass");
+            await new Promise(resolve => setTimeout(resolve, (oneSeconds+1)*1000));
+            await assertResolve(driver.OrbsGuardians.leave(),"should succeed after min time passes");
         });
     });
 });

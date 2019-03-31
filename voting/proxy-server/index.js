@@ -1,30 +1,36 @@
-const Web3 = require('web3');
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 const cors = require('cors');
 const express = require('express');
+const stakeApiFactory = require('./api/stake');
+const rewardsApiFactory = require('./api/rewards');
 const guardiansApiFactory = require('./api/guardians');
 const validatorsApiFactory = require('./api/validators');
 const electedValidatorsApiFactory = require('./api/elected-validators');
-const Orbs = require('orbs-client-sdk');
+const { OrbsClientService } = require('./services/orbs-client');
+const { EthereumClientService } = require('./services/ethereum-client');
 
 const port = process.env.PORT || 5678;
-const virtualChainId = 2020;
-const orbsNodeUrl = `http://3.122.219.67/vchains/${virtualChainId}`;
+const virtualChainId = 1000001;
+const orbsNodeAddress = '18.197.127.2';
+const ethereumProviderUrl =
+  process.env.ETHEREUM_PROVIDER_URL ||
+  'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141';
 
 const app = express();
 
-const web3 = new Web3(
-  new Web3.providers.HttpProvider(
-    'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141'
-  )
-);
+const ethereumClient = new EthereumClientService(ethereumProviderUrl);
 
-const orbsClient = new Orbs.Client(
-  orbsNodeUrl,
-  virtualChainId,
-  Orbs.NetworkType.NETWORK_TYPE_TEST_NET
+const orbsClientService = new OrbsClientService(
+  orbsNodeAddress,
+  virtualChainId
 );
-
-const orbsAccount = Orbs.createAccount();
 
 const corsOptions = {
   origin: ['http://localhost:3000', 'https://orbs-network.github.io']
@@ -33,8 +39,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get('/is_alive', (req, res) => res.sendStatus(200));
-app.use('/api', guardiansApiFactory(web3, orbsAccount, orbsClient));
-app.use('/api', electedValidatorsApiFactory());
-app.use('/api', validatorsApiFactory(web3));
+app.use('/api', guardiansApiFactory(ethereumClient, orbsClientService));
+app.use('/api', electedValidatorsApiFactory(ethereumClient, orbsClientService));
+app.use('/api', validatorsApiFactory(ethereumClient, orbsClientService));
+app.use('/api', rewardsApiFactory(orbsClientService));
+app.use('/api', stakeApiFactory(orbsClientService));
 
 app.listen(port, () => console.log(`Started on port ${port}!`));

@@ -1,13 +1,22 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
-import GuardianDialog from '../GuardianDetails';
-import ManualDelegationDialog from '../ManualDelegation';
-
-import { Mode } from '../../api/interface';
-import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import { Mode } from '../../api/interface';
+import GuardianDialog from '../GuardianDetails';
+import Typography from '@material-ui/core/Typography';
+import ManualDelegationDialog from '../ManualDelegation';
+import { ApiService } from '../../api';
+import { normalizeUrl } from '../../services/urls';
 
-const DelegatorsPage = ({ apiService }) => {
+const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
     [address: string]: { name: string; url: string };
   });
@@ -20,6 +29,14 @@ const DelegatorsPage = ({ apiService }) => {
     setManualDelegationDialogState
   ] = useState(false);
 
+  const [totalStake, setTotalStake] = useState('0');
+  const [delegatedTo, setDelegatedTo] = useState('');
+
+  const fetchTotalStake = async () => {
+    const totalStake = await apiService.getTotalStake();
+    setTotalStake(totalStake);
+  };
+
   const fetchGuardians = async () => {
     const addresses = await apiService.getGuardians();
     const details = await Promise.all(
@@ -29,20 +46,30 @@ const DelegatorsPage = ({ apiService }) => {
     const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
       acc[curr] = {
         name: details[idx]['name'],
-        url: details[idx]['website'],
-        balance: details[idx]['balance']
+        url: normalizeUrl(details[idx]['website']),
+        stake: details[idx]['stake']
       };
       return acc;
     }, {});
     setGuardians(guardiansStateObject);
   };
 
+  const fetchDelegatedTo = async () => {
+    if (hasMetamask()) {
+      const res = await apiService.getCurrentDelegation();
+      setDelegatedTo(res);
+    }
+  };
+
   useEffect(() => {
+    fetchTotalStake();
     fetchGuardians();
+    fetchDelegatedTo();
   }, []);
 
   const delegate = async candidate => {
     const receipt = await apiService.delegate(candidate);
+    fetchDelegatedTo();
     console.log(receipt);
   };
 
@@ -75,9 +102,9 @@ const DelegatorsPage = ({ apiService }) => {
         Guardians List
       </Typography>
 
-      <Typography align="right" variant="overline">
-        Total stake: 100,000,000 Orbs
-      </Typography>
+      {/* <Typography align="right" variant="overline">
+        Total stake: {totalStake} Orbs
+      </Typography> */}
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
@@ -96,9 +123,11 @@ const DelegatorsPage = ({ apiService }) => {
         </Typography>
       )}
 
-      <Typography paragraph variant="body1" color="textPrimary">
-        Delegation Status: Your vote is going to `0x`
-      </Typography>
+      {hasMetamask() && delegatedTo.length > 0 && (
+        <Typography paragraph variant="body1" color="textPrimary">
+          Delegation Status: Your vote is going to `{delegatedTo}`.
+        </Typography>
+      )}
 
       <GuardianDialog
         readOnly={!hasMetamask()}

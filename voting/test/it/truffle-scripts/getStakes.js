@@ -1,3 +1,11 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+
 const erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
 const numberOfStakeHolders = process.env.NUMBER_OF_STAKEHOLDERS_ETHEREUM;
 
@@ -19,7 +27,7 @@ module.exports = async function(done) {
     let txs = [];
     for (let i = 0;i < numberOfStakeHolders;i++) {
       txs.push(instance.balanceOf(accounts[i]).then(balance => {
-        return { Index: i, Balance: balance };
+        return { Index: i, Balance: "" + balance };
       }));
     }
 

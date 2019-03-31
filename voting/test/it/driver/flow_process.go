@@ -1,3 +1,9 @@
+// Copyright 2019 the orbs-ethereum-contracts authors
+// This file is part of the orbs-ethereum-contracts library in the Orbs project.
+//
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+// The above notice should be included in all copies or substantial portions of the software.
+
 package driver
 
 import (
@@ -15,6 +21,7 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	logStage("Wait for mirror period to end...")
 	beginProcessingAtBlock := config.FirstElectionBlockNumber + orbs.GetMirrorVotingPeriod() + 1
 	waitForFinality(beginProcessingAtBlock, orbs, ethereum)
+	orbs.GetCurrentSystemBlockSigners() // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
 	logStageDone("Wait for mirror period to end")
 
 	logStage("Running processing...")
@@ -69,11 +76,15 @@ func independantCaluculateGetWinners(config *Config, ethereum EthereumAdapter) [
 	return winnersOrbsAddresses
 }
 
-func runNaiveCalculations(config *Config, stakes map[int]int) []int {
-	relationship := make(map[int]int)
+func runNaiveCalculations(config *Config, stakesInFloat map[int]float32) []int {
+	stakes := make(map[int]int, len(stakesInFloat))
+	for k, v := range stakesInFloat {
+		stakes[k] = int(v)
+	}
 
+	relationship := make(map[int]int)
 	for _, transfer := range config.Transfers {
-		if transfer.Amount == 0 {
+		if transfer.Amount == DELEGATE_TRANSFER {
 			relationship[transfer.FromIndex] = transfer.ToIndex
 		}
 	}
@@ -83,25 +94,25 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 	}
 
 	//for key, value := range relationship {
-	//	fmt.Printf("Delegator %d to agent %d : stake %d \n", key, value, config.DelegatorStakeValues[key])
+	//	fmt.Printf("Delegator %d to agent %d : stake %f \n", key, value, stakes[key])
 	//}
 
 	// run twice
 	for from, to := range relationship {
-		if config.DelegatorStakeValues[from] != 0 {
+		if stakes[from] != 0 {
 			stakes[to] = stakes[to] + stakes[from]
 			stakes[from] = 0
 		}
 	}
 	for from, to := range relationship {
-		if config.DelegatorStakeValues[from] != 0 {
+		if stakes[from] != 0 {
 			stakes[to] = stakes[to] + stakes[from]
 			stakes[from] = 0
 		}
 	}
 
 	//for i, stake := range stakes {
-	//	fmt.Printf("after stake %d is %d\n", i, stake)
+	//	fmt.Printf("after stake of %d is %d\n", i, stake)
 	//}
 
 	guardianVote := make(map[int]int)
@@ -130,8 +141,9 @@ func runNaiveCalculations(config *Config, stakes map[int]int) []int {
 
 	candidateVote := make(map[int]int)
 	for guardian, candidates := range guardianToCandidate {
+		//fmt.Printf("Guardiand %d voted for %v\n", guardian, candidates)
 		for _, candidate := range candidates {
-			candidateVote[candidate] = candidateVote[candidate] + config.DelegatorStakeValues[guardian]
+			candidateVote[candidate] = candidateVote[candidate] + guardianVote[guardian]
 		}
 	}
 

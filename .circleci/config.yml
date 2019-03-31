@@ -46,6 +46,34 @@ jobs:
           path: _out
           destination: test-output
 
+  subscription-e2e:
+    machine: true
+    steps:
+      - checkout
+      - run: ./.circleci/subscription.sh
+      - store_artifacts:
+          path: _out
+          destination: test-output
+
+  samaritan:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: ./.circleci/bring-gamma.sh
+      - run: ./.circleci/samaritan.sh
+
+  subscription-solidity-tests:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: cd subscription/ethereum && ./test.sh
+      - store_artifacts:
+          path: subscription/ethereum/_out
+      - store_test_results:
+          path: subscription/ethereum/_reports
+
 workflows:
   version: 2
   voting:
@@ -57,3 +85,17 @@ workflows:
   asb:
     jobs:
       - asb-e2e
+  subscription:
+    jobs:
+      - subscription-solidity-tests
+      - subscription-e2e
+  scheduled_samaritan:
+    triggers:
+      - schedule:
+          cron: "0,10,20,30,40,50 * * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - samaritan

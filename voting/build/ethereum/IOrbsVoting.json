@@ -12,7 +12,7 @@
         {
           "indexed": false,
           "name": "validators",
-          "type": "bytes20[]"
+          "type": "address[]"
         },
         {
           "indexed": false,
@@ -46,6 +46,23 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "delegator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "delegationCounter",
+          "type": "uint256"
+        }
+      ],
+      "name": "Undelegate",
+      "type": "event"
+    },
+    {
       "constant": false,
       "inputs": [
         {
@@ -74,6 +91,15 @@
       "type": "function"
     },
     {
+      "constant": false,
+      "inputs": [],
+      "name": "undelegate",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "constant": true,
       "inputs": [
         {
@@ -81,15 +107,57 @@
           "type": "address"
         }
       ],
-      "name": "getLastVote",
+      "name": "getCurrentVote",
       "outputs": [
         {
           "name": "validators",
           "type": "address[]"
         },
         {
-          "name": "blockHeight",
+          "name": "blockNumber",
           "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "guardian",
+          "type": "address"
+        }
+      ],
+      "name": "getCurrentVoteBytes20",
+      "outputs": [
+        {
+          "name": "validatorsBytes20",
+          "type": "bytes20[]"
+        },
+        {
+          "name": "blockNumber",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "delegator",
+          "type": "address"
+        }
+      ],
+      "name": "getCurrentDelegation",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
         }
       ],
       "payable": false,
@@ -103,13 +171,44 @@
   "deployedSourceMap": "",
   "compiler": {
     "name": "solc",
-    "version": "0.5.3+commit.10d17f24.Emscripten.clang"
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-17T16:41:49.104Z",
+  "updatedAt": "2019-03-25T00:37:37.778Z",
   "devdoc": {
-    "methods": {}
+    "methods": {
+      "delegate(address)": {
+        "details": "Delegation method to select who you would like to delegate your stake to.",
+        "params": {
+          "to": "address the address, you want to delegate your stake to. If you want to cancel a delegation - delegate to yourself to yourself."
+        }
+      },
+      "getCurrentDelegation(address)": {
+        "details": "returns the address to which the delegator has delegated the stake",
+        "params": {
+          "delegator": "address the address of the delegator"
+        }
+      },
+      "getCurrentVote(address)": {
+        "details": "returns vote pair - validators list and the block number the vote was set.",
+        "params": {
+          "guardian": "address the address of the guardian"
+        }
+      },
+      "getCurrentVoteBytes20(address)": {
+        "details": "returns vote pair - validators list and the block number the vote was set.      same as getCurrentVote but returns addresses represented as byte20."
+      },
+      "undelegate()": {
+        "details": "Delegation method to select who you would like to delegate your stake to."
+      },
+      "voteOut(address[])": {
+        "details": "Voting method to select which validators you want to vote out in this election period.",
+        "params": {
+          "validators": "address[] an array of validators addresses you want to vote out. In case you want to vote, but not vote out anyone, send an empty array."
+        }
+      }
+    }
   },
   "userdoc": {
     "methods": {}
