@@ -7,9 +7,6 @@ WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting
 
 COPY voting/ .
 
-# general mock contrats imported by tests
-COPY orbs-solidity-mocks/ethereum/ ./orbs-solidity-mocks/ethereum/
-
 WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting/processor
 RUN rm -f orbs-gamma-config.json && \
     mv orbs-gamma-config.docker.json orbs-gamma-config.json

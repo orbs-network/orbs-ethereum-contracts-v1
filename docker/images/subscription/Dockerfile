@@ -7,9 +7,6 @@ WORKDIR ./orbs-ethereum-contracts
 
 COPY subscription/ ./subscription/
 
-# general mock contrats imported by tests
-COPY orbs-solidity-mocks/ethereum/ ./orbs-solidity-mocks/ethereum/
-
 # required because subscription depends on IOrbsValidators
 COPY voting/ethereum/ ./voting/ethereum/
 

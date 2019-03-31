@@ -4,25 +4,28 @@
 .vscode/
 .idea/
 
-ASB/build
-ASB/package-lock.json
+ASB/ethereum/build/
 
-Federation/dist
-Federation/coverage
-Federation/coverageEnv
-Federation/coverage.json
-Federation/allFiredEvents
-Federation/scTopics
-Federation/Unified.sol
+ASB/ethereum/coverage
+ASB/ethereum/coverageEnv
+ASB/ethereum/coverage.json
+ASB/ethereum/allFiredEvents
+ASB/ethereum/scTopics
+ASB/ethereum/Unified.sol
 
-#consider removing this at all
-orbs-solidity-mocks/build
+deprecated-federation/dist
+deprecated-federation/coverage
+deprecated-federation/coverageEnv
+deprecated-federation/coverage.json
+deprecated-federation/allFiredEvents
+deprecated-federation/scTopics
+deprecated-federation/Unified.sol
 
-Voting/ethereum/build/
-Voting/mirror_process/package-lock.json
-Voting/test/it/build/
-Voting/test/it/package-lock.json
-Voting/orbs/mergetool
+voting/ethereum/build/
+voting/mirror_process/package-lock.json
+voting/test/it/build/
+voting/test/it/package-lock.json
+voting/orbs/mergetool
 
 subscription/ethereum/build/
 

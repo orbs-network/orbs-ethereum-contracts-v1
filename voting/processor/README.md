@@ -2,7 +2,6 @@
 ## setup orbs (gammacli)
 
 * setup orbs-gamma-config.json with the environment(s) you want
-* setup your orbs keys in orbs-test-keys.json 
 
 ## setup enviroment
 

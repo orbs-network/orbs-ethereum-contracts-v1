@@ -5,4 +5,4 @@
 mkdir -p ../build/ethereum
 rm -rf ../build/ethereum/*
 
-node ../../stripper.js  ../build/ethereum/ build/contracts/*.json
+node ./stripper.js  ../build/ethereum/ build/contracts/*.json

@@ -3,10 +3,10 @@ ENV GAMMA_HOST="gamma"
 
 COPY docker/images/asb/bring-gamma.sh /tmp/bring-gamma.sh
 
-WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/ASB
+WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/ASB/test
 
 COPY docker/images/asb/entrypoint.sh .
-COPY ASB/ .
+COPY ASB/test .
 COPY build ./build/
 
 RUN rm -f orbs-gamma-config.json && \
