@@ -37,12 +37,6 @@ module.exports = {
       accounts: accounts,
       gasPrice: helpers.GAS_PRICE,
     },
-    testing: {
-      provider: function () {
-        return new HDWalletProvider('turtle picnic vendor promote tortoise else recall drill coin very noodle summer', "https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141")
-      },
-      network_id: 3
-    },
   },
   compilers: {
     solc: {
