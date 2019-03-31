@@ -9,7 +9,7 @@ const Web3 = require('web3');
 const fs = require('fs');
 const _ = require('lodash/core');
 
-let ethereumConnectionURL = process.env.ETHEREUM_NETWORK_URL_ON_ETHEREUM;
+let ethereumConnectionURL = process.env.ETHEREUM_NETWORK_URL;
 let erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
 let votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
 let startBlock = process.env.START_BLOCK_ON_ETHEREUM;
@@ -25,7 +25,7 @@ function validateInput() {
     }
 
     if (!ethereumConnectionURL) {
-        throw("missing env variable ETHEREUM_NETWORK_URL_ON_ETHEREUM");
+        throw("missing env variable ETHEREUM_NETWORK_URL");
     }
 
     if (!erc20ContractAddress) {
