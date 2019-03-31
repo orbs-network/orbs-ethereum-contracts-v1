@@ -40,7 +40,9 @@ In order to vote follow these steps:
    
    **`OrbsVoting` contract ABI for Voting:**
 
+   ```json
    [{"constant":false,"inputs":[{"name":"validators","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVote","outputs":[{"name":"validators","type":"address[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]
+   ```
 
     Alternatively, the ABI may be extracted directly from [Etherscan][1], **Contract ABI** box.
   
@@ -70,15 +72,13 @@ Proceed to *Choose Address*.
 The address you choose should be your Guardian's address as registered in OrbsGuardians contract. See: [Guardian registration](./guardian_registration.md)
 ![](../instructions/voting_5.png)
 Make sure the account has a positive Ether balance for transaction fees.
-<br> Then click *Unlock*. 
+    <br> Then click *Unlock*. 
 
 1.  Verify *Automatically Calculate Gas Limit* is checked and adjust Gas Price to a
 reasonable value, for example according to https://ethgasstation.info/.
 ![](./voting_6.png)
-
 Click *Write*, then *Sign Transaction* 
 ![](./voting_8.png)
-
 Review, then click *Send*
 
 1. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
@@ -88,10 +88,10 @@ Navigate to *Etherscan* by clicking *Verify (Etherscan)*
 1. Confirm the transaction has been accepted successfully.
 ![](./voting_11.png)
  
-Make sure you see 
-> TxReceipt Status:Success
-
-With sufficient block confirmations.
+    Make sure you see 
+    > TxReceipt Status:Success
+    
+    With sufficient block confirmations.
 
 1. Review your voting by calling getCurrentVote() with your Guardian address.
 
