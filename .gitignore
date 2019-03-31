@@ -19,7 +19,9 @@ Federation/Unified.sol
 TestingERC20/build
 
 Voting/ethereum/build/
-Voting/mirror_process/package-lock.json
+Voting/process/package-lock.json
+Voting/status/package-lock.json
+Voting/status/output.csv
 Voting/test/it/build/
 Voting/test/it/package-lock.json
 Voting/orbs/mergetool
