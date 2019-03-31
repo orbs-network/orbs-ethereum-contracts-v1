@@ -4,14 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "mkdir -p ./build/contracts/ && cp -rv ./node_modules/orbs-solidity-mocks/build/contracts/TestingERC20.json ./build/contracts/."
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "openzeppelin-solidity": "2.0.0",
-    "orbs-solidity-mocks": "file:../../../orbs-solidity-mocks",
     "truffle": "5.0.5",
     "truffle-hdwallet-provider": "1.0.3",
     "web3": "1.0.0-beta.47"
