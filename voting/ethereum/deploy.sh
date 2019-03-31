@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ./node_modules/.bin/truffle compile
 
 mkdir -p ../build/ethereum
