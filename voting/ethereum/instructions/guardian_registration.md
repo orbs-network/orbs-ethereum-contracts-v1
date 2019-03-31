@@ -102,7 +102,8 @@ With sufficient block confirmations.
 * Only an externally owned account may register as a Guardian.
 * The contract does not enforce uniqueness of name and website values between the different Guardians. Two Guardians may register with same name, or website url. It is up to the Delegators to vet their Guardians. 
 * To make changes to your registration, repeat using the update() function instead of register(). There is no need for an additional deposit upon update(). 
-* To be removed from the Guardians list, use the leave() function.
-  - Upon leave() the 16 ETH deposit is transferred back to the Guardian address.- Note: there is a 2-weeks minimal participation period and only after this period a Guardian can leave and receive her deposit back.
+* To to be removed from the Guardians list, use the leave() function.
+  - Upon leave() the 16 ETH deposit is transferred back to the Guardian address.
+  - Note: there is a 2-weeks minimal participation period and only after this period a Guardian can leave and receive her deposit back.
  
 
