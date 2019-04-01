@@ -7,7 +7,7 @@ WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/ASB/test
 
 COPY docker/images/asb/entrypoint.sh .
 COPY ASB/test .
-COPY build ./build/
+COPY ASB/build ./build
 
 RUN rm -f orbs-gamma-config.json && \
     rm -f truffle-config.js && \
@@ -15,7 +15,7 @@ RUN rm -f orbs-gamma-config.json && \
     mv truffle-config.docker.js truffle-config.js
 
 RUN bash /tmp/bring-gamma.sh
-RUN go get ./... && \
-    npm install
+RUN go get ./...
+RUN npm install
 
 CMD ["/bin/bash", "entrypoint.sh"]

@@ -13,6 +13,8 @@ ASB/ethereum/allFiredEvents
 ASB/ethereum/scTopics
 ASB/ethereum/Unified.sol
 
+ASB/test/build/
+
 deprecated-federation/dist
 deprecated-federation/coverage
 deprecated-federation/coverageEnv

@@ -7,12 +7,13 @@
 package test
 
 import (
+	"github.com/orbs-network/orbs-ethereum-contracts/ASB/test/driver"
 	"testing"
 )
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
 // DON'T FORGET TO UPDATE VALUES ACCORDING TO INSTRUCTIONS AFTER DEPLOY
-var configGanache = &Config{
+var configGanache = &driver.Config{
 	DebugLogs:                        true,                  // shows detailed responses for every command
 	EthereumErc20Address:             "",                    // update after deploy with the resulting value
 	OrbsErc20ContractName:            "ERC20TokenProxyTemp", // choose different names to redeploy
@@ -29,30 +30,30 @@ var configGanache = &Config{
 // 2. make sure gamma server is running with `gamma-cli start-local`
 
 func TestDeployOnGanache(t *testing.T) {
-	orbs := AdapterForGammaCliLocal(configGanache)
-	ethereum := AdapterForTruffleGanache(configGanache)
-	RunDeployFlow(t, configGanache, orbs, ethereum)
+	orbs := driver.AdapterForGammaCliLocal(configGanache)
+	ethereum := driver.AdapterForTruffleGanache(configGanache)
+	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
 }
 
 func TestEthToOrbsOnGanache(t *testing.T) {
-	orbs := AdapterForGammaCliLocal(configGanache)
-	ethereum := AdapterForTruffleGanache(configGanache)
-	RunEthToOrbsFlow(t, configGanache, orbs, ethereum)
+	orbs := driver.AdapterForGammaCliLocal(configGanache)
+	ethereum := driver.AdapterForTruffleGanache(configGanache)
+	driver.RunEthToOrbsFlow(t, configGanache, orbs, ethereum)
 }
 
 func TestOrbsToEthOnGanache(t *testing.T) {
-	orbs := AdapterForGammaCliLocal(configGanache)
-	ethereum := AdapterForTruffleGanache(configGanache)
-	RunOrbsToEthFlow(t, configGanache, orbs, ethereum)
+	orbs := driver.AdapterForGammaCliLocal(configGanache)
+	ethereum := driver.AdapterForTruffleGanache(configGanache)
+	driver.RunOrbsToEthFlow(t, configGanache, orbs, ethereum)
 }
 
 func TestFullFlowOnGanache(t *testing.T) {
 	if configGanache.UserAccountOnEthereum == "" {
 		configGanache.UserAccountOnEthereum = "0xd1948B0252242B60DAb2E3566AD2971B87868644"
 	}
-	orbs := AdapterForGammaCliLocal(configGanache)
-	ethereum := AdapterForTruffleGanache(configGanache)
-	RunDeployFlow(t, configGanache, orbs, ethereum)
-	RunEthToOrbsFlow(t, configGanache, orbs, ethereum)
-	RunOrbsToEthFlow(t, configGanache, orbs, ethereum)
+	orbs := driver.AdapterForGammaCliLocal(configGanache)
+	ethereum := driver.AdapterForTruffleGanache(configGanache)
+	driver.RunDeployFlow(t, configGanache, orbs, ethereum)
+	driver.RunEthToOrbsFlow(t, configGanache, orbs, ethereum)
+	driver.RunOrbsToEthFlow(t, configGanache, orbs, ethereum)
 }

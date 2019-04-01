@@ -7,12 +7,13 @@
 package test
 
 import (
+	"github.com/orbs-network/orbs-ethereum-contracts/ASB/test/driver"
 	"testing"
 )
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
 // DON'T FORGET TO UPDATE VALUES ACCORDING TO INSTRUCTIONS AFTER DEPLOY
-var configRopsten = &Config{
+var configRopsten = &driver.Config{
 	DebugLogs:                        true,                  // shows detailed responses for every command
 	EthereumErc20Address:             "",                    // use your own or update after deploy with the resulting value
 	OrbsErc20ContractName:            "ERC20TokenProxyTemp", // choose different names to avoid collisions on test net
@@ -25,19 +26,19 @@ var configRopsten = &Config{
 }
 
 func TestDeployOnRopsten(t *testing.T) {
-	orbs := AdapterForGammaCliTestnet(configRopsten)
-	ethereum := AdapterForTruffleRopsten(configRopsten)
-	RunDeployFlow(t, configRopsten, orbs, ethereum)
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten)
+	driver.RunDeployFlow(t, configRopsten, orbs, ethereum)
 }
 
 func TestEthToOrbsOnRopsten(t *testing.T) {
-	orbs := AdapterForGammaCliTestnet(configRopsten)
-	ethereum := AdapterForTruffleRopsten(configRopsten)
-	RunEthToOrbsFlow(t, configRopsten, orbs, ethereum)
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten)
+	driver.RunEthToOrbsFlow(t, configRopsten, orbs, ethereum)
 }
 
 func TestOrbsToEthOnRopsten(t *testing.T) {
-	orbs := AdapterForGammaCliTestnet(configRopsten)
-	ethereum := AdapterForTruffleRopsten(configRopsten)
-	RunOrbsToEthFlow(t, configRopsten, orbs, ethereum)
+	orbs := driver.AdapterForGammaCliTestnet(configRopsten)
+	ethereum := driver.AdapterForTruffleRopsten(configRopsten)
+	driver.RunOrbsToEthFlow(t, configRopsten, orbs, ethereum)
 }

@@ -10,14 +10,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/orbs-network/orbs-ethereum-contracts/ASB/test/test"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 )
 
-func AdapterForTruffleGanache(config *test.Config) test.EthereumAdapter {
+func AdapterForTruffleGanache(config *Config) EthereumAdapter {
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
@@ -25,7 +24,7 @@ func AdapterForTruffleGanache(config *test.Config) test.EthereumAdapter {
 	}
 }
 
-func AdapterForTruffleRopsten(config *Config) test.EthereumAdapter {
+func AdapterForTruffleRopsten(config *Config) EthereumAdapter {
 	return &truffleAdapter{
 		debug:       config.DebugLogs,
 		projectPath: ".",
@@ -161,7 +160,7 @@ func (ta *truffleAdapter) run(args string, env ...string) []byte {
 	var out []byte
 	var err error
 	if ta.debug {
-		out, err = test.combinedOutputWithStdoutPipe(cmd)
+		out, err = combinedOutputWithStdoutPipe(cmd)
 	} else {
 		out, err = cmd.CombinedOutput()
 	}

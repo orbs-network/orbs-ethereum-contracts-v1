@@ -9,21 +9,20 @@ package driver
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/orbs-network/orbs-ethereum-contracts/ASB/test/test"
 	"io/ioutil"
 	"os/exec"
 	"strconv"
 	"strings"
 )
 
-func AdapterForGammaCliLocal(config *Config) test.OrbsAdapter {
+func AdapterForGammaCliLocal(config *Config) OrbsAdapter {
 	return &gammaCliAdapter{
 		debug: config.DebugLogs,
 		env:   "experimental", // use "local" for the stable local gamma-cli ... or for client tests
 	}
 }
 
-func AdapterForGammaCliTestnet(config *test.Config) test.OrbsAdapter {
+func AdapterForGammaCliTestnet(config *Config) OrbsAdapter {
 	return &gammaCliAdapter{
 		debug: config.DebugLogs,
 		env:   "testnet",
@@ -129,7 +128,7 @@ func (gc *gammaCliAdapter) run(args string, env ...string) []byte {
 	var out []byte
 	var err error
 	if gc.debug {
-		out, err = test.combinedOutputWithStdoutPipe(cmd)
+		out, err = combinedOutputWithStdoutPipe(cmd)
 	} else {
 		out, err = cmd.CombinedOutput()
 	}
