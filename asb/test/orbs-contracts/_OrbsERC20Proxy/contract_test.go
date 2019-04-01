@@ -7,10 +7,9 @@
 package main
 
 import (
-	orbsClient "github.com/orbs-network/orbs-client-sdk-go/orbs"
+	orbsClient "github.com/orbs-network/orbs-client-sdk-go/orbsclient"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 	. "github.com/orbs-network/orbs-contract-sdk/go/testing/unit"
-	"github.com/orbs-network/orbs-ethereum-contracts/asb/test/test"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -22,7 +21,7 @@ func TestBalance_AllGood(t *testing.T) {
 	InServiceScope(owner, nil, func(m Mockery) {
 		state.WriteUint64(owner, userHave)
 		// call
-		balance := test.balanceOf(owner)
+		balance := balanceOf(owner)
 		require.Equal(t, userHave, balance)
 	})
 }
@@ -32,7 +31,7 @@ func TestBalance_WrongGoodAddress(t *testing.T) {
 
 	InServiceScope(owner, nil, func(m Mockery) {
 		// call
-		balance := test.balanceOf(owner)
+		balance := balanceOf(owner)
 		require.Equal(t, uint64(0), balance)
 	})
 }
@@ -43,7 +42,7 @@ func TestBalance_BadAddress(t *testing.T) {
 	InServiceScope(owner, nil, func(m Mockery) {
 		// call
 		require.Panics(t, func() {
-			test.balanceOf([]byte{0, 0, 4, 5})
+			balanceOf([]byte{0, 0, 4, 5})
 		}, "should panic bad address")
 	})
 }
@@ -54,7 +53,7 @@ func TestTransfer_BadAddress(t *testing.T) {
 	InServiceScope(owner, nil, func(m Mockery) {
 		// call
 		require.Panics(t, func() {
-			test.transfer([]byte{0, 0, 4, 5}, 10)
+			transfer([]byte{0, 0, 4, 5}, 10)
 		}, "should panic bad address")
 	})
 
@@ -73,7 +72,7 @@ func TestTransferImpl_AllGood(t *testing.T) {
 		state.WriteUint64(target, targetHave)
 
 		// call
-		test._transferImpl(owner, target, userTransfer)
+		_transferImpl(owner, target, userTransfer)
 
 		// assert
 		require.Equal(t, userHave-userTransfer, state.ReadUint64(owner))
@@ -95,7 +94,7 @@ func TestTransferImpl_NotEnough(t *testing.T) {
 
 		// call
 		require.Panics(t, func() {
-			test._transferImpl(owner, target, userTransfer)
+			_transferImpl(owner, target, userTransfer)
 		}, "should panic not enough")
 	})
 }
@@ -109,13 +108,13 @@ func TestApproveAllow_AllGood(t *testing.T) {
 
 	InServiceScope(owner, caller, func(m Mockery) {
 		// call
-		test.approve(spender, approveAmount)
+		approve(spender, approveAmount)
 
 		allowKey := append(caller, spender...)
 
 		// assert
 		require.Equal(t, approveAmount, state.ReadUint64(allowKey))
-		require.Equal(t, approveAmount, test.allowance(caller, spender))
+		require.Equal(t, approveAmount, allowance(caller, spender))
 	})
 }
 
@@ -125,7 +124,7 @@ func TestApprove_BadAddress(t *testing.T) {
 	InServiceScope(owner, nil, func(m Mockery) {
 		// call
 		require.Panics(t, func() {
-			test.approve([]byte{0, 0, 4, 5}, 10)
+			approve([]byte{0, 0, 4, 5}, 10)
 		}, "should panic bad address")
 	})
 }
@@ -187,7 +186,7 @@ func TestTransferFrom_BadSrcAddress(t *testing.T) {
 	InServiceScope(owner, nil, func(m Mockery) {
 		// call
 		require.Panics(t, func() {
-			test.transferFrom([]byte{0, 0, 4, 5}, owner, 10)
+			transferFrom([]byte{0, 0, 4, 5}, owner, 10)
 		}, "should panic bad address")
 	})
 }
@@ -198,7 +197,7 @@ func TestTransferFrom_BadTargetAddress(t *testing.T) {
 	InServiceScope(owner, nil, func(m Mockery) {
 		// call
 		require.Panics(t, func() {
-			test.transferFrom(owner, []byte{0, 0, 4, 5}, 10)
+			transferFrom(owner, []byte{0, 0, 4, 5}, 10)
 		}, "should panic bad address")
 	})
 }
@@ -213,15 +212,15 @@ func TestMint(t *testing.T) {
 	target := createOrbsAddress()
 
 	InServiceScope(owner, asbcontract, func(m Mockery) {
-		state.WriteUint64(test.TOTAL_SUPPLY_KEY, total)
+		state.WriteUint64(TOTAL_SUPPLY_KEY, total)
 		state.WriteUint64(target, startWith)
-		state.WriteBytes(test.ASB_ADDR_KEY, asbcontract)
+		state.WriteBytes(ASB_ADDR_KEY, asbcontract)
 
 		// call
-		test.asbMint(target, mintAmount)
+		asbMint(target, mintAmount)
 
 		// assert
-		require.Equal(t, total+mintAmount, state.ReadUint64(test.TOTAL_SUPPLY_KEY))
+		require.Equal(t, total+mintAmount, state.ReadUint64(TOTAL_SUPPLY_KEY))
 		require.Equal(t, startWith+mintAmount, state.ReadUint64(target))
 	})
 }
@@ -231,10 +230,10 @@ func TestMint_BadAddress(t *testing.T) {
 	asbcontract := createOrbsAddress()
 
 	InServiceScope(owner, asbcontract, func(m Mockery) {
-		state.WriteBytes(test.ASB_ADDR_KEY, asbcontract)
+		state.WriteBytes(ASB_ADDR_KEY, asbcontract)
 		// call
 		require.Panics(t, func() {
-			test.asbMint([]byte{0, 0, 4, 5}, 10)
+			asbMint([]byte{0, 0, 4, 5}, 10)
 		}, "should panic bad address")
 	})
 }
@@ -249,15 +248,15 @@ func TestBurn_AllGood(t *testing.T) {
 	target := createOrbsAddress()
 
 	InServiceScope(owner, asbcontract, func(m Mockery) {
-		state.WriteUint64(test.TOTAL_SUPPLY_KEY, total)
+		state.WriteUint64(TOTAL_SUPPLY_KEY, total)
 		state.WriteUint64(target, startWith)
-		state.WriteBytes(test.ASB_ADDR_KEY, asbcontract)
+		state.WriteBytes(ASB_ADDR_KEY, asbcontract)
 
 		// call
-		test.asbBurn(target, burnAmount)
+		asbBurn(target, burnAmount)
 
 		// assert
-		require.Equal(t, total-burnAmount, state.ReadUint64(test.TOTAL_SUPPLY_KEY))
+		require.Equal(t, total-burnAmount, state.ReadUint64(TOTAL_SUPPLY_KEY))
 		require.Equal(t, startWith-burnAmount, state.ReadUint64(target))
 	})
 }
@@ -272,13 +271,13 @@ func TestBurn_NotEnough(t *testing.T) {
 	target := createOrbsAddress()
 
 	InServiceScope(owner, asbcontract, func(m Mockery) {
-		state.WriteUint64(test.TOTAL_SUPPLY_KEY, total)
+		state.WriteUint64(TOTAL_SUPPLY_KEY, total)
 		state.WriteUint64(target, startWith)
-		state.WriteBytes(test.ASB_ADDR_KEY, asbcontract)
+		state.WriteBytes(ASB_ADDR_KEY, asbcontract)
 
 		// call
 		require.Panics(t, func() {
-			test.asbBurn(target, burnAmount)
+			asbBurn(target, burnAmount)
 		}, "should panic not enough")
 	})
 }
@@ -288,10 +287,10 @@ func TestBurn_BadAddress(t *testing.T) {
 	asbcontract := createOrbsAddress()
 
 	InServiceScope(owner, asbcontract, func(m Mockery) {
-		state.WriteBytes(test.ASB_ADDR_KEY, asbcontract)
+		state.WriteBytes(ASB_ADDR_KEY, asbcontract)
 		// call
 		require.Panics(t, func() {
-			test.asbBurn([]byte{0, 0, 4, 5}, 10)
+			asbBurn([]byte{0, 0, 4, 5}, 10)
 		}, "should panic bad address")
 	})
 }
@@ -317,11 +316,11 @@ func TestBindAsb_WrongCaller(t *testing.T) {
 	caller := createOrbsAddress()
 
 	InServiceScope(owner, caller, func(m Mockery) {
-		test._init()
+		_init()
 
 		// call
 		require.Panics(t, func() {
-			test.asbBind("asbcontract")
+			asbBind("asbcontract")
 		}, "should panic bad caller")
 	})
 }
@@ -332,5 +331,5 @@ func createOrbsAddress() []byte {
 	if err != nil {
 		panic(err.Error())
 	}
-	return orbsUser.AddressAsBytes()
+	return orbsUser.RawAddress
 }
