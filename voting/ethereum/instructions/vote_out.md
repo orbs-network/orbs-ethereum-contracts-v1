@@ -1,4 +1,4 @@
-## Voting Out Validatots
+## Voting Out Validators
 
 Guardians enforce the protocol by monitoring the network and __voting out__ Validators that do not properly participate in the protocol. A Guardian that identifies Validators that do not follow the protocol can vote them out. 
 In each vote, a Guardian should vote in one of the following ways:
