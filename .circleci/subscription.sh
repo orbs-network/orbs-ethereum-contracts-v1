@@ -19,6 +19,6 @@ mkdir _out
 docker-compose -f subscription/docker/docker-compose.yml logs > _out/docker.log
 
 echo "Shutting down test environment.."
-#docker-compose -f subscription/docker/docker-compose.yml down -v
+docker-compose -f subscription/docker/docker-compose.yml down -v
 
 exit $EXITCODE

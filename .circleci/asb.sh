@@ -14,7 +14,7 @@ echo "Sleeping for a few seconds to let Ganache and Gamma become ready to accept
 sleep 5
 
 echo "====================== Running ASB tests ======================"
-docker exec docker_asb_1 go test . -run TestFullFlowOnGanache -v -count 1
+docker exec docker_asb_1 bash ./entrypoint.sh
 EXITCODE=$?
 echo "====================== ASB tests finished with exit code: $EXITCODE  ======================"
 

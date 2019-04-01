@@ -21,6 +21,6 @@ mkdir _out
 docker-compose -f voting/docker/docker-compose.yml logs > _out/docker.log
 
 echo "Shutting down test environment.."
-#docker-compose -f docker/compose/voting/docker-compose.yml down -v
+docker-compose -f docker/compose/voting/docker-compose.yml down -v
 
 exit $EXITCODE
