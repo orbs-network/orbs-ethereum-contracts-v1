@@ -1,7 +1,7 @@
 FROM itamararjuan/go-node
 ENV GAMMA_HOST="gamma"
 
-COPY docker/images/subscription/bring-gamma.sh /tmp/bring-gamma.sh
+COPY subscription/docker/bring-gamma.sh /tmp/bring-gamma.sh
 
 WORKDIR ./orbs-ethereum-contracts
 
@@ -15,7 +15,7 @@ RUN npm install
 RUN truffle compile
 
 WORKDIR ../test
-COPY docker/images/subscription/entrypoint.sh .
+COPY subscription/docker/entrypoint.sh .
 
 RUN rm -f orbs-gamma-config.json && \
     rm -f truffle-config.js && \
