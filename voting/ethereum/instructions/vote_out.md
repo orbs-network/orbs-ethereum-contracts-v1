@@ -2,7 +2,7 @@
 
 Guardians enforce the protocol by monitoring the network and __voting out__ Validators that do not properly participate in the protocol. A Guardian that identifies Validators that do not follow the protocol can vote them out. 
 In each vote, a Guardian should vote in one of the following ways:
-* __Vote an empty list__ (a.k.a. __"Keep Everyone"__) - this indicates that the Guardian is content with the current set of elected Validators
+* __Vote an empty list__ (a.k.a. __"Keep Everyone"__) - this indicates that the Guardian is content with the entire set of listed Validators.
 * __Vote out a list (between 1 and 3) of Validators__ - this indicates that the Guardian is not content with the performance of these Validators and would like to remove them from participation in the network. 
 
 A Guardian may cast a vote at any time. This vote is valid for up to 45,500 Ethereum blocks (approximately one week). In order to participate in an election, a Guardian needs to have a valid vote at the time of the election event. When voting to vote out multiple Validators, the voting weight for each Validator equals to the Guardian’s total voting weight.
