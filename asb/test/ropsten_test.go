@@ -7,7 +7,7 @@
 package test
 
 import (
-	"github.com/orbs-network/orbs-ethereum-contracts/ASB/test/driver"
+	"github.com/orbs-network/orbs-ethereum-contracts/asb/test/driver"
 	"testing"
 )
 

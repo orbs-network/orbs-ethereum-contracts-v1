@@ -10,7 +10,7 @@ import (
 	orbsClient "github.com/orbs-network/orbs-client-sdk-go/orbs"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/safemath/safeuint64"
 	. "github.com/orbs-network/orbs-contract-sdk/go/testing/unit"
-	"github.com/orbs-network/orbs-ethereum-contracts/ASB/test/test"
+	"github.com/orbs-network/orbs-ethereum-contracts/asb/test/test"
 	"github.com/stretchr/testify/require"
 	"math/big"
 	"testing"

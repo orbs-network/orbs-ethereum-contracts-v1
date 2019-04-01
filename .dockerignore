@@ -1,9 +1,9 @@
 deprecated-federation/
+
 .circleci/
-voting/test/it/package-lock.json
-voting/test/it/node_modules/
-ASB/node_modules/
-ASB/package-lock.json
+
+**/node_modules/
+
 /.gitignore
 /*.js
 /*.sh

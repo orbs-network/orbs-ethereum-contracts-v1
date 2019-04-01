@@ -11,24 +11,15 @@ RUN npm install yarn -g
 RUN ls -la /root/.npm/
 RUN npm install truffle -g
 
-
 ENV GAMMA_HOST="gamma"
 
-COPY subscription/docker/bring-gamma.sh /tmp/bring-gamma.sh
+COPY asb/docker/bring-gamma.sh /tmp/bring-gamma.sh
 
-WORKDIR ./orbs-ethereum-contracts
+WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb/test
 
-COPY subscription/ ./subscription/
-
-# required because subscription depends on IOrbsValidators
-COPY voting/ethereum/ ./voting/ethereum/
-
-WORKDIR ./subscription/ethereum
-RUN npm install
-RUN truffle compile
-
-WORKDIR ../test
-COPY subscription/docker/entrypoint.sh .
+COPY asb/docker/entrypoint.sh .
+COPY asb/test .
+COPY asb/build ./build
 
 RUN rm -f orbs-gamma-config.json && \
     rm -f truffle-config.js && \
@@ -36,7 +27,7 @@ RUN rm -f orbs-gamma-config.json && \
     mv truffle-config.docker.js truffle-config.js
 
 RUN bash /tmp/bring-gamma.sh
-RUN go get -t ./... && \
+RUN go get ./... && \
     npm install
 
 CMD ["/bin/bash", "entrypoint.sh"]

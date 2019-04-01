@@ -4,7 +4,6 @@ docker build -t orbs:subscription -f subscription/docker/Dockerfile .
 
 echo "Starting up test environment.."
 docker-compose -f subscription/docker/docker-compose.yml down -v
-docker-compose -f subscription/docker/docker-compose.yml pull
 docker-compose -f subscription/docker/docker-compose.yml up -d
 docker exec subscription_gamma_1 sudo echo "ganache host.docker.internal" > /etc/hosts
 

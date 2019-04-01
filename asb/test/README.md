@@ -7,7 +7,7 @@
 * Install ganache: https://truffleframework.com/ganache
 * Install docker: https://docs.docker.com/v17.12/docker-for-mac/install
 * Install gamma-cli: `brew install orbs-network/devtools/gamma-cli`
-* Open project root directory: `cd ~/go/src/github.com/orbs-network/orbs-network-go/vendor/github.com/orbs-network/orbs-ethereum-contracts/ASB`
+* Open project root directory: `cd ~/go/src/github.com/orbs-network/orbs-network-go/vendor/github.com/orbs-network/orbs-ethereum-contracts/asb`
 * Install project by running in terminal: `yarn` 
 * Install truffle by running in termina: `npm install truffle`
 

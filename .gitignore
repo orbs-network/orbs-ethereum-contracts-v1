@@ -4,16 +4,16 @@
 .vscode/
 .idea/
 
-ASB/ethereum/build/
+asb/ethereum/build/
 
-ASB/ethereum/coverage
-ASB/ethereum/coverageEnv
-ASB/ethereum/coverage.json
-ASB/ethereum/allFiredEvents
-ASB/ethereum/scTopics
-ASB/ethereum/Unified.sol
+asb/ethereum/coverage
+asb/ethereum/coverageEnv
+asb/ethereum/coverage.json
+asb/ethereum/allFiredEvents
+asb/ethereum/scTopics
+asb/ethereum/Unified.sol
 
-ASB/test/build/
+asb/test/build/
 
 deprecated-federation/dist
 deprecated-federation/coverage

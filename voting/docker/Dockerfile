@@ -1,7 +1,19 @@
-FROM itamararjuan/go-node
+FROM golang:1.11.4
+
+RUN apt-get update
+
+RUN apt-get install -y jq curl git vim build-essential
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+
+RUN npm install yarn -g
+RUN ls -la /root/.npm/
+RUN npm install truffle -g
+
 ENV GAMMA_HOST="gamma"
 
-COPY docker/images/voting/bring-gamma.sh /tmp/bring-gamma.sh
+COPY voting/docker/bring-gamma.sh /tmp/bring-gamma.sh
 
 WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting
 
@@ -13,7 +25,7 @@ RUN rm -f orbs-gamma-config.json && \
 RUN npm install
 
 WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting/test/it
-COPY docker/images/voting/entrypoint.sh .
+COPY voting/docker/entrypoint.sh .
 
 RUN rm -f orbs-gamma-config.json && \
     rm -f truffle-config.js && \
