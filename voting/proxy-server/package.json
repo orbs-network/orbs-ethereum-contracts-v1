@@ -8,7 +8,7 @@
     "fake": "nodemon fake.js",
     "start": "node index.js",
     "test": "jest --watch",
-    "test:ci": "jest",
+    "test:ci": "jest --ci --reporters=default --reporters=jest-junit",
     "lint": "prettier --single-quote --write '**/*.js'",
     "contracts:prod": "./scripts/copy-contracts.sh",
     "deploy": "./scripts/heroku-deploy.sh"
@@ -32,7 +32,12 @@
   "devDependencies": {
     "axios": "^0.18.0",
     "jest": "^24.7.1",
+    "jest-junit": "^6.3.0",
     "nodemon": "^1.18.10",
     "prettier": "^1.16.4"
+  },
+  "jest-junit": {
+    "outputDirectory": "_reports",
+    "outputName": "results.xml"
   }
 }

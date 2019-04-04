@@ -1,1 +1,3 @@
-contracts
+src/contracts
+_reports
+node_modules
