@@ -7,6 +7,8 @@
     "dev": "nodemon index.js",
     "fake": "nodemon fake.js",
     "start": "node index.js",
+    "test": "jest --watch",
+    "test:ci": "jest",
     "lint": "prettier --single-quote --write '**/*.js'",
     "contracts:prod": "./scripts/copy-contracts.sh",
     "deploy": "./scripts/heroku-deploy.sh"
@@ -28,6 +30,8 @@
     "web3": "1.0.0-beta.48"
   },
   "devDependencies": {
+    "axios": "^0.18.0",
+    "jest": "^24.7.1",
     "nodemon": "^1.18.10",
     "prettier": "^1.16.4"
   }

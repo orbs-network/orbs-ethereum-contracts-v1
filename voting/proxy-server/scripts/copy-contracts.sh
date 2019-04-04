@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-rm -rf ./contracts
-mkdir contracts
-cp ../build/ethereum/* ./contracts
+rm -rf ./src/contracts
+mkdir ./src/contracts
+cp ../build/ethereum/* ./src/contracts
