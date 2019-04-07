@@ -19,9 +19,9 @@
       ]
     },
     "mainnet": {
-      "VirtualChain": 1000001,
+      "VirtualChain": 1100000,
       "Endpoints": [
-        "http://18.197.127.2/vchains/1000001"
+        "http://18.197.127.2/vchains/1100000"
       ]
     },
     "testnet": {
