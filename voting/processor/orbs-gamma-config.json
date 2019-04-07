@@ -18,6 +18,12 @@
         "http://18.219.247.226/vchains/1"
       ]
     },
+    "mainnet": {
+      "VirtualChain": 1000001,
+      "Endpoints": [
+        "http://18.197.127.2/vchains/1000001"
+      ]
+    },
     "testnet": {
       "VirtualChain": 42,
       "Endpoints": [
