@@ -17,7 +17,7 @@ const { OrbsClientService } = require('./services/orbs-client');
 const { EthereumClientService } = require('./services/ethereum-client');
 
 const port = process.env.PORT || 5678;
-const virtualChainId = 1000001;
+const virtualChainId = 1100000;
 const orbsNodeAddress = '18.197.127.2';
 const ethereumProviderUrl =
   process.env.ETHEREUM_PROVIDER_URL ||

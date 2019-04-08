@@ -1,22 +1,25 @@
-## Voting Out Validatots
+## Voting Out Validators
 
-Guardians enforce the protocol by monitoring the network by voting out Validatots that do not follow the protocol. A Guardian that identifies Validators that do not follow the protocol can vote them out. In each vote, a Guardian can vote out up to 3 Validators, a Guardian may by voting with an empty list, express consent to include all the listed Validators. 
+Guardians enforce the protocol by monitoring the network and __voting out__ Validators that do not properly participate in the protocol. A Guardian that identifies Validators that do not follow the protocol can vote them out. 
+In each vote, a Guardian should vote in one of the following ways:
+* __Vote an empty list__ (a.k.a. __"Keep Everyone"__) - this indicates that the Guardian is content with the entire set of listed Validators.
+* __Vote out a list (between 1 and 3) of Validators__ - this indicates that the Guardian is not content with the performance of these Validators and would like to remove them from participating in the network. 
 
-A Guardian may cast a vote at any time which remains valid for up to 45,500 Ethereum blocks (approximately one week). In order to participate in an election, a guardian needs to have a valid vote at the time of the election event. When voting to vote out multiple Validators, the voting weight for each Validator equals to the Guardian’s total voting weight.
+A Guardian may cast a vote at any time. This vote is valid for up to 45,500 Ethereum blocks (approximately one week). In order to participate in an election, a Guardian needs to have a valid vote at the time of the election event. When voting to vote out multiple Validators, the voting weight for each Validator equals to the Guardian’s total voting weight.
 
 This document provides instructions for voting process using the MyCrypto desktop wallet application.
 Any wallet software may be used, and the choice of MyCrypto here is for illustration only.
 
-For voting using a voting UI see https://orbs-network.github.io/voting/guardian.
+For voting using the voting UI see https://orbs-network.github.io/voting/guardian.
 
-### Voting requires following data:
-- Ethereum Addresses of up to three Orbs Validators to **vote out / remove from the network**
+### Voting requires the following data:
+- Ethereum addresses of up to three Orbs Validators to **vote out (=remove from the network)**
 
 ### Voting pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)
  - A wallet setup with your Guardians's Ethereum account keys with a positive Ether balance for gas payment.
- - Guardian registration of with your Ethereum account. See: [Guardian registration](./guardian_registration.md)
- - ABI and contract address, available below in the Registration steps or on [Etherscan][1]
+ - Guardian registration with your Ethereum account. See: [Guardian registration](./guardian_registration.md)
+ - ABI and contract address, available below in the Voting steps or on [Etherscan][1]
 
 
 ### Voting steps
@@ -98,6 +101,6 @@ With sufficient block confirmations.
 [1]: https://etherscan.io/address/0x30f855afb78758aa4c2dc706fb0fa3a98c865d2d#code
 
 ##### Notes
-* If a vote is made from an address not registered as a Guardian the transaction will succeed but the vote will be ignored by Orbs network. Registration is verified on Orbs upon processing of voting results.
-* A transaction that Votes out address of non-Validators will succeed but the vote will be ignored.
-* A vote may be modified at any time. The last vote recorded before an election event is taken into consideration for the election.
+* If a vote is made from an address that is not registered as a Guardian the transaction will succeed, but the vote will be ignored by the Orbs network (Guardian registration is verified on Orbs during election processing)
+* A transaction that votes out an address that isn't associated with an active Validator will succeed, but the vote will be ignored.
+* A vote may be modified at any time. The last vote recorded before an election event is considered for the election.
