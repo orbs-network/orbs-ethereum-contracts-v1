@@ -45,7 +45,7 @@ In order to register a Validator with OrbsValidatorsRegistry contract follow the
    
    **Registration Interface ABI:**
 
-   [{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"register","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getValidatorData","outputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
+   > [{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"register","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getValidatorData","outputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
 
     Alternatively, the ABI may be extracted directly from [Etherscan][2], **Contract ABI** box.
   
@@ -54,7 +54,7 @@ In order to register a Validator with OrbsValidatorsRegistry contract follow the
     ![](../instructions/enroll_validator_2.png)
 
 5. Click *Access*.
-* If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
+   * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
 
 6. Select `register` in the drop down list *Read / Write Contract*
 ![](../instructions/MyCrypto-register.png)
@@ -79,7 +79,7 @@ and provide your wallet information/credentials.
 In this example we choose to work with a HW Ledger:
 ![](../instructions/enroll_validator_5.png)
 
-Proceed to *Choose Address*. 
+    Proceed to *Choose Address*. 
 
 9. Select your Validator's Ethereum address. 
 The address you choose will be the Validator's identification for voting later on.
@@ -102,11 +102,10 @@ Navigate to *Etherscan* by clicking *Verify (Etherscan)*
 
 12. Confirm the transaction has been accepted successfully.
 ![](../instructions/etherscan_confirmation_1.png)
- 
-Make sure you see 
-> TxReceipt Status:Success
 
-With sufficient block confirmations.
+    Make sure you see 
+    > TxReceipt Status:Success
+    With sufficient block confirmations.
 
 13. Review your registration data by calling getValidatorData() with your Ethereum address.
 
