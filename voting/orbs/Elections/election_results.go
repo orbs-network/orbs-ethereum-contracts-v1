@@ -31,6 +31,15 @@ func getElectedValidatorsEthereumAddress() []byte {
 	return getElectedValidatorsEthereumAddressByIndex(index)
 }
 
+func _upsplitValidators(unsplit []byte) [][20]byte {
+	lenoutput := len(unsplit) / 20
+	validators := make([][20]byte, lenoutput)
+	for i := 0; i < lenoutput; i++ {
+		copy(validators[i][:], unsplit[i*20:(i+1)*20])
+	}
+	return validators
+}
+
 func getElectedValidatorsEthereumAddressByBlockNumber(blockNumber uint64) []byte {
 	numberOfElections := getNumberOfElections()
 	for i := numberOfElections; i > 0; i-- {

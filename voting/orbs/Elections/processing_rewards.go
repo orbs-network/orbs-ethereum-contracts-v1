@@ -77,14 +77,14 @@ func _getValidatorsStake() (validatorsStake map[[20]byte]uint64) {
 		validator := _getValidatorEthereumAddressAtIndex(i)
 		stake := getValidatorStake(validator[:])
 		validatorsStake[validator] = stake
-		fmt.Printf("elections %10d rewards: validator %x, stake %d\n", getCurrentElectionBlockNumber(), validator, stake)
+		fmt.Printf("elections %10d : validator %x, stake %d\n", getCurrentElectionBlockNumber(), validator, stake)
 	}
 	return
 }
 
 func _maxRewardForGroup(upperMaximum, totalVotes, percent uint64) uint64 {
 	calcMaximum := safeuint64.Div(safeuint64.Mul(totalVotes, percent), 100)
-	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = totalVotes %d * percent %d\n", getCurrentElectionBlockNumber(), upperMaximum, calcMaximum, totalVotes, percent)
+	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = thresholdValue %d * percent %d\n", getCurrentElectionBlockNumber(), upperMaximum, calcMaximum, totalVotes, percent)
 	if calcMaximum < upperMaximum {
 		return calcMaximum
 	}

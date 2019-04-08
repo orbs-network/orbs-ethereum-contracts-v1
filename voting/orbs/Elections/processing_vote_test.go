@@ -687,6 +687,194 @@ func TestOrbsVotingContract_processVote_processValidatorsSelection(t *testing.T)
 	})
 }
 
+func TestOrbsVotingContract_processVote_filterValidatorsBelowThreshold(t *testing.T) {
+	tests := []struct {
+		name              string
+		expectNumFiltered int
+		numValidators     int
+		startAddr         byte
+		numVotes          int
+		votesStartAddr    byte
+		votedOutAddrs     []byte
+		thresholdValue    uint64
+	}{
+		{"non voted out", 10, 10, 4, 15, 3, []byte{}, 1000},
+		{"one vote out", 9, 10, 4, 15, 3, []byte{5}, 1000},
+		{"two vote out", 20, 22, 4, 15, 3, []byte{5, 7}, 1000},
+		{"voted out not on list", 12, 12, 4, 15, 10, []byte{20, 21}, 1000},
+		{"mix", 11, 12, 5, 25, 1, []byte{9, 2, 22}, 1000},
+	}
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		for i := range tests {
+			cTest := tests[i]
+			validatorsList := genenrateValidatorsList(cTest.numValidators, cTest.startAddr)
+			candidateVotes := genenrateVotedCandidatesForFilter(cTest.numVotes, cTest.votesStartAddr, cTest.votedOutAddrs, cTest.thresholdValue)
+			validatorsFiltered := _filterValidatorsBelowThreshold(validatorsList, candidateVotes, cTest.thresholdValue)
+
+			require.Equal(t, cTest.expectNumFiltered, len(validatorsFiltered))
+			if len(cTest.votedOutAddrs) != 0 {
+				for _, voteOutAddr := range cTest.votedOutAddrs {
+					require.NotContains(t, validatorsFiltered, voteOutAddr)
+				}
+			}
+		}
+	})
+}
+
+func TestOrbsVotingContract_processVote_findNewValidatorWithHighestStake(t *testing.T) {
+	tests := []struct {
+		name                  string
+		expected              [20]byte
+		numValidators         int
+		startAddr             byte
+		numFilteredValidators int
+		startFilterAddr       byte
+		numVotes              int
+		votesStartAddr        byte
+		votedOutAddrs         []byte
+		thresholdValue        uint64
+	}{
+		{"non voted out", [20]byte{16}, 15, 2, 10, 4, 15, 3, []byte{}, 1000},
+		{"non voted out one not voted at all", [20]byte{18}, 16, 3, 10, 4, 15, 3, []byte{}, 1000},
+		{"non voted out but no new", [20]byte{}, 10, 4, 10, 4, 10, 4, []byte{}, 1000},
+		{"one voted out", [20]byte{15}, 15, 2, 10, 4, 15, 3, []byte{16}, 1000},
+	}
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		for i := range tests {
+			cTest := tests[i]
+			allValidators := genenrateValidatorsAndStakes(cTest.numValidators, cTest.startAddr)
+			filteredCurrentValidators := genenrateValidatorsAndStakes(cTest.numFilteredValidators, cTest.startFilterAddr)
+			candidateVotes := genenrateVotedCandidatesForFilter(cTest.numVotes, cTest.votesStartAddr, cTest.votedOutAddrs, cTest.thresholdValue)
+			candidateNewValidator, _ := _findCandidateValidatorWithHighestStake(candidateVotes, filteredCurrentValidators, allValidators, cTest.thresholdValue)
+
+			require.EqualValues(t, cTest.expected, candidateNewValidator, "failed at %s", cTest.name)
+		}
+	})
+}
+
+func TestOrbsVotingContract_processVote_adjustValidatorList(t *testing.T) {
+	tests := []struct {
+		name                    string
+		expectedWorstRemoved    bool
+		expectedNewAdded        bool
+		numValidators           int
+		startAddr               byte
+		worstValidator          byte
+		worstValidatorStake     uint64
+		candidateValidator      byte
+		candidateValidatorStake uint64
+	}{
+		{"less than MAX_ELECTED_VALIDATORS, add better", false, true, MAX_ELECTED_VALIDATORS - 2, 2, 5, 100, 15, 105},
+		{"less than MAX_ELECTED_VALIDATORS, add worse", false, true, MAX_ELECTED_VALIDATORS - 2, 2, 5, 100, 15, 10},
+		{"have MAX_ELECTED_VALIDATORS, add new that is better", true, true, MAX_ELECTED_VALIDATORS, 10, 15, 100, 5, 1000},
+		{"have MAX_ELECTED_VALIDATORS, don't add new that is worse", false, false, MAX_ELECTED_VALIDATORS, 2, 8, 1000, 31, 10},
+	}
+	InServiceScope(nil, nil, func(m Mockery) {
+		for i := range tests {
+			cTest := tests[i]
+			_init()
+			_setCurrentElectionBlockNumber(600)
+			currentValidators := genenrateValidatorsList(cTest.numValidators, cTest.startAddr)
+			worstValidator := [20]byte{cTest.worstValidator}
+			newValidator := [20]byte{cTest.candidateValidator}
+			adjusted := _adjustValidatorList(currentValidators, worstValidator, cTest.worstValidatorStake, newValidator, cTest.candidateValidatorStake)
+
+			if cTest.expectedNewAdded {
+				require.Contains(t, adjusted, newValidator, "failed at %s", cTest.name)
+			} else {
+				require.NotContains(t, adjusted, newValidator, "failed at %s", cTest.name)
+			}
+			if cTest.expectedWorstRemoved {
+				require.NotContains(t, adjusted, worstValidator, "failed at %s", cTest.name)
+			} else {
+				require.Contains(t, adjusted, worstValidator, "failed at %s", cTest.name)
+			}
+		}
+	})
+}
+
+func TestOrbsVotingContract_processVote_validateEnoughValidators(t *testing.T) {
+	tests := []struct {
+		name                             string
+		expectNumFiltered                int
+		expectedBelowThreshAllowed       bool
+		expectedCurrentValidatorsAllowed byte
+		numAllValidators                 int
+		allValidatorStartAddr            byte
+		numPotentialValidators           int
+		potentialStartAddr               byte
+		numVotes                         int
+		votesStartAddr                   byte
+		votedOutAddrs                    []byte
+		thresholdValue                   uint64
+	}{
+		{"potential is MAX_ELECTED_VALIDATORS", MAX_ELECTED_VALIDATORS, false, 0, 25, 1, MAX_ELECTED_VALIDATORS, 2, 10, 1, []byte{1}, 1000},
+		{"potential is above min", MIN_ELECTED_VALIDATORS + 2, false, 0, 25, 1, MIN_ELECTED_VALIDATORS + 2, 23, 10, 1, []byte{2}, 1000},
+		{"potential is below min, enough in candidates", 9, false, 1, 11, 1, MIN_ELECTED_VALIDATORS - 1, 3, 11, 1, []byte{2, 6}, 1000},
+		{"potential is below min and not enough in candidates", 5, true, 6, 5, 5, MIN_ELECTED_VALIDATORS - 2, 5, 5, 5, []byte{5, 6, 7}, 1000},
+	}
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		_setCurrentElectionBlockNumber(600)
+		for i := range tests {
+			cTest := tests[i]
+			currentValidatorsList := genenrateValidatorsList(cTest.numAllValidators, cTest.allValidatorStartAddr)
+			_setValidators(currentValidatorsList)
+			potentialValidatorsList := genenrateValidatorsList(cTest.numPotentialValidators, cTest.potentialStartAddr)
+			candidateVotes := genenrateVotedCandidatesForFilter(cTest.numVotes, cTest.votesStartAddr, cTest.votedOutAddrs, cTest.thresholdValue)
+			thresholdValue := cTest.thresholdValue
+			electedValidators := _validateEnoughValidators(potentialValidatorsList, candidateVotes, thresholdValue)
+
+			require.Equal(t, cTest.expectNumFiltered, len(electedValidators), "failed at %s", cTest.name)
+			for _, addr := range cTest.votedOutAddrs {
+				if cTest.expectedBelowThreshAllowed {
+					require.Contains(t, electedValidators, [20]byte{addr}, "failed at %s", cTest.name)
+				} else {
+					require.NotContains(t, electedValidators, [20]byte{addr}, "failed at %s", cTest.name)
+				}
+			}
+			if cTest.expectedCurrentValidatorsAllowed != 0 {
+				require.Contains(t, electedValidators, [20]byte{cTest.expectedCurrentValidatorsAllowed}, "failed at %s", cTest.name)
+			} else {
+				require.NotContains(t, electedValidators, [20]byte{cTest.expectedCurrentValidatorsAllowed}, "failed at %s", cTest.name)
+			}
+		}
+	})
+}
+
+func genenrateValidatorsAndStakes(numCurrent int, startAddr byte) (validatorsStakes map[[20]byte]uint64) {
+	validatorsStakes = make(map[[20]byte]uint64, numCurrent)
+	for i := 0; i < numCurrent; i++ {
+		validatorsStakes[[20]byte{startAddr}] = uint64(startAddr)
+		startAddr++
+	}
+
+	return
+}
+
+func genenrateValidatorsList(numCurrent int, startAddr byte) (validators [][20]byte) {
+	validators = make([][20]byte, 0, numCurrent)
+	for i := 0; i < numCurrent; i++ {
+		validators = append(validators, [20]byte{startAddr})
+		startAddr++
+	}
+	return
+}
+
+func genenrateVotedCandidatesForFilter(numVotes int, startAddr byte, voteOutAddrs []byte, threshold uint64) (candidateVotes map[[20]byte]uint64) {
+	candidateVotes = make(map[[20]byte]uint64, numVotes)
+	for i := 0; i < numVotes; i++ {
+		candidateVotes[[20]byte{startAddr}] = uint64(startAddr)
+		startAddr++
+	}
+	for _, voteOutAddr := range voteOutAddrs {
+		candidateVotes[[20]byte{voteOutAddr}] = threshold + 10
+	}
+	return
+}
+
 /***
  * driver
  */
@@ -818,6 +1006,9 @@ func (f *harness) mockDelegationsInOrbsBeforeProcess() {
 }
 
 func (f *harness) mockValidatorsInOrbsBeforeProcess() {
+	for len(f.validators) < MIN_ELECTED_VALIDATORS {
+		f.addValidator()
+	}
 	_setNumberOfValidators(len(f.validators))
 	for i, v := range f.validators {
 		state.WriteBytes(_formatValidaorIterator(i), v.address[:])
@@ -859,6 +1050,9 @@ func (f *harness) setupEthereumGuardiansDataBeforeProcess(m Mockery) {
 }
 
 func (f *harness) setupEthereumValidatorsBeforeProcess(m Mockery) {
+	for len(f.validators) < MIN_ELECTED_VALIDATORS {
+		f.addValidator()
+	}
 	if len(f.validators) != 0 {
 		validatorAddresses := make([][20]byte, len(f.validators))
 		for i, a := range f.validators {

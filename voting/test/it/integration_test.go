@@ -43,7 +43,7 @@ func adapterFactory(env string) (orbs driver.OrbsAdapter, ethereum driver.Ethere
 			500,
 			200,
 			5,
-			3,
+			4,
 			1,
 			10*time.Second,
 		)

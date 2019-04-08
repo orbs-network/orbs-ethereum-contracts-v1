@@ -3,6 +3,11 @@ TestingERC20/
 .circleci/
 voting/test/it/package-lock.json
 voting/test/it/node_modules/
+Voting/process/node_modules/
+Voting/process/package-lock.json
+Voting/status/node_modules/
+Voting/status/package-lock.json
+Voting/status/output.csv
 ASB/node_modules/
 ASB/package-lock.json
 /.gitignore

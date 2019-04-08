@@ -283,7 +283,7 @@ func _calculateOneGuardianVoteRecursive(currentLevelGuardian [20]byte, guardianT
 	return currentVotes
 }
 
-func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes uint64) [][20]byte {
+func _processValidatorsSelection2(candidateVotes map[[20]byte]uint64, totalVotes uint64) [][20]byte {
 	validators := _getValidators()
 	voteOutThreshhold := safeuint64.Div(safeuint64.Mul(totalVotes, VOTE_OUT_WEIGHT_PERCENT), 100)
 	fmt.Printf("elections %10d: %d is vote out threshhold\n", getCurrentElectionBlockNumber(), voteOutThreshhold)
@@ -304,6 +304,117 @@ func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes 
 		return validators
 	} else {
 		return winners
+	}
+}
+
+func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes uint64) [][20]byte {
+	currentValidators := _getCurrentValidators()
+	voteOutThreshold := safeuint64.Div(safeuint64.Mul(totalVotes, VOTE_OUT_WEIGHT_PERCENT), 100)
+	fmt.Printf("elections %10d: %d is vote out threshold\n", getCurrentElectionBlockNumber(), voteOutThreshold)
+
+	filteredCurrentValidators := _filterValidatorsBelowThreshold(currentValidators, candidateVotes, voteOutThreshold)
+
+	allValidatorsStake := _getValidatorsStake()
+	filteredCurrentValidatorsStake, leastValidator, leastStake := _findValidatorWithLeastStaked(filteredCurrentValidators, allValidatorsStake)
+	candidateNewValidator, candidateNewValidatorStake := _findCandidateValidatorWithHighestStake(candidateVotes, filteredCurrentValidatorsStake, allValidatorsStake, voteOutThreshold)
+
+	potentialValidators := _adjustValidatorList(filteredCurrentValidators, leastValidator, leastStake, candidateNewValidator, candidateNewValidatorStake)
+	potentialValidators = _validateEnoughValidators(potentialValidators, candidateVotes, voteOutThreshold)
+
+	fmt.Printf("elections %10d: new elected validators: %v\n", getCurrentElectionBlockNumber(), potentialValidators)
+
+	return potentialValidators
+}
+
+func _getCurrentValidators() [][20]byte {
+	addresses := getElectedValidatorsEthereumAddress()
+	if len(addresses) < 20 { // no election was ever done
+		return _getValidators()
+	} else {
+		return _upsplitValidators(addresses)
+	}
+}
+
+func _filterValidatorsBelowThreshold(validatorsList [][20]byte, candidateVotes map[[20]byte]uint64, voteOutThreshold uint64) [][20]byte {
+	filteredValidators := make([][20]byte, 0, len(validatorsList))
+
+	for _, validator := range validatorsList {
+		voted, ok := candidateVotes[validator]
+		if !ok || voted < voteOutThreshold {
+			filteredValidators = append(filteredValidators, validator)
+		} else {
+			fmt.Printf("elections %10d: validator %x voted out by %d votes\n", getCurrentElectionBlockNumber(), validator, voted)
+		}
+	}
+
+	return filteredValidators
+}
+
+func _findValidatorWithLeastStaked(validatorsList [][20]byte, allValidatorsStake map[[20]byte]uint64) (validatorStakes map[[20]byte]uint64, leastValidator [20]byte, leastStake uint64) {
+	validatorStakes = make(map[[20]byte]uint64, len(validatorsList))
+	leastStake = allValidatorsStake[validatorsList[0]]
+	leastValidator = validatorsList[0]
+	for validator, stake := range allValidatorsStake {
+		validatorStakes[validator] = stake
+		if stake < leastStake {
+			leastStake = stake
+			leastValidator = validator
+		}
+	}
+	return
+}
+
+func _findCandidateValidatorWithHighestStake(candidateVotes map[[20]byte]uint64, currentValidatorsStake map[[20]byte]uint64, allValidatorsStake map[[20]byte]uint64, voteOutThreshold uint64) ([20]byte, uint64) {
+	candidateNewValidator := [20]byte{}
+	candidateNewValidatorStake := uint64(0)
+
+	for validator, stake := range allValidatorsStake {
+		if _, inCurrentValidators := currentValidatorsStake[validator]; !inCurrentValidators {
+			voted, ok := candidateVotes[validator]
+			if (!ok || voted < voteOutThreshold) && stake > candidateNewValidatorStake {
+				candidateNewValidatorStake = stake
+				candidateNewValidator = validator
+			}
+		}
+	}
+	if candidateNewValidatorStake > 0 {
+		fmt.Printf("elections %10d: possible new elected %x with stake %d\n", getCurrentElectionBlockNumber(), candidateNewValidator, candidateNewValidatorStake)
+	}
+	return candidateNewValidator, candidateNewValidatorStake
+}
+
+func _adjustValidatorList(filteredCurrentValidators [][20]byte, worstCurrentValidator [20]byte, worstCurrentValidatorStake uint64, candidateNewValidator [20]byte, candidateNewValidatorStake uint64) [][20]byte {
+	if len(filteredCurrentValidators) < MAX_ELECTED_VALIDATORS {
+		if candidateNewValidatorStake > 0 {
+			fmt.Printf("elections %10d: validator list smaller than %d adding new elected validator %x\n", getCurrentElectionBlockNumber(), MAX_ELECTED_VALIDATORS, candidateNewValidator)
+			filteredCurrentValidators = append(filteredCurrentValidators, candidateNewValidator)
+		}
+	} else if worstCurrentValidatorStake < candidateNewValidatorStake {
+		fmt.Printf("elections %10d: replacing current validator %x (stake: %d) with new validator %x (stake: %d)\n", getCurrentElectionBlockNumber(), worstCurrentValidator, worstCurrentValidatorStake, candidateNewValidator, candidateNewValidatorStake)
+		for i, currentValidator := range filteredCurrentValidators {
+			if bytes.Equal(currentValidator[:], worstCurrentValidator[:]) {
+				filteredCurrentValidators[i] = candidateNewValidator
+				break
+			}
+		}
+	}
+	return filteredCurrentValidators
+}
+
+func _validateEnoughValidators(potentialValidators [][20]byte, candidateVotes map[[20]byte]uint64, voteOutThreshold uint64) [][20]byte {
+	if len(potentialValidators) < MIN_ELECTED_VALIDATORS {
+		fmt.Printf("elections %10d: not enought validators left after vote.\n", getCurrentElectionBlockNumber())
+		validators := _getValidators()
+		filteredValidators := _filterValidatorsBelowThreshold(validators, candidateVotes, voteOutThreshold)
+		if len(filteredValidators) < MIN_ELECTED_VALIDATORS {
+			fmt.Printf("elections %10d: using all validators (even voted out) - %d validators\n", getCurrentElectionBlockNumber(), len(validators))
+			return validators
+		} else {
+			fmt.Printf("elections %10d: using all validators above threshold - %d validators\n", getCurrentElectionBlockNumber(), len(filteredValidators))
+			return filteredValidators
+		}
+	} else {
+		return potentialValidators
 	}
 }
 
