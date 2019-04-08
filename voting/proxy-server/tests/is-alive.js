@@ -7,12 +7,15 @@
  */
 
 const axios = require('axios');
+const Chance = require('chance');
 const ProxyServer = require('../src/server');
+
+const chance = new Chance();
 
 describe('Endpoint `/is_alive`', () => {
   let server, serverUrl;
   beforeAll(() => {
-    const port = 5678;
+    const port = chance.integer({ min: 1000, max: 9999 });
     const config = {
       port,
       ethereum: {},
@@ -23,8 +26,8 @@ describe('Endpoint `/is_alive`', () => {
     server.start();
   });
 
-  afterAll(() => {
-    server.stop();
+  afterAll(async () => {
+    await server.stop();
   });
 
   it('should return OK if the server is up', async () => {

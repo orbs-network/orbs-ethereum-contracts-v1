@@ -17,6 +17,7 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
       const guardians = await ethereumClient.getGuardians(offset, limit);
       res.json(guardians);
     } catch (err) {
+      console.log(err);
       res.status(500).send(err.toString());
     }
   });

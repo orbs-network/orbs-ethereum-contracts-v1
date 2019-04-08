@@ -8,6 +8,8 @@
 
 const cors = require('cors');
 const express = require('express');
+const { promisify } = require('util');
+const guardiansApiFactory = require('./api/guardians');
 
 const { OrbsClientService } = require('./services/orbs-client');
 const { EthereumClientService } = require('./services/ethereum-client');
@@ -30,13 +32,17 @@ class ProxyServer {
     this.expressApp.use(cors(corsOptions));
 
     this.expressApp.get('/is_alive', (req, res) => res.sendStatus(200));
+    this.expressApp.use(
+      '/api',
+      guardiansApiFactory(this.ethereumService, this.orbsService)
+    );
 
     this.server = this.expressApp.listen(this.port, () =>
-      console.log(`Started on port ${this.port}!`)
+      console.log(`Proxy server started on port ${this.port}!`)
     );
   }
   stop() {
-    this.server.close();
+    return promisify(this.server.close)();
   }
 }
 

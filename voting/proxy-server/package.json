@@ -31,10 +31,13 @@
   },
   "devDependencies": {
     "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "chance": "^1.0.18",
     "jest": "^24.7.1",
     "jest-junit": "^6.3.0",
     "nodemon": "^1.18.10",
-    "prettier": "^1.16.4"
+    "prettier": "^1.16.4",
+    "web3-eth-abi": "^1.0.0-beta.52"
   },
   "jest-junit": {
     "outputDirectory": "_reports",
