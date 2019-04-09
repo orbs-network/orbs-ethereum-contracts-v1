@@ -21,7 +21,7 @@ const virtualChainId = 1100000;
 const orbsNodeAddress = '18.197.127.2';
 const ethereumProviderUrl =
   process.env.ETHEREUM_PROVIDER_URL ||
-  'https://mainnet.infura.io/v3/3fe9b03bd8374639809addf2164f7287';
+  'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141';
 
 const app = express();
 

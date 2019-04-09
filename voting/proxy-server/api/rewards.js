@@ -14,14 +14,27 @@ const rewardsApiFactory = orbsClient => {
   router.get('/rewards/:address', async (req, res) => {
     const address = req.params['address'];
     const [
-      delegatorReward,
-      guardianReward,
-      validatorReward
+      delegatorRewardResponse,
+      guardianRewardResponse,
+      validatorRewardResponse
     ] = await Promise.all([
       orbsClient.getParticipationReward(address),
       orbsClient.getGuardianReward(address),
       orbsClient.getValidatorReward(address)
     ]);
+
+    const delegatorReward =
+      delegatorRewardResponse > 0n
+        ? (delegatorRewardResponse * 236223785n) / 1000000000n
+        : 0n;
+    const guardianReward =
+      guardianRewardResponse > 0n
+        ? (guardianRewardResponse * 442919598n) / 1000000000n
+        : 0n;
+    const validatorReward =
+      validatorRewardResponse > 0n
+        ? ((validatorRewardResponse - 8423n) * 8422121n) / 1000000000n + 8423n
+        : 0n;
 
     res.json({
       delegatorReward: delegatorReward.toString(),
