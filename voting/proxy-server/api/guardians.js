@@ -34,10 +34,10 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
       if (totalStakeResults === 0n) {
         data['stake'] = '0';
       } else {
-        data['stake'] = (
-          (100n * votingWeightResults) /
-          totalStakeResults
-        ).toString();
+        data['stake'] = `${(100n * votingWeightResults) /
+          totalStakeResults}.${(10000n * votingWeightResults) /
+          totalStakeResults -
+          ((100n * votingWeightResults) / totalStakeResults) * 100n}`;
       }
 
       res.json(data);
