@@ -18,8 +18,8 @@ type Config struct {
 	EthereumVotingAddress        string
 	EthereumGuardiansAddress     string
 	UserAccountOnOrbs            string
-	DelegatorsNumber             int
-	DelegatorStakeValues         []float32
+	NumberOfAccounts             int
+	AccountStakeValues           []float32
 	GuardiansAccounts            []int
 	ValidatorsAccounts           []int
 	ValidatorsOrbsAddresses      []string
@@ -57,11 +57,11 @@ func (config *Config) Validate(isDeploy bool) error {
 		return errors.Errorf("configuration field '%s' is empty, did you forget to update it?", "UserAccountOnOrbs")
 	}
 
-	if config.DelegatorsNumber < 10 {
-		return errors.Errorf("configuration field '%s' has invalid value '%d'", "DelegatorsNumber", config.DelegatorsNumber)
+	if config.NumberOfAccounts < 10 {
+		return errors.Errorf("configuration field '%s' has invalid value '%d'", "NumberOfAccounts", config.NumberOfAccounts)
 	}
-	if len(config.DelegatorStakeValues) != config.DelegatorsNumber {
-		return errors.Errorf("configuration field '%s' has invalid length '%d'", "DelegatorStakeValues", len(config.DelegatorStakeValues))
+	if len(config.AccountStakeValues) != config.NumberOfAccounts {
+		return errors.Errorf("configuration field '%s' has invalid length '%d'", "AccountStakeValues", len(config.AccountStakeValues))
 	}
 	if len(config.GuardiansAccounts) < 3 {
 		return errors.Errorf("configuration field '%s' has invalid length '%d'", "GuardiansAccounts", len(config.GuardiansAccounts))

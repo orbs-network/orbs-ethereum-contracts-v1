@@ -282,6 +282,7 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
 	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 	getGuardianStake, getGuardianVotingWeight, getTotalStake, getValidatorStake, getValidatorVote, getExcellenceProgramGuardians,
+	_firstElectionFixRewards,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -302,6 +303,7 @@ func unsafetests_setElectedValidators(joinedAddresses []byte) {
 }
 
 func unsafetests_setElectedBlockNumber(blockNumber uint64) {
+	FIRST_ELECTION_BLOCK = blockNumber
 	_setCurrentElectionBlockNumber(blockNumber)
 }
 
@@ -501,11 +503,11 @@ var DELEGATION_NAME = "Delegate"
 var DELEGATION_BY_TRANSFER_NAME = "Transfer"
 var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(70000000000000000)
 var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
-var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(480)
-var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(40320)
-var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(15000)
+var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(545)
+var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(45500)
+var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(20000)
 var TRANSITION_PERIOD_LENGTH_IN_BLOCKS = uint64(1)
-var FIRST_ELECTION_BLOCK = uint64(7467969)
+var FIRST_ELECTION_BLOCK = uint64(7502750)
 var MAX_ELECTED_VALIDATORS = 22
 var MIN_ELECTED_VALIDATORS = 7
 var VOTE_OUT_WEIGHT_PERCENT = uint64(70)
@@ -567,7 +569,7 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint
 	} else if stateMethod == eventName {
 		stateBlockNumber = state.ReadUint64(_formatDelegatorBlockNumberKey(delegator))
 		stateBlockTxIndex := state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegator))
-		if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex > eventBlockTxIndex) {
+		if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex >= eventBlockTxIndex) {
 			panic(fmt.Errorf("delegate from %v to %v with block-height %d and tx-index %d failed since already have newer block-height %d and tx-index %d",
 				delegator, agent, eventBlockNumber, eventBlockTxIndex, stateBlockNumber, stateBlockTxIndex))
 		}
@@ -647,15 +649,18 @@ func _formatDelegatorStakeKey(delegator []byte) []byte {
 // The above notice should be included in all copies or substantial portions of the software.
 
 /***
- * Rewards
+ * Rewards.
+ * Rewards constants are annual!!
  */
-var ELECTION_PARTICIPATION_MAX_REWARD = uint64(493150) // 60M / number of elections per year
+
+var ELECTION_PARTICIPATION_MAX_REWARD = uint64(60000000)
 var ELECTION_PARTICIPATION_MAX_STAKE_REWARD_PERCENT = uint64(8)
-var ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD = uint64(328767) // 40M / number of elections per year
+var ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD = uint64(40000000)
 var ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT = uint64(10)
 var ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER = 10
-var ELECTION_VALIDATOR_INTRODUCTION_MAX_REWARD = uint64(8220) // 1M / number of elections per year
+var ELECTION_VALIDATOR_INTRODUCTION_MAX_REWARD = uint64(1000000)
 var ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT = uint64(4)
+var ANNUAL_TO_ELECTION_FACTOR = uint64(11723)
 
 func _processRewards(totalVotes uint64, elected [][20]byte, participantStakes map[[20]byte]uint64, guardiansAccumulatedStake map[[20]byte]uint64) {
 	_processRewardsParticipants(totalVotes, participantStakes)
@@ -715,12 +720,13 @@ func _getValidatorsStake() (validatorsStake map[[20]byte]uint64) {
 }
 
 func _maxRewardForGroup(upperMaximum, totalVotes, percent uint64) uint64 {
-	calcMaximum := safeuint64.Div(safeuint64.Mul(totalVotes, percent), 100)
-	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = totalVotes %d * percent %d\n", getCurrentElectionBlockNumber(), upperMaximum, calcMaximum, totalVotes, percent)
-	if calcMaximum < upperMaximum {
-		return calcMaximum
+	upperMaximumPerElection := safeuint64.Div(safeuint64.Mul(upperMaximum, 100), ANNUAL_TO_ELECTION_FACTOR)
+	calcMaximumPerElection := safeuint64.Div(safeuint64.Mul(totalVotes, percent), ANNUAL_TO_ELECTION_FACTOR)
+	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = totalVotes %d * percent %d / number of annual election \n", getCurrentElectionBlockNumber(), upperMaximumPerElection, calcMaximumPerElection, totalVotes, percent)
+	if calcMaximumPerElection < upperMaximumPerElection {
+		return calcMaximumPerElection
 	}
-	return upperMaximum
+	return upperMaximumPerElection
 }
 
 func _formatCumulativeParticipationReward(delegator []byte) []byte {
@@ -879,6 +885,30 @@ func _processVotingStateMachine() [][20]byte {
 		return elected
 	}
 	return nil
+}
+
+func _firstElectionFixRewards() {
+	key := []byte("_fix_rewards_")
+	if state.ReadUint32(key) == 0 {
+		candidateVotes, totalVotes, participantStakes, guardiansAccumulatedStake := _calculateVotes()
+		elected := _processValidatorsSelection(candidateVotes, totalVotes)
+		for participant, _ := range participantStakes {
+			fmt.Printf("elections %10d rewards: clear participant %x\n", getEffectiveElectionBlockNumber(), participant)
+			state.Clear(_formatCumulativeParticipationReward(participant[:]))
+		}
+		for guardian, _ := range guardiansAccumulatedStake {
+			fmt.Printf("elections %10d rewards: clear guardian %x\n", getEffectiveElectionBlockNumber(), guardian)
+			state.Clear(_formatCumulativeGuardianExcellenceReward(guardian[:]))
+		}
+		for _, validator := range elected {
+			fmt.Printf("elections %10d rewards: clear validator %x\n", getEffectiveElectionBlockNumber(), validator)
+			state.Clear(_formatCumulativeValidatorReward(validator[:]))
+		}
+		_processRewards(totalVotes, elected, participantStakes, guardiansAccumulatedStake)
+		state.WriteUint32(key, 1)
+	} else {
+		panic(fmt.Sprintf("cannot fix first election rewards anymore (current %d, effective %d)", getCurrentElectionBlockNumber(), getEffectiveElectionBlockNumber()))
+	}
 }
 
 func _nextProcessVotingState(stage string) {
