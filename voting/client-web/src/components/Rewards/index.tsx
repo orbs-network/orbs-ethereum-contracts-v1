@@ -17,6 +17,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
+import { ApiService } from '../../api';
 
 const styles = theme => ({
   form: {
@@ -36,7 +37,13 @@ const styles = theme => ({
   }
 });
 
-const RewardsPage = ({ classes, apiService }) => {
+const RewardsPage = ({
+  classes,
+  apiService
+}: {
+  classes: any;
+  apiService: ApiService;
+}) => {
   const [address, setAddress] = useState('');
   const [rewards, setRewards] = useState({});
 
