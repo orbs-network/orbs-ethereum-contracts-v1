@@ -8,40 +8,72 @@
 
 import React from 'react';
 import Table from '@material-ui/core/Table';
+import Tooltip from '@material-ui/core/Tooltip';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = () => ({});
+const styles = () => ({
+  table: {
+    tableLayout: 'fixed' as any
+  },
+  cell: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }
+});
 
 const ValidatorsList = ({ validators, classes }) => {
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell>Ethereum Address</TableCell>
-          <TableCell>Orbs Address</TableCell>
-          <TableCell>Stake</TableCell>
-          <TableCell>Total Reward</TableCell>
-          <TableCell>Participation Reward</TableCell>
+          <TableCell style={{ width: '20%' }} className={classes.cell}>
+            Name
+          </TableCell>
+          <TableCell style={{ width: '30%' }} className={classes.cell}>
+            Ethereum Address
+          </TableCell>
+          <TableCell style={{ width: '30%' }} className={classes.cell}>
+            Orbs Address
+          </TableCell>
+          <TableCell style={{ width: '10%' }}>Stake</TableCell>
+          <TableCell style={{ width: '10%' }}>Total Reward</TableCell>
+          <TableCell style={{ width: '10%' }}>Participation Reward</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="validators-list">
         {Object.keys(validators).map(id => (
           <TableRow data-testid={`validator-${id}`} key={id}>
             <TableCell
+              className={classes.cell}
               component="th"
               scope="row"
               data-testid={`validator-${id}-name`}
             >
               {validators[id].name}
             </TableCell>
-            <TableCell data-testid={`validator-${id}-address`}>{id}</TableCell>
-            <TableCell data-testid={`validator-${id}-orbs-address`}>
-              {validators[id].orbsAddress}
+            <TableCell
+              className={classes.cell}
+              data-testid={`validator-${id}-address`}
+            >
+              <Tooltip title={id} placement="top-start" enterDelay={200}>
+                <span>{id}</span>
+              </Tooltip>
+            </TableCell>
+            <TableCell
+              className={classes.cell}
+              data-testid={`validator-${id}-orbs-address`}
+            >
+              <Tooltip
+                title={validators[id].orbsAddress}
+                placement="top-start"
+                enterDelay={200}
+              >
+                <span>{validators[id].orbsAddress}</span>
+              </Tooltip>
             </TableCell>
             <TableCell>{validators[id].stake} orbs</TableCell>
             <TableCell>{validators[id].totalReward} orbs</TableCell>

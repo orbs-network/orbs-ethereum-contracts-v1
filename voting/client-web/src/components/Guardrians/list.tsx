@@ -6,16 +6,17 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
+import Tooltip from '@material-ui/core/Tooltip';
 import Checkbox from '@material-ui/core/Checkbox';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
-import { Tooltip, SvgIcon, IconButton } from '@material-ui/core';
+import { CopyAddressButton } from '../CopyAddressButton';
 
 const styles = () => ({
   table: {
@@ -26,34 +27,6 @@ const styles = () => ({
     textOverflow: 'ellipsis'
   }
 });
-
-const CopyIcon = () => {
-  return (
-    <SvgIcon fontSize="small">
-      <path fill="none" d="M0 0h24v24H0V0z" />
-      <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm-1 4H8c-1.1 0-1.99.9-1.99 2L6 21c0 1.1.89 2 1.99 2H19c1.1 0 2-.9 2-2V11l-6-6zM8 21V7h6v5h5v9H8z" />
-    </SvgIcon>
-  );
-};
-
-const CopyAddress = ({ address }) => {
-  const [tooltipShown, setTooltopShown] = useState(false);
-  const copy = () => {
-    (navigator as any).clipboard.writeText(address).then(() => {
-      setTooltopShown(true);
-      setTimeout(() => {
-        setTooltopShown(false);
-      }, 1000);
-    });
-  };
-  return (
-    <Tooltip placement="top" title="Copied!" open={tooltipShown}>
-      <IconButton onClick={copy}>
-        <CopyIcon />
-      </IconButton>
-    </Tooltip>
-  );
-};
 
 const ValidatorsList = ({
   disableAll,
@@ -112,7 +85,7 @@ const ValidatorsList = ({
             </TableCell>
             <TableCell>
               {!!(navigator as any).clipboard && (
-                <CopyAddress address={address} />
+                <CopyAddressButton address={address} />
               )}
             </TableCell>
             <TableCell
