@@ -38,7 +38,6 @@ const Main = ({ apiService, classes }) => {
             <GuardianPage {...props} apiService={apiService} />
           )}
         />
-        <Redirect exact from="/validator" to="/" />
         <Route
           exact
           path="/validator"
@@ -46,7 +45,6 @@ const Main = ({ apiService, classes }) => {
             <ValidatorsPage {...props} apiService={apiService} />
           )}
         />
-        <Redirect exact from="/reward" to="/" />
         <Route
           exact
           path="/reward"
