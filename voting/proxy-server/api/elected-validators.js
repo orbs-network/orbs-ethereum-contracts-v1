@@ -32,37 +32,9 @@ const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
       const address = req.params['address'];
       const validatorData = await ethereumClient.getValidatorData(address);
       const stake = await orbsClientService.getValidatorStake(address);
-      const [
-        delegatorRewardResponse,
-        guardianRewardResponse,
-        validatorRewardResponse
-      ] = await Promise.all([
-        orbsClientService.getParticipationReward(address),
-        orbsClientService.getGuardianReward(address),
-        orbsClientService.getValidatorReward(address)
-      ]);
-
-      const delegatorReward =
-        delegatorRewardResponse > 0n
-          ? (delegatorRewardResponse * 236223785n) / 1000000000n
-          : 0n;
-      const guardianReward =
-        guardianRewardResponse > 0n
-          ? (guardianRewardResponse * 442919598n) / 1000000000n
-          : 0n;
-      const validatorReward =
-        validatorRewardResponse > 0n
-          ? ((validatorRewardResponse - 8423n) * 8422121n) / 1000000000n + 8423n
-          : 0n;
 
       const result = Object.assign({}, validatorData, {
-        stake: stake.toString(),
-        participationReward: delegatorReward.toString(),
-        totalReward: (
-          delegatorReward +
-          guardianReward +
-          validatorReward
-        ).toString()
+        stake: stake.toString()
       });
       res.json(result);
     } catch (err) {
