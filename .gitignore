@@ -21,7 +21,7 @@ TestingERC20/build
 Voting/ethereum/build/
 Voting/process/package-lock.json
 Voting/status/package-lock.json
-Voting/status/output.csv
+Voting/status/*.csv
 Voting/test/it/build/
 Voting/test/it/package-lock.json
 Voting/orbs/mergetool
