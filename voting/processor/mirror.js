@@ -92,42 +92,6 @@ async function delegateEvents(ethereumConnectionURL, votingContractAddress, star
     }
 }
 
-async function getMirrorEndingBlockNumber() {
-    let blockNumber = 0;
-    try {
-        let result = await gamma.runQuery('get-mirroring-end-block.json', orbsVotingContractName, orbsEnvironment);
-        blockNumber = parseInt(result.OutputArguments[0].Value)
-    } catch (e){
-        console.log(`Could not get mirror ending block number. Error OUTPUT:\n` + e);
-    }
-    return blockNumber;
-}
-
-async function getMirrorStartingBlockNumber() {
-    let blockNumber = 0;
-    try {
-        let result = await gamma.runQuery('get-mirroring-start-block.json', orbsVotingContractName, orbsEnvironment);
-        blockNumber = parseInt(result.OutputArguments[0].Value)
-    } catch (e){
-        console.log(`Could not get mirror starting block number. Error OUTPUT:\n` + e);
-    }
-    return blockNumber;
-}
-
-async function isMirroringAllowed() {
-    let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-    let mirrorStartingBlockNumber = await getMirrorStartingBlockNumber();
-    let mirrorEndingBlockNumber = await getMirrorEndingBlockNumber();
-
-    if (currentBlockNumber >= mirrorStartingBlockNumber && currentBlockNumber < mirrorEndingBlockNumber) {
-        return true;
-    } else {
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber}\nElection block number: ${mirrorStartingBlockNumber}\nMirror ending  block number: ${mirrorEndingBlockNumber}.
-         Mirroring is not needed please try again later!!\n`);
-        return false;
-    }
-}
-
 async function main() {
     validateInput();
     if (verbose) {
@@ -155,11 +119,8 @@ async function main() {
         }
 
         console.log('\x1b[36m%s\x1b[0m', `\nRunning mirror between blocks ${actualStartBlock}-${actualEndBlock}\n`);
-        let isAllowed = await isMirroringAllowed();
-        if (isAllowed) {
-            await transferEvents(ethereumConnectionURL, erc20ContractAddress, actualStartBlock, actualEndBlock);
-            await delegateEvents(ethereumConnectionURL, votingContractAddress, actualStartBlock, actualEndBlock);
-        }
+        await transferEvents(ethereumConnectionURL, erc20ContractAddress, actualStartBlock, actualEndBlock);
+        await delegateEvents(ethereumConnectionURL, votingContractAddress, actualStartBlock, actualEndBlock);
     }
 }
 
