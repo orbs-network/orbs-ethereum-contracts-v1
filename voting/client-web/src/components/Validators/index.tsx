@@ -39,22 +39,9 @@ const ValidatorsPage = ({
     setValidators(Object.assign({}, validators));
   };
 
-  const getValidatorsRewards = async address => {
-    const reward = await apiService.getRewards(address);
-    if (!validators[address]) {
-      validators[address] = {};
-    }
-
-    validators[address].totalReward = reward['totalReward'];
-    validators[address].participationReward = reward['delegatorReward'];
-
-    setValidators(Object.assign({}, validators));
-  };
-
   const fetchElectedValidators = async () => {
     const ids = await apiService.getElectedValidators();
     ids.map(getValidatorsData);
-    ids.map(getValidatorsRewards);
   };
 
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;

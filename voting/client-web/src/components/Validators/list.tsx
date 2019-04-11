@@ -33,15 +33,13 @@ const ValidatorsList = ({ validators, classes }) => {
           <TableCell style={{ width: '20%' }} className={classes.cell}>
             Name
           </TableCell>
-          <TableCell style={{ width: '30%' }} className={classes.cell}>
+          <TableCell style={{ width: '35%' }} className={classes.cell}>
             Ethereum Address
           </TableCell>
-          <TableCell style={{ width: '30%' }} className={classes.cell}>
+          <TableCell style={{ width: '35%' }} className={classes.cell}>
             Orbs Address
           </TableCell>
           <TableCell style={{ width: '10%' }}>Stake</TableCell>
-          <TableCell style={{ width: '10%' }}>Total Reward</TableCell>
-          <TableCell style={{ width: '10%' }}>Participation Reward</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="validators-list">
@@ -76,8 +74,6 @@ const ValidatorsList = ({ validators, classes }) => {
               </Tooltip>
             </TableCell>
             <TableCell>{validators[id].stake} orbs</TableCell>
-            <TableCell>{validators[id].totalReward} orbs</TableCell>
-            <TableCell>{validators[id].participationReward} orbs</TableCell>
           </TableRow>
         ))}
       </TableBody>
