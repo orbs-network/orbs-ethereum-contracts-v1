@@ -112,7 +112,7 @@ async function main() {
         let actualEndBlock = 0;
         if (!startBlock) {
             actualEndBlock = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-            actualStartBlock = actualEndBlock - 300;
+            actualStartBlock = actualEndBlock - 900;
         } else {
             actualStartBlock = startBlock;
             actualEndBlock = endBlock;
