@@ -55,7 +55,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
             前回投票時のステーク
           </TableCell>
           <TableCell style={{ width: '10%' }} className={classes.cell}>
-            次回の選挙に有効な投票
+            前回投票への参加有無
           </TableCell>
         </TableRow>
       </TableHead>
