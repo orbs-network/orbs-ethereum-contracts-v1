@@ -18,7 +18,12 @@ import { normalizeUrl } from '../../services/urls';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
-    [address: string]: { name: string; url: string; stake: string };
+    [address: string]: {
+      name: string;
+      url: string;
+      stake: string;
+      hasEligibleVote: boolean;
+    };
   });
   const [selectedGuardian, setSelectedGuardian] = useState('');
   const [guardianDetailsDialogState, setGuardianDetailsDialogState] = useState(
@@ -42,7 +47,8 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     guardians[address] = {
       name: data['name'],
       url: normalizeUrl(data['website']),
-      stake: data['stake']
+      stake: data['stake'],
+      hasEligibleVote: data['hasEligibleVote']
     };
     setGuardians(Object.assign({}, guardians));
   };
