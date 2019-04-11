@@ -84,9 +84,7 @@ const ValidatorsList = ({
               {validators[address].name}
             </TableCell>
             <TableCell>
-              {!!(navigator as any).clipboard && (
-                <CopyAddressButton address={address} />
-              )}
+              <CopyAddressButton address={address} />
             </TableCell>
             <TableCell
               className={classes.cell}

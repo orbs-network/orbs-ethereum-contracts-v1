@@ -17,6 +17,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Chip } from '@material-ui/core';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
+import { CopyAddressButton } from '../CopyAddressButton';
 
 const styles = () => ({
   table: {
@@ -45,6 +46,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
           <TableCell style={{ width: '18%' }} className={classes.cell}>
             Name
           </TableCell>
+          <TableCell style={{ width: '4%' }} />
           <TableCell style={{ width: '35%' }} className={classes.cell}>
             Address
           </TableCell>
@@ -74,6 +76,9 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
               data-testid={`guardian-${address}-name`}
             >
               {guardians[address].name}
+            </TableCell>
+            <TableCell>
+              <CopyAddressButton address={address} />
             </TableCell>
             <TableCell
               className={classes.cell}

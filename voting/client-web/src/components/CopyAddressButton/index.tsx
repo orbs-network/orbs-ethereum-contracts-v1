@@ -14,7 +14,8 @@ const CLOSE_TIMEOUT = 1000;
 
 export const CopyAddressButton = ({ address }) => {
   const [tooltipShown, setTooltopShown] = useState(false);
-  const copy = () => {
+  const copy = ev => {
+    ev.stopPropagation();
     (navigator as any).clipboard.writeText(address).then(() => {
       setTooltopShown(true);
       setTimeout(() => {
@@ -22,11 +23,15 @@ export const CopyAddressButton = ({ address }) => {
       }, CLOSE_TIMEOUT);
     });
   };
-  return (
-    <Tooltip placement="top" title="Copied!" open={tooltipShown}>
-      <IconButton onClick={copy}>
-        <CopyIcon />
-      </IconButton>
-    </Tooltip>
-  );
+  if ((navigator as any).clipboard) {
+    return (
+      <Tooltip placement="top" title="Copied!" open={tooltipShown}>
+        <IconButton onClick={copy}>
+          <CopyIcon />
+        </IconButton>
+      </Tooltip>
+    );
+  } else {
+    return null;
+  }
 };
