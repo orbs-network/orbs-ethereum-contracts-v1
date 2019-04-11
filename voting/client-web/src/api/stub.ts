@@ -50,6 +50,9 @@ export class ApiStrategyStub implements IApiStrategy {
   getLastVote() {
     return Promise.resolve({ validators: [] });
   }
+  getNextElectionBlockHeight() {
+    return Promise.resolve('0');
+  }
   isMainNet() {
     return false;
   }

@@ -36,6 +36,12 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
   const [totalStake, setTotalStake] = useState('0');
   const [delegatedTo, setDelegatedTo] = useState('');
+  const [nextElectionsBlockHeight, setNextElectionsBlockHeight] = useState('');
+
+  const fetchNextElectionsBlockHeight = async () => {
+    const res = await apiService.getNextElectionBlockHeight();
+    setNextElectionsBlockHeight(res);
+  };
 
   const fetchTotalStake = async () => {
     const totalStake = await apiService.getTotalStake();
@@ -69,6 +75,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     fetchTotalStake();
     fetchGuardians();
     fetchDelegatedTo();
+    fetchNextElectionsBlockHeight();
   }, []);
 
   const delegate = async candidate => {
@@ -109,6 +116,11 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
       {/* <Typography align="right" variant="overline">
         Total stake: {totalStake} Orbs
       </Typography> */}
+
+      <Typography variant="subtitle1" gutterBottom color="textPrimary">
+        Next election round will take place at Ethereum block:{' '}
+        {nextElectionsBlockHeight}
+      </Typography>
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
