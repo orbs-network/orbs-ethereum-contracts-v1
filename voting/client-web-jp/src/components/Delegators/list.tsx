@@ -93,7 +93,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
                 {guardians[address].url}
               </Link>
             </TableCell>
-            <TableCell className={classes.cell}>
+            <TableCell>
               {guardians[address].stake}%
             </TableCell>
             <TableCell className={classes.cell}>

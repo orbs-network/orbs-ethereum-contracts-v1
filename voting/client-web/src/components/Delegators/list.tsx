@@ -42,13 +42,13 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
+          <TableCell style={{ width: '18%' }} className={classes.cell}>
             Name
           </TableCell>
           <TableCell style={{ width: '35%' }} className={classes.cell}>
             Address
           </TableCell>
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
+          <TableCell style={{ width: '25%' }} className={classes.cell}>
             Website
           </TableCell>
           <TableCell style={{ width: '10%' }} className={classes.cell}>
@@ -93,9 +93,7 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
                 {guardians[address].url}
               </Link>
             </TableCell>
-            <TableCell className={classes.cell}>
-              {guardians[address].stake}%
-            </TableCell>
+            <TableCell>{guardians[address].stake}%</TableCell>
             <TableCell className={classes.cell}>
               <Chip
                 className={
