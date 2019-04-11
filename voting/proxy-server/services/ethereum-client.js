@@ -8,9 +8,26 @@
 
 const Web3 = require('web3');
 const contractsInfo = require('../contracts-info');
+const votingContractJSON = require('../contracts/OrbsVoting.json');
 const guardiansContractJSON = require('../contracts/OrbsGuardians.json');
 const validatorsContractJSON = require('../contracts/OrbsValidators.json');
 const validatorsRegistryContractJSON = require('../contracts/OrbsValidatorsRegistry.json');
+
+const FIRST_ELECTION_BLOCK_HEIGHT = 7528900;
+const INTERVAL_BETWEEN_ELECTIONS = 20000;
+const VALID_VOTE_LENGTH = 45500;
+
+const getNextElectionsBlockHeight = currentBlockHeight => {
+  let amountOfElections = 0;
+  let nextElectionsBlockHeight = 0;
+  while (nextElectionsBlockHeight < currentBlockHeight) {
+    amountOfElections += 1;
+    nextElectionsBlockHeight =
+      FIRST_ELECTION_BLOCK_HEIGHT +
+      INTERVAL_BETWEEN_ELECTIONS * amountOfElections;
+  }
+  return nextElectionsBlockHeight;
+};
 
 class EthereumClientService {
   constructor(url) {
@@ -18,6 +35,10 @@ class EthereumClientService {
     this.guardiansContract = new this.web3.eth.Contract(
       guardiansContractJSON.abi,
       contractsInfo.EthereumGuardiansContract.address
+    );
+    this.votingContract = new this.web3.eth.Contract(
+      votingContractJSON.abi,
+      contractsInfo.EthereumVotingContract.address
     );
     this.validatorsContract = new this.web3.eth.Contract(
       validatorsContractJSON.abi,
@@ -31,8 +52,24 @@ class EthereumClientService {
   getGuardians(offset, limit) {
     return this.guardiansContract.methods.getGuardians(offset, limit).call();
   }
-  getGuardianData(address) {
-    return this.guardiansContract.methods.getGuardianData(address).call();
+  async getGuardianData(address) {
+    const [
+      guardianData,
+      currentVote,
+      ethereumCurrentBlockHeight
+    ] = await Promise.all([
+      this.guardiansContract.methods.getGuardianData(address).call(),
+      this.votingContract.methods.getCurrentVote(address).call(),
+      this.web3.eth.getBlockNumber()
+    ]);
+    const votedAtBlockHeight = parseInt(currentVote.blockNumber);
+    const nextElectionsBlockHeight = getNextElectionsBlockHeight(
+      ethereumCurrentBlockHeight
+    );
+    return Object.assign({}, guardianData, {
+      hasEligibleVote:
+        votedAtBlockHeight + VALID_VOTE_LENGTH > nextElectionsBlockHeight
+    });
   }
   getValidators() {
     return this.validatorsContract.methods.getValidators().call();
