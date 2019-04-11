@@ -17,18 +17,6 @@ const FIRST_ELECTION_BLOCK_HEIGHT = 7528900;
 const INTERVAL_BETWEEN_ELECTIONS = 20000;
 const VALID_VOTE_LENGTH = 45500;
 
-const getNextElectionsBlockHeight = currentBlockHeight => {
-  let amountOfElections = 0;
-  let nextElectionsBlockHeight = 0;
-  while (nextElectionsBlockHeight < currentBlockHeight) {
-    amountOfElections += 1;
-    nextElectionsBlockHeight =
-      FIRST_ELECTION_BLOCK_HEIGHT +
-      INTERVAL_BETWEEN_ELECTIONS * amountOfElections;
-  }
-  return nextElectionsBlockHeight;
-};
-
 class EthereumClientService {
   constructor(url) {
     this.web3 = new Web3(new Web3.providers.HttpProvider(url));
@@ -56,16 +44,13 @@ class EthereumClientService {
     const [
       guardianData,
       currentVote,
-      ethereumCurrentBlockHeight
+      nextElectionsBlockHeight
     ] = await Promise.all([
       this.guardiansContract.methods.getGuardianData(address).call(),
       this.votingContract.methods.getCurrentVote(address).call(),
-      this.web3.eth.getBlockNumber()
+      this.getNextElectionsBlockHeight()
     ]);
     const votedAtBlockHeight = parseInt(currentVote.blockNumber);
-    const nextElectionsBlockHeight = getNextElectionsBlockHeight(
-      ethereumCurrentBlockHeight
-    );
     return Object.assign({}, guardianData, {
       hasEligibleVote:
         votedAtBlockHeight + VALID_VOTE_LENGTH > nextElectionsBlockHeight
@@ -79,6 +64,19 @@ class EthereumClientService {
       .getValidatorData(address)
       .call();
   }
+
+  async getNextElectionsBlockHeight() {
+    let amountOfElections = 0;
+    let nextElectionsBlockHeight = 0;
+    const currentBlockHeight = await this.web3.eth.getBlockNumber();
+    while (nextElectionsBlockHeight < currentBlockHeight) {
+      amountOfElections += 1;
+      nextElectionsBlockHeight =
+        FIRST_ELECTION_BLOCK_HEIGHT +
+        INTERVAL_BETWEEN_ELECTIONS * amountOfElections;
+    }
+    return nextElectionsBlockHeight;
+  };
 }
 
 module.exports = {
