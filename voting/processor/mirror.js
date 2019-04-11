@@ -14,7 +14,9 @@ const endBlock = process.env.END_BLOCK_ON_ETHEREUM;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
-let force = false;
+let force = process.env.FORCE_RUN;
+let paceGamma = 5;
+let paceEthereum = 10000;
 
 const gamma = require('./gamma-calls');
 
@@ -35,14 +37,6 @@ function validateInput() {
         throw("missing env variable VOTING_CONTRACT_ADDRESS");
     }
 
-    if (!startBlock) {
-        throw("missing env variable START_BLOCK_ON_ETHEREUM");
-    }
-
-    if (!endBlock) {
-        throw("missing env variable END_BLOCK_ON_ETHEREUM");
-    }
-
     if (!orbsVotingContractName) {
         throw("missing env variable ORBS_VOTING_CONTRACT_NAME");
     }
@@ -51,26 +45,25 @@ function validateInput() {
         console.log('No ORBS environment found using default value "local"\n');
         orbsEnvironment = "local";
     }
-
-    if (process.env.FORCE_RUN) {
-        force = true;
-    }
 }
 
 async function transferEvents(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock) {
 
     let transferEvents = await require('./node-scripts/findDelegateByTransferEvents')(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock);
     if (verbose) {
-        console.log('\x1b[34m%s\x1b[0m', `\nFound ${transferEvents.length} Transfer events:`);
+        console.log('\x1b[34m%s\x1b[0m', `Found ${transferEvents.length} Transfer events:\n`);
     }
 
-    for (let i = 0;i < transferEvents.length;i++) {
+    for (let i = 0;i < transferEvents.length;i=i+paceGamma) {
         try {
-            if (verbose) {
-                console.log('\x1b[32m%s\x1b[0m', `Transfer event ${i + 1}:`);
-                console.log(transferEvents[i]);
+            let txs = [];
+            for (let j = 0;j < paceGamma && i+j < transferEvents.length;j++) {
+                if (verbose) {
+                    console.log('\x1b[32m%s\x1b[0m', `Transfer event ${i + j + 1}:\n`, transferEvents[i+j]);
+                }
+                txs.push(gamma.sendTransaction('mirror-transfer.json', [transferEvents[i+j].txHash], orbsVotingContractName, orbsEnvironment));
             }
-            await gamma.sendTransaction('mirror-transfer.json', [transferEvents[i].txHash], orbsVotingContractName, orbsEnvironment);
+            await Promise.all(txs);
         } catch (e){
             console.log(`Could not mirror transfer event. Error OUTPUT:\n` + e);
         }
@@ -80,77 +73,54 @@ async function transferEvents(ethereumConnectionURL, erc20ContractAddress, start
 async function delegateEvents(ethereumConnectionURL, votingContractAddress, startBlock, endBlock) {
     let delegateEvents = await require('./node-scripts/findDelegateEvents')(ethereumConnectionURL, votingContractAddress, startBlock, endBlock);
     if (verbose) {
-        console.log('\x1b[34m%s\x1b[0m', `\nFound ${delegateEvents.length} Delegate events`);
+        console.log('\x1b[34m%s\x1b[0m', `Found ${delegateEvents.length} Delegate events:\n`);
     }
 
-    for (let i = 0;i < delegateEvents.length;i++) {
+    for (let i = 0;i < delegateEvents.length;i=i+paceGamma) {
         try {
-            if (verbose) {
-                console.log('\x1b[32m%s\x1b[0m', `Delegation event ${i + 1}:`);
-                console.log(delegateEvents[i]);
+            let txs = [];
+            for (let j = 0;j < paceGamma && i+j < delegateEvents.length;j++) {
+                if (verbose) {
+                    console.log('\x1b[32m%s\x1b[0m', `Delegation event ${i + j + 1}:\n`, delegateEvents[i+j]);
+                }
+                txs.push(gamma.sendTransaction('mirror-delegate.json', [delegateEvents[i+j].txHash], orbsVotingContractName, orbsEnvironment));
             }
-            await gamma.sendTransaction('mirror-delegate.json', [delegateEvents[i].txHash], orbsVotingContractName, orbsEnvironment);
+            await Promise.all(txs)
         } catch (e){
             console.log(`Could not mirror delegation event. Error OUTPUT:\n` + e);
         }
     }
 }
 
-async function getMirrorEndingBlockNumber() {
-    let blockNumber = 0;
-    try {
-        let result = await gamma.runQuery('get-mirroring-end-block.json', orbsVotingContractName, orbsEnvironment);
-        blockNumber = parseInt(result.OutputArguments[0].Value)
-    } catch (e){
-        console.log(`Could not get mirror ending block number. Error OUTPUT:\n` + e);
-    }
-    return blockNumber;
-}
-
-async function getMirrorStartingBlockNumber() {
-    let blockNumber = 0;
-    try {
-        let result = await gamma.runQuery('get-mirroring-start-block.json', orbsVotingContractName, orbsEnvironment);
-        blockNumber = parseInt(result.OutputArguments[0].Value)
-    } catch (e){
-        console.log(`Could not get mirror starting block number. Error OUTPUT:\n` + e);
-    }
-    return blockNumber;
-}
-
-async function isMirroringAllowed() {
-    let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-    let mirrorStartingBlockNumber = await getMirrorStartingBlockNumber();
-    let mirrorEndingBlockNumber = await getMirrorEndingBlockNumber();
-
-    if (currentBlockNumber >= mirrorStartingBlockNumber && currentBlockNumber < mirrorEndingBlockNumber) {
-        return true;
-    } else {
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber}\nElection block number: ${mirrorStartingBlockNumber}\nMirror ending  block number: ${mirrorEndingBlockNumber}.
-         Mirroring is not needed please try again later!!\n`);
-        return false;
-    }
-}
-
 async function main() {
     validateInput();
     if (verbose) {
-        console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
+        console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE\n`);
     }
 
-    let actualStartBlock = startBlock;
-    let isAllowed = false;
     if (force) {
-        actualStartBlock = '7443302';
-        isAllowed = true;
-        console.log('\x1b[36m%s\x1b[0m', `\n\nRunning special mirror with start block: ${actualStartBlock}\n`);
+        console.log('\x1b[36m%s\x1b[0m', `Running special mirror for longer runs\n`);
+        let actualStartBlock = 7440000;
+        let actualEndBlock = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
+        for (let i = actualStartBlock;i < actualEndBlock;i=i+paceEthereum) {
+            console.log('\x1b[36m%s\x1b[0m', `\nBetween blocks ${i}-${i+paceEthereum} \n`);
+            await transferEvents(ethereumConnectionURL, erc20ContractAddress, i, i+paceEthereum);
+            await delegateEvents(ethereumConnectionURL, votingContractAddress, i, i+paceEthereum);
+        }
     } else {
-        isAllowed = await isMirroringAllowed();
-    }
+        let actualStartBlock = 0;
+        let actualEndBlock = 0;
+        if (!startBlock) {
+            actualEndBlock = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
+            actualStartBlock = actualEndBlock - 300;
+        } else {
+            actualStartBlock = startBlock;
+            actualEndBlock = endBlock;
+        }
 
-    if (isAllowed) {
-        await transferEvents(ethereumConnectionURL, erc20ContractAddress, actualStartBlock, endBlock);
-        await delegateEvents(ethereumConnectionURL, votingContractAddress, actualStartBlock, endBlock);
+        console.log('\x1b[36m%s\x1b[0m', `\nRunning mirror between blocks ${actualStartBlock}-${actualEndBlock}\n`);
+        await transferEvents(ethereumConnectionURL, erc20ContractAddress, actualStartBlock, actualEndBlock);
+        await delegateEvents(ethereumConnectionURL, votingContractAddress, actualStartBlock, actualEndBlock);
     }
 }
 

@@ -21,12 +21,12 @@ func RunRecordFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	for i := 0; i < len(config.Transfers); i++ {
 		ethereum.Transfer(config.EthereumErc20Address, config.Transfers[i].FromIndex, config.Transfers[i].ToIndex, config.Transfers[i].Amount)
-		config.DelegatorStakeValues[config.Transfers[i].FromIndex] -= config.Transfers[i].Amount
-		config.DelegatorStakeValues[config.Transfers[i].ToIndex] += config.Transfers[i].Amount
+		config.AccountStakeValues[config.Transfers[i].FromIndex] -= config.Transfers[i].Amount
+		config.AccountStakeValues[config.Transfers[i].ToIndex] += config.Transfers[i].Amount
 	}
-	balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
-	require.Len(t, balances, len(config.DelegatorStakeValues))
-	for i, conifgBalance := range config.DelegatorStakeValues {
+	balances := ethereum.GetStakes(config.EthereumErc20Address, config.NumberOfAccounts)
+	require.Len(t, balances, len(config.AccountStakeValues))
+	for i, conifgBalance := range config.AccountStakeValues {
 		require.InDeltaf(t, conifgBalance, balances[i], 0.001, "balance of account %d in ethereum after transfer different from calculated one", i)
 	}
 	logStageDone("Stakes on Ethereum after transfers = %v", balances)
