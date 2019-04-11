@@ -92,7 +92,7 @@ workflows:
   scheduled_samaritan:
     triggers:
       - schedule:
-          cron: "0,20,40 * * * *"
+          cron: "0,10,20,30,40,50 * * * *"
           filters:
             branches:
               only:
