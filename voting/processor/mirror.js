@@ -15,7 +15,7 @@ const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
 let force = process.env.FORCE_RUN;
-let paceGamma = 5;
+let paceGamma = 1;
 let paceEthereum = 10000;
 
 const gamma = require('./gamma-calls');
