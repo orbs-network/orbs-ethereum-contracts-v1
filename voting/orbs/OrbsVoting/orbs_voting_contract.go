@@ -282,7 +282,6 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
 	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 	getGuardianStake, getGuardianVotingWeight, getTotalStake, getValidatorStake, getValidatorVote, getExcellenceProgramGuardians,
-	_firstElectionFixRewards, _firstElectionFixRewardsDelegator,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -341,7 +340,7 @@ func _firstElectionFixRewards() {
 			if reward != 0 {
 				state.Clear(_formatCumulativeGuardianExcellenceReward(guardian[:]))
 				fmt.Printf("elections %10d rewards fix: clear guardian %x, orig reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
-				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 4179)
+				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 2229)
 				_addCumulativeGuardianExcellenceReward(guardian[:], reward)
 				fmt.Printf("elections %10d rewards fix: guardian %x reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
 			}
@@ -349,7 +348,7 @@ func _firstElectionFixRewards() {
 			if reward != 0 {
 				state.Clear(_formatCumulativeParticipationReward(guardian[:]))
 				fmt.Printf("elections %10d rewards fix: clear guardian participant %x orig reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
-				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 2229)
+				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 4179)
 				_addCumulativeParticipationReward(guardian[:], reward)
 				fmt.Printf("elections %10d rewards fix: guardian participant %x reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
 			}
@@ -385,7 +384,7 @@ func _firstElectionFixRewardsDelegator(delegator []byte) {
 		if reward != 0 {
 			state.Clear(_formatCumulativeParticipationReward(delegator))
 			fmt.Printf("elections %10d rewards fix: clear participant %x original %d\n", getEffectiveElectionBlockNumber(), delegator, reward)
-			reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 2229)
+			reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 4179)
 			_addCumulativeParticipationReward(delegator[:], reward)
 			fmt.Printf("elections %10d rewards fix: participant %x reward %d\n", getEffectiveElectionBlockNumber(), delegator, reward)
 		}
@@ -575,7 +574,7 @@ var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(545)
 var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(45500)
 var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(20000)
 var TRANSITION_PERIOD_LENGTH_IN_BLOCKS = uint64(1)
-var FIRST_ELECTION_BLOCK = uint64(7502750)
+var FIRST_ELECTION_BLOCK = uint64(7528900)
 var MAX_ELECTED_VALIDATORS = 22
 var MIN_ELECTED_VALIDATORS = 7
 var VOTE_OUT_WEIGHT_PERCENT = uint64(70)
