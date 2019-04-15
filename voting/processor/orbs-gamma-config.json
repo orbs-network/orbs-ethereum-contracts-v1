@@ -24,6 +24,12 @@
         "http://18.197.127.2/vchains/1100000"
       ]
     },
+    "mainnet101": {
+      "VirtualChain": 1000000,
+      "Endpoints": [
+        "http://validator.orbs.com/vchains/1000000"
+      ]
+    },
     "testnet": {
       "VirtualChain": 42,
       "Endpoints": [
