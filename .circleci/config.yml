@@ -55,13 +55,13 @@ jobs:
           path: _out
           destination: test-output
 
-  samaritan:
-    docker:
-      - image: circleci/node:11.2.0
-    steps:
-      - checkout
-      - run: ./.circleci/bring-gamma.sh
-      - run: ./.circleci/samaritan.sh
+  # samaritan:
+  #   docker:
+  #     - image: circleci/node:11.2.0
+  #   steps:
+  #     - checkout
+  #     - run: ./.circleci/bring-gamma.sh
+  #     - run: ./.circleci/samaritan.sh
 
   subscription-solidity-tests:
     docker:
@@ -89,13 +89,13 @@ workflows:
     jobs:
       - subscription-solidity-tests
       - subscription-e2e
-  scheduled_samaritan:
-    triggers:
-      - schedule:
-          cron: "0,10,20,30,40,50 * * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - samaritan
+  # scheduled_samaritan:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0,10,20,30,40,50 * * * *"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #   jobs:
+  #     - samaritan
