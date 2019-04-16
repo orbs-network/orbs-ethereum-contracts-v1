@@ -35,9 +35,9 @@ function validateInput() {
 
 const CONTINUE = 0, DONE = 1, ERRORS = 2, PENDINGS = 3;
 let numErrors = 0;
-const maxErrors = 1;
+const maxErrors = 10;
 let numPendings = 0;
-const maxPendings = 2;
+const maxPendings = 25;
 async function processResult(result) {
     console.log(result);
     if (result.RequestStatus === "COMPLETED") {
@@ -130,10 +130,6 @@ async function getProcessingInfo() {
     let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
     let processStartBlockNumber = await getProcessingStartBlockNumber();
 
-    console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block number: ${processStartBlockNumber}.
-         Processing is not needed please try again later!!\n`);
-
-
     return { isProcessingPeriod : currentBlockNumber >= processStartBlockNumber, currentBlockNumber,  processStartBlockNumber} ;
 }
 
@@ -145,7 +141,7 @@ async function main() {
 
     let processInfo = await getProcessingInfo();
     if (processInfo.isProcessingPeriod) {
-        //await processCall();
+        await processCall();
     } else {
         console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${processInfo.currentBlockNumber} is before process vote starting block number: ${processInfo.processStartBlockNumber}.
          Processing is not needed please try again later!!\n`);
