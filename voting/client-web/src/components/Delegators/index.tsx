@@ -119,7 +119,15 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
       <Typography variant="subtitle1" gutterBottom color="textPrimary">
         Next election round will take place at Ethereum block:{' '}
-        {nextElectionsBlockHeight}
+        <Link
+          variant="h6"
+          color="secondary"
+          target="_blank"
+          rel="noopener"
+          href={`https://etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
+        >
+          {nextElectionsBlockHeight}
+        </Link>
       </Typography>
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
