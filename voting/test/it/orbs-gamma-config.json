@@ -23,6 +23,12 @@
       "Endpoints": [
         "http://18.219.51.57/vchains/1009"
       ]
+    },
+    "mainnet": {
+      "VirtualChain": 1100000,
+      "Endpoints": [
+        "http://18.197.127.2/vchains/1100000"
+      ]
     }
   }
 }
