@@ -8,9 +8,9 @@
 
 let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
-let maxNumberOfProcess  = process.env.MAXIMUM_NUMBER_OF_TRIES;
+let maxNumberOfProcess = 2;//process.env.MAXIMUM_NUMBER_OF_TRIES;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
-const batchSize = 10;
+const batchSize = 3;
 
 const gamma = require('./gamma-calls');
 
@@ -33,6 +33,50 @@ function validateInput() {
     }
 }
 
+const CONTINUE = 0, DONE = 1, ERRORS = 2, PENDINGS = 3;
+let numErrors = 0;
+const maxErrors = 10;
+let numPendings = 0;
+const maxPendings = 25;
+async function processResult(result) {
+    console.log(result);
+    if (result.RequestStatus === "COMPLETED") {
+        if(result.ExecutionResult === "SUCCESS") {
+            let isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
+            if (isDone) {
+                console.log('\x1b[36m%s\x1b[0m', `process return with "complete" ...`);
+            }
+            return isDone ? DONE : CONTINUE;
+        } else {
+            console.log('\x1b[36m%s\x1b[0m', `process return with normal error for "not the right time for process" ...`);
+            return DONE;
+        }
+    } else if (result.RequestStatus === "IN_PROCESS" && result.ExecutionResult === "NOT_EXECUTED" && result.TransactionStatus === "PENDING") {
+        numPendings++;
+        if (numPendings >= maxPendings) {
+            console.log('\x1b[31m%s\x1b[0m', `too many pendings quitting ...\n`);
+        }
+        return numPendings >= maxPendings ? PENDINGS : CONTINUE;
+    } else {
+        numErrors++;
+        if (numErrors >= maxErrors) {
+            console.log('\x1b[31m%s\x1b[0m', `too many errors quitting ...\n`);
+        }
+        return numErrors >= maxErrors ? ERRORS : CONTINUE;
+    }
+}
+
+async function processResults(results) {
+    let state = CONTINUE;
+    for(let i = 0;i < results.length;i++) {
+        state = await processResult(results[i])
+        if (state !== CONTINUE){
+            break;
+        }
+    }
+    return state;
+}
+
 async function processCall() {
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `\nStarted Processing...`);
@@ -49,8 +93,12 @@ async function processCall() {
         for(let i = 0;i < batchSize;i++) {
             txs.push(gamma.sendTransaction('process-voting.json', [], orbsVotingContractName, orbsEnvironment));
         }
-        await Promise.all(txs);
+        let results = await Promise.all(txs);
         numberOfCalls += batchSize;
+
+        if (await processResults(results) !== CONTINUE){
+            break;
+        }
 
         if (verbose) {
             console.log(`checking state of process... (took ${(Date.now() - start) / 1000.0} seconds)`);

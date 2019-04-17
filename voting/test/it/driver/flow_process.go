@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
+	"time"
 )
 
 func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum EthereumAdapter) {
@@ -26,8 +27,10 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 
 	logStage("Running processing...")
 	maxSteps := len(config.Transfers) + len(config.Delegates) + len(config.Votes) + len(config.ValidatorsAccounts) + 2
+	beforeProcess := time.Now()
 	na.Process(config.OrbsVotingContractName, maxSteps, orbs.GetOrbsEnvironment())
-	logStageDone("Running processing")
+	afterProcess := time.Now()
+	logStageDone("Running processing, took %s", afterProcess.Sub(beforeProcess))
 
 	logStage("Getting winners processing...")
 	winners := orbs.GetElectedNodes(config.OrbsVotingContractName)
