@@ -78,45 +78,37 @@ const GuardianPage = ({
       name: string;
       url: string;
       orbsAddress: string;
+      votesAgainst: string;
     };
   });
 
   const [lastVote, setLastVote] = useState([]);
   const [selectionDisabled, setSelectionDisabled] = useState(false);
 
+  const fetchValidator = async (address, checked) => {
+    const data = await apiService.getValidatorData(address);
+    validators[address] = {
+      checked,
+      name: data['name'],
+      url: normalizeUrl(data['website']),
+      orbsAddress: data['orbsAddress'],
+      votesAgainst: data['votesAgainst']
+    };
+    setValidators(Object.assign({}, validators));
+  };
+
   const fetchValidators = async () => {
     const validatorsInState = await apiService.getValidators();
-
-    const validatorsInfo = await Promise.all(
-      validatorsInState.map(address => apiService.getValidatorData(address))
-    );
-
-    const resultValidators = validatorsInState.reduce(
-      (acc, currAddress, idx) => {
-        acc[currAddress] = {
-          checked: false,
-          name: validatorsInfo[idx]['name'],
-          url: normalizeUrl(validatorsInfo[idx]['website']),
-          orbsAddress: validatorsInfo[idx]['orbsAddress'],
-          votesAgainst: validatorsInfo[idx]['votesAgainst']
-        };
-        return acc;
-      },
-      {}
-    );
 
     if (hasMetamask() && isMetamaskActive()) {
       const from = await apiService.getCurrentAddress();
       const validatorsInStorage = get(from);
-
-      validatorsInStorage.forEach(address => {
-        if (resultValidators[address] !== undefined) {
-          resultValidators[address].checked = true;
-        }
+      validatorsInState.forEach(address => {
+        fetchValidator(address, validatorsInStorage.indexOf(address) > -1);
       });
+    } else {
+      validatorsInState.forEach(address => fetchValidator(address, false));
     }
-
-    setValidators(resultValidators);
   };
 
   const fetchLastVote = async () => {

@@ -95,7 +95,6 @@ func adapterFactory(env string) (orbs driver.OrbsAdapter, ethereum driver.Ethere
 
 // EDIT THIS CONFIGURATION TO CONTROL THE TEST SCENARIO
 // DON'T FORGET TO UPDATE VALUES ACCORDING TO INSTRUCTIONS AFTER DEPLOY
-var delegatorsNumber = 15
 var guardiansAccounts = []int{4, 6, 10, 11}
 var validatorAccounts = []int{20, 21, 22, 23, 24}
 var config = &driver.Config{
@@ -106,15 +105,15 @@ var config = &driver.Config{
 	EthereumValidatorsAddress:    "",
 	EthereumValidatorsRegAddress: "",
 	EthereumGuardiansAddress:     "",
-	UserAccountOnOrbs:            "user1",                                                              // one of the IDs in orbs-test-keys.json
-	DelegatorsNumber:             delegatorsNumber,                                                     // upto 20
-	DelegatorStakeValues:         []float32{100, 100, 80, 80, 60, 60, 340, 0, 200, 50, 50, 0, 0, 0, 0}, // should length  stakeholdernumber 10 is activist with no stake, 11-14 silent
-	GuardiansAccounts:            guardiansAccounts,                                                    // indexes of activists up to 20
-	ValidatorsAccounts:           validatorAccounts,                                                    // user index 20 ... if you have more than 5 configure truffle for more accounts
+	UserAccountOnOrbs:            "user1", // one of the IDs in orbs-test-keys.json
+	NumberOfAccounts:             25,      // first x >= 10 is delegate, then y guardians, at least last 5 are validators
+	AccountStakeValues:           []float32{10000, 10000, 8000, 8000, 6000, 6000, 34000, 0, 20000, 5000, 5000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10000, 20000, 15000, 5000, 7000},
+	GuardiansAccounts:            guardiansAccounts, // indexes of activists up to 20
+	ValidatorsAccounts:           validatorAccounts, // user index 20 ... if you have more than 5 configure truffle for more accounts
 	ValidatorsOrbsAddresses:      []string{"0xf2915f50D9946a34Da51f746E85fD8A935Bea465", "0xbb92862fc7DC3bdA21294DB7b6c6628d9B65D49F", "0x38593d40b7F13f9CbF71e615dF4d51bb49947f86", "0x32489dF19c68E1881219F37e7AcabD9C05d405C4", "0xfE176d83686b87408988eeEb9835E282FF12fbFf"},
 	ValidatorsOrbsIps:            []string{driver.IpToHexaBytes("18.219.51.57"), driver.IpToHexaBytes("54.193.117.100"), driver.IpToHexaBytes("34.210.94.85"), driver.IpToHexaBytes("63.35.108.49"), driver.IpToHexaBytes("18.196.28.98")},
-	Transfers:                    generateTransfers(delegatorsNumber, guardiansAccounts),
-	Delegates:                    generateDelegates(delegatorsNumber, guardiansAccounts),
+	Transfers:                    generateTransfers(10, guardiansAccounts),
+	Delegates:                    generateDelegates(10, guardiansAccounts),
 	Votes:                        generateVotes(guardiansAccounts, validatorAccounts),
 	FirstElectionBlockNumber:     0, // zero to automatically determine after mirroring completes. positive value to enforce static value
 }
@@ -135,7 +134,7 @@ func TestFullFlow(t *testing.T) {
 	driver.RunMirrorFlow(t, config, orbs, ethereum)
 	driver.RunProcessFlow(t, config, orbs, ethereum)
 
-	driver.RunReclaimGuardianDepositsFlow(t, config, ethereum)
+	//	driver.RunReclaimGuardianDepositsFlow(t, config, ethereum)
 
 	ethereum.PrintBalances()
 }

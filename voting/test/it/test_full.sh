@@ -7,9 +7,10 @@
 
 
 if [ ! -f "./build/contracts/TestingERC20.json" ]; then
-  truffle compile
+  ./node_modules/.bin/truffle compile
 fi
 
+mkdir -p build/contracts
 cp ../../build/ethereum/*.json ./build/contracts
 
 gamma_server_env="experimental"

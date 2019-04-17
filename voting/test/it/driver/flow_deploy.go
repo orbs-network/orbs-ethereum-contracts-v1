@@ -30,10 +30,10 @@ func RunDeployFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 	}
 
 	logStage("Setting Delegators' Ethereum staked account ...")
-	ethereum.SetStakes(config.EthereumErc20Address, config.DelegatorStakeValues)
-	balances := ethereum.GetStakes(config.EthereumErc20Address, config.DelegatorsNumber)
-	require.Len(t, balances, len(config.DelegatorStakeValues))
-	for i, conifgBalance := range config.DelegatorStakeValues {
+	ethereum.SetStakes(config.EthereumErc20Address, config.AccountStakeValues)
+	balances := ethereum.GetStakes(config.EthereumErc20Address, config.NumberOfAccounts)
+	require.Len(t, balances, len(config.AccountStakeValues))
+	for i, conifgBalance := range config.AccountStakeValues {
 		require.EqualValues(t, conifgBalance, balances[i])
 	}
 	logStageDone("Stakes on Ethereum = %v", balances)

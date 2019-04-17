@@ -283,30 +283,6 @@ func _calculateOneGuardianVoteRecursive(currentLevelGuardian [20]byte, guardianT
 	return currentVotes
 }
 
-func _processValidatorsSelection2(candidateVotes map[[20]byte]uint64, totalVotes uint64) [][20]byte {
-	validators := _getValidators()
-	voteOutThreshhold := safeuint64.Div(safeuint64.Mul(totalVotes, VOTE_OUT_WEIGHT_PERCENT), 100)
-	fmt.Printf("elections %10d: %d is vote out threshhold\n", getCurrentElectionBlockNumber(), voteOutThreshhold)
-
-	winners := make([][20]byte, 0, len(validators))
-	for _, validator := range validators {
-		voted, ok := candidateVotes[validator]
-		_setValidatorVote(validator[:], voted)
-		if !ok || voted < voteOutThreshhold {
-			fmt.Printf("elections %10d: elected %x (got %d vote outs)\n", getCurrentElectionBlockNumber(), validator, voted)
-			winners = append(winners, validator)
-		} else {
-			fmt.Printf("elections %10d: candidate %x voted out by %d votes\n", getCurrentElectionBlockNumber(), validator, voted)
-		}
-	}
-	if len(winners) < MIN_ELECTED_VALIDATORS {
-		fmt.Printf("elections %10d: not enought validators left after vote using all validators %v\n", getCurrentElectionBlockNumber(), validators)
-		return validators
-	} else {
-		return winners
-	}
-}
-
 func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes uint64) [][20]byte {
 	currentValidators := _getCurrentValidators()
 	voteOutThreshold := safeuint64.Div(safeuint64.Mul(totalVotes, VOTE_OUT_WEIGHT_PERCENT), 100)

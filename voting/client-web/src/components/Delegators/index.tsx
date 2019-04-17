@@ -18,7 +18,12 @@ import { normalizeUrl } from '../../services/urls';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
-    [address: string]: { name: string; url: string };
+    [address: string]: {
+      name: string;
+      url: string;
+      stake: string;
+      hasEligibleVote: boolean;
+    };
   });
   const [selectedGuardian, setSelectedGuardian] = useState('');
   const [guardianDetailsDialogState, setGuardianDetailsDialogState] = useState(
@@ -31,27 +36,32 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
   const [totalStake, setTotalStake] = useState('0');
   const [delegatedTo, setDelegatedTo] = useState('');
+  const [nextElectionsBlockHeight, setNextElectionsBlockHeight] = useState('');
+
+  const fetchNextElectionsBlockHeight = async () => {
+    const res = await apiService.getNextElectionBlockHeight();
+    setNextElectionsBlockHeight(res);
+  };
 
   const fetchTotalStake = async () => {
     const totalStake = await apiService.getTotalStake();
     setTotalStake(totalStake);
   };
 
+  const fetchGuardian = async address => {
+    const data = await apiService.getGuardianData(address);
+    guardians[address] = {
+      name: data['name'],
+      url: normalizeUrl(data['website']),
+      stake: data['stake'],
+      hasEligibleVote: data['hasEligibleVote']
+    };
+    setGuardians(Object.assign({}, guardians));
+  };
+
   const fetchGuardians = async () => {
     const addresses = await apiService.getGuardians();
-    const details = await Promise.all(
-      addresses.map(address => apiService.getGuardianData(address))
-    );
-
-    const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
-      acc[curr] = {
-        name: details[idx]['name'],
-        url: normalizeUrl(details[idx]['website']),
-        stake: details[idx]['stake']
-      };
-      return acc;
-    }, {});
-    setGuardians(guardiansStateObject);
+    addresses.forEach(address => fetchGuardian(address));
   };
 
   const fetchDelegatedTo = async () => {
@@ -65,6 +75,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     fetchTotalStake();
     fetchGuardians();
     fetchDelegatedTo();
+    fetchNextElectionsBlockHeight();
   }, []);
 
   const delegate = async candidate => {
@@ -105,6 +116,19 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
       {/* <Typography align="right" variant="overline">
         Total stake: {totalStake} Orbs
       </Typography> */}
+
+      <Typography variant="subtitle1" gutterBottom color="textPrimary">
+        Next election round will take place at Ethereum block:{' '}
+        <Link
+          variant="h6"
+          color="secondary"
+          target="_blank"
+          rel="noopener"
+          href={`https://etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
+        >
+          {nextElectionsBlockHeight}
+        </Link>
+      </Typography>
 
       <GuardiansList guardians={guardians} onSelect={selectGuardian} />
 
