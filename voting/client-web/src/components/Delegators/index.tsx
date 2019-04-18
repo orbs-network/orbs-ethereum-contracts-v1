@@ -10,7 +10,6 @@ import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
 import Link from '@material-ui/core/Link';
 import { Mode } from '../../api/interface';
-import GuardianDialog from '../GuardianDetails';
 import Typography from '@material-ui/core/Typography';
 import ManualDelegationDialog from '../ManualDelegation';
 import { ApiService } from '../../api';
@@ -25,10 +24,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
       hasEligibleVote: boolean;
     };
   });
-  const [selectedGuardian, setSelectedGuardian] = useState('');
-  const [guardianDetailsDialogState, setGuardianDetailsDialogState] = useState(
-    false
-  );
+
   const [
     manualDelegationDialogState,
     setManualDelegationDialogState
@@ -84,23 +80,11 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     console.log(receipt);
   };
 
-  const delegateHandler = () => {
-    delegate(selectedGuardian);
-    setTimeout(() => {
-      setGuardianDetailsDialogState(false);
-    }, 100);
-  };
-
   const manualDelegateHandler = address => {
     delegate(address);
     setTimeout(() => {
       setManualDelegationDialogState(false);
     }, 100);
-  };
-
-  const selectGuardian = address => {
-    setSelectedGuardian(address);
-    setGuardianDetailsDialogState(true);
   };
 
   const hasMetamask = () => {
@@ -130,7 +114,12 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         </Link>
       </Typography>
 
-      <GuardiansList guardians={guardians} onSelect={selectGuardian} />
+      <GuardiansList
+        delegatedTo={delegatedTo}
+        enableDelegation={hasMetamask()}
+        guardians={guardians}
+        onSelect={delegate}
+      />
 
       {hasMetamask() && (
         <Typography paragraph variant="body1" color="textPrimary">
@@ -152,17 +141,6 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
           Delegation Status: Your vote is going to `{delegatedTo}`.
         </Typography>
       )}
-
-      <GuardianDialog
-        readOnly={!hasMetamask()}
-        dialogState={guardianDetailsDialogState}
-        guardian={Object.assign(
-          { address: selectGuardian },
-          guardians[selectedGuardian]
-        )}
-        onClose={() => setGuardianDetailsDialogState(false)}
-        onDelegate={delegateHandler}
-      />
 
       <ManualDelegationDialog
         dialogState={manualDelegationDialogState}

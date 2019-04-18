@@ -40,21 +40,21 @@ const ValidatorsList = ({
       <TableHead>
         <TableRow>
           <TableCell
-            style={{ width: '5%' }}
+            style={{ width: '40px' }}
             className={classes.cell}
             padding="checkbox"
           />
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
+          <TableCell style={{ width: '25%' }} className={classes.cell}>
             Name
           </TableCell>
-          <TableCell style={{ width: '4%' }} className={classes.cell} />
-          <TableCell style={{ width: '25%' }} className={classes.cell}>
+          <TableCell style={{ width: '2%' }} className={classes.cell} />
+          <TableCell style={{ width: '20%' }} className={classes.cell}>
             Ethereum Address
           </TableCell>
-          <TableCell style={{ width: '25%' }} className={classes.cell}>
+          <TableCell style={{ width: '20%' }} className={classes.cell}>
             Orbs Address
           </TableCell>
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
+          <TableCell style={{ width: '25%' }} className={classes.cell}>
             Website
           </TableCell>
           <TableCell style={{ width: '10%' }} className={classes.cell}>
@@ -65,7 +65,7 @@ const ValidatorsList = ({
       <TableBody data-testid="validators-list">
         {Object.keys(validators).map(address => (
           <TableRow data-testid={`validator-${address}`} key={address}>
-            <TableCell className={classes.cell} padding="checkbox">
+            <TableCell className={classes.cell} padding="none">
               {!readOnly && (
                 <Checkbox
                   disabled={!validators[address].checked && disableAll}
@@ -76,6 +76,7 @@ const ValidatorsList = ({
               )}
             </TableCell>
             <TableCell
+              padding="dense"
               className={classes.cell}
               component="th"
               scope="row"
@@ -83,10 +84,11 @@ const ValidatorsList = ({
             >
               {validators[address].name}
             </TableCell>
-            <TableCell>
+            <TableCell padding="none">
               <CopyAddressButton address={address} />
             </TableCell>
             <TableCell
+              padding="dense"
               className={classes.cell}
               data-testid={`validator-${address}-address`}
             >
@@ -95,6 +97,7 @@ const ValidatorsList = ({
               </Tooltip>
             </TableCell>
             <TableCell
+              padding="dense"
               className={classes.cell}
               data-testid={`validator-${address}-orbsAddress`}
             >
@@ -106,7 +109,7 @@ const ValidatorsList = ({
                 <span>{validators[address].orbsAddress}</span>
               </Tooltip>
             </TableCell>
-            <TableCell className={classes.cell}>
+            <TableCell padding="dense" className={classes.cell}>
               <Link
                 data-testid={`validator-${address}-url`}
                 href={validators[address].url}
@@ -118,7 +121,7 @@ const ValidatorsList = ({
                 {validators[address].url}
               </Link>
             </TableCell>
-            <TableCell className={classes.cell}>
+            <TableCell padding="dense" className={classes.cell}>
               {validators[address].votesAgainst}
             </TableCell>
           </TableRow>

@@ -17,7 +17,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { Chip } from '@material-ui/core';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
+import blue from '@material-ui/core/colors/blue';
 import { CopyAddressButton } from '../CopyAddressButton';
+import { DelegateButton } from './delegateButton';
 
 const styles = () => ({
   table: {
@@ -32,44 +34,59 @@ const styles = () => ({
     width: 50,
     backgroundColor: green[700]
   },
+  delegateButton: {
+    width: 70,
+    backgroundColor: blue[700]
+  },
   noChip: {
     width: 50,
     backgroundColor: red[700]
   }
 });
 
-const GuardiansList = ({ onSelect, guardians, classes }) => {
+const GuardiansList = ({
+  enableDelegation,
+  onSelect,
+  guardians,
+  classes,
+  delegatedTo
+}) => {
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell style={{ width: '18%' }} className={classes.cell}>
+          <TableCell style={{ width: '10px' }} className={classes.cell} />
+          <TableCell style={{ width: '30%' }} className={classes.cell}>
             Name
           </TableCell>
           <TableCell style={{ width: '4%' }} />
-          <TableCell style={{ width: '35%' }} className={classes.cell}>
+          <TableCell style={{ width: '20%' }} className={classes.cell}>
             Address
           </TableCell>
           <TableCell style={{ width: '25%' }} className={classes.cell}>
             Website
           </TableCell>
           <TableCell style={{ width: '10%' }} className={classes.cell}>
-            Stake in last election
+            % in last election
           </TableCell>
-          <TableCell style={{ width: '10%' }} className={classes.cell}>
-            Vote valid for next elections
+          <TableCell style={{ width: '13%' }} className={classes.cell}>
+            Valid for next elections
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="guardians-list">
         {Object.keys(guardians).map(address => (
-          <TableRow
-            data-testid={`guardian-${address}`}
-            key={address}
-            hover={true}
-            onClick={() => onSelect(address)}
-          >
+          <TableRow data-testid={`guardian-${address}`} key={address}>
+            <TableCell padding="none" className={classes.cell}>
+              {enableDelegation && (
+                <DelegateButton
+                  onDelegate={() => onSelect(address)}
+                  isDelegated={address === delegatedTo}
+                />
+              )}
+            </TableCell>
             <TableCell
+              padding="none"
               className={classes.cell}
               component="th"
               scope="row"
@@ -77,16 +94,17 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
             >
               {guardians[address].name}
             </TableCell>
-            <TableCell>
+            <TableCell padding="none">
               <CopyAddressButton address={address} />
             </TableCell>
             <TableCell
+              padding="dense"
               className={classes.cell}
               data-testid={`guardian-${address}-address`}
             >
               {address}
             </TableCell>
-            <TableCell className={classes.cell}>
+            <TableCell padding="dense" className={classes.cell}>
               <Link
                 data-testid={`guardian-${address}-url`}
                 href={guardians[address].url}
@@ -98,8 +116,8 @@ const GuardiansList = ({ onSelect, guardians, classes }) => {
                 {guardians[address].url}
               </Link>
             </TableCell>
-            <TableCell>{guardians[address].stake}%</TableCell>
-            <TableCell className={classes.cell}>
+            <TableCell padding="dense">{guardians[address].stake}%</TableCell>
+            <TableCell padding="dense" className={classes.cell}>
               <Chip
                 className={
                   guardians[address].hasEligibleVote
