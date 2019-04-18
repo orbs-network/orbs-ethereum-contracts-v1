@@ -1,3 +1,4 @@
+import erc20Abi from '../constants/erc20-abi';
 import * as contractsInfo from '../contracts-info';
 import votingContractJson from '../contracts/OrbsVoting.json';
 import guardiansContractJson from '../contracts/OrbsGuardians.json';
@@ -37,5 +38,12 @@ export const votingContractFactory = web3 => {
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsVoting']['address']
       : contractsInfo.EthereumVotingContract.address
+  );
+};
+
+export const erc20ContractFactory = web3 => {
+  return new web3.eth.Contract(
+    erc20Abi,
+    contractsInfo.EthereumErc20Address.address
   );
 };
