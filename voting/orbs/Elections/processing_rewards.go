@@ -164,23 +164,26 @@ func _getTopGuardians(guardiansAccumulatedStake map[[20]byte]uint64) (topGuardia
 	}
 	sort.Sort(guardianList)
 
-	i := 0
-	for i = 0; i < len(guardianList) && i < ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER; i++ {
-		fmt.Printf("elections %10d rewards: top guardian %x, has %d votes\n", _getCurrentElectionBlockNumber(), guardianList[i].address, guardianList[i].vote)
-		totalVotes = safeuint64.Add(totalVotes, guardianList[i].vote)
-	}
-	for i = ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER; i < len(guardianList); i++ {
-		if guardianList[i].vote != guardianList[i-1].vote {
-			break
+	for i := range guardianList {
+		if _isSortedGuardianEligibleForExcelenceReward(guardianList, i) {
+			fmt.Printf("elections %10d rewards: top guardian %x, has %d votes\n", _getCurrentElectionBlockNumber(), guardianList[i].address, guardianList[i].vote)
+			totalVotes = safeuint64.Add(totalVotes, guardianList[i].vote)
+		} else {
+			return guardianList[0:i], totalVotes
 		}
-		fmt.Printf("elections %10d rewards: top guardian %x, has %d votes\n", _getCurrentElectionBlockNumber(), guardianList[i].address, guardianList[i].vote)
-		totalVotes = safeuint64.Add(totalVotes, guardianList[i].vote)
 	}
-	if i < len(guardianList) {
-		return guardianList[0:i], totalVotes
-	} else {
-		return guardianList, totalVotes
+	return guardianList, totalVotes
+}
+
+// note : strong assumption the list is sorted !
+func _isSortedGuardianEligibleForExcelenceReward(sortedGuardians guardianArray, position int) bool {
+	if position < ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER {
+		return true
 	}
+	if sortedGuardians[position].vote == sortedGuardians[position-1].vote {
+		return true
+	}
+	return false
 }
 
 type guardianVote struct {
@@ -197,6 +200,7 @@ func (s guardianArray) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
+// important to have a deterministic sort. first by vote then by address.
 func (s guardianArray) Less(i, j int) bool {
 	return s[i].vote > s[j].vote || (s[i].vote == s[j].vote && bytes.Compare(s[i].address[:], s[j].address[:]) > 0)
 }
