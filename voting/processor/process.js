@@ -8,9 +8,9 @@
 
 let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
-let maxNumberOfProcess = 2;//process.env.MAXIMUM_NUMBER_OF_TRIES;
+let maxNumberOfProcess = process.env.MAXIMUM_NUMBER_OF_TRIES;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
-const batchSize = 3;
+const batchSize = 10;
 
 const gamma = require('./gamma-calls');
 
@@ -28,7 +28,7 @@ function validateInput() {
         maxNumberOfProcess = -1;
     }
 
-    if (process.env.VERBOUSE) {
+    if (process.env.VERBOSE) {
         verbose = true;
     }
 }
