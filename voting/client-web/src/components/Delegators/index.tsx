@@ -18,6 +18,7 @@ import { normalizeUrl } from '../../services/urls';
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
     [address: string]: {
+      address: string;
       name: string;
       url: string;
       stake: string;
@@ -47,6 +48,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const fetchGuardian = async address => {
     const data = await apiService.getGuardianData(address);
     guardians[address] = {
+      address,
       name: data['name'],
       url: normalizeUrl(data['website']),
       stake: data['stake'],

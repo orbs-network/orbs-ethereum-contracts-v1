@@ -51,6 +51,10 @@ const GuardiansList = ({
   classes,
   delegatedTo
 }) => {
+  const sortedGuardians = Object.values(guardians);
+  sortedGuardians.sort((a, b) =>
+    a['name'].toLowerCase() > b['name'].toLowerCase() ? 1 : -1
+  );
   return (
     <Table className={classes.table}>
       <TableHead>
@@ -75,13 +79,16 @@ const GuardiansList = ({
         </TableRow>
       </TableHead>
       <TableBody data-testid="guardians-list">
-        {Object.keys(guardians).map(address => (
-          <TableRow data-testid={`guardian-${address}`} key={address}>
+        {sortedGuardians.map(guardian => (
+          <TableRow
+            data-testid={`guardian-${guardian['address']}`}
+            key={guardian['address']}
+          >
             <TableCell padding="none" className={classes.cell}>
               {enableDelegation && (
                 <DelegateButton
-                  onDelegate={() => onSelect(address)}
-                  isDelegated={address === delegatedTo}
+                  onDelegate={() => onSelect(guardian['address'])}
+                  isDelegated={guardian['address'] === delegatedTo}
                 />
               )}
             </TableCell>
@@ -90,41 +97,41 @@ const GuardiansList = ({
               className={classes.cell}
               component="th"
               scope="row"
-              data-testid={`guardian-${address}-name`}
+              data-testid={`guardian-${guardian['address']}-name`}
             >
-              {guardians[address].name}
+              {guardian['name']}
             </TableCell>
             <TableCell padding="none">
-              <CopyAddressButton address={address} />
+              <CopyAddressButton address={guardian['address']} />
             </TableCell>
             <TableCell
               padding="dense"
               className={classes.cell}
-              data-testid={`guardian-${address}-address`}
+              data-testid={`guardian-${guardian['address']}-address`}
             >
-              {address}
+              {guardian['address']}
             </TableCell>
             <TableCell padding="dense" className={classes.cell}>
               <Link
-                data-testid={`guardian-${address}-url`}
-                href={guardians[address].url}
+                data-testid={`guardian-${guardian['address']}-url`}
+                href={guardian['url']}
                 target="_blank"
                 rel="noopener noreferrer"
                 color="secondary"
                 variant="body1"
               >
-                {guardians[address].url}
+                {guardian['url']}
               </Link>
             </TableCell>
-            <TableCell padding="dense">{guardians[address].stake}%</TableCell>
+            <TableCell padding="dense">{guardian['stake']}%</TableCell>
             <TableCell padding="dense" className={classes.cell}>
               <Chip
                 className={
-                  guardians[address].hasEligibleVote
+                  guardians['hasEligibleVote']
                     ? classes.yesChip
                     : classes.noChip
                 }
-                label={guardians[address].hasEligibleVote ? 'Yes' : 'No'}
+                label={guardians['hasEligibleVote'] ? 'Yes' : 'No'}
               />
             </TableCell>
           </TableRow>
