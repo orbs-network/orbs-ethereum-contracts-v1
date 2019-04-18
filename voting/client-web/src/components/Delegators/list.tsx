@@ -127,11 +127,9 @@ const GuardiansList = ({
             <TableCell padding="dense" className={classes.cell}>
               <Chip
                 className={
-                  guardians['hasEligibleVote']
-                    ? classes.yesChip
-                    : classes.noChip
+                  guardian['hasEligibleVote'] ? classes.yesChip : classes.noChip
                 }
-                label={guardians['hasEligibleVote'] ? 'Yes' : 'No'}
+                label={guardian['hasEligibleVote'] ? 'Yes' : 'No'}
               />
             </TableCell>
           </TableRow>
