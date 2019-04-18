@@ -17,9 +17,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Chip } from '@material-ui/core';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import blue from '@material-ui/core/colors/blue';
-import { CopyAddressButton } from '../CopyAddressButton';
-import { DelegateButton } from './delegateButton';
 
 const styles = () => ({
   table: {
@@ -34,102 +31,77 @@ const styles = () => ({
     width: 50,
     backgroundColor: green[700]
   },
-  delegateButton: {
-    width: 70,
-    backgroundColor: blue[700]
-  },
   noChip: {
     width: 50,
     backgroundColor: red[700]
   }
 });
 
-const GuardiansList = ({
-  enableDelegation,
-  onSelect,
-  guardians,
-  classes,
-  delegatedTo
-}) => {
-  const sortedGuardians = Object.values(guardians);
-  sortedGuardians.sort((a, b) =>
-    a['name'].toLowerCase() > b['name'].toLowerCase() ? 1 : -1
-  );
+const GuardiansList = ({ onSelect, guardians, classes }) => {
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell style={{ width: '10px' }} className={classes.cell} />
-          <TableCell style={{ width: '30%' }} className={classes.cell}>
+          <TableCell style={{ width: '18%' }} className={classes.cell}>
             이름
           </TableCell>
-          <TableCell style={{ width: '4%' }} />
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
+          <TableCell style={{ width: '35%' }} className={classes.cell}>
             주소
           </TableCell>
-          <TableCell style={{ width: '25%' }} className={classes.cell}>
+          <TableCell style={{ width: '20%' }} className={classes.cell}>
             웹사이트
           </TableCell>
           <TableCell style={{ width: '10%' }} className={classes.cell}>
             지난 투표에서의 참여지분
           </TableCell>
-          <TableCell style={{ width: '13%' }} className={classes.cell}>
+          <TableCell style={{ width: '10%' }} className={classes.cell}>
             다음 선거에 유효한 투표
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="guardians-list">
-        {sortedGuardians.map(guardian => (
+        {Object.keys(guardians).map(address => (
           <TableRow
-            data-testid={`guardian-${guardian['address']}`}
-            key={guardian['address']}
+            data-testid={`guardian-${address}`}
+            key={address}
+            hover={true}
+            onClick={() => onSelect(address)}
           >
-            <TableCell padding="none" className={classes.cell}>
-              {enableDelegation && (
-                <DelegateButton
-                  onDelegate={() => onSelect(guardian['address'])}
-                  isDelegated={guardian['address'] === delegatedTo}
-                />
-              )}
-            </TableCell>
             <TableCell
-              padding="none"
               className={classes.cell}
               component="th"
               scope="row"
-              data-testid={`guardian-${guardian['address']}-name`}
+              data-testid={`guardian-${address}-name`}
             >
-              {guardian['name']}
-            </TableCell>
-            <TableCell padding="none">
-              <CopyAddressButton address={guardian['address']} />
+              {guardians[address].name}
             </TableCell>
             <TableCell
-              padding="dense"
               className={classes.cell}
-              data-testid={`guardian-${guardian['address']}-address`}
+              data-testid={`guardian-${address}-address`}
             >
-              {guardian['address']}
+              {address}
             </TableCell>
-            <TableCell padding="dense" className={classes.cell}>
+            <TableCell className={classes.cell}>
               <Link
-                data-testid={`guardian-${guardian['address']}-url`}
-                href={guardian['url']}
+                data-testid={`guardian-${address}-url`}
+                href={guardians[address].url}
                 target="_blank"
                 rel="noopener noreferrer"
                 color="secondary"
                 variant="body1"
               >
-                {guardian['url']}
+                {guardians[address].url}
               </Link>
             </TableCell>
-            <TableCell padding="dense">{guardian['stake']}%</TableCell>
-            <TableCell padding="dense" className={classes.cell}>
+            <TableCell>{guardians[address].stake}%</TableCell>
+            <TableCell className={classes.cell}>
               <Chip
                 className={
-                  guardian['hasEligibleVote'] ? classes.yesChip : classes.noChip
+                  guardians[address].hasEligibleVote
+                    ? classes.yesChip
+                    : classes.noChip
                 }
-                label={guardian['hasEligibleVote'] ? '예' : '아니'}
+                label={guardians[address].hasEligibleVote ? '예' : '아니'}
               />
             </TableCell>
           </TableRow>

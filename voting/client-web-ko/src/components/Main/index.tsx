@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import DelegatorsPage from '../Delegators';
+import DelegatorsPage from '../Delegators/index';
 import { Route, RouteProps } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import styles from './style';

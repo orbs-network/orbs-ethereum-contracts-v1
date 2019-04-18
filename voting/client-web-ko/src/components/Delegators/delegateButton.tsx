@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip, SvgIcon, IconButton } from '@material-ui/core';
 
-const Icon = ({color}) => {
+const Icon = ({ color }) => {
   return (
     <SvgIcon fontSize="small" color={color}>
       <path fill="none" d="M0 0h24v24H0V0z" />
@@ -10,11 +10,18 @@ const Icon = ({color}) => {
   );
 };
 
-export const DelegateButton = ({isDelegated, onDelegate}) => {
+export const DelegateButton = ({ isDelegated, onDelegate }) => {
   return (
-    <Tooltip placement="top" title={isDelegated ? "Your vote is delegated to this guardian" : "Delegate"}>
+    <Tooltip
+      placement="top"
+      title={
+        isDelegated
+          ? 'Your vote is delegated to this guardian'
+          : 'Delegate to this guardian'
+      }
+    >
       <IconButton onClick={onDelegate}>
-        <Icon color={isDelegated ? "secondary" : "action"}/>
+        <Icon color={isDelegated ? 'secondary' : 'action'} />
       </IconButton>
     </Tooltip>
   );
