@@ -10,7 +10,7 @@ let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
 let maxNumberOfProcess = process.env.MAXIMUM_NUMBER_OF_TRIES;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
-const batchSize = 10;
+let batchSize = 10;
 
 const gamma = require('./gamma-calls');
 
@@ -30,6 +30,9 @@ function validateInput() {
 
     if (process.env.VERBOSE) {
         verbose = true;
+    }
+    if (process.env.BATCH_SIZE) {
+        batchSize = process.env.BATCH_SIZE;
     }
 }
 
@@ -140,12 +143,12 @@ async function main() {
     }
 
     let processInfo = await getProcessingInfo();
-    if (processInfo.isProcessingPeriod) {
+    //if (processInfo.isProcessingPeriod) {
         await processCall();
-    } else {
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${processInfo.currentBlockNumber} is before process vote starting block number: ${processInfo.processStartBlockNumber}.
-         Processing is not needed please try again later!!\n`);
-    }
+    //} else {
+    //console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${processInfo.currentBlockNumber} is before process vote starting block number: ${processInfo.processStartBlockNumber}.
+    //     Processing is not needed please try again later!!\n`);
+   // }
 }
 
 main()
