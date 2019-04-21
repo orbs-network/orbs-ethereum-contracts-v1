@@ -38,7 +38,7 @@ const ManualDelegationDialog = ({ dialogState, onClose, onDelegate }) => {
     <Dialog open={dialogState} onClose={onClose} maxWidth="lg" fullWidth={true}>
       <DialogTitle>Manualy Delegate Your Stake</DialogTitle>
       <DialogContent data-testid="manual-delegation-dialog">
-        <Typography variant="h6" color="textPrimary">
+        <Typography variant="body1" color="textPrimary">
           You can delegate your stake to anyone. They will need to delegate
           their own stake & your stake to a guardian. Only stake delegated to a
           voting guardian will be rewarded.

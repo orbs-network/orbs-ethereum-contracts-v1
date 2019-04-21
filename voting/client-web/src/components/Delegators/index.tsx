@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import ManualDelegationDialog from '../ManualDelegation';
 import { ApiService } from '../../api';
 import { normalizeUrl } from '../../services/urls';
+import DelegationStatusDialog from '../DelegationStatusDialog';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
@@ -64,7 +65,8 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
   const fetchDelegatedTo = async () => {
     if (hasMetamask()) {
-      const res = await apiService.getCurrentDelegation();
+      const address = await apiService.getCurrentAddress();
+      const res = await apiService.getCurrentDelegation(address);
       setDelegatedTo(res);
     }
   };
@@ -95,9 +97,23 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
   return (
     <>
-      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        Guardians List
-      </Typography>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <Typography
+          variant="h2"
+          component="h2"
+          gutterBottom
+          color="textPrimary"
+        >
+          Guardians List
+        </Typography>
+        <DelegationStatusDialog apiService={apiService} />
+      </header>
 
       {/* <Typography align="right" variant="overline">
         Total stake: {totalStake} Orbs
@@ -135,12 +151,6 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
             here
           </Link>
           .
-        </Typography>
-      )}
-
-      {hasMetamask() && delegatedTo.length > 0 && (
-        <Typography paragraph variant="body1" color="textPrimary">
-          Delegation Status: Your vote is going to `{delegatedTo}`.
         </Typography>
       )}
 
