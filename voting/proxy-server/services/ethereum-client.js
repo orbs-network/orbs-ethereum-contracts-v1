@@ -8,6 +8,7 @@
 
 const Web3 = require('web3');
 const contractsInfo = require('../contracts-info');
+const erc20ContactAbi = require('../constants/erc20-abi');
 const votingContractJSON = require('../contracts/OrbsVoting.json');
 const guardiansContractJSON = require('../contracts/OrbsGuardians.json');
 const validatorsContractJSON = require('../contracts/OrbsValidators.json');
@@ -36,6 +37,10 @@ class EthereumClientService {
       validatorsRegistryContractJSON.abi,
       contractsInfo.EthereumValidatorsRegistryContract.address
     );
+    this.erc20Contract = new this.web3.eth.Contract(
+      erc20ContactAbi,
+      contractsInfo.EthereumErc20Address.address
+    )
   }
   getGuardians(offset, limit) {
     return this.guardiansContract.methods.getGuardians(offset, limit).call();
@@ -63,6 +68,42 @@ class EthereumClientService {
     return this.validatorsRegistryContract.methods
       .getValidatorData(address)
       .call();
+  }
+
+  async getCurrentDelegation(address) {
+    const from = address;
+
+    const OrbsTDEEthereumBlock = 7439168;
+    const TransferEventSignature = this.web3.utils.sha3(
+      'Transfer(address,address,uint256)'
+    );
+    const delegationConstant =
+      '0x00000000000000000000000000000000000000000000000000f8b0a10e470000';
+
+    let currentDelegation = await this.votingContract.methods
+      .getCurrentDelegation(from)
+      .call({ from });
+
+    if (currentDelegation === '0x0000000000000000000000000000000000000000') {
+      const paddedAddress = this.web3.utils.padLeft(from, 64);
+      const options = {
+        fromBlock: OrbsTDEEthereumBlock,
+        toBlock: 'latest',
+        topics: [paddedAddress]
+      };
+      const events = await this.erc20Contract.getPastEvents(
+        TransferEventSignature,
+        options
+      );
+      const entryWithTransaction = events.find(
+        ({ raw }) => raw['data'] === delegationConstant
+      );
+      if (entryWithTransaction) {
+        const help = entryWithTransaction['raw']['topics'][2];
+        currentDelegation = '0x' + help.substring(26, 66);
+      }
+    }
+    return currentDelegation;
   }
 
   async getNextElectionsBlockHeight() {

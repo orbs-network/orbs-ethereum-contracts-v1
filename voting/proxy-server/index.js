@@ -13,6 +13,7 @@ const rewardsApiFactory = require('./api/rewards');
 const electionsApiFactory = require('./api/elections');
 const guardiansApiFactory = require('./api/guardians');
 const validatorsApiFactory = require('./api/validators');
+const delegationApiFactory = require('./api/delegation');
 const electedValidatorsApiFactory = require('./api/elected-validators');
 const { OrbsClientService } = require('./services/orbs-client');
 const { EthereumClientService } = require('./services/ethereum-client');
@@ -46,5 +47,6 @@ app.use('/api', validatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', rewardsApiFactory(orbsClientService));
 app.use('/api', stakeApiFactory(orbsClientService));
 app.use('/api', electionsApiFactory(ethereumClient));
+app.use('/api', delegationApiFactory(ethereumClient));
 
 app.listen(port, () => console.log(`Started on port ${port}!`));
