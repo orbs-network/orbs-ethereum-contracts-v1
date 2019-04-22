@@ -20,6 +20,7 @@ import Languages from './languages';
 
 const Header = ({ classes, isReadOnly }) => {
   const links = [
+    { label: 'Home', url: '/' },
     { label: 'Delegators', url: '/delegator' },
     { label: 'Guardians', url: '/guardian' },
     { label: 'Validators', url: '/validator' },
@@ -47,6 +48,7 @@ const Header = ({ classes, isReadOnly }) => {
               // @ts-ignore
               component={NavLink}
               key={idx}
+              exact={true}
               className={classes.link}
               activeStyle={{ color: HOVER_COLOR }}
               underline="none"
