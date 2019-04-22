@@ -26,7 +26,8 @@ export interface IApiStrategy {
   }): Promise<{}>;
   getRewards(address: string): Promise<any>;
   getTotalStake(): Promise<string>;
-  getCurrentDelegation(): Promise<address>;
+  getCurrentDelegation(address: address): Promise<address>;
   getLastVote(): Promise<{ validators: string[] }>;
+  getNextElectionBlockHeight(): Promise<string>;
   isMainNet(): boolean;
 }

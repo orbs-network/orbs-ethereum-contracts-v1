@@ -10,20 +10,23 @@ import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
 import Link from '@material-ui/core/Link';
 import { Mode } from '../../api/interface';
-import GuardianDialog from '../GuardianDetails';
 import Typography from '@material-ui/core/Typography';
 import ManualDelegationDialog from '../ManualDelegation';
 import { ApiService } from '../../api';
 import { normalizeUrl } from '../../services/urls';
+import DelegationStatusDialog from '../DelegationStatusDialog';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
-    [address: string]: { name: string; url: string };
+    [address: string]: {
+      address: string;
+      name: string;
+      url: string;
+      stake: string;
+      hasEligibleVote: boolean;
+    };
   });
-  const [selectedGuardian, setSelectedGuardian] = useState('');
-  const [guardianDetailsDialogState, setGuardianDetailsDialogState] = useState(
-    false
-  );
+
   const [
     manualDelegationDialogState,
     setManualDelegationDialogState
@@ -31,32 +34,39 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
   const [totalStake, setTotalStake] = useState('0');
   const [delegatedTo, setDelegatedTo] = useState('');
+  const [nextElectionsBlockHeight, setNextElectionsBlockHeight] = useState('');
+
+  const fetchNextElectionsBlockHeight = async () => {
+    const res = await apiService.getNextElectionBlockHeight();
+    setNextElectionsBlockHeight(res);
+  };
 
   const fetchTotalStake = async () => {
     const totalStake = await apiService.getTotalStake();
     setTotalStake(totalStake);
   };
 
+  const fetchGuardian = async address => {
+    const data = await apiService.getGuardianData(address);
+    guardians[address] = {
+      address,
+      name: data['name'],
+      url: normalizeUrl(data['website']),
+      stake: data['stake'],
+      hasEligibleVote: data['hasEligibleVote']
+    };
+    setGuardians(Object.assign({}, guardians));
+  };
+
   const fetchGuardians = async () => {
     const addresses = await apiService.getGuardians();
-    const details = await Promise.all(
-      addresses.map(address => apiService.getGuardianData(address))
-    );
-
-    const guardiansStateObject = addresses.reduce((acc, curr, idx) => {
-      acc[curr] = {
-        name: details[idx]['name'],
-        url: normalizeUrl(details[idx]['website']),
-        stake: details[idx]['stake']
-      };
-      return acc;
-    }, {});
-    setGuardians(guardiansStateObject);
+    addresses.forEach(address => fetchGuardian(address));
   };
 
   const fetchDelegatedTo = async () => {
     if (hasMetamask()) {
-      const res = await apiService.getCurrentDelegation();
+      const address = await apiService.getCurrentAddress();
+      const res = await apiService.getCurrentDelegation(address);
       setDelegatedTo(res);
     }
   };
@@ -65,19 +75,13 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     fetchTotalStake();
     fetchGuardians();
     fetchDelegatedTo();
+    fetchNextElectionsBlockHeight();
   }, []);
 
   const delegate = async candidate => {
     const receipt = await apiService.delegate(candidate);
     fetchDelegatedTo();
     console.log(receipt);
-  };
-
-  const delegateHandler = () => {
-    delegate(selectedGuardian);
-    setTimeout(() => {
-      setGuardianDetailsDialogState(false);
-    }, 100);
   };
 
   const manualDelegateHandler = address => {
@@ -87,26 +91,53 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     }, 100);
   };
 
-  const selectGuardian = address => {
-    setSelectedGuardian(address);
-    setGuardianDetailsDialogState(true);
-  };
-
   const hasMetamask = () => {
     return apiService.mode === Mode.ReadWrite;
   };
 
   return (
     <>
-      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        Guardians List
-      </Typography>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <Typography
+          variant="h2"
+          component="h2"
+          gutterBottom
+          color="textPrimary"
+        >
+          Guardians List
+        </Typography>
+        <DelegationStatusDialog apiService={apiService} />
+      </header>
 
       {/* <Typography align="right" variant="overline">
         Total stake: {totalStake} Orbs
       </Typography> */}
 
-      <GuardiansList guardians={guardians} onSelect={selectGuardian} />
+      <Typography variant="subtitle1" gutterBottom color="textPrimary">
+        Next election round will take place at Ethereum block:{' '}
+        <Link
+          variant="h6"
+          color="secondary"
+          target="_blank"
+          rel="noopener"
+          href={`https://etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
+        >
+          {nextElectionsBlockHeight}
+        </Link>
+      </Typography>
+
+      <GuardiansList
+        delegatedTo={delegatedTo}
+        enableDelegation={hasMetamask()}
+        guardians={guardians}
+        onSelect={delegate}
+      />
 
       {hasMetamask() && (
         <Typography paragraph variant="body1" color="textPrimary">
@@ -122,23 +153,6 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
           .
         </Typography>
       )}
-
-      {hasMetamask() && delegatedTo.length > 0 && (
-        <Typography paragraph variant="body1" color="textPrimary">
-          Delegation Status: Your vote is going to `{delegatedTo}`.
-        </Typography>
-      )}
-
-      <GuardianDialog
-        readOnly={!hasMetamask()}
-        dialogState={guardianDetailsDialogState}
-        guardian={Object.assign(
-          { address: selectGuardian },
-          guardians[selectedGuardian]
-        )}
-        onClose={() => setGuardianDetailsDialogState(false)}
-        onDelegate={delegateHandler}
-      />
 
       <ManualDelegationDialog
         dialogState={manualDelegationDialogState}

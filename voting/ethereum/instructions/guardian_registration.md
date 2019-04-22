@@ -1,6 +1,6 @@
 ## Guardian Registration
 In order to participate in voting, a Guardian must first register. 
-An Orbs Guardian is identified by her Ethereum address. Delegation to the Guardian are done by delegating to her Ethereum address. 
+An Orbs Guardian is identified by an Ethereum address. Delegation to a Guardian is done by delegating to the Guardian's Ethereum address. 
 
 This document walks you through the Guardian registration process using the MyCrypto desktop wallet application.
 Any wallet software may be used and the choice of MyCrypto here is for illustration only.
@@ -13,7 +13,7 @@ Note: A Guardian may update her registration data at any time or leave the regis
 
 ### Registration pre-requirements
  - MyCrypto desktop app (or another equivalent wallet software)
- - A wallet configured with your Guardian's Ethereum account keys and a positive Ether balance to pay the Ethereum transaction fees
+ - A wallet configured with your Guardian's Ethereum account keys and a positive Ether balance to pay the Ethereum transaction fees (transaction and deposit)
  - 16 ETH deposit is required to register as a Guardian
  - Registration data (Guardian name + website URL)
  - ABI and contract address available below in the Registration steps or on [Etherscan][1] 
@@ -36,16 +36,15 @@ Note: A Guardian may update her registration data at any time or leave the regis
    
    **Registration Interface ABI:**
 
-   [{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"register","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getGuardianData","outputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
+    > [{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"register","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getGuardianData","outputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
 
     Alternatively, the ABI may be extracted directly from [Etherscan][1], **Contract ABI** box.
   
     Paste the ABI in the **ABI / JSON Interface** box.
-
 ![](../instructions/MyCrypto_guardian2.png)
 5. Click *Access*.
    * If the *Access* button appears disabled, make sure there are no trailing line feeds at the bottom of the *ABI / JSON Interface* text box.
-6. Select `register` in the drop down list *Read / Write Contract*
+6. Select `register` in the drop-down list *Read / Write Contract*
 ![](../instructions/MyCrypto_guardian3.png)
 The function parameters for the `register` call will appear in the form.
 
@@ -55,10 +54,9 @@ The function parameters for the `register` call will appear in the form.
 8. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
 In this example we choose to work with a HW Ledger:
-
 ![](../instructions/MyCrypto_guardian5.png)
 
-Proceed to *Choose Address*. 
+    Proceed to *Choose Address*. 
 
 9. Select your Guardians's Ethereum address. 
 The address you choose will be the Guardians's identification for delegation and rewards calculation later on.
@@ -74,25 +72,24 @@ Exactly 16 Ether deposit is required for registration. You may not send more tha
 `500,000` should be more than enough (at the time this is being written a successful registration uses 
 ~115000 gas). You will not be charged for unused gas. Please update the Gas Price to a reasonable value, for example according to https://ethgasstation.info/
 
-Click *Write* 
-
-Click *Sign Transaction*
-
-Click *Send Transaction*
-
-Review, then click *Send*
+    Click *Write* 
+    
+    Click *Sign Transaction*
+    
+    Click *Send Transaction*
+    
+    Review, then click *Send*
 
 12. Once the transaction is sent, MyCrypto will provide a link to track the transaction status on Etherscan.
 Navigate to *Etherscan* by clicking *Verify (Etherscan)*
 
-
 13. Confirm the transaction has been accepted successfully.
 ![](../instructions/etherscan_confirmation_2.png)
  
-Make sure you see 
-> TxReceipt Status:Success
-
-With sufficient block confirmations.
+    Make sure you see 
+    > TxReceipt Status:Success
+    
+    With sufficient block confirmations.
 
 14. Review your registration data by calling getGuardianData() with your Ethereum address.
 

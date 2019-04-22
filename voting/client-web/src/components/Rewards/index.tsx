@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -17,6 +17,9 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
+import { ApiService } from '../../api';
+import { Location } from 'history';
+import { parse as parseQuery } from 'querystring';
 
 const styles = theme => ({
   form: {
@@ -36,7 +39,15 @@ const styles = theme => ({
   }
 });
 
-const RewardsPage = ({ classes, apiService }) => {
+const RewardsPage = ({
+  classes,
+  apiService,
+  location
+}: {
+  classes: any;
+  apiService: ApiService;
+  location?: Location;
+}) => {
   const [address, setAddress] = useState('');
   const [rewards, setRewards] = useState({});
 
@@ -47,6 +58,16 @@ const RewardsPage = ({ classes, apiService }) => {
   const submitHandler = () => {
     fetchRewards(address);
   };
+
+  useEffect(() => {
+    if (!location!.search) {
+      return;
+    }
+
+    const queryParams: any = parseQuery(location!.search.substr(1));
+    setAddress(queryParams.address);
+    fetchRewards(queryParams.address);
+  }, []);
 
   return (
     <>

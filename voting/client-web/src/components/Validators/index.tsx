@@ -12,29 +12,36 @@ import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Link } from 'react-router-dom';
+import { ApiService } from '../../api';
 
 const styles = () => ({});
 
-const ValidatorsPage = ({ classes, apiService }) => {
+const ValidatorsPage = ({
+  classes,
+  apiService
+}: {
+  classes: any;
+  apiService: ApiService;
+}) => {
   const [validators, setValidators] = useState({});
+
+  const getValidatorsData = async address => {
+    const data = await apiService.getElectedValidatorData(address);
+    if (!validators[address]) {
+      validators[address] = {};
+    }
+
+    validators[address].name = data['name'];
+    validators[address].address;
+    validators[address].orbsAddress = data['orbsAddress'];
+    validators[address].stake = data['stake'];
+
+    setValidators(Object.assign({}, validators));
+  };
 
   const fetchElectedValidators = async () => {
     const ids = await apiService.getElectedValidators();
-    const list = await Promise.all(
-      ids.map(address => apiService.getElectedValidatorData(address))
-    );
-    const validators = ids.reduce((acc, currId, idx) => {
-      acc[currId] = {
-        name: list[idx]['name'],
-        address: currId,
-        orbsAddress: list[idx]['orbsAddress'],
-        stake: list[idx]['stake'],
-        totalReward: list[idx]['totalReward'],
-        participationReward: list[idx]['participationReward']
-      };
-      return acc;
-    }, {});
-    setValidators(validators);
+    ids.map(getValidatorsData);
   };
 
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;

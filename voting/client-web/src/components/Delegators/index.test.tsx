@@ -41,22 +41,6 @@ describe('Delegators Page', () => {
     });
   });
 
-  it('should delegate to a selected candidate', async () => {
-    const delegateSpy = jest.spyOn(driver.apiService, 'delegate');
-    const firstAddress = Object.keys(guardiansData)[0];
-
-    const { getByTestId } = driver.render();
-    const guardianList = getByTestId('guardians-list');
-    await waitForElement(() => guardianList.children.length);
-
-    getByTestId(`guardian-${firstAddress}`).click();
-
-    await waitForElement(() => getByTestId('guardian-dialog'));
-
-    await getByTestId('delegate-button').click();
-    expect(delegateSpy).toHaveBeenCalledWith(firstAddress);
-  });
-
   it('should be able to delegate manually', async () => {
     const delegateSpy = jest.spyOn(driver.apiService, 'delegate');
     const address = '0xa8F0f2A5D6E3799D5a0Bed1d1B3C61d21B163EFD';

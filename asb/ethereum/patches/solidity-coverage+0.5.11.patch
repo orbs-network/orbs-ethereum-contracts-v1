@@ -1,0 +1,36 @@
+patch-package
+--- a/node_modules/solidity-coverage/lib/app.js
++++ b/node_modules/solidity-coverage/lib/app.js
+@@ -332,7 +332,7 @@ class App {
+       });
+       this.events = [];
+       reader
+-        .on('line', line => this.events.push(line))
++        .on('line', line => this.coverage.processEvent(line))
+         .on('close', () => {
+           // Generate Istanbul report
+           try {
+--- a/node_modules/solidity-coverage/lib/coverageMap.js
++++ b/node_modules/solidity-coverage/lib/coverageMap.js
+@@ -98,9 +98,9 @@ module.exports = class CoverageMap {
+    * @param  {String} relative path to host contracts eg: './../contracts'
+    * @return {Object} coverage map.
+    */
+-  generate(events, pathPrefix) {
+-    for (let idx = 0; idx < events.length; idx++) {
+-      const event = JSON.parse(events[idx]);
++  processEvent(line) {
++
++      const event = JSON.parse(line);
+ 
+       if (event.topics.filter(t => this.lineTopics.indexOf(t) >= 0).length > 0) {
+         const data = SolidityCoder.decodeParams(['string', 'uint256'], event.data.replace('0x', ''));
+@@ -128,7 +128,7 @@ module.exports = class CoverageMap {
+         this.assertCoverage[canonicalContractPath][data[1].toNumber()].postEvents += 1;
+       }
+     }
+-    // Finally, interpret the assert pre/post events
++  generate(events, pathPrefix) {
+     Object.keys(this.assertCoverage).forEach(contractPath => {
+       const contract = this.coverage[contractPath];
+       for (let i = 1; i <= Object.keys(contract.b).length; i++) {

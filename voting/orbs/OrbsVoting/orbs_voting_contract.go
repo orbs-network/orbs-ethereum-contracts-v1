@@ -331,6 +331,75 @@ func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 // This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 // The above notice should be included in all copies or substantial portions of the software.
 
+func _firstElectionFixRewards() {
+	key := []byte("_fix_rewards_first_election_")
+	if state.ReadUint32(key) == 0 {
+		guardians := _getGuardians()
+		for guardian, _ := range guardians {
+			reward := getCumulativeGuardianExcellenceReward(guardian[:])
+			if reward != 0 {
+				state.Clear(_formatCumulativeGuardianExcellenceReward(guardian[:]))
+				fmt.Printf("elections %10d rewards fix: clear guardian %x, orig reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
+				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 2229)
+				_addCumulativeGuardianExcellenceReward(guardian[:], reward)
+				fmt.Printf("elections %10d rewards fix: guardian %x reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
+			}
+			reward = getCumulativeParticipationReward(guardian[:])
+			if reward != 0 {
+				state.Clear(_formatCumulativeParticipationReward(guardian[:]))
+				fmt.Printf("elections %10d rewards fix: clear guardian participant %x orig reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
+				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 4179)
+				_addCumulativeParticipationReward(guardian[:], reward)
+				fmt.Printf("elections %10d rewards fix: guardian participant %x reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
+			}
+
+		}
+
+		electionValidatorIntroduction := safeuint64.Div(safeuint64.Mul(ELECTION_VALIDATOR_INTRODUCTION_REWARD, 100), ANNUAL_TO_ELECTION_FACTOR)
+		validators := _getValidators()
+		for _, validator := range validators {
+			reward := getCumulativeValidatorReward(validator[:])
+			if reward != 0 {
+				state.Clear(_formatCumulativeValidatorReward(validator[:]))
+				fmt.Printf("elections %10d rewards fix: clear validator %x orig reward %d\n", getEffectiveElectionBlockNumber(), validator, reward)
+				reward = safeuint64.Sub(reward, 8423)
+				if reward != 0 {
+					reward = safeuint64.Div(safeuint64.Mul(reward, 100), 11723)
+				}
+				reward = safeuint64.Add(reward, electionValidatorIntroduction)
+				_addCumulativeValidatorReward(validator[:], reward)
+				fmt.Printf("elections %10d rewards fix: validator %x reward %d\n", getEffectiveElectionBlockNumber(), validator, reward)
+			}
+		}
+		state.WriteUint32(key, 1)
+	} else {
+		panic(fmt.Sprintf("cannot fix first election rewards anymore"))
+	}
+}
+
+func _firstElectionFixRewardsDelegator(delegator []byte) {
+	key := []byte(fmt.Sprintf("_fix_rewards_first_election_%s", hex.EncodeToString(delegator)))
+	if state.ReadUint32(key) == 0 && getNumberOfElections() == 1 {
+		reward := getCumulativeParticipationReward(delegator)
+		if reward != 0 {
+			state.Clear(_formatCumulativeParticipationReward(delegator))
+			fmt.Printf("elections %10d rewards fix: clear participant %x original %d\n", getEffectiveElectionBlockNumber(), delegator, reward)
+			reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 4179)
+			_addCumulativeParticipationReward(delegator[:], reward)
+			fmt.Printf("elections %10d rewards fix: participant %x reward %d\n", getEffectiveElectionBlockNumber(), delegator, reward)
+		}
+		state.WriteUint32(key, 1)
+	} else {
+		panic(fmt.Sprintf("cannot fix first election rewards anymore"))
+	}
+}
+
+// Copyright 2019 the orbs-ethereum-contracts authors
+// This file is part of the orbs-ethereum-contracts library in the Orbs project.
+//
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+// The above notice should be included in all copies or substantial portions of the software.
+
 /***
  * Guardians
  */
@@ -501,11 +570,11 @@ var DELEGATION_NAME = "Delegate"
 var DELEGATION_BY_TRANSFER_NAME = "Transfer"
 var DELEGATION_BY_TRANSFER_VALUE = big.NewInt(70000000000000000)
 var ETHEREUM_STAKE_FACTOR = big.NewInt(1000000000000000000)
-var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(480)
-var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(40320)
-var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(15000)
+var VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS = uint64(545)
+var VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS = uint64(45500)
+var ELECTION_PERIOD_LENGTH_IN_BLOCKS = uint64(20000)
 var TRANSITION_PERIOD_LENGTH_IN_BLOCKS = uint64(1)
-var FIRST_ELECTION_BLOCK = uint64(7467969)
+var FIRST_ELECTION_BLOCK = uint64(7528900)
 var MAX_ELECTED_VALIDATORS = 22
 var MIN_ELECTED_VALIDATORS = 7
 var VOTE_OUT_WEIGHT_PERCENT = uint64(70)
@@ -567,8 +636,8 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint
 	} else if stateMethod == eventName {
 		stateBlockNumber = state.ReadUint64(_formatDelegatorBlockNumberKey(delegator))
 		stateBlockTxIndex := state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegator))
-		if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex > eventBlockTxIndex) {
-			panic(fmt.Errorf("delegate from %v to %v with block-height %d and tx-index %d failed since already have newer block-height %d and tx-index %d",
+		if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex >= eventBlockTxIndex) {
+			panic(fmt.Errorf("delegate from %v to %v with block-height %d and tx-index %d failed since current delegation is from block-height %d and tx-index %d",
 				delegator, agent, eventBlockNumber, eventBlockTxIndex, stateBlockNumber, stateBlockTxIndex))
 		}
 	}
@@ -647,15 +716,18 @@ func _formatDelegatorStakeKey(delegator []byte) []byte {
 // The above notice should be included in all copies or substantial portions of the software.
 
 /***
- * Rewards
+ * Rewards.
+ * Rewards constants are annual!!
  */
-var ELECTION_PARTICIPATION_MAX_REWARD = uint64(493150) // 60M / number of elections per year
+
+var ELECTION_PARTICIPATION_MAX_REWARD = uint64(60000000)
 var ELECTION_PARTICIPATION_MAX_STAKE_REWARD_PERCENT = uint64(8)
-var ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD = uint64(328767) // 40M / number of elections per year
+var ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD = uint64(40000000)
 var ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT = uint64(10)
 var ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER = 10
-var ELECTION_VALIDATOR_INTRODUCTION_MAX_REWARD = uint64(8220) // 1M / number of elections per year
+var ELECTION_VALIDATOR_INTRODUCTION_REWARD = uint64(1000000)
 var ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT = uint64(4)
+var ANNUAL_TO_ELECTION_FACTOR = uint64(11723)
 
 func _processRewards(totalVotes uint64, elected [][20]byte, participantStakes map[[20]byte]uint64, guardiansAccumulatedStake map[[20]byte]uint64) {
 	_processRewardsParticipants(totalVotes, participantStakes)
@@ -665,7 +737,7 @@ func _processRewards(totalVotes uint64, elected [][20]byte, participantStakes ma
 
 func _processRewardsParticipants(totalVotes uint64, participantStakes map[[20]byte]uint64) {
 	totalReward := _maxRewardForGroup(ELECTION_PARTICIPATION_MAX_REWARD, totalVotes, ELECTION_PARTICIPATION_MAX_STAKE_REWARD_PERCENT)
-	fmt.Printf("elections %10d rewards: participants total reward is %d \n", getCurrentElectionBlockNumber(), totalReward)
+	fmt.Printf("elections %10d rewards: %d participants total reward is %d \n", getCurrentElectionBlockNumber(), len(participantStakes), totalReward)
 	for participant, stake := range participantStakes {
 		reward := safeuint64.Div(safeuint64.Mul(stake, totalReward), totalVotes)
 		fmt.Printf("elections %10d rewards: participant %x, stake %d adding %d\n", getCurrentElectionBlockNumber(), participant, stake, reward)
@@ -692,11 +764,12 @@ func _processRewardsGuardians(totalVotes uint64, guardiansAccumulatedStake map[[
 }
 
 func _processRewardsValidators(elected [][20]byte) {
-	fmt.Printf("elections %10d rewards: validadator introduction reward %d\n", getCurrentElectionBlockNumber(), ELECTION_VALIDATOR_INTRODUCTION_MAX_REWARD)
+	electionValidatorIntroduction := safeuint64.Div(safeuint64.Mul(ELECTION_VALIDATOR_INTRODUCTION_REWARD, 100), ANNUAL_TO_ELECTION_FACTOR)
 	validatorsStake := _getValidatorsStake()
+	fmt.Printf("elections %10d rewards: %d validadator introduction reward %d\n", getCurrentElectionBlockNumber(), len(validatorsStake), electionValidatorIntroduction)
 	for _, elected := range elected {
 		stake := validatorsStake[elected]
-		reward := safeuint64.Add(ELECTION_VALIDATOR_INTRODUCTION_MAX_REWARD, safeuint64.Div(safeuint64.Mul(stake, ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT), 100))
+		reward := safeuint64.Add(electionValidatorIntroduction, safeuint64.Div(safeuint64.Mul(stake, ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT), ANNUAL_TO_ELECTION_FACTOR))
 		fmt.Printf("elections %10d rewards: validator %x, stake %d adding %d\n", getCurrentElectionBlockNumber(), elected, stake, reward)
 		_addCumulativeValidatorReward(elected[:], reward)
 	}
@@ -715,12 +788,13 @@ func _getValidatorsStake() (validatorsStake map[[20]byte]uint64) {
 }
 
 func _maxRewardForGroup(upperMaximum, totalVotes, percent uint64) uint64 {
-	calcMaximum := safeuint64.Div(safeuint64.Mul(totalVotes, percent), 100)
-	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = totalVotes %d * percent %d\n", getCurrentElectionBlockNumber(), upperMaximum, calcMaximum, totalVotes, percent)
-	if calcMaximum < upperMaximum {
-		return calcMaximum
+	upperMaximumPerElection := safeuint64.Div(safeuint64.Mul(upperMaximum, 100), ANNUAL_TO_ELECTION_FACTOR)
+	calcMaximumPerElection := safeuint64.Div(safeuint64.Mul(totalVotes, percent), ANNUAL_TO_ELECTION_FACTOR)
+	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = totalVotes %d * percent %d / number of annual election \n", getCurrentElectionBlockNumber(), upperMaximumPerElection, calcMaximumPerElection, totalVotes, percent)
+	if calcMaximumPerElection < upperMaximumPerElection {
+		return calcMaximumPerElection
 	}
-	return upperMaximum
+	return upperMaximumPerElection
 }
 
 func _formatCumulativeParticipationReward(delegator []byte) []byte {

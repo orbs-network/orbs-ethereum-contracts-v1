@@ -1,15 +1,18 @@
 import Web3 from 'web3';
 import {
-  guardiansContractFactory,
+  erc20ContractFactory,
   votingContractFactory,
+  guardiansContractFactory,
   validatorsRegistryContractFactory
 } from './contracts';
+import { Address4 } from 'ip-address';
 
 export class MetamaskService {
   private web3: Web3;
   private validatorsRegistryContract;
   private guardiansContract;
   private votingContract;
+  private erc20Contract;
 
   constructor() {
     this.web3 = new Web3(ethereum as any);
@@ -18,10 +21,12 @@ export class MetamaskService {
     );
     this.guardiansContract = guardiansContractFactory(this.web3);
     this.votingContract = votingContractFactory(this.web3);
+    this.erc20Contract = erc20ContractFactory(this.web3);
   }
 
-  private ipAddressToHex(address: string) {
-    return this.web3.utils.toHex(address.split('.').join(''));
+  private ipAddressToBytes(address: string) {
+    const formatted = new Address4(address).toHex();
+    return `0x${formatted.split(':').join('')}`;
   }
 
   private enableMetamask(): Promise<string> {
@@ -55,27 +60,68 @@ export class MetamaskService {
     const { name, website } = info;
     const from = await this.enableMetamask();
     const requiredDeposit = await this.guardiansContract.methods
-      .registrationDeposit()
+      .registrationDepositWei()
       .call();
-    return this.guardiansContract.methods
-      .register(name, website)
-      .send({ from, value: requiredDeposit });
+    const isGuardian = await this.guardiansContract.methods
+      .isGuardian(from)
+      .call({ from });
+    const method = isGuardian ? 'update' : 'register';
+    return this.guardiansContract.methods[method](name, website).send({
+      from,
+      value: requiredDeposit
+    });
   }
 
   async registerValidator(info) {
     const { name, ipAddress, website, orbsAddress } = info;
     const from = await this.enableMetamask();
-    const ipHex = this.ipAddressToHex(ipAddress);
-    return this.validatorsRegistryContract.methods
-      .register(name, ipHex, website, orbsAddress)
-      .send({ from });
+    const ipHex = this.ipAddressToBytes(ipAddress);
+    const isValidator = await this.validatorsRegistryContract.methods
+      .isValidator(from)
+      .call({ from });
+    const method = isValidator ? 'update' : 'register';
+    return this.validatorsRegistryContract.methods[method](
+      name,
+      ipHex,
+      website,
+      orbsAddress
+    ).send({ from });
   }
 
   async getCurrentDelegation(): Promise<string> {
     const from = await this.enableMetamask();
-    return this.votingContract.methods
+
+    const OrbsTDEEthereumBlock = 7439168;
+    const TransferEventSignature = this.web3.utils.sha3(
+      'Transfer(address,address,uint256)'
+    );
+    const delegationConstant =
+      '0x00000000000000000000000000000000000000000000000000f8b0a10e470000';
+
+    let currentDelegation = await this.votingContract.methods
       .getCurrentDelegation(from)
       .call({ from });
+
+    if (currentDelegation === '0x0000000000000000000000000000000000000000') {
+      const paddedAddress = this.web3.utils.padLeft(from, 64);
+      const options = {
+        fromBlock: OrbsTDEEthereumBlock,
+        toBlock: 'latest',
+        topics: [paddedAddress]
+      };
+      const events = await this.erc20Contract.getPastEvents(
+        TransferEventSignature,
+        options
+      );
+      const entryWithTransaction = events.find(
+        ({ raw }) => raw['data'] === delegationConstant
+      );
+      if (entryWithTransaction) {
+        const help = entryWithTransaction['raw']['topics'][2];
+        currentDelegation = '0x' + help.substring(26, 66);
+      }
+    }
+    return currentDelegation;
   }
 
   async getLastVote() {

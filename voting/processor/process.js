@@ -8,8 +8,9 @@
 
 let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
-let maxNumberOfProcess  = process.env.MAXIMUM_NUMBER_OF_TRIES;
+let maxNumberOfProcess = process.env.MAXIMUM_NUMBER_OF_TRIES;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
+let batchSize = 10;
 
 const gamma = require('./gamma-calls');
 
@@ -27,10 +28,56 @@ function validateInput() {
         maxNumberOfProcess = -1;
     }
 
-    if (process.env.VERBOUSE) {
+    if (process.env.VERBOSE) {
         verbose = true;
     }
+    if (process.env.BATCH_SIZE) {
+        batchSize = process.env.BATCH_SIZE;
+    }
+}
 
+const CONTINUE = 0, DONE = 1, ERRORS = 2, PENDINGS = 3;
+let numErrors = 0;
+const maxErrors = 10;
+let numPendings = 0;
+const maxPendings = 25;
+async function processResult(result) {
+    console.log(result);
+    if (result.RequestStatus === "COMPLETED") {
+        if(result.ExecutionResult === "SUCCESS") {
+            let isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
+            if (isDone) {
+                console.log('\x1b[36m%s\x1b[0m', `process return with "complete" ...`);
+            }
+            return isDone ? DONE : CONTINUE;
+        } else {
+            console.log('\x1b[36m%s\x1b[0m', `process return with normal error for "not the right time for process" ...`);
+            return DONE;
+        }
+    } else if (result.RequestStatus === "IN_PROCESS" && result.ExecutionResult === "NOT_EXECUTED" && result.TransactionStatus === "PENDING") {
+        numPendings++;
+        if (numPendings >= maxPendings) {
+            console.log('\x1b[31m%s\x1b[0m', `too many pendings quitting ...\n`);
+        }
+        return numPendings >= maxPendings ? PENDINGS : CONTINUE;
+    } else {
+        numErrors++;
+        if (numErrors >= maxErrors) {
+            console.log('\x1b[31m%s\x1b[0m', `too many errors quitting ...\n`);
+        }
+        return numErrors >= maxErrors ? ERRORS : CONTINUE;
+    }
+}
+
+async function processResults(results) {
+    let state = CONTINUE;
+    for(let i = 0;i < results.length;i++) {
+        state = await processResult(results[i])
+        if (state !== CONTINUE){
+            break;
+        }
+    }
+    return state;
 }
 
 async function processCall() {
@@ -38,26 +85,37 @@ async function processCall() {
         console.log('\x1b[34m%s\x1b[0m', `\nStarted Processing...`);
     }
 
-    let isDone = 0;
+    let processInfo = {};
     let numberOfCalls = 0;
     do {
-        let result = await gamma.sendTransaction('process-voting.json', [], orbsVotingContractName, orbsEnvironment);
-        isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
+        let start = Date.now();
+        if (verbose) {
+            console.log(`send batch of ${batchSize} calls... `);
+        }
+        let txs = [];
+        for(let i = 0;i < batchSize;i++) {
+            txs.push(gamma.sendTransaction('process-voting.json', [], orbsVotingContractName, orbsEnvironment));
+        }
+        let results = await Promise.all(txs);
+        numberOfCalls += batchSize;
 
-        if (verbose && numberOfCalls !== 0 && (numberOfCalls % 10) === 0) {
-            console.log(`still processing ... `);
+        if (await processResults(results) !== CONTINUE){
+            break;
         }
 
-        numberOfCalls++;
+        if (verbose) {
+            console.log(`checking state of process... (took ${(Date.now() - start) / 1000.0} seconds)`);
+        }
+
         if (maxNumberOfProcess !== -1 && maxNumberOfProcess <= numberOfCalls) {
-            throw new Error(`problem processing votes did not finish after ${numberOfCalls} tries.`);
+            throw new Error(`problem processing votes: did not finish after ${numberOfCalls} tries.`);
         }
-    } while (isDone === 0);
+        processInfo = await getProcessingInfo();
+    } while (processInfo.isProcessingPeriod);
 
     if (verbose) {
         console.log(`Processing was called ${numberOfCalls} times.`);
     }
-
 }
 
 async function getProcessingStartBlockNumber() {
@@ -71,17 +129,11 @@ async function getProcessingStartBlockNumber() {
     return blockNumber;
 }
 
-async function isProcessingAllowed() {
+async function getProcessingInfo() {
     let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
     let processStartBlockNumber = await getProcessingStartBlockNumber();
 
-    if (currentBlockNumber >= processStartBlockNumber) {
-        return true;
-    } else {
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block number: ${processStartBlockNumber}.
-         Processing is not needed please try again later!!\n`);
-        return false;
-    }
+    return { isProcessingPeriod : currentBlockNumber >= processStartBlockNumber, currentBlockNumber,  processStartBlockNumber} ;
 }
 
 async function main() {
@@ -90,10 +142,13 @@ async function main() {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
 
-    isAllowed = await isProcessingAllowed();
-    if (isAllowed) {
+    let processInfo = await getProcessingInfo();
+    //if (processInfo.isProcessingPeriod) {
         await processCall();
-    }
+    //} else {
+    //console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${processInfo.currentBlockNumber} is before process vote starting block number: ${processInfo.processStartBlockNumber}.
+    //     Processing is not needed please try again later!!\n`);
+   // }
 }
 
 main()

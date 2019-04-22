@@ -41,4 +41,14 @@ export class RemoteService {
   getTotalStake() {
     return axios.get(`${remoteAddress}/stake/total`).then(res => res.data);
   }
+  getNextElectionBlockHeight() {
+    return axios.get(`${remoteAddress}/elections/next`).then(res => res.data);
+  }
+  getCurrentDelegation(address: string) {
+    return axios
+      .get(`${remoteAddress}/delegation/status`, {
+        params: { address }
+      })
+      .then(res => res.data);
+  }
 }

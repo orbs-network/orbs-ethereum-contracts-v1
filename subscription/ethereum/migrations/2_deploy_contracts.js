@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-const DateTime = artifacts.require('./DateTime');
+const DateTime = artifacts.require('DateTime');
 const OrbsSubscriptions = artifacts.require('OrbsSubscriptions');
 const ERC20 = artifacts.require('TestingERC20');
 
