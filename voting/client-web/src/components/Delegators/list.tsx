@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
@@ -14,12 +14,11 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
-import { Chip } from '@material-ui/core';
+import { Chip, Checkbox } from '@material-ui/core';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import blue from '@material-ui/core/colors/blue';
 import { CopyAddressButton } from '../CopyAddressButton';
-import { DelegateButton } from './delegateButton';
 
 const styles = () => ({
   table: {
@@ -51,6 +50,7 @@ const GuardiansList = ({
   classes,
   delegatedTo
 }) => {
+  const [candidate, setCandidate] = useState('');
   const sortedGuardians = Object.values(guardians);
   sortedGuardians.sort((a, b) =>
     a['name'].toLowerCase() > b['name'].toLowerCase() ? 1 : -1
@@ -86,9 +86,15 @@ const GuardiansList = ({
           >
             <TableCell padding="none" className={classes.cell}>
               {enableDelegation && (
-                <DelegateButton
-                  onDelegate={() => onSelect(guardian['address'])}
-                  isDelegated={guardian['address'] === delegatedTo}
+                <Checkbox
+                  checked={
+                    guardian['address'] === delegatedTo ||
+                    guardian['address'] === candidate
+                  }
+                  value={guardian['address']}
+                  onChange={ev => {
+                    setCandidate(ev.target.value), onSelect(ev.target.value);
+                  }}
                 />
               )}
             </TableCell>
