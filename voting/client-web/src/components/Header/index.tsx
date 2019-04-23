@@ -21,9 +21,9 @@ import Languages from './languages';
 const Header = ({ classes, isReadOnly }) => {
   const links = [
     { label: 'Home', url: '/' },
-    { label: 'Delegators', url: '/delegator' },
-    { label: 'Guardians', url: '/guardian' },
-    { label: 'Validators', url: '/validator' },
+    { label: 'Guardians', url: '/delegator' },
+    { label: 'Validators', url: '/guardian' },
+    { label: 'Elected Validators', url: '/validator' },
     { label: 'Rewards', url: '/reward' }
   ];
 
