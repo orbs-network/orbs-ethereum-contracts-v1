@@ -50,7 +50,7 @@ const GuardiansList = ({
   classes,
   delegatedTo
 }) => {
-  const [candidate, setCandidate] = useState('');
+  const [candidate, setCandidate] = useState(delegatedTo);
   const sortedGuardians = Object.values(guardians);
   sortedGuardians.sort((a, b) =>
     a['name'].toLowerCase() > b['name'].toLowerCase() ? 1 : -1
@@ -87,10 +87,7 @@ const GuardiansList = ({
             <TableCell padding="none" className={classes.cell}>
               {enableDelegation && (
                 <Checkbox
-                  checked={
-                    guardian['address'] === delegatedTo ||
-                    guardian['address'] === candidate
-                  }
+                  checked={guardian['address'] === candidate}
                   value={guardian['address']}
                   onChange={ev => {
                     setCandidate(ev.target.value), onSelect(ev.target.value);
