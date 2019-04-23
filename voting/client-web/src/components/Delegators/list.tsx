@@ -59,7 +59,11 @@ const GuardiansList = ({
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell style={{ width: '10px' }} className={classes.cell} />
+          <TableCell
+            style={{ width: '65px' }}
+            className={classes.cell}
+            padding="checkbox"
+          />
           <TableCell style={{ width: '30%' }} className={classes.cell}>
             Name
           </TableCell>
