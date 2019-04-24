@@ -163,7 +163,7 @@ async function writeOneDelegationTxResults(list, typeStr, currentElectionBlock) 
     let csvStr = `Delegator,Block,TxIndex,TxHash\n`;
     for (let i = 0; i < list.length; i++) {
         let obj = list[i];
-        csvStr += `${list.address},${list.block},${list.txIndex},${list.txHash}\n`;
+        csvStr += `${obj.address},${obj.block},${obj.txIndex},${obj.txHash}\n`;
     }
 
     let path = `${currentElectionBlock}_${filenamePrefix}_${typeStr}.csv`;
@@ -175,10 +175,23 @@ async function writeDelegationsTxResults(eventTxs, currentElectionBlock) {
     if (verbose) {
         console.log('\x1b[33m%s\x1b[0m', `about to save tx of delegations`);
     }
+    let latestTransfers = _.values(eventTxs.onlyLatestTransfers);
+    let latestDelegates = _.values(eventTxs.onlyLatestDelegates);
     await writeOneDelegationTxResults(eventTxs.totalTransfers, "TotalTransfers", currentElectionBlock);
-    await writeOneDelegationTxResults(_.values(eventTxs.onlyLatestTransfers), "LatestTransfersOnly", currentElectionBlock);
+    await writeOneDelegationTxResults(latestTransfers, "LatestTransfersOnly", currentElectionBlock);
     await writeOneDelegationTxResults(eventTxs.totalDelegates, "TotalDelegates", currentElectionBlock);
-    await writeOneDelegationTxResults(_.values(eventTxs.onlyLatestDelegates), "LastestDelegatesOnly", currentElectionBlock);
+    await writeOneDelegationTxResults(latestDelegates, "LatestDelegatesOnly", currentElectionBlock);
+
+    let latestMap = {};
+    for(let i = 0; i < latestTransfers.length;i++) {
+        let t = latestTransfers[i];
+        latestMap[t.address] = t;
+    }
+    for(let i = 0; i < latestDelegates.length;i++) {
+        let d = latestDelegates[i];console.log(d);
+        latestMap[d.address] = d;
+    }
+    await writeOneDelegationTxResults(_.values(latestMap), "LatestCombined", currentElectionBlock);
 }
 
 /***
@@ -354,7 +367,7 @@ async function main() {
         console.log('\x1b[33m%s\x1b[0m', `VERBOSE MODE`);
     }
     // connect to ethereum
-    let web3Infura = await new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/9679dc4f2d724f7997547f05f769d74e"));
+    let web3Infura = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));//await new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/9679dc4f2d724f7997547f05f769d74e"));
     let tokenContractInfura = await new web3Infura.eth.Contract(TOKEN_ABI, erc20ContractAddress);
     let votingContractInfura = await new web3Infura.eth.Contract(VOTING_ABI, votingContractAddress);
 
