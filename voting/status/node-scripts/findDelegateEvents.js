@@ -6,32 +6,42 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"validators","type":"address[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Undelegate","type":"event"},{"constant":false,"inputs":[{"name":"validators","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"undelegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVote","outputs":[{"name":"validators","type":"address[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVoteBytes20","outputs":[{"name":"validatorsBytes20","type":"bytes20[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"delegator","type":"address"}],"name":"getCurrentDelegation","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+function generateTx(event) {
+    return {txHash : event.transactionHash, block : event.blockNumber, txIndex : event.transactionIndex, address: getAddressFromTopic(event, TOPIC_FROM_ADDR)};
+}
 
-async function getAllPastDelegateEvents(tokenContract, startBlock, endBlock) {
-    let options = {
-        fromBlock: startBlock,
-        toBlock: endBlock
-    };
-
+async function getAllPastDelegateEvents(votingContract, startBlock, endBlock, paging, verbose, eventTxs) {
     let mapOfTransfers = {};
     let listOfTransfers = [];
     try {
-        let events = await tokenContract.getPastEvents('Delegate', options);
-        for (let i = events.length-1; i >= 0;i--) {
-            let event = events[i];
-            let delegatorAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);
-            let currentDelegateIndex = mapOfTransfers[delegatorAddress];
-            if (typeof currentDelegateIndex === 'number' && isObjectNewerThanTx(listOfTransfers[currentDelegateIndex], event) ) {
-                continue;
-            }
-            let obj = generateDelegateObject(event.blockNumber, event.transactionIndex, event.transactionHash, delegatorAddress, getAddressFromTopic(event, TOPIC_TO_ADDR), event.event);
+        for (let i = startBlock;i < endBlock;i += paging) {
+            let actualEndBlock = i + paging < endBlock ? i + paging : endBlock
+            let options = {
+                fromBlock: i,
+                toBlock: actualEndBlock
+            };
 
-            if(typeof currentDelegateIndex === 'number') {
-                listOfTransfers[currentDelegateIndex] = obj;
-            } else {
-                mapOfTransfers[delegatorAddress] = listOfTransfers.length;
-                listOfTransfers.push(obj);
+            let events = await votingContract.getPastEvents('Delegate', options);
+            if (verbose) {
+                console.log('\x1b[33m%s\x1b[0m', `reading from block ${i} to block ${actualEndBlock} found ${events.length} delegate events`);
+            }
+            for (let i = events.length - 1; i >= 0; i--) {
+                let event = events[i];
+                eventTxs.totalDelegates.push(generateTx(event));
+                let delegatorAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);
+                let currentDelegateIndex = mapOfTransfers[delegatorAddress];
+                if (typeof currentDelegateIndex === 'number' && isObjectNewerThanTx(listOfTransfers[currentDelegateIndex], event)) {
+                    continue;
+                }
+                eventTxs.onlyLatestDelegates[delegatorAddress] = generateTx(event);
+                let obj = generateDelegateObject(event.blockNumber, event.transactionIndex, event.transactionHash, delegatorAddress, getAddressFromTopic(event, TOPIC_TO_ADDR), event.event);
+
+                if (typeof currentDelegateIndex === 'number') {
+                    listOfTransfers[currentDelegateIndex] = obj;
+                } else {
+                    mapOfTransfers[delegatorAddress] = listOfTransfers.length;
+                    listOfTransfers.push(obj);
+                }
             }
         }
         return listOfTransfers;
@@ -53,13 +63,10 @@ function isObjectNewerThanTx(latestDelegate, event) {
         (latestDelegate.block > event.blockNumber && latestDelegate.transactionIndex > event.transactionIndex)
 }
 
-function generateDelegateObject(block, transactionIndex, txHash, delegatorAddress, delegateeAddress, method) {
+function generateDelegateObject(block, transactionIndex, txHash, address, delegateeAddress, method) {
     return {
-        block, transactionIndex, txHash, delegatorAddress, delegateeAddress, method
+        address, block, transactionIndex, txHash, delegateeAddress, method
     }
 }
 
-module.exports = async function (web3, votingContractAddress, startBlock, endBlock) {
-    let contract = await new web3.eth.Contract(VOTING_ABI, votingContractAddress);
-    return await getAllPastDelegateEvents(contract, startBlock, endBlock);
-};
+module.exports = getAllPastDelegateEvents;

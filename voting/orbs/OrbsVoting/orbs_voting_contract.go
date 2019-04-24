@@ -262,12 +262,6 @@ func getValidatorsRegistryAbi() string {
 	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorLeft","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"validator","type":"address"}],"name":"ValidatorUpdated","type":"event"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"register","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getValidatorData","outputs":[{"name":"name","type":"string"},{"name":"ipAddress","type":"bytes4"},{"name":"website","type":"string"},{"name":"orbsAddress","type":"bytes20"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getRegistrationBlockNumber","outputs":[{"name":"registeredOn","type":"uint256"},{"name":"lastUpdatedOn","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"isValidator","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"validator","type":"address"}],"name":"getOrbsAddress","outputs":[{"name":"orbsAddress","type":"bytes20"}],"payable":false,"stateMutability":"view","type":"function"}]`
 }
 
-// Copyright 2019 the orbs-ethereum-contracts authors
-// This file is part of the orbs-ethereum-contracts library in the Orbs project.
-//
-// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
-// The above notice should be included in all copies or substantial portions of the software.
-
 // +build unsafetests
 
 var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
@@ -746,20 +740,18 @@ func _processRewardsParticipants(totalVotes uint64, participantStakes map[[20]by
 }
 
 func _processRewardsGuardians(totalVotes uint64, guardiansAccumulatedStake map[[20]byte]uint64) {
-	if len(guardiansAccumulatedStake) > ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER {
-		fmt.Printf("elections %10d rewards: there are %d guardians with total reward is %d - choosing %d top guardians\n",
-			getCurrentElectionBlockNumber(), len(guardiansAccumulatedStake), totalVotes, ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER)
-		guardiansAccumulatedStake, totalVotes = _getTopGuardians(guardiansAccumulatedStake)
-		fmt.Printf("elections %10d rewards: top %d guardians with total vote is now %d \n", getCurrentElectionBlockNumber(), len(guardiansAccumulatedStake), totalVotes)
-	}
+	fmt.Printf("elections %10d rewards: there are %d guardians with total reward is %d - choosing %d top guardians\n",
+		getCurrentElectionBlockNumber(), len(guardiansAccumulatedStake), totalVotes, ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER)
+	topGuardians, totalTopVotes := _getTopGuardians(guardiansAccumulatedStake)
+	fmt.Printf("elections %10d rewards: top %d guardians with total vote is now %d \n", getCurrentElectionBlockNumber(), len(topGuardians), totalTopVotes)
 
-	_setExcellenceProgramGuardians(guardiansAccumulatedStake)
-	totalReward := _maxRewardForGroup(ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD, totalVotes, ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT)
+	_setExcellenceProgramGuardians(topGuardians)
+	totalReward := _maxRewardForGroup(ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD, totalTopVotes, ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT)
 	fmt.Printf("elections %10d rewards: guardians total reward is %d \n", getCurrentElectionBlockNumber(), totalReward)
-	for guardian, stake := range guardiansAccumulatedStake {
-		reward := safeuint64.Div(safeuint64.Mul(stake, totalReward), totalVotes)
-		fmt.Printf("elections %10d rewards: guardian %x, stake %d adding %d\n", getCurrentElectionBlockNumber(), guardian, stake, reward)
-		_addCumulativeGuardianExcellenceReward(guardian[:], reward)
+	for _, guardian := range topGuardians {
+		reward := safeuint64.Div(safeuint64.Mul(guardian.vote, totalReward), totalTopVotes)
+		fmt.Printf("elections %10d rewards: guardian %x, stake %d adding %d\n", getCurrentElectionBlockNumber(), guardian.address, guardian.vote, reward)
+		_addCumulativeGuardianExcellenceReward(guardian.address[:], reward)
 	}
 }
 
@@ -846,10 +838,10 @@ func getExcellenceProgramGuardians() []byte {
 	return state.ReadBytes(_formatExcellenceProgramGuardians())
 }
 
-func _setExcellenceProgramGuardians(guardians map[[20]byte]uint64) {
+func _setExcellenceProgramGuardians(guardians guardianArray) {
 	guardiansForSave := make([]byte, 0, len(guardians)*20)
-	for guardianAddr := range guardians {
-		guardiansForSave = append(guardiansForSave, guardianAddr[:]...)
+	for _, guardian := range guardians {
+		guardiansForSave = append(guardiansForSave, guardian.address[:]...)
 	}
 	state.WriteBytes(_formatExcellenceProgramGuardians(), guardiansForSave)
 }
@@ -857,9 +849,8 @@ func _setExcellenceProgramGuardians(guardians map[[20]byte]uint64) {
 /***
  * Rewards: Sort top guardians using sort.Interface
  */
-func _getTopGuardians(guardiansAccumulatedStake map[[20]byte]uint64) (topGuardiansStake map[[20]byte]uint64, totalVotes uint64) {
+func _getTopGuardians(guardiansAccumulatedStake map[[20]byte]uint64) (topGuardiansStake guardianArray, totalVotes uint64) {
 	totalVotes = uint64(0)
-	topGuardiansStake = make(map[[20]byte]uint64)
 
 	guardianList := make(guardianArray, 0, len(guardiansAccumulatedStake))
 	for guardian, vote := range guardiansAccumulatedStake {
@@ -867,17 +858,28 @@ func _getTopGuardians(guardiansAccumulatedStake map[[20]byte]uint64) (topGuardia
 	}
 	sort.Sort(guardianList)
 
-	for i := 0; i < ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER; i++ {
-		fmt.Printf("elections %10d rewards: top guardian %x, has %d votes\n", _getCurrentElectionBlockNumber(), guardianList[i].guardian, guardianList[i].vote)
+	i := 0
+	for i = 0; i < len(guardianList) && i < ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER; i++ {
+		fmt.Printf("elections %10d rewards: top guardian %x, has %d votes\n", _getCurrentElectionBlockNumber(), guardianList[i].address, guardianList[i].vote)
 		totalVotes = safeuint64.Add(totalVotes, guardianList[i].vote)
-		topGuardiansStake[guardianList[i].guardian] = guardianList[i].vote
 	}
-	return
+	for i = ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER; i < len(guardianList); i++ {
+		if guardianList[i].vote != guardianList[i-1].vote {
+			break
+		}
+		fmt.Printf("elections %10d rewards: top guardian %x, has %d votes\n", _getCurrentElectionBlockNumber(), guardianList[i].address, guardianList[i].vote)
+		totalVotes = safeuint64.Add(totalVotes, guardianList[i].vote)
+	}
+	if i < len(guardianList) {
+		return guardianList[0:i], totalVotes
+	} else {
+		return guardianList, totalVotes
+	}
 }
 
 type guardianVote struct {
-	guardian [20]byte
-	vote     uint64
+	address [20]byte
+	vote    uint64
 }
 type guardianArray []*guardianVote
 
@@ -890,7 +892,7 @@ func (s guardianArray) Swap(i, j int) {
 }
 
 func (s guardianArray) Less(i, j int) bool {
-	return s[i].vote > s[j].vote
+	return s[i].vote > s[j].vote || (s[i].vote == s[j].vote && bytes.Compare(s[i].address[:], s[j].address[:]) > 0)
 }
 
 // Copyright 2019 the orbs-ethereum-contracts authors
