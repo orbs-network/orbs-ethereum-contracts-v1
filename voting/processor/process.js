@@ -6,10 +6,10 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
-let maxNumberOfProcess = process.env.MAXIMUM_NUMBER_OF_TRIES;
-const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
+let maxNumberOfProcess = 10000;
 let batchSize = 10;
 
 const gamma = require('./gamma-calls');
@@ -31,8 +31,13 @@ function validateInput() {
     if (process.env.VERBOSE) {
         verbose = true;
     }
+
+    if (process.env.MAXIMUM_NUMBER_OF_TRIES) {
+        maxNumberOfProcess = parseInt(process.env.MAXIMUM_NUMBER_OF_TRIES);
+    }
+
     if (process.env.BATCH_SIZE) {
-        batchSize = process.env.BATCH_SIZE;
+        batchSize = parseInt(process.env.BATCH_SIZE);
     }
 }
 
@@ -42,7 +47,6 @@ const maxErrors = 10;
 let numPendings = 0;
 const maxPendings = 25;
 async function processResult(result) {
-    console.log(result);
     if (result.RequestStatus === "COMPLETED") {
         if(result.ExecutionResult === "SUCCESS") {
             let isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
@@ -90,7 +94,7 @@ async function processCall() {
     do {
         let start = Date.now();
         if (verbose) {
-            console.log(`send batch of ${batchSize} calls... `);
+            console.log('\x1b[36m%s\x1b[0m', `send batch of ${batchSize} calls... `);
         }
         let txs = [];
         for(let i = 0;i < batchSize;i++) {
@@ -104,11 +108,12 @@ async function processCall() {
         }
 
         if (verbose) {
-            console.log(`checking state of process... (took ${(Date.now() - start) / 1000.0} seconds)`);
+            console.log('\x1b[36m%s\x1b[0m', `checking state of process... (took ${(Date.now() - start) / 1000.0} seconds)`);
         }
 
         if (maxNumberOfProcess !== -1 && maxNumberOfProcess <= numberOfCalls) {
-            throw new Error(`problem processing votes: did not finish after ${numberOfCalls} tries.`);
+            console.log('\x1b[31m%s\x1b[0m', `note processing votes: did not finish after ${numberOfCalls} tries.`);
+            break;
         }
         processInfo = await getProcessingInfo();
     } while (processInfo.isProcessingPeriod);
