@@ -52,8 +52,8 @@ const GuardiansList = ({
 }) => {
   const [candidate, setCandidate] = useState(delegatedTo);
   const sortedGuardians = Object.values(guardians);
-  sortedGuardians.sort((a, b) =>
-    a['name'].toLowerCase() > b['name'].toLowerCase() ? 1 : -1
+  sortedGuardians.sort(
+    (a, b) => parseFloat(b['stake']) - parseFloat(a['stake'])
   );
   return (
     <Table className={classes.table}>
