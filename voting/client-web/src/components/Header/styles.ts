@@ -12,7 +12,7 @@ export default theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 30}px`
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 8}px`
   },
   movedDown: {
     paddingTop: 48

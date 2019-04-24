@@ -10,6 +10,7 @@ import React, { useState, useEffect } from 'react';
 import GuardiansList from './list';
 import Link from '@material-ui/core/Link';
 import { Mode } from '../../api/interface';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ManualDelegationDialog from '../ManualDelegation';
 import { ApiService } from '../../api';
@@ -34,6 +35,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
   const [totalStake, setTotalStake] = useState('0');
   const [delegatedTo, setDelegatedTo] = useState('');
+  const [delegationCandidate, setDelegationCandidate] = useState('');
   const [nextElectionsBlockHeight, setNextElectionsBlockHeight] = useState('');
 
   const fetchNextElectionsBlockHeight = async () => {
@@ -136,7 +138,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         delegatedTo={delegatedTo}
         enableDelegation={hasMetamask()}
         guardians={guardians}
-        onSelect={delegate}
+        onSelect={setDelegationCandidate}
       />
 
       {hasMetamask() && (
@@ -159,6 +161,18 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         onClose={() => setManualDelegationDialogState(false)}
         onDelegate={manualDelegateHandler}
       />
+
+      <div style={{ textAlign: 'center' }}>
+        {hasMetamask() && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => delegate(delegationCandidate)}
+          >
+            Delegate
+          </Button>
+        )}
+      </div>
     </>
   );
 };

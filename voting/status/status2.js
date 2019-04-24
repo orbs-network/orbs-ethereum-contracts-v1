@@ -370,11 +370,7 @@ async function main() {
         processEndBlock = await web3Infura.eth.getBlockNumber();
         if (verbose) {
             console.log('\x1b[33m%s\x1b[0m', `latest block: ${processEndBlock}`);
-            let web3temp = await new Web3(new Web3.providers.HttpProvider("http://eth.orbs.com"));
-            console.log('\x1b[33m%s\x1b[0m', `latest block eth.orbs.com: ${await web3temp.eth.getBlockNumber()}`);
-
         }
-
     }
 
     let eventTxs = { totalTransfers : [], onlyLatestTransfers: {}, totalDelegates : [], onlyLatestDelegates: {}};

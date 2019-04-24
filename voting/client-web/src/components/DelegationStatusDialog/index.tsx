@@ -86,7 +86,9 @@ const DelegationStatus = ({
             required
             placeholder="Enter address 0x00..."
             value={address}
-            onChange={ev => setAddress(ev.target.value)}
+            onChange={ev => {
+              setAddress(ev.target.value), setDelegatedTo('');
+            }}
             margin="normal"
             variant="standard"
             style={{ width: '40%' }}
