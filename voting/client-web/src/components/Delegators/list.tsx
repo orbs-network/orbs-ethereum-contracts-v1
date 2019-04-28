@@ -78,7 +78,7 @@ const GuardiansList = ({
             % in last election
           </TableCell>
           <TableCell style={{ width: '13%' }} className={classes.cell}>
-            Valid for next elections
+            Voted for next elections
           </TableCell>
         </TableRow>
       </TableHead>
