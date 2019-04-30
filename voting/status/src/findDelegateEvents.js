@@ -5,12 +5,17 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-
-function generateTx(event) {
-    return {txHash : event.transactionHash, block : event.blockNumber, txIndex : event.transactionIndex, address: getAddressFromTopic(event, TOPIC_FROM_ADDR)};
+let verbose = false;
+if (process.env.VERBOSE) {
+    verbose = true;
 }
 
-async function getAllPastDelegateEvents(votingContract, startBlock, endBlock, paging, verbose, eventTxs) {
+
+function generateTx(event) {
+    return {txHash : event.transactionHash, block : event.blockNumber, txIndex : event.transactionIndex, address: getAddressFromTopic(event, TOPIC_FROM_ADDR), method: "Delegate"};
+}
+
+async function getAllPastDelegateEvents(votingContract, startBlock, endBlock, paging, eventTxs) {
     let mapOfTransfers = {};
     let listOfTransfers = [];
     try {
@@ -65,7 +70,7 @@ function isObjectNewerThanTx(latestDelegate, event) {
 
 function generateDelegateObject(block, transactionIndex, txHash, address, delegateeAddress, method) {
     return {
-        address, block, transactionIndex, txHash, delegateeAddress, method
+        address, block, transactionIndex, txHash, delegateeAddress, method, stake: 'n/a', participationReward : 0
     }
 }
 

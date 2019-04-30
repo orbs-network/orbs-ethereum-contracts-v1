@@ -9,23 +9,36 @@ const Web3 = require('web3');
 const fs = require('fs');
 const _ = require('lodash/core');
 
+const delegators = require('./src/delegators');
+const guardians = require('./src/guardians');
+const stakes = require('./src/stakes');
+const voting = require('./src/voting');
+const files = require('./src/writeFiles');
+
+const TOKEN_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
+const GUARDIANS_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"guardian","type":"address"}],"name":"GuardianRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"guardian","type":"address"}],"name":"GuardianLeft","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"guardian","type":"address"}],"name":"GuardianUpdated","type":"event"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"register","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"isGuardian","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getGuardianData","outputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getRegistrationBlockNumber","outputs":[{"name":"registeredOn","type":"uint256"},{"name":"lastUpdatedOn","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"offset","type":"uint256"},{"name":"limit","type":"uint256"}],"name":"getGuardians","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"offset","type":"uint256"},{"name":"limit","type":"uint256"}],"name":"getGuardiansBytes20","outputs":[{"name":"","type":"bytes20[]"}],"payable":false,"stateMutability":"view","type":"function"}];
+const VOTING_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"validators","type":"address[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Undelegate","type":"event"},{"constant":false,"inputs":[{"name":"validators","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"undelegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVote","outputs":[{"name":"validators","type":"address[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVoteBytes20","outputs":[{"name":"validatorsBytes20","type":"bytes20[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"delegator","type":"address"}],"name":"getCurrentDelegation","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+const VALIDATORS_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"voter","type":"address"},{"indexed":false,"name":"validators","type":"address[]"},{"indexed":false,"name":"voteCounter","type":"uint256"}],"name":"VoteOut","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Delegate","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"delegator","type":"address"},{"indexed":false,"name":"delegationCounter","type":"uint256"}],"name":"Undelegate","type":"event"},{"constant":false,"inputs":[{"name":"validators","type":"address[]"}],"name":"voteOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"}],"name":"delegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"undelegate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVote","outputs":[{"name":"validators","type":"address[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getCurrentVoteBytes20","outputs":[{"name":"validatorsBytes20","type":"bytes20[]"},{"name":"blockNumber","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"delegator","type":"address"}],"name":"getCurrentDelegation","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+
 let ethereumConnectionURL = process.env.ETHEREUM_NETWORK_URL;
 let erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
 let votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
 let guardiansContractAddress = process.env.GUARDIANS_CONTRACT_ADDRESS;
-let startBlock = process.env.START_BLOCK_ON_ETHEREUM;
-let endBlock = process.env.END_BLOCK_ON_ETHEREUM;
+let validatorsContractAddress = process.env.VALIDATORS_CONTRACT_ADDRESS;
+let processStartBlock = 7440000;
+let processEndBlock = 'latest';
+let processStatePruning = 5000;
+let firstElectionBlock = 7528900;
+let electionPeriod = 20000;
+let votingValidityPeriod = 45500;
 let filenamePrefix = process.env.OUTPUT_FILENAME_PREFIX;
-let paging = process.env.PAGING;
 let verbose = false;
-const TOKEN_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
-const GUARDIANS_ABI = [{"anonymous":false,"inputs":[{"indexed":true,"name":"guardian","type":"address"}],"name":"GuardianRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"guardian","type":"address"}],"name":"GuardianLeft","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"guardian","type":"address"}],"name":"GuardianUpdated","type":"event"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"register","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"name":"update","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"leave","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"isGuardian","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getGuardianData","outputs":[{"name":"name","type":"string"},{"name":"website","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"guardian","type":"address"}],"name":"getRegistrationBlockNumber","outputs":[{"name":"registeredOn","type":"uint256"},{"name":"lastUpdatedOn","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"offset","type":"uint256"},{"name":"limit","type":"uint256"}],"name":"getGuardians","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"offset","type":"uint256"},{"name":"limit","type":"uint256"}],"name":"getGuardiansBytes20","outputs":[{"name":"","type":"bytes20[]"}],"payable":false,"stateMutability":"view","type":"function"}];
+if (process.env.VERBOSE) {
+    verbose = true;
+}
+let showOnlyLast = false;
 
 function validateInput() {
-    if (process.env.VERBOSE) {
-        verbose = true;
-    }
-
     if (!ethereumConnectionURL) {
         throw("missing env variable ETHEREUM_NETWORK_URL");
     }
@@ -42,16 +55,32 @@ function validateInput() {
         guardiansContractAddress = '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711';
     }
 
-    if (!startBlock) {
-        startBlock = 7460000;
+    if (!validatorsContractAddress) {
+        validatorsContractAddress = '0x240fAa45557c61B6959162660E324Bb90984F00f';
     }
 
-    if (!endBlock) {
-        endBlock = 'latest';
+    if (process.env.START_BLOCK_ON_ETHEREUM) {
+        processStartBlock = parseInt(process.env.START_BLOCK_ON_ETHEREUM);
     }
 
-    if (!paging) {
-        paging = 1000;
+    if (process.env.END_BLOCK_ON_ETHEREUM) {
+        processEndBlock = parseInt(process.env.END_BLOCK_ON_ETHEREUM);
+    }
+
+    if (process.env.STATE_PRUNING_BLOCKS_ON_ETHEREUM) {
+        processStatePruning = parseInt(process.env.STATE_PRUNING_BLOCKS_ON_ETHEREUM);
+    }
+
+    if (process.env.FIRST_ELECTION_ON_ETHEREUM) {
+        firstElectionBlock = parseInt(process.env.FIRST_ELECTION_ON_ETHEREUM);
+    }
+
+    if (process.env.ELECTION_PERIOD_ON_ETHEREUM) {
+        electionPeriod = parseInt(process.env.ELECTION_PERIOD_ON_ETHEREUM);
+    }
+
+    if (process.env.VOTING_VALIDITY_PERIOD_ON_ETHEREUM) {
+        votingValidityPeriod = parseInt(process.env.VOTING_VALIDITY_PERIOD_ON_ETHEREUM);
     }
 
     if (!filenamePrefix) {
@@ -59,151 +88,9 @@ function validateInput() {
     }
 }
 
-async function readStake(web3, tokenContract, address) {
-    let stakeBN = web3.utils.toBN(await tokenContract.methods.balanceOf(address).call());
-    let mod10in16 = web3.utils.toBN('10000000000000000');
-    let stakeStr = stakeBN.div(mod10in16);
-    return parseFloat(stakeStr) / 100.0;
-}
-
-function mergeEvents(transferEvents, delegateEvents) {
-    let mapper = {};
-    for (let i = 0;i < transferEvents.length;i++) {
-        mapper[transferEvents[i].delegatorAddress] = transferEvents[i];
-    }
-
-    for (let i = 0;i < delegateEvents.length;i++) {
-        mapper[delegateEvents[i].delegatorAddress] = delegateEvents[i];
-    }
-
-    return mapper;
-}
-
-async function readAndMergeEvents(web3, tokenContract, votingContractAddress, startBlock, endBlock) {
-    if (verbose) {
-        console.log('\x1b[33m%s\x1b[0m', `Reading from block ${startBlock} to block ${endBlock}`);
-    }
-
-    let transferEvents = await require('./node-scripts/findDelegateByTransferEvents')(web3, tokenContract, startBlock, endBlock);
-    if (verbose) {
-        console.log('\x1b[33m%s\x1b[0m', `Found ${transferEvents.length} Transfer events of Contract Address ${tokenContract.address}`);
-    }
-
-    let delegateEvents = await require('./node-scripts/findDelegateEvents')(web3, votingContractAddress, startBlock, endBlock);
-    if (verbose) {
-        console.log('\x1b[33m%s\x1b[0m', `Found ${delegateEvents.length} Delegate events of Contract Address ${votingContractAddress}`);
-    }
-
-    let delegatorsMap = await mergeEvents(transferEvents, delegateEvents);
-
-    let delegators = _.values(delegatorsMap);
-    for (let i = 0; i < delegators.length; i++) {
-        let delegtor = delegators[i];
-        delegtor.stake = await readStake(web3, tokenContract, delegtor.delegatorAddress);
-        if (verbose) {
-            console.log('%s \x1b[34m%s\x1b[0m %s \x1b[34m%s\x1b[0m %s \x1b[35m%s\x1b[0m %s \x1b[36m%s\x1b[0m %s \x1b[32m%s\x1b[0m',
-                `Delegator`, `${delegtor.delegatorAddress}`,
-                `with stake`, `${delegtor.stake}`,
-                `delegated to`, `${delegtor.delegateeAddress}`,
-                `with a`, `${delegtor.method}`,
-                `at block`, `${delegtor.block}`);
-        }
-    }
-
-    console.log('\x1b[33m%s\x1b[0m', `Merged events into ${delegators.length} delegators.`);
-    return delegatorsMap
-}
-async function writeDelegationsResults(delegatorsMap, web3, tokenContract) {
-    let csvStr = 'Delegator,Stake,Delegatee,Method,Block\n';
-
-    let delegators = _.values(delegatorsMap);
-    for (let i = 0; i < delegators.length; i++) {
-        let delegator = delegators[i];
-        csvStr += `${delegator.delegatorAddress},${delegator.stake},${delegator.delegateeAddress},${delegator.method},${delegator.block}\n`;
-    }
-
-    let path = filenamePrefix + "_delegations.csv";
-    fs.writeFileSync(path, csvStr);
-    console.log('\x1b[33m%s\x1b[0m', `CSV version file was saved to ${path}!\n`);
-}
-
-async function readGuardians(web3, guardiansContract, tokenContract) {
-    let start = 0, page = 50;
-    let guardianMap = {};
-    let gAddrs = [];
-    do {
-        gAddrs = await guardiansContract.methods.getGuardians(start, page).call();
-        if (verbose) {
-            console.log('\x1b[33m%s\x1b[0m', `Reading next batch of (${gAddrs.length}) guardians`);
-        }
-        for (let i = 0; i < gAddrs.length;i++){
-            let g = await guardiansContract.methods.getGuardianData(gAddrs[i]).call();
-            let stake = await readStake(web3, tokenContract, gAddrs[i]);
-            guardianMap[gAddrs[i]] = {address: gAddrs[i], name: g.name, website: g.website, stake: stake, delegators: []};
-            if (verbose) {
-                console.log('%s \x1b[34m%s\x1b[0m %s \x1b[35m%s\x1b[0m %s \x1b[36m%s\x1b[0m %s \x1b[32m%s\x1b[0m',
-                    `Guardian`, `${gAddrs[i]}`,
-                    `with name`, `${g.name}`,
-                    `and website`, `${g.website}`,
-                    `has self-stake`, `${stake}`);
-            }
-        }
-
-        start = start + page;
-    } while (gAddrs.length >= page);
-
-    console.log('\x1b[33m%s\x1b[0m', `Read ${_.size(guardianMap)} guardians.`);
-    return guardianMap;
-}
-
-async function writeGuardianResults(guardiansMap) {
-    let csvStr = 'Guardian,Name,Website,Stake\n';
-
-    let guardians = _.values(guardiansMap);
-    for (let i = 0; i < guardians.length; i++) {
-        let guardian = guardians[i];
-        csvStr += `${guardian.address},${guardian.name},${guardian.website},${guardian.stake}\n`;
-    }
-
-    let path = filenamePrefix + "_guardians.csv";
-    fs.writeFileSync(path, csvStr);
-    console.log('\x1b[33m%s\x1b[0m', `CSV version file was saved to ${path}!\n`);
-}
-
-async function calculateGuardiansDelegationMap(guardiansMap, delegatorsMap) {
-
-    let delegators = _.values(delegatorsMap);
-    for (let i = 0; i < delegators.length; i++) {
-        let delegtor = delegators[i];
-        if (guardiansMap[delegtor.delegateeAddress]) {
-            guardiansMap[delegtor.delegateeAddress].delegators.push(delegtor);
-            delegtor.guardian = delegtor.delegateeAddress;
-        }
-    }
-
-
-}
-
-async function writeGuardianVotingResults(guardiansMap) {
-    let csvStr = 'Guardian,Name,Self Stake,Total Stake\n';
-
-    let guardians = _.values(guardiansMap);
-    for (let i = 0; i < guardians.length; i++) {
-        let guardian = guardians[i];
-        let stake = guardian.stake;
-        for (let j = 0; j < guardian.delegators.length;j++) {
-            stake = stake + guardian.delegators[j].stake;
-        }
-        csvStr += `${guardian.address},${guardian.name},${guardian.website},${guardian.stake},${stake}\n`;
-    }
-
-    let path = filenamePrefix + "_stakes.csv";
-    fs.writeFileSync(path, csvStr);
-    console.log('\x1b[33m%s\x1b[0m', `CSV version file was saved to ${path}!\n`);
-}
-
-
-
+/**
+ * main
+ */
 async function main() {
     validateInput();
     if (verbose) {
@@ -211,19 +98,79 @@ async function main() {
     }
     let web3 = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));
     let tokenContract = await new web3.eth.Contract(TOKEN_ABI, erc20ContractAddress);
-
-    let results = await readAndMergeEvents(web3, tokenContract, votingContractAddress, startBlock, endBlock);
-
-    await writeDelegationsResults(results, web3, tokenContract);
-
     let guardiansContract = await new web3.eth.Contract(GUARDIANS_ABI, guardiansContractAddress);
-    let guardians = await readGuardians(web3, guardiansContract, tokenContract);
+    let votingContract = await new web3.eth.Contract(VOTING_ABI, votingContractAddress);
 
-    await writeGuardianResults(guardians);
+    console.log('\x1b[32m%s\x1b[0m', `Status collection working on period from block ${processStartBlock} to election block ${processEndBlock}`);
+    console.log('\x1b[32m%s\x1b[0m', `First election on block ${firstElectionBlock} then every ${electionPeriod} blocks, voting is valid ${votingValidityPeriod} after vote cast.`);
+    console.log('\x1b[36m%s\x1b[0m', `Note all stake and vote-casting is checked via Ethereum state on election block.`);
+    if (processEndBlock === 'latest' || !processEndBlock || processEndBlock < firstElectionBlock) {
+        processEndBlock = await web3.eth.getBlockNumber();
+        if (verbose) {
+            console.log('\x1b[33m%s\x1b[0m', `latest block: ${processEndBlock}`);
+        }
+    }
+    let processLastStateBlock = processStatePruning === 0 ? 0 : processEndBlock - processStatePruning;
 
-    calculateGuardiansDelegationMap(guardians, results)
+    let eventTxs = { totalTransfers : [], onlyLatestTransfers: {}, totalDelegates : [], onlyLatestDelegates: {}};
+    let delegatorsMap = {};
+    let accumulatedDelegatorsRewards = {};
+    let accumulatedGuardiansRewards = {};
 
-    await writeGuardianVotingResults(guardians);
+    if (firstElectionBlock-electionPeriod > processStartBlock) {
+        console.log('\x1b[34m%s\x1b[0m', `\nPre-election : collecting data in period block ${processStartBlock}-${firstElectionBlock - electionPeriod} (from start to up to one period before first)`);
+        let preElectionDelegation = await delegators.read(web3, tokenContract, votingContract, processStartBlock, firstElectionBlock - electionPeriod, eventTxs);
+        delegators.update(delegatorsMap, preElectionDelegation);
+    }
+
+    let electionNumber = 1;
+    for (let startElectionPeriod = firstElectionBlock-electionPeriod; startElectionPeriod < processEndBlock - electionPeriod; startElectionPeriod = startElectionPeriod + electionPeriod) {
+        let currentElectionBlock = startElectionPeriod + electionPeriod;
+        console.log('\x1b[34m%s\x1b[0m', `\nElection ${electionNumber}: collecting data in period block ${startElectionPeriod}-${currentElectionBlock}`);
+
+        if (verbose) {
+            console.log('\x1b[35m%s\x1b[0m', `reading delegation events in this period`);
+        }
+        let electionPeriodDelegation = await delegators.read(web3, tokenContract, votingContract, startElectionPeriod, currentElectionBlock, eventTxs);
+        delegators.update(delegatorsMap, electionPeriodDelegation);
+        if (_.size(delegatorsMap) === 0) {
+            console.log('\x1b[34m%s\x1b[0m', `Election ${electionNumber}: no delegation data skipping`);
+            electionNumber++;
+            continue;
+        }
+        if (currentElectionBlock > processLastStateBlock) {
+            await stakes.read(delegatorsMap, web3, tokenContract, currentElectionBlock);
+        }
+        await delegators.writeToFile(delegatorsMap, filenamePrefix, currentElectionBlock);
+        await delegators.writeTxToFile(eventTxs, filenamePrefix, currentElectionBlock);
+
+        if (currentElectionBlock > processLastStateBlock) {
+            if (verbose) {
+                console.log('\x1b[35m%s\x1b[0m', `reading guardians events in this period`);
+            }
+            let guardiansMap = await guardians.read(web3, guardiansContract, votingContract, currentElectionBlock, votingValidityPeriod);
+            await stakes.read(guardiansMap, web3, tokenContract, currentElectionBlock);
+            guardians.writeToFile(guardiansMap, filenamePrefix, currentElectionBlock);
+
+            // let validators = readValidators(validatorsContract);
+            // await readStakes(validators, electionBlock);
+            // await writeValidatorsResults(validators);
+
+            if (verbose) {
+                console.log('\x1b[35m%s\x1b[0m', `doing calculation for election results`);
+            }
+            let voteResults = voting.calculate(guardiansMap, accumulatedGuardiansRewards, delegatorsMap, accumulatedDelegatorsRewards);
+            voting.writeToFile(voteResults, filenamePrefix, currentElectionBlock);
+        } else {
+            if (verbose) {
+                console.log('\x1b[35m%s\x1b[0m', `generating guardians from input`);
+            }
+            let guardiansMap = await guardians.generateFromDelegations(web3, guardiansContract, delegatorsMap);
+            let voteResults = voting.calculate(guardiansMap, accumulatedGuardiansRewards, delegatorsMap, accumulatedDelegatorsRewards);
+            voting.writeToFile(voteResults, filenamePrefix, currentElectionBlock);
+        }
+        electionNumber++;
+    }
 
 }
 
@@ -231,5 +178,5 @@ async function main() {
 
 main()
     .then(results => {
-        console.log('\x1b[33m%s\x1b[0m', "\n\nDone!!\n");
+        console.log('\x1b[36m%s\x1b[0m', "Done!!");
     }).catch(console.error);
