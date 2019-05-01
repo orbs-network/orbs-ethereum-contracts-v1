@@ -95,7 +95,7 @@ class EthereumClientService {
         TransferEventSignature,
         options
       );
-      const entryWithTransaction = events.find(
+      const entryWithTransaction = events.reverse().find(
         ({ raw }) => raw['data'] === delegationConstant
       );
       if (entryWithTransaction) {
