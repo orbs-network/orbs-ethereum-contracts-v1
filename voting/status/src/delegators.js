@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-
+"use strict";
 const fs = require('fs');
 const _ = require('lodash/core');
 
@@ -104,7 +104,7 @@ async function writeOneDelegationTxResults(list, typeStr, filenamePrefix, curren
 
     let path = `${filenamePrefix}_${currentElectionBlock}_${typeStr}.csv`;
     fs.writeFileSync(path, csvStr);
-    console.log('\x1b[33m%s\x1b[0m', `Delegation ${typeStr} information saved to CSV file ${path}!\n`);
+    console.log('\x1b[33m%s\x1b[0m', `Delegation ${typeStr} information saved to CSV file ${path}!`);
 }
 
 async function writeTxToFile(eventTxs, filenamePrefix, currentElectionBlock) {
@@ -128,6 +128,7 @@ async function writeTxToFile(eventTxs, filenamePrefix, currentElectionBlock) {
         latestMap[d.address] = d;
     }
     await writeOneDelegationTxResults(_.values(latestMap), "LatestCombined", filenamePrefix, currentElectionBlock);
+    console.log('');
 }
 
 module.exports = {

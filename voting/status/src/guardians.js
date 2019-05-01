@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-
+"use strict";
 const fs = require('fs');
 const _ = require('lodash/core');
 
@@ -26,7 +26,7 @@ async function read(web3, guardiansContract, votingContract, stateBlock, votingV
         for (let i = 0; i < gAddrs.length;i++){
             let g = await guardiansContract.methods.getGuardianData(gAddrs[i]).call({}, stateBlock);
             let gVote = await votingContract.methods.getCurrentVote(gAddrs[i]).call({}, stateBlock);
-            let guardianObj = {address: gAddrs[i], name: g.name, website: g.website, delegators: [], participationReward: 0 };
+            let guardianObj = {address: gAddrs[i], name: g.name, website: g.website, delegators: [] };
             if (gVote && gVote.blockNumber >= stateBlock-votingValidityPeriod) {
                 guardianObj.voteBlock = gVote.blockNumber;
                 guardianObj.vote = gVote.validators;
@@ -45,7 +45,7 @@ async function generateFromDelegations(web3, guardiansContract, delegatorsMap) {
     let delegators = _.values(delegatorsMap);
     for (let i = 0; i < delegators.length; i++) {
         let delegator = delegators[i];
-        guardianMap[delegator.delegateeAddress.toLowerCase()] = {address : delegator.delegateeAddress, stake: 'n/a', delegators: [], participationReward: 0 }
+        guardianMap[delegator.delegateeAddress.toLowerCase()] = {address : delegator.delegateeAddress, stake: 'n/a', delegators: [] }
     }
     let guardians = _.values(guardianMap);
     for (let i = 0; i < guardians.length; i++) {

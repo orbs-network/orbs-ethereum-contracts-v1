@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-
+"use strict";
 const fs = require('fs');
 const _ = require('lodash/core');
 
@@ -87,7 +87,9 @@ function _copyAndSums(guardiansMap, delegatorsMap, results) {
         for (let j = 0; j < guardian.delegators.length; j++) {
             let delegator = delegatorsMap[guardian.delegators[j]];
             let delegatorStake = Math.trunc(delegator.stake);
-            results.totalStake += delegatorStake;
+            if (guardian.voteBlock) {
+                results.totalStake += delegatorStake;
+            }
             voteWeight += delegatorStake;
             delegators.push({address: delegator.address, selfStake: delegatorStake})
         }
@@ -148,22 +150,22 @@ function _voteRewardsCalculations(result, maxGuardianReward, guardiansRewards, m
         }
     }
 }
-function _nonVoteFillOldRewards(result, guardiansRewards, participatsRewards) {
+function _nonVoteFillOldRewards(result, guardiansRewards, participantsRewards) {
     for (let i = 0; i < result.guardiansNonVote.length;i++) {
-        let guardian = result.guardians[i];
+        let guardian = result.guardiansNonVote[i];
         guardian.accExcellenceReward = guardiansRewards[guardian.address.toLowerCase()];
         if(!guardian.accExcellenceReward) {
             guardian.accExcellenceReward = 0;
-        }
+       }
 
-        guardian.accReward = participatsRewards[guardian.address.toLowerCase()];
+        guardian.accReward = participantsRewards[guardian.address.toLowerCase()];
         if(!guardian.accReward) {
             guardian.accReward = 0;
         }
 
         for (let j = 0; j < guardian.delegators.length; j++) {
             let delegator = guardian.delegators[j];
-            delegator.accReward = participatsRewards[delegator.address.toLowerCase()];
+            delegator.accReward = participantsRewards[delegator.address.toLowerCase()];
             if(!delegator.accReward) {
                 delegator.accReward = 0;
             }
@@ -188,7 +190,7 @@ function calculate(guardiansMap, guardiansRewards, delegatorsMap, participantsRe
     }
 
     let maxparticipantionReward = _maxRewardForGroup(PARTICIPATION_ANNUAL_MAX, result.totalStake, PARTICIPATION_ANNUAL_PERCENT);
-    let maxGuardianReward = _maxRewardForGroup(EXCELLENCE_ANNUAL_MAX, result.totalExcellence, EXCELLENCE_ANNUAL_PERCENT);
+    let maxGuardianReward = _maxRewardForGroup(EXCELLENCE_ANNUAL_MAX, result.totalExcellenceStake, EXCELLENCE_ANNUAL_PERCENT);
     _voteRewardsCalculations(result, maxGuardianReward, guardiansRewards, maxparticipantionReward, participantsRewards);
     _nonVoteFillOldRewards(result, guardiansRewards, participantsRewards);
 
@@ -225,15 +227,15 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
             totalAccReward += delegator.accReward;
         }
     }
-    csvStr += `Totals\n,,,${result.totalStake},100%,${totalReward},${totalAccReward},${result.totalStake},${totalGuardianReward},100%,${totalGuardianAccReward}\n`;
+    csvStr += `Totals\n,,,${result.totalStake},100%,${totalReward},${totalAccReward},${result.totalStake},100%,${totalGuardianReward},${totalGuardianAccReward}\n`;
     csvStr += `\nNot Voted@${currentElectionBlock}\n`;
 
     for (let i = 0; i < result.guardiansNonVote.length; i++) {
         let guardian = result.guardiansNonVote[i];
-        csvStr += `${guardian.address},"${guardian.name}",0,0%,0,${guardian.accReward},0,0%,0,${guardian.accExcellenceReward}\n`;
+        csvStr += `${guardian.address},"${guardian.name}",,${guardian.selfStake},0%,0,${guardian.accReward},${guardian.voteWeight},0%,0,${guardian.accExcellenceReward}\n`;
         for (let j = 0; j < guardian.delegators.length; j++) {
             let delegator = guardian.delegators[j];
-            csvStr += `,,${delegator.address},0,0%,0,${delegator.accReward}\n`;
+            csvStr += `,,${delegator.address},${delegator.selfStake},0%,0,${delegator.accReward}\n`;
         }
     }
 
