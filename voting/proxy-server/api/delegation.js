@@ -13,7 +13,9 @@ const delegationApiFactory = ethereumClient => {
 
   router.get('/delegation/status', async (req, res) => {
     try {
-      const delegatedTo = await ethereumClient.getCurrentDelegation(req.query['address']);
+      const delegatedTo = await ethereumClient.getCurrentDelegation(
+        req.query['address']
+      );
       res.send(delegatedTo);
     } catch (err) {
       res.status(500).send(err.toString());

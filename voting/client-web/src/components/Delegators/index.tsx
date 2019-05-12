@@ -97,15 +97,15 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     return apiService.mode === Mode.ReadWrite;
   };
 
+  const centerContent = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  };
+
   return (
     <>
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
+      <header style={centerContent}>
         <Typography
           variant="h2"
           component="h2"
@@ -117,22 +117,23 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         <DelegationStatusDialog apiService={apiService} />
       </header>
 
-      {/* <Typography align="right" variant="overline">
-        Total stake: {totalStake} Orbs
-      </Typography> */}
+      <div style={centerContent}>
+        <Typography variant="body1" gutterBottom color="textPrimary">
+          Next election round will take place at Ethereum block:{' '}
+          <Link
+            color="secondary"
+            target="_blank"
+            rel="noopener"
+            href={`//etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
+          >
+            {nextElectionsBlockHeight}
+          </Link>
+        </Typography>
 
-      <Typography variant="subtitle1" gutterBottom color="textPrimary">
-        Next election round will take place at Ethereum block:{' '}
-        <Link
-          variant="h6"
-          color="secondary"
-          target="_blank"
-          rel="noopener"
-          href={`https://etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
-        >
-          {nextElectionsBlockHeight}
-        </Link>
-      </Typography>
+        <Typography variant="body1" gutterBottom color="textPrimary">
+          Total stake: {totalStake} Orbs
+        </Typography>
+      </div>
 
       <GuardiansList
         delegatedTo={delegatedTo}
