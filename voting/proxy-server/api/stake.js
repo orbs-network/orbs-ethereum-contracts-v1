@@ -12,6 +12,18 @@ const stakeApiFactory = orbsClientService => {
   const router = express.Router();
   const numberFormatter = new Intl.NumberFormat('en');
 
+  /**
+   * @swagger
+   * 
+   * /stake/total:
+   *  get:
+   *    description: Returns total participating stake
+   *    tags:
+   *      - Stake
+   *    responses:
+   *      '200':
+   *        description: Formatted string of total stake
+   */
   router.get('/stake/total', async (req, res) => {
     try {
       const totalStake = await orbsClientService.getTotalStake();

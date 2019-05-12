@@ -11,6 +11,18 @@ const express = require('express');
 const electionsApiFactory = ethereumService => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   * 
+   * /elections/next:
+   *  get:
+   *    description: Returns Ethereum block height of next elections
+   *    tags:
+   *      - Elections
+   *    responses:
+   *      '200':
+   *        description: Ethereum block height of next elections
+   */
   router.get('/elections/next', async (req, res) => {
     try {
       const nextElections = await ethereumService.getNextElectionsBlockHeight();

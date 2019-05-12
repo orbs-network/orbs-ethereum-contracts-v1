@@ -11,6 +11,23 @@ const express = require('express');
 const delegationApiFactory = ethereumClient => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   * 
+   * /delegation/status:
+   *  get:
+   *    description: Returns the address of current delegator
+   *    tags:
+   *      - Delegation
+   *    parameters:
+   *      - name: address
+   *        in: query
+   *        required: true
+   *        description: The address for whom the delegation status should be checked
+   *    responses:
+   *      '200':
+   *        description: Delegator address
+   */
   router.get('/delegation/status', async (req, res) => {
     try {
       const delegatedTo = await ethereumClient.getCurrentDelegation(

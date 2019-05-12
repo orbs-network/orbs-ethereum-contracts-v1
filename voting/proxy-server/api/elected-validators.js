@@ -22,11 +22,40 @@ const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
     return addresses;
   };
 
+  /**
+   * @swagger
+   * 
+   * /validators/elected:
+   *  get:
+   *    description: Returns the list of elected validators
+   *    tags:
+   *      - Validators
+   *    responses:
+   *      '200':
+   *        description: The list of elected validators
+   */
   router.get('/validators/elected', async (req, res) => {
     const data = await getElectedValidators();
     res.json(data);
   });
 
+  /**
+   * @swagger
+   * 
+   * /validators/elected/{address}:
+   *  get:
+   *    description: Returns the information about particular elected validator
+   *    tags:
+   *      - Validators
+   *    parameters:
+   *      - name: address
+   *        in: path
+   *        description: Validator ethereum address
+   *        required: true
+   *    responses:
+   *      '200':
+   *        description: The detailed information about the elected validator with given address
+   */
   router.get('/validators/elected/:address', async (req, res) => {
     try {
       const address = req.params['address'];
