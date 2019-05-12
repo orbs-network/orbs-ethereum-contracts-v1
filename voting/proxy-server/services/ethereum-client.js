@@ -40,7 +40,7 @@ class EthereumClientService {
     this.erc20Contract = new this.web3.eth.Contract(
       erc20ContactAbi,
       contractsInfo.EthereumErc20Address.address
-    )
+    );
   }
   getGuardians(offset, limit) {
     return this.guardiansContract.methods.getGuardians(offset, limit).call();
@@ -95,9 +95,9 @@ class EthereumClientService {
         TransferEventSignature,
         options
       );
-      const entryWithTransaction = events.reverse().find(
-        ({ raw }) => raw['data'] === delegationConstant
-      );
+      const entryWithTransaction = events
+        .reverse()
+        .find(({ raw }) => raw['data'] === delegationConstant);
       if (entryWithTransaction) {
         const help = entryWithTransaction['raw']['topics'][2];
         currentDelegation = '0x' + help.substring(26, 66);
@@ -117,7 +117,7 @@ class EthereumClientService {
         INTERVAL_BETWEEN_ELECTIONS * amountOfElections;
     }
     return nextElectionsBlockHeight;
-  };
+  }
 }
 
 module.exports = {
