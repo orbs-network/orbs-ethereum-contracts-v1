@@ -121,11 +121,10 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         <Typography variant="body1" gutterBottom color="textPrimary">
           Next election round will take place at Ethereum block:{' '}
           <Link
-            variant="h6"
             color="secondary"
             target="_blank"
             rel="noopener"
-            href={`https://etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
+            href={`//etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
           >
             {nextElectionsBlockHeight}
           </Link>
