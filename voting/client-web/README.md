@@ -1,4 +1,4 @@
-# Orbs Voting UI
+# [Orbs Voting UI](https://orbs-network.github.io/voting/)
 > Voting UI is a webapp hosted at [github pages](https://orbs-network.github.io/voting/) where stakeholders can delegate their votes to guardians. Guardians in turn can vote for different validators and get rewards.
 
 ## Local dev
