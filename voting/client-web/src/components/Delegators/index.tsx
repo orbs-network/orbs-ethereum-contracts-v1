@@ -100,7 +100,8 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const centerContent = {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: '15px'
   };
 
   return (
@@ -131,7 +132,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         </Typography>
 
         <Typography variant="body1" gutterBottom color="textPrimary">
-          Total stake: {totalStake} Orbs
+          Participating stake: {totalStake} Orbs
         </Typography>
       </div>
 
