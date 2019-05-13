@@ -13,7 +13,7 @@ const validatorsApiFactory = (ethereumClient, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /validators:
    *  get:
    *    description: Returns the list of validators
@@ -30,7 +30,7 @@ const validatorsApiFactory = (ethereumClient, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /validators/{address}:
    *  get:
    *    description: Returns the information about particular validator

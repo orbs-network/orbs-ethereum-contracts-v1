@@ -13,7 +13,7 @@ const electionsApiFactory = (ethereumService, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /elections/next:
    *  get:
    *    description: Returns Ethereum block height of next elections
@@ -34,7 +34,7 @@ const electionsApiFactory = (ethereumService, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /elections/past:
    *  get:
    *    description: Returns Ethereum block height of past elections

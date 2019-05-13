@@ -14,7 +14,7 @@ const stakeApiFactory = orbsClientService => {
 
   /**
    * @swagger
-   * 
+   *
    * /stake/total:
    *  get:
    *    description: Returns total participating stake

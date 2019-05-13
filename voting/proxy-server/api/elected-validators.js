@@ -24,7 +24,7 @@ const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /validators/elected:
    *  get:
    *    description: Returns the list of elected validators
@@ -41,7 +41,7 @@ const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /validators/elected/{address}:
    *  get:
    *    description: Returns the information about particular elected validator

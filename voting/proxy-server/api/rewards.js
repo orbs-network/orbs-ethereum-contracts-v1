@@ -13,7 +13,7 @@ const rewardsApiFactory = orbsClient => {
 
   /**
    * @swagger
-   * 
+   *
    * /rewards/{address}:
    *  get:
    *    description: Returns the information about rewards of all types for given address
