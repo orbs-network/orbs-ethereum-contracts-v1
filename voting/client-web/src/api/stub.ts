@@ -53,6 +53,9 @@ export class ApiStrategyStub implements IApiStrategy {
   getNextElectionBlockHeight() {
     return Promise.resolve('0');
   }
+  getPastElectionBlockHeight() {
+    return Promise.resolve('0');
+  }
   isMainNet() {
     return false;
   }

@@ -13,7 +13,7 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /guardians:
    *  get:
    *    description: Returns the list of guardians
@@ -44,7 +44,7 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
 
   /**
    * @swagger
-   * 
+   *
    * /guardians/{address}:
    *  get:
    *    description: Returns the information about particular guardian

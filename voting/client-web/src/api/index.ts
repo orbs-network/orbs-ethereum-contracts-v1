@@ -73,6 +73,9 @@ export class ApiService implements IApiStrategy {
   getNextElectionBlockHeight() {
     return this.remote!.getNextElectionBlockHeight();
   }
+  getPastElectionBlockHeight() {
+    return this.remote!.getPastElectionBlockHeight();
+  }
   isMainNet() {
     return this.metamask!.isMainNet();
   }

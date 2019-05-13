@@ -49,7 +49,7 @@ app.use('/api', electedValidatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', validatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', rewardsApiFactory(orbsClientService));
 app.use('/api', stakeApiFactory(orbsClientService));
-app.use('/api', electionsApiFactory(ethereumClient));
+app.use('/api', electionsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', delegationApiFactory(ethereumClient));
 
 const options = {
@@ -57,15 +57,19 @@ const options = {
     info: {
       title: 'Proxy Server API',
       version: '0.0.1',
-      description: 'REST API descriptions for voting proxy server',
+      description: 'REST API descriptions for voting proxy server'
     },
-    basePath: '/api',
+    basePath: '/api'
   },
   // List of files to be processes. You can also set globs './routes/*.js'
-  apis: ['./api/*.js'],
+  apis: ['./api/*.js']
 };
 
 const specs = swaggerJsdoc(options);
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, {customSiteTitle: 'Proxy Server API docs'}));
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(specs, { customSiteTitle: 'Proxy Server API docs' })
+);
 
 app.listen(port, () => console.log(`Started on port ${port}!`));

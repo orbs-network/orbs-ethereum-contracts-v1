@@ -50,16 +50,21 @@ const RewardsPage = ({
 }) => {
   const [address, setAddress] = useState('');
   const [rewards, setRewards] = useState({});
+  const [electionBlock, setElectionBlock] = useState('0');
 
-  const fetchRewards = address => {
+  const fetchRewards = address =>
     apiService.getRewards(address).then(setRewards);
-  };
+
+  const fetchElectionBlock = () =>
+    apiService.getPastElectionBlockHeight().then(setElectionBlock);
 
   const submitHandler = () => {
     fetchRewards(address);
   };
 
   useEffect(() => {
+    fetchElectionBlock();
+
     if (!location!.search) {
       return;
     }
@@ -114,6 +119,13 @@ const RewardsPage = ({
           </TableRow>
         </TableFooter>
       </Table>
+
+      <Typography inline variant="subtitle1" color="textPrimary">
+        * The information above corresponds to elections at block number:{' '}
+      </Typography>
+      <Typography inline variant="subtitle1" color="secondary">
+        {electionBlock}
+      </Typography>
     </>
   );
 };

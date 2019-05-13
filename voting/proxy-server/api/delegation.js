@@ -13,7 +13,7 @@ const delegationApiFactory = ethereumClient => {
 
   /**
    * @swagger
-   * 
+   *
    * /delegation/status:
    *  get:
    *    description: Returns the address of current delegator
