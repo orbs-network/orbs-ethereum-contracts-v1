@@ -49,7 +49,7 @@ app.use('/api', electedValidatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', validatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', rewardsApiFactory(orbsClientService));
 app.use('/api', stakeApiFactory(orbsClientService));
-app.use('/api', electionsApiFactory(ethereumClient));
+app.use('/api', electionsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', delegationApiFactory(ethereumClient));
 
 const options = {
