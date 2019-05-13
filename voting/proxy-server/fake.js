@@ -46,4 +46,8 @@ app.get('/api/guardians/:address', (req, res) => {
   res.json(data);
 });
 
+app.get('/api/elections/*', (req, res) => {
+  res.send(chance.integer({ min: 0 }).toString());
+});
+
 app.listen(port, () => console.log(`Started on port ${port}!`));
