@@ -54,4 +54,11 @@ export class RemoteService {
       })
       .then(res => res.data);
   }
+  getCurrentDelegationInfo(address: string) {
+    return axios
+      .get(`${remoteAddress}/delegation`, {
+        params: { address }
+      })
+      .then(res => res.data);
+  }
 }
