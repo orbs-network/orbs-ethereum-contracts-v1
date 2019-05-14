@@ -47,6 +47,9 @@ export class ApiStrategyStub implements IApiStrategy {
   getCurrentDelegation() {
     return Promise.resolve('');
   }
+  getCurrentDelegationInfo() {
+    return Promise.resolve({});
+  }
   getLastVote() {
     return Promise.resolve({ validators: [] });
   }

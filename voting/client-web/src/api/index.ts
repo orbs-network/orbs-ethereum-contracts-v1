@@ -67,6 +67,9 @@ export class ApiService implements IApiStrategy {
   getCurrentDelegation(address: string) {
     return this.remote!.getCurrentDelegation(address);
   }
+  getCurrentDelegationInfo(address: string) {
+    return this.remote!.getCurrentDelegationInfo(address);
+  }
   getLastVote() {
     return this.metamask!.getLastVote();
   }
