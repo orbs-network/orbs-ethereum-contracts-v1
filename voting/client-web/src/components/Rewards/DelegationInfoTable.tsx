@@ -41,7 +41,7 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>Voted in previous elections</TableCell>
+          <TableCell>Guardian voted in previous elections</TableCell>
           <TableCell align="right">
             {guardianInfo['voted'] && (
               <VoteChip value={guardianInfo['voted']} />
@@ -49,7 +49,7 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>Voted for next elections</TableCell>
+          <TableCell>Guardian voted for next elections</TableCell>
           <TableCell align="right">
             {guardianInfo['hasEligibleVote'] && (
               <VoteChip value={guardianInfo['hasEligibleVote']} />
