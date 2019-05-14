@@ -69,6 +69,9 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
         orbsClientService.getTotalStake()
       ]);
 
+      data['voted'] = votingWeightResults !== 0n; 
+      console.log(votingWeightResults);
+
       if (totalStakeResults === 0n) {
         data['stake'] = '0';
       } else {
@@ -80,6 +83,7 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
 
       res.json(data);
     } catch (err) {
+      console.error(err.toString())
       res.status(500).send(err.toString());
     }
   });
