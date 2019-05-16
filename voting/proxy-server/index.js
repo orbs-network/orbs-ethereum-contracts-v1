@@ -18,6 +18,9 @@ const electedValidatorsApiFactory = require('./api/elected-validators');
 const { OrbsClientService } = require('./services/orbs-client');
 const { EthereumClientService } = require('./services/ethereum-client');
 
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 const port = process.env.PORT || 5678;
 const virtualChainId = 1100000;
 const orbsNodeAddress = '18.197.127.2';
@@ -46,7 +49,27 @@ app.use('/api', electedValidatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', validatorsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', rewardsApiFactory(orbsClientService));
 app.use('/api', stakeApiFactory(orbsClientService));
-app.use('/api', electionsApiFactory(ethereumClient));
+app.use('/api', electionsApiFactory(ethereumClient, orbsClientService));
 app.use('/api', delegationApiFactory(ethereumClient));
+
+const options = {
+  swaggerDefinition: {
+    info: {
+      title: 'Proxy Server API',
+      version: '0.0.1',
+      description: 'REST API descriptions for voting proxy server'
+    },
+    basePath: '/api'
+  },
+  // List of files to be processes. You can also set globs './routes/*.js'
+  apis: ['./api/*.js']
+};
+
+const specs = swaggerJsdoc(options);
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(specs, { customSiteTitle: 'Proxy Server API docs' })
+);
 
 app.listen(port, () => console.log(`Started on port ${port}!`));

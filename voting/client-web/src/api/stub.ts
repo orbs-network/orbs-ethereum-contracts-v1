@@ -47,10 +47,16 @@ export class ApiStrategyStub implements IApiStrategy {
   getCurrentDelegation() {
     return Promise.resolve('');
   }
+  getCurrentDelegationInfo() {
+    return Promise.resolve({});
+  }
   getLastVote() {
     return Promise.resolve({ validators: [] });
   }
   getNextElectionBlockHeight() {
+    return Promise.resolve('0');
+  }
+  getPastElectionBlockHeight() {
     return Promise.resolve('0');
   }
   isMainNet() {

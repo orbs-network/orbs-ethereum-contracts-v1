@@ -14,10 +14,9 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
-import { Chip, Checkbox } from '@material-ui/core';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
+import { Checkbox } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
+import VoteChip from '../VoteChip';
 import { CopyAddressButton } from '../CopyAddressButton';
 
 const styles = () => ({
@@ -29,17 +28,9 @@ const styles = () => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis'
   },
-  yesChip: {
-    width: 50,
-    backgroundColor: green[700]
-  },
   delegateButton: {
     width: 70,
     backgroundColor: blue[700]
-  },
-  noChip: {
-    width: 50,
-    backgroundColor: red[700]
   }
 });
 
@@ -132,12 +123,7 @@ const GuardiansList = ({
             </TableCell>
             <TableCell padding="dense">{guardian['stake']}%</TableCell>
             <TableCell padding="dense" className={classes.cell}>
-              <Chip
-                className={
-                  guardian['hasEligibleVote'] ? classes.yesChip : classes.noChip
-                }
-                label={guardian['hasEligibleVote'] ? 'Yes' : 'No'}
-              />
+              <VoteChip value={guardian['hasEligibleVote']} />
             </TableCell>
           </TableRow>
         ))}

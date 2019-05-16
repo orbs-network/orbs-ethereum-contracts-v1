@@ -85,6 +85,11 @@ class OrbsClientService {
     ]);
     return this.sendQuery(query);
   }
+
+  getEffectiveElectionBlockNumber() {
+    const query = this.buildQuery('getEffectiveElectionBlockNumber', []);
+    return this.sendQuery(query);
+  }
 }
 
 module.exports = {

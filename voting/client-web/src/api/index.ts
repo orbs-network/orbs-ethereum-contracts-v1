@@ -67,11 +67,17 @@ export class ApiService implements IApiStrategy {
   getCurrentDelegation(address: string) {
     return this.remote!.getCurrentDelegation(address);
   }
+  getCurrentDelegationInfo(address: string) {
+    return this.remote!.getCurrentDelegationInfo(address);
+  }
   getLastVote() {
     return this.metamask!.getLastVote();
   }
   getNextElectionBlockHeight() {
     return this.remote!.getNextElectionBlockHeight();
+  }
+  getPastElectionBlockHeight() {
+    return this.remote!.getPastElectionBlockHeight();
   }
   isMainNet() {
     return this.metamask!.isMainNet();

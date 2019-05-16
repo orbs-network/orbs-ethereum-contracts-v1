@@ -44,9 +44,19 @@ export class RemoteService {
   getNextElectionBlockHeight() {
     return axios.get(`${remoteAddress}/elections/next`).then(res => res.data);
   }
+  getPastElectionBlockHeight() {
+    return axios.get(`${remoteAddress}/elections/past`).then(res => res.data);
+  }
   getCurrentDelegation(address: string) {
     return axios
       .get(`${remoteAddress}/delegation/status`, {
+        params: { address }
+      })
+      .then(res => res.data);
+  }
+  getCurrentDelegationInfo(address: string) {
+    return axios
+      .get(`${remoteAddress}/delegation`, {
         params: { address }
       })
       .then(res => res.data);

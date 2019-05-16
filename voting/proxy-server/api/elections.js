@@ -8,9 +8,21 @@
 
 const express = require('express');
 
-const electionsApiFactory = ethereumService => {
+const electionsApiFactory = (ethereumService, orbsClientService) => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   *
+   * /elections/next:
+   *  get:
+   *    description: Returns Ethereum block height of next elections
+   *    tags:
+   *      - Elections
+   *    responses:
+   *      '200':
+   *        description: Ethereum block height of next elections
+   */
   router.get('/elections/next', async (req, res) => {
     try {
       const nextElections = await ethereumService.getNextElectionsBlockHeight();
@@ -19,6 +31,28 @@ const electionsApiFactory = ethereumService => {
       res.status(500).send(err.toString());
     }
   });
+
+  /**
+   * @swagger
+   *
+   * /elections/past:
+   *  get:
+   *    description: Returns Ethereum block height of past elections
+   *    tags:
+   *      - Elections
+   *    responses:
+   *      '200':
+   *        description: Ethereum block height of past elections
+   */
+  router.get('/elections/past', async (req, res) => {
+    try {
+      const blockNumber = await orbsClientService.getEffectiveElectionBlockNumber();
+      res.send(blockNumber.toString());
+    } catch (err) {
+      res.status(500).send(err.toString());
+    }
+  });
+
   return router;
 };
 

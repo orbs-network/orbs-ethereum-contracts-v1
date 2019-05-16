@@ -6,9 +6,9 @@
 1. Run `npm run dev`
 
 ## Deployment
-The current host of the docker image is Heroku.
+The current host of the docker image is Heroku. Read the following prerequisites and deployment guidelines.
 
-### Prerequsites
+### Prerequisites
 1. Install Docker
 1. Install Heroku CLI
 1. Login to Heroku
@@ -16,3 +16,5 @@ The current host of the docker image is Heroku.
 ### How to deploy?
 1. Run `npm run contracts:prod` (Optional)
 1. Run `npm run deploy`
+
+## [REST API Docs](https://orbs-voting-proxy-server.herokuapp.com/docs)

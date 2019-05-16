@@ -11,6 +11,23 @@ const express = require('express');
 const rewardsApiFactory = orbsClient => {
   const router = express.Router();
 
+  /**
+   * @swagger
+   *
+   * /rewards/{address}:
+   *  get:
+   *    description: Returns the information about rewards of all types for given address
+   *    tags:
+   *      - Rewards
+   *    parameters:
+   *      - name: address
+   *        in: path
+   *        description: Ethereum address
+   *        required: true
+   *    responses:
+   *      '200':
+   *        description: The detailed information about rewards of all types for given address
+   */
   router.get('/rewards/:address', async (req, res) => {
     const address = req.params['address'];
     const [

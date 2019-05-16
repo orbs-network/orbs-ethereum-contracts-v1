@@ -12,14 +12,11 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableFooter from '@material-ui/core/TableFooter';
 import { ApiService } from '../../api';
 import { Location } from 'history';
 import { parse as parseQuery } from 'querystring';
+import { RewardsTable } from './RewardsTable';
+import { DelegationInfoTable } from './DelegationInfoTable';
 
 const styles = theme => ({
   form: {
@@ -34,8 +31,8 @@ const styles = theme => ({
   submit: {
     marginLeft: 30
   },
-  table: {
-    marginTop: `${theme.spacing.unit * 5}px`
+  section: {
+    marginTop: `${theme.spacing.unit * 8}px`
   }
 });
 
@@ -50,16 +47,31 @@ const RewardsPage = ({
 }) => {
   const [address, setAddress] = useState('');
   const [rewards, setRewards] = useState({});
+  const [delegatorInfo, setDelegatorInfo] = useState({});
+  const [guardianInfo, setGuardianInfo] = useState({});
+  const [electionBlock, setElectionBlock] = useState('0');
 
-  const fetchRewards = address => {
+  const fetchRewards = address =>
     apiService.getRewards(address).then(setRewards);
+
+  const fetchDelegationInfo = async address => {
+    const info = await apiService.getCurrentDelegationInfo(address);
+    setDelegatorInfo(info);
+    const guardianData = await apiService.getGuardianData(info['delegatedTo']);
+    setGuardianInfo(guardianData);
   };
+
+  const fetchPastElectionBlock = () =>
+    apiService.getPastElectionBlockHeight().then(setElectionBlock);
 
   const submitHandler = () => {
     fetchRewards(address);
+    fetchDelegationInfo(address);
   };
 
   useEffect(() => {
+    fetchPastElectionBlock();
+
     if (!location!.search) {
       return;
     }
@@ -67,19 +79,20 @@ const RewardsPage = ({
     const queryParams: any = parseQuery(location!.search.substr(1));
     setAddress(queryParams.address);
     fetchRewards(queryParams.address);
+    fetchDelegationInfo(queryParams.address);
   }, []);
 
   return (
     <>
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        Total Reward
+        Rewards & Delegation Info
       </Typography>
 
       <FormControl className={classes.form} variant="standard" margin="normal">
         <TextField
           required
           className={classes.input}
-          placeholder="Address"
+          placeholder="Enter the address"
           value={address}
           onChange={ev => setAddress(ev.target.value)}
           margin="normal"
@@ -92,28 +105,41 @@ const RewardsPage = ({
         </div>
       </FormControl>
 
-      <Table className={classes.table} padding="none">
-        <TableBody>
-          <TableRow>
-            <TableCell>Delegator Reward</TableCell>
-            <TableCell>{rewards['delegatorReward']}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Guardian Excellency Reward</TableCell>
-            <TableCell>{rewards['guardianReward']}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Validator Reward</TableCell>
-            <TableCell>{rewards['validatorReward']}</TableCell>
-          </TableRow>
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell>Total Reward</TableCell>
-            <TableCell>{rewards['totalReward']}</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+      <section className={classes.section}>
+        <Typography
+          variant="h4"
+          component="h4"
+          gutterBottom
+          color="textPrimary"
+        >
+          Rewards
+        </Typography>
+        <RewardsTable rewards={rewards} />
+      </section>
+
+      <section className={classes.section}>
+        <Typography
+          variant="h4"
+          component="h4"
+          gutterBottom
+          color="textPrimary"
+        >
+          Delegation Details
+        </Typography>
+        <DelegationInfoTable
+          delegatorInfo={delegatorInfo}
+          guardianInfo={guardianInfo}
+        />
+      </section>
+
+      <section className={classes.section}>
+        <Typography inline variant="subtitle1" color="textPrimary">
+          * The information above corresponds to elections at block number:{' '}
+        </Typography>
+        <Typography inline variant="subtitle1" color="secondary">
+          {electionBlock}
+        </Typography>
+      </section>
     </>
   );
 };
