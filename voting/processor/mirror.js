@@ -16,7 +16,7 @@ let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
 let verbose = false;
 let force = process.env.FORCE_RUN;
 let paceGamma = 1;
-let paceEthereum = 10000;
+let paceEthereum = 5000;
 
 const gamma = require('./gamma-calls');
 
@@ -45,6 +45,11 @@ function validateInput() {
         console.log('No ORBS environment found using default value "local"\n');
         orbsEnvironment = "local";
     }
+
+    if (process.env.PACE_ETHEREUM) {
+        console.log(`reset value of pace in ethereum to ${process.env.PACE_ETHEREUM}\n`);
+        paceEthereum = parseInt(process.env.PACE_ETHEREUM);
+    }
 }
 
 async function transferEvents(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock) {
@@ -61,7 +66,7 @@ async function transferEvents(ethereumConnectionURL, erc20ContractAddress, start
                 if (verbose) {
                     console.log('\x1b[32m%s\x1b[0m', `Transfer event ${i + j + 1}:\n`, transferEvents[i+j]);
                 }
-                txs.push(gamma.sendTransaction('mirror-transfer.json', [transferEvents[i+j].txHash], orbsVotingContractName, orbsEnvironment));
+                txs.push(gamma.sendTransaction(orbsEnvironment, orbsVotingContractName,'mirror-transfer.json', [transferEvents[i+j].txHash]));
             }
             await Promise.all(txs);
         } catch (e){
@@ -83,7 +88,7 @@ async function delegateEvents(ethereumConnectionURL, votingContractAddress, star
                 if (verbose) {
                     console.log('\x1b[32m%s\x1b[0m', `Delegation event ${i + j + 1}:\n`, delegateEvents[i+j]);
                 }
-                txs.push(gamma.sendTransaction('mirror-delegate.json', [delegateEvents[i+j].txHash], orbsVotingContractName, orbsEnvironment));
+                txs.push(gamma.sendTransaction(orbsEnvironment, orbsVotingContractName,'mirror-delegate.json', [delegateEvents[i+j].txHash]));
             }
             await Promise.all(txs)
         } catch (e){
@@ -98,29 +103,29 @@ async function main() {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE\n`);
     }
 
-    if (force) {
-        console.log('\x1b[36m%s\x1b[0m', `Running special mirror for longer runs\n`);
-        let actualStartBlock = 7440000;
-        let actualEndBlock = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-        for (let i = actualStartBlock;i < actualEndBlock;i=i+paceEthereum) {
-            console.log('\x1b[36m%s\x1b[0m', `\nBetween blocks ${i}-${i+paceEthereum} \n`);
-            await transferEvents(ethereumConnectionURL, erc20ContractAddress, i, i+paceEthereum);
-            await delegateEvents(ethereumConnectionURL, votingContractAddress, i, i+paceEthereum);
-        }
+    let actualStartBlock = 0;
+    let actualEndBlock = 0;
+    if (!startBlock) {
+        actualEndBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
+        actualStartBlock = actualEndBlock - 900;
     } else {
-        let actualStartBlock = 0;
-        let actualEndBlock = 0;
-        if (!startBlock) {
-            actualEndBlock = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-            actualStartBlock = actualEndBlock - 900;
+        if (force) {
+            actualStartBlock = 7440000;
+            actualEndBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
         } else {
-            actualStartBlock = startBlock;
-            actualEndBlock = endBlock;
+            actualStartBlock = parseInt(startBlock);
+            actualEndBlock = parseInt(endBlock);
         }
+    }
 
-        console.log('\x1b[36m%s\x1b[0m', `\nRunning mirror between blocks ${actualStartBlock}-${actualEndBlock}\n`);
-        await transferEvents(ethereumConnectionURL, erc20ContractAddress, actualStartBlock, actualEndBlock);
-        await delegateEvents(ethereumConnectionURL, votingContractAddress, actualStartBlock, actualEndBlock);
+    console.log('\x1b[36m%s\x1b[0m', `Running mirror between blocks ${actualStartBlock}-${actualEndBlock}\n`);
+    for (let i = actualStartBlock; i < actualEndBlock; i = i + paceEthereum) {
+        let currentEnd = i + paceEthereum < actualEndBlock ? i + paceEthereum : actualEndBlock;
+        if (verbose) {
+            console.log('\x1b[36m%s\x1b[0m', `current iteration between blocks ${i}-${currentEnd} \n`);
+        }
+        await transferEvents(ethereumConnectionURL, erc20ContractAddress, i, currentEnd);
+        await delegateEvents(ethereumConnectionURL, votingContractAddress, i, currentEnd);
     }
 }
 

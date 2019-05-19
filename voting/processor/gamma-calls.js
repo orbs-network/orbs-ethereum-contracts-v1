@@ -14,7 +14,7 @@ if (process.env.VERBOSE) {
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-async function runQuery(orbsContractFunctionJson, orbsVotingContractName, orbsEnvironment) {
+async function runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson) {
     let command = `gamma-cli run-query ./gammacli-jsons/${orbsContractFunctionJson} -signer user1 -name ${orbsVotingContractName} -env ${orbsEnvironment}`;
     const {stdout, stderr } = await exec(command);
     if (stdout.length === 0 && stderr.length > 0){
@@ -31,7 +31,7 @@ async function runQuery(orbsContractFunctionJson, orbsVotingContractName, orbsEn
     return result;
 }
 
-async function sendTransaction(orbsContractFunctionJson, args, orbsVotingContractName, orbsEnvironment) {
+async function sendTransaction(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, args) {
     let argsString = '';
     for (let i = 0;i < args.length;i++) {
         argsString += ` -arg${i+1} ${args[i]}`;
@@ -48,19 +48,28 @@ async function sendTransaction(orbsContractFunctionJson, args, orbsVotingContrac
     return result;
 }
 
-async function getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment) {
+async function getNumberResult(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson) {
     let blockNumber = 0;
     try {
-        let result = await runQuery('get-current-block.json', orbsVotingContractName, orbsEnvironment);
+        let result = await runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson);
         blockNumber = parseInt(result.OutputArguments[0].Value)
     } catch (e){
-        console.log(`Could not get current block number. Error OUTPUT:\n` + e);
+        console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n` + e);
     }
     return blockNumber;
+}
+
+async function getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName) {
+    return await getNumberResult(orbsEnvironment, orbsVotingContractName, 'get-current-block.json');
+}
+
+async function getProcessingStartBlockNumber(orbsEnvironment, orbsVotingContractName) {
+    return await getNumberResult(orbsEnvironment, orbsVotingContractName, 'get-processing-start-block.json');
 }
 
 module.exports = {
     runQuery,
     sendTransaction,
     getCurrentBlockNumber,
+    getProcessingStartBlockNumber,
 };

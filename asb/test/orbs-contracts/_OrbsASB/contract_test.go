@@ -50,7 +50,7 @@ func TestTransferIn_NoTuid(t *testing.T) {
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init() // start the asb contract // todo  v1 open bug
 		// prepare
-		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0,0, func(out interface{}) {
+		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0, 0, func(out interface{}) {
 			v := out.(*EthTransferredOut)
 			v.Tuid = nil
 		})
@@ -86,7 +86,7 @@ func TestTransferIn_NegativeValue(t *testing.T) {
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init() // start the asb contract // todo  v1 open bug
 		// prepare
-		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0,0, func(out interface{}) {
+		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0, 0, func(out interface{}) {
 			v := out.(*EthTransferredOut)
 			v.Tuid = big.NewInt(42)
 			v.Value = big.NewInt(-17)
@@ -105,7 +105,7 @@ func TestTransferIn_NoOrbsAddress(t *testing.T) {
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init() // start the asb contract // todo  v1 open bug
 		// prepare
-		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0,0, func(out interface{}) {
+		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0, 0, func(out interface{}) {
 			v := out.(*EthTransferredOut)
 			v.Tuid = big.NewInt(42)
 			v.Value = big.NewInt(17)
@@ -128,7 +128,7 @@ func TestTransferIn_TuidAlreadyUsed(t *testing.T) {
 		setInTuid(genInTuidKey(big.NewInt(42).Bytes()))
 
 		// prepare
-		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0,0, func(out interface{}) {
+		m.MockEthereumLog(getAsbAddr(), getAsbAbi(), txid, "EthTransferredOut", 0, 0, func(out interface{}) {
 			v := out.(*EthTransferredOut)
 			v.Tuid = big.NewInt(42)
 			v.Value = big.NewInt(17)
