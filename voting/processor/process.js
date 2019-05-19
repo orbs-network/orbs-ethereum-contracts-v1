@@ -75,7 +75,7 @@ async function processResult(result) {
 async function processResults(results) {
     let state = CONTINUE;
     for(let i = 0;i < results.length;i++) {
-        state = await processResult(results[i])
+        state = await processResult(results[i]);
         if (state !== CONTINUE){
             break;
         }
@@ -122,20 +122,9 @@ async function processCall() {
     }
 }
 
-async function getProcessingStartBlockNumber() {
-    let blockNumber = 0;
-    try {
-        let result = await gamma.runQuery('get-processing-start-block.json', orbsVotingContractName, orbsEnvironment);
-        blockNumber = parseInt(result.OutputArguments[0].Value)
-    } catch (e){
-        console.log(`Could not get processing start block number. Error OUTPUT:\n` + e);
-    }
-    return blockNumber;
-}
-
 async function getProcessingInfo() {
     let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-    let processStartBlockNumber = await getProcessingStartBlockNumber();
+    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber();
 
     return { isProcessingPeriod : currentBlockNumber >= processStartBlockNumber, currentBlockNumber,  processStartBlockNumber} ;
 }

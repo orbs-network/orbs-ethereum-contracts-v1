@@ -9,8 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "web3": "1.0.0-beta.48",
-    "typedarray-to-buffer": "^3.1.5",
-    "yaeti": "^0.0.6"
+    "@slack/web-api": "5.0.1",
+    "typedarray-to-buffer": "3.1.5",
+    "web3": "1.0.0-beta.55",
+    "yaeti": "0.0.6"
   }
 }

@@ -24,7 +24,7 @@ deprecated-federation/scTopics
 deprecated-federation/Unified.sol
 
 voting/ethereum/build/
-voting/process/package-lock.json
+voting/processor/package-lock.json
 Voting/status/package-lock.json
 Voting/status/*.csv
 voting/test/it/build/

@@ -48,19 +48,28 @@ async function sendTransaction(orbsContractFunctionJson, args, orbsVotingContrac
     return result;
 }
 
-async function getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment) {
+async function getNumberResult(orbsVotingContractName, orbsEnvironment, orbsContractFunctionJson) {
     let blockNumber = 0;
     try {
-        let result = await runQuery('get-current-block.json', orbsVotingContractName, orbsEnvironment);
+        let result = await runQuery(orbsContractFunctionJson, orbsVotingContractName, orbsEnvironment);
         blockNumber = parseInt(result.OutputArguments[0].Value)
     } catch (e){
-        console.log(`Could not get current block number. Error OUTPUT:\n` + e);
+        console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n` + e);
     }
     return blockNumber;
+}
+
+async function getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment) {
+    return await getNumberResult(orbsVotingContractName, orbsEnvironment,'get-current-block.json');
+}
+
+async function getProcessingStartBlockNumber(orbsVotingContractName, orbsEnvironment) {
+    return await getNumberResult(orbsVotingContractName, orbsEnvironment,'get-processing-start-block.json');
 }
 
 module.exports = {
     runQuery,
     sendTransaction,
     getCurrentBlockNumber,
+    getProcessingStartBlockNumber,
 };
