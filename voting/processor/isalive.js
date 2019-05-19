@@ -34,11 +34,17 @@ function validateInput() {
     }
 }
 
+const slackChannel = 'prod-monitoring';
+const slackUserName = 'ElectionMonitor';
+const slackUserEmoji = ':cat2:';
+async function sendSlack(slack, message) {
+    await slack.chat.postMessage({text : message, username: slackUserName, icon_emoji: slackUserEmoji, channel: slackChannel});
+}
+
 async function main() {
     validateInput();
     let web3 = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));
     let slack = await new WebClient(slackToken);
-    let slackChannel = 'prod-monitoring';
 
     let currentBlockNumberByOrbs = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
     let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsVotingContractName, orbsEnvironment);
@@ -47,7 +53,7 @@ async function main() {
         let message = `Warning: Current block number: ${currentBlockNumberByOrbs} is well after process vote starting block number: ${processStartBlockNumber}.
  Something is wrong with elections, it seems stuck.\n`;
         console.log('\x1b[31m%s\x1b[0m', message);
-        await slack.chat.postMessage({text : message, channel: slackChannel});
+        await sendSlack(slack, message);
         process.exit(-2)
     }
 
@@ -56,7 +62,7 @@ async function main() {
         let message = `Warning: Current block number reading from Orbs: ${currentBlockNumberByOrbs} is too far away from current block reading from Ethereum : ${currentBlockNumberByEthereum}.
  Orbs and Ethereum are out of Sync.\n`;
         console.log('\x1b[31m%s\x1b[0m', message);
-        await slack.chat.postMessage({text : message, channel: slackChannel});
+        await sendSlack(slack, message);
         process.exit(-3)
     }
 
