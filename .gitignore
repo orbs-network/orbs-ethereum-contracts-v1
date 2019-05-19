@@ -25,8 +25,8 @@ deprecated-federation/Unified.sol
 
 voting/ethereum/build/
 voting/processor/package-lock.json
-Voting/status/package-lock.json
-Voting/status/*.csv
+voting/status/package-lock.json
+voting/status/*.csv
 voting/test/it/build/
 voting/test/it/package-lock.json
 voting/orbs/mergetool
