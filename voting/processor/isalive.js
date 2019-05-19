@@ -58,7 +58,7 @@ async function main() {
         let message = `Warning: Current block number reading from Orbs: ${currentBlockNumberByOrbs} is too far away from current block reading from Ethereum : ${currentBlockNumberByEthereum}.
  Orbs and Ethereum are out of Sync.\n`;
         console.log('\x1b[31m%s\x1b[0m', message);
-        //await sendSlack(slack, message);
+        await sendSlack(slack, message);
         process.exit(-3)
     }
 
