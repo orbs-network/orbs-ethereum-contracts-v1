@@ -46,7 +46,7 @@ async function main() {
     let web3 = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));
     let slack = await new WebClient(slackToken);
 
-    let currentBlockNumberByOrbs = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
+    let currentBlockNumberByOrbs = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
     let currentBlockNumberByEthereum = 0;
     try {
         currentBlockNumberByEthereum = await web3.eth.getBlockNumber();
@@ -62,7 +62,7 @@ async function main() {
         process.exit(-3)
     }
 
-    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsVotingContractName, orbsEnvironment);
+    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsEnvironment, orbsVotingContractName);
     if (processStartBlockNumber === 0 || currentBlockNumberByOrbs >= (processStartBlockNumber + 600) ) {
         let message = `Warning: Current block number: ${currentBlockNumberByOrbs} is well after process vote starting block number: ${processStartBlockNumber}.
  Something is wrong with elections, it seems stuck.\n`;

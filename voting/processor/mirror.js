@@ -66,7 +66,7 @@ async function transferEvents(ethereumConnectionURL, erc20ContractAddress, start
                 if (verbose) {
                     console.log('\x1b[32m%s\x1b[0m', `Transfer event ${i + j + 1}:\n`, transferEvents[i+j]);
                 }
-                txs.push(gamma.sendTransaction('mirror-transfer.json', [transferEvents[i+j].txHash], orbsVotingContractName, orbsEnvironment));
+                txs.push(gamma.sendTransaction(orbsEnvironment, orbsVotingContractName,'mirror-transfer.json', [transferEvents[i+j].txHash]));
             }
             await Promise.all(txs);
         } catch (e){
@@ -88,7 +88,7 @@ async function delegateEvents(ethereumConnectionURL, votingContractAddress, star
                 if (verbose) {
                     console.log('\x1b[32m%s\x1b[0m', `Delegation event ${i + j + 1}:\n`, delegateEvents[i+j]);
                 }
-                txs.push(gamma.sendTransaction('mirror-delegate.json', [delegateEvents[i+j].txHash], orbsVotingContractName, orbsEnvironment));
+                txs.push(gamma.sendTransaction(orbsEnvironment, orbsVotingContractName,'mirror-delegate.json', [delegateEvents[i+j].txHash]));
             }
             await Promise.all(txs)
         } catch (e){
@@ -106,12 +106,12 @@ async function main() {
     let actualStartBlock = 0;
     let actualEndBlock = 0;
     if (!startBlock) {
-        actualEndBlock = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
+        actualEndBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
         actualStartBlock = actualEndBlock - 900;
     } else {
         if (force) {
             actualStartBlock = 7440000;
-            actualEndBlock = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
+            actualEndBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
         } else {
             actualStartBlock = parseInt(startBlock);
             actualEndBlock = parseInt(endBlock);

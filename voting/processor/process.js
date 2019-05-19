@@ -97,7 +97,7 @@ async function processCall() {
         }
         let txs = [];
         for(let i = 0;i < batchSize;i++) {
-            txs.push(gamma.sendTransaction('process-voting.json', [], orbsVotingContractName, orbsEnvironment));
+            txs.push(gamma.sendTransaction(orbsEnvironment, orbsVotingContractName, 'process-voting.json', []));
         }
         let results = await Promise.all(txs);
         numberOfCalls += batchSize;
@@ -123,8 +123,8 @@ async function processCall() {
 }
 
 async function getProcessingInfo() {
-    let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber();
+    let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
+    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsEnvironment, orbsVotingContractName);
 
     return { isProcessingPeriod : currentBlockNumber >= processStartBlockNumber, currentBlockNumber,  processStartBlockNumber} ;
 }
