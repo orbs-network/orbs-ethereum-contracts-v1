@@ -47,23 +47,28 @@ async function main() {
     let slack = await new WebClient(slackToken);
 
     let currentBlockNumberByOrbs = await gamma.getCurrentBlockNumber(orbsVotingContractName, orbsEnvironment);
-    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsVotingContractName, orbsEnvironment);
+    let currentBlockNumberByEthereum = 0;
+    try {
+        currentBlockNumberByEthereum = await web3.eth.getBlockNumber();
+    } catch {
+        console.error(e);
+        currentBlockNumberByEthereum = 0;
+    }
+    if (currentBlockNumberByOrbs === 0 || currentBlockNumberByEthereum === 0 || (currentBlockNumberByOrbs + 200) < currentBlockNumberByEthereum || (currentBlockNumberByEthereum + 200) < currentBlockNumberByOrbs) {
+        let message = `Warning: Current block number reading from Orbs: ${currentBlockNumberByOrbs} is too far away from current block reading from Ethereum : ${currentBlockNumberByEthereum}.
+ Orbs and Ethereum are out of Sync.\n`;
+        console.log('\x1b[31m%s\x1b[0m', message);
+        //await sendSlack(slack, message);
+        process.exit(-3)
+    }
 
-    if (currentBlockNumberByOrbs === 0 || processStartBlockNumber === 0 || currentBlockNumberByOrbs >= (processStartBlockNumber + 600) ) {
+    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsVotingContractName, orbsEnvironment);
+    if (processStartBlockNumber === 0 || currentBlockNumberByOrbs >= (processStartBlockNumber + 600) ) {
         let message = `Warning: Current block number: ${currentBlockNumberByOrbs} is well after process vote starting block number: ${processStartBlockNumber}.
  Something is wrong with elections, it seems stuck.\n`;
         console.log('\x1b[31m%s\x1b[0m', message);
         await sendSlack(slack, message);
         process.exit(-2)
-    }
-
-    let currentBlockNumberByEthereum = await web3.eth.getBlockNumber();
-    if (currentBlockNumberByEthereum === 0 || (currentBlockNumberByOrbs + 200) < currentBlockNumberByEthereum || (currentBlockNumberByEthereum + 200) < currentBlockNumberByOrbs) {
-        let message = `Warning: Current block number reading from Orbs: ${currentBlockNumberByOrbs} is too far away from current block reading from Ethereum : ${currentBlockNumberByEthereum}.
- Orbs and Ethereum are out of Sync.\n`;
-        console.log('\x1b[31m%s\x1b[0m', message);
-        await sendSlack(slack, message);
-        process.exit(-3)
     }
 
     console.log('\x1b[35m%s\x1b[0m', `Current block from Orbs: ${currentBlockNumberByOrbs}
