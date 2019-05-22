@@ -23,6 +23,7 @@ let totalTransfers = 0;
 let totalDelegate = 0;
 
 const gamma = require('./gamma-calls');
+const slack = require('./slack');
 
 function validateInput() {
     if (process.env.VERBOSE) {
@@ -161,6 +162,7 @@ async function iterateOverEvents(start, end, pace) {
             }
             if (pace < 20) { // really should not get here
                 console.log('\x1b[31m%s\x1b[0m', `something is terrible wrong. exit`);
+                await slack.sendSlack(`Warning: mirror failed because event slowing down reached lower thank 20, check Jenkins!`);
                 process.exit(-5);
             }
             let newPace = pace / 10;
@@ -204,4 +206,6 @@ async function main() {
 main()
     .then(results => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
-    }).catch(console.error);
+    }).catch(e => {
+        slack.sendSlack(`Warning: mirror failed with message '${e.message}', check Jenkins!`).then(console.error(e));
+    });
