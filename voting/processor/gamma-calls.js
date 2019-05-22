@@ -14,20 +14,23 @@ if (process.env.VERBOSE) {
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-async function runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson) {
-    let command = `gamma-cli run-query ./gammacli-jsons/${orbsContractFunctionJson} -signer user1 -name ${orbsVotingContractName} -env ${orbsEnvironment}`;
+async function runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, args) {
+    let argsString = '';
+    if (args && args.length > 0) {
+        for (let i = 0; i < args.length; i++) {
+            argsString += ` -arg${i + 1} ${args[i]}`;
+        }
+    }
+    let command = `gamma-cli run-query ./gammacli-jsons/${orbsContractFunctionJson} -signer user1 -name ${orbsVotingContractName} ${argsString} -env ${orbsEnvironment}`;
     const {stdout, stderr } = await exec(command);
     if (stdout.length === 0 && stderr.length > 0){
         throw new Error(stderr);
     }
     let result = JSON.parse(stdout);
 
-    if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
-        throw new Error(`problem running query result:\n${stdout}`);
-    }
-    if (verbose) {
-        console.log(`RUNNING: ${command}\n`, `OUTPUT:\n`, result);
-    }
+    // if (verbose) {
+    //     console.log(`RUNNING: ${command}\n`, `OUTPUT:\n`, result);
+    // }
     return result;
 }
 
@@ -52,6 +55,10 @@ async function getNumberResult(orbsEnvironment, orbsVotingContractName, orbsCont
     let blockNumber = 0;
     try {
         let result = await runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson);
+        if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
+            console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n`, result);
+            return 0;
+        }
         blockNumber = parseInt(result.OutputArguments[0].Value)
     } catch (e){
         console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n` + e);

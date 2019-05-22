@@ -18,7 +18,6 @@ async function getAllPastDelegateEvents(tokenContract, startBlock, endBlock) {
 
     let mapOfTransfers = {};
     let listOfTransfers = [];
-    try {
         let events = await tokenContract.getPastEvents('Delegate', options);
         for (let i = events.length-1; i >= 0;i--) {
             let event = events[i];
@@ -37,10 +36,6 @@ async function getAllPastDelegateEvents(tokenContract, startBlock, endBlock) {
             }
         }
         return listOfTransfers;
-    } catch (error) {
-        console.log(error);
-        return [];
-    }
 }
 
 const TOPIC_FROM_ADDR = 1;
