@@ -1,0 +1,35 @@
+{
+  "name": "playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dummy-it.spec.js",
+  "scripts": {
+    "test": "mocha *.spec.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "openzeppelin-solidity": "2.0.0",
+    "truffle-contract": "^4.0.17",
+    "truffle-hdwallet-provider": "^1.0.9",
+    "truffle-resolver": "^5.0.5",
+    "truffle-workflow-compile": "^2.0.16",
+    "web3": "1.0.0-beta.34"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-bn": "^0.1.1",
+    "ganache-cli": "6.2.3",
+    "mocha": "^6.1.4",
+    "mocha-junit-reporter": "^1.18.0",
+    "mocha-multi-reporters": "^1.1.7"
+  },
+  "mocha": {
+    "diff": true,
+    "reporter": "spec",
+    "slow": 75,
+    "timeout": 200000,
+    "ui": "bdd"
+  }
+}
