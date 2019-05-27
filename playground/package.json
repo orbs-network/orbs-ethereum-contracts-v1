@@ -11,7 +11,9 @@
   "dependencies": {
     "openzeppelin-solidity": "2.0.0",
     "truffle-contract": "^4.0.17",
+    "truffle-deployer": "^3.0.18",
     "truffle-hdwallet-provider": "^1.0.9",
+    "truffle-legacy-system": "^1.0.6",
     "truffle-resolver": "^5.0.5",
     "truffle-workflow-compile": "^2.0.16",
     "web3": "1.0.0-beta.34"
