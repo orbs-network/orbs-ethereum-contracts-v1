@@ -79,7 +79,7 @@ describe("Ethereum Integration", () => {
         const accounts = await web3.eth.getAccounts();
         const resolver = new Resolver(config);
 
-        const DateTime = resolver.require("../../deprecated-federation/contracts/DateTime.sol");
+        const DateTime = resolver.require("federation/contracts/DateTime.sol");
         DateTime.defaults({from: accounts[0]});
 
         const LeapYear = resolver.require("LeapYear");
