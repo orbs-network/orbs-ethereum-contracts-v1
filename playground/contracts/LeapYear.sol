@@ -1,6 +1,6 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
-import "../../deprecated-federation/contracts/DateTime.sol";
+import "subscription/contracts/DateTime.sol";
 
 contract LeapYear {
 

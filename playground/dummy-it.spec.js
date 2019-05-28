@@ -24,7 +24,7 @@ describe("Ethereum Integration", () => {
         contracts_build_directory: path.resolve(".", "build"),
         compilers: {
             solc: {
-                version: '0.4.24',       // Fetch exact version from solc-bin (default: truffle's version)
+                version: '0.4.25',       // Fetch exact version from solc-bin (default: truffle's version)
                 settings: {          // See the solidity docs for advice about optimization and evmVersion
                     optimizer: {
                         enabled: true,
@@ -79,7 +79,7 @@ describe("Ethereum Integration", () => {
         const accounts = await web3.eth.getAccounts();
         const resolver = new Resolver(config);
 
-        const DateTime = resolver.require("federation/contracts/DateTime.sol");
+        const DateTime = resolver.require("subscription/contracts/DateTime.sol");
         DateTime.defaults({from: accounts[0]});
 
         const LeapYear = resolver.require("LeapYear");

@@ -16,8 +16,8 @@
     "truffle-legacy-system": "^1.0.6",
     "truffle-resolver": "^5.0.5",
     "truffle-workflow-compile": "^2.0.16",
-    "web3": "1.0.0-beta.34",
-    "federation": "file:../deprecated-federation"
+    "subscription": "file:../subscription/ethereum",
+    "web3": "1.0.0-beta.34"
   },
   "devDependencies": {
     "chai": "^4.2.0",
