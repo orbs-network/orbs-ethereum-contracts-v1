@@ -4,17 +4,21 @@
 // This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 // The above notice should be included in all copies or substantial portions of the software.
 
-package driver
+package orbs_js_adapter
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
 )
 
-func NewGammaCliAdapter(
+func NewOrbsJsSdkAdapter(
 	debug bool,
 	env string,
 	voteMirrorPeriod uint64,
@@ -24,8 +28,8 @@ func NewGammaCliAdapter(
 	minElectedValidators int,
 	finalityBlocksComponent int,
 	finalityTimeComponent time.Duration,
-) *GammaCliAdapter {
-	return &GammaCliAdapter{
+) *OrbsJsSdkAdapter {
+	return &OrbsJsSdkAdapter{
 		debug:                   debug,
 		env:                     env,
 		voteMirrorPeriod:        voteMirrorPeriod,
@@ -38,7 +42,7 @@ func NewGammaCliAdapter(
 	}
 }
 
-type GammaCliAdapter struct {
+type OrbsJsSdkAdapter struct {
 	debug                   bool
 	env                     string
 	voteMirrorPeriod        uint64
@@ -50,7 +54,7 @@ type GammaCliAdapter struct {
 	finalityTimeComponent   time.Duration
 }
 
-func (gamma *GammaCliAdapter) DeployContract(orbsVotingContractName string) string {
+func (gamma *OrbsJsSdkAdapter) DeployContract(orbsVotingContractName string) string {
 	if orbsVotingContractName == "" {
 		orbsVotingContractName = fmt.Sprintf("OrbsVoting_%d", time.Now().Unix())
 	}
@@ -58,7 +62,7 @@ func (gamma *GammaCliAdapter) DeployContract(orbsVotingContractName string) stri
 	return orbsVotingContractName
 }
 
-func (gamma *GammaCliAdapter) SetContractConstants(orbsVotingContractName string) {
+func (gamma *OrbsJsSdkAdapter) SetContractConstants(orbsVotingContractName string) {
 	gamma.run("send-tx ./gammacli-jsons/set-variables.json -signer user1 -name " + orbsVotingContractName +
 		" -arg1 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
 		" -arg2 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
@@ -67,31 +71,31 @@ func (gamma *GammaCliAdapter) SetContractConstants(orbsVotingContractName string
 		" -arg5 " + fmt.Sprintf("%d", gamma.minElectedValidators))
 }
 
-func (gamma *GammaCliAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
+func (gamma *OrbsJsSdkAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
 	gamma.run("send-tx ./gammacli-jsons/set-token-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumErc20Address)
 }
 
-func (gamma *GammaCliAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
+func (gamma *OrbsJsSdkAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-validators-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
 }
 
-func (gamma *GammaCliAdapter) BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string) {
+func (gamma *OrbsJsSdkAdapter) BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-validators-registry-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsRegistryAddress)
 }
 
-func (gamma *GammaCliAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
+func (gamma *OrbsJsSdkAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-voting-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
 }
 
-func (gamma *GammaCliAdapter) BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string) {
+func (gamma *OrbsJsSdkAdapter) BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string) {
 	gamma.run("send-tx ./gammacli-jsons/set-guardians-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumGuardiansAddress)
 }
 
-func (gamma *GammaCliAdapter) SetElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
+func (gamma *OrbsJsSdkAdapter) SetElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
 	gamma.run("send-tx ./gammacli-jsons/set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
 }
 
-func (gamma *GammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []string {
+func (gamma *OrbsJsSdkAdapter) GetElectedNodes(orbsVotingContractName string) []string {
 	bytes := gamma.run("run-query ./gammacli-jsons/get-elected.json -signer user1 -name " + orbsVotingContractName)
 	out := struct {
 		OutputArguments []*struct {
@@ -112,7 +116,7 @@ func (gamma *GammaCliAdapter) GetElectedNodes(orbsVotingContractName string) []s
 	return respose
 }
 
-func (gamma *GammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAddresses []string) {
+func (gamma *OrbsJsSdkAdapter) ForwardElectionResultsToSystem(electedValidatorAddresses []string) {
 	joinedAddresses := "0x"
 	for _, address := range electedValidatorAddresses {
 		if strings.HasPrefix(address, "0x") {
@@ -127,7 +131,7 @@ func (gamma *GammaCliAdapter) ForwardElectionResultsToSystem(electedValidatorAdd
 	gamma.run("send-tx ./gammacli-jsons/forward-results-to-system.json -signer user1 -arg1 " + joinedAddresses)
 }
 
-func (gamma *GammaCliAdapter) SendTransactionGetProof() string {
+func (gamma *OrbsJsSdkAdapter) SendTransactionGetProof() string {
 	bytes := gamma.run("send-tx ./gammacli-jsons/generic-transaction.json -signer user1")
 	out := struct {
 		TxId string
@@ -151,15 +155,15 @@ func (gamma *GammaCliAdapter) SendTransactionGetProof() string {
 	return out2.PackedProof
 }
 
-func (gamma *GammaCliAdapter) GetFinalityBlocksComponent() int {
+func (gamma *OrbsJsSdkAdapter) GetFinalityBlocksComponent() int {
 	return gamma.finalityBlocksComponent
 }
 
-func (gamma *GammaCliAdapter) GetFinalityTimeComponent() time.Duration {
+func (gamma *OrbsJsSdkAdapter) GetFinalityTimeComponent() time.Duration {
 	return gamma.finalityTimeComponent
 }
 
-func (gamma *GammaCliAdapter) run(args string, env ...string) []byte {
+func (gamma *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
 	args += " -env " + gamma.env
 	if gamma.debug {
 		fmt.Println("\n  ### RUNNING: gamma-cli " + args)
@@ -184,10 +188,25 @@ func (gamma *GammaCliAdapter) run(args string, env ...string) []byte {
 	return out
 }
 
-func (gamma *GammaCliAdapter) GetMirrorVotingPeriod() int {
+func (gamma *OrbsJsSdkAdapter) GetMirrorVotingPeriod() int {
 	return int(gamma.voteMirrorPeriod)
 }
 
-func (gamma *GammaCliAdapter) GetOrbsEnvironment() string {
+func (gamma *OrbsJsSdkAdapter) GetOrbsEnvironment() string {
 	return gamma.env
+}
+
+func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
+	if c.Stdout != nil {
+		return nil, errors.New("exec: Stdout already set")
+	}
+	if c.Stderr != nil {
+		return nil, errors.New("exec: Stderr already set")
+	}
+	var b bytes.Buffer
+	w := io.MultiWriter(&b, os.Stdout)
+	c.Stdout = w
+	c.Stderr = w
+	err := c.Run()
+	return b.Bytes(), err
 }
