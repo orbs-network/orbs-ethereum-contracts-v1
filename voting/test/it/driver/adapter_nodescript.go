@@ -62,7 +62,7 @@ func (na *nodeAdapter) run(args string, env ...string) []byte {
 	var out []byte
 	var err error
 	if na.debug {
-		out, err = combinedOutputWithStdoutPipe(cmd)
+		out, err = CombinedOutputWithStdoutPipe(cmd)
 	} else {
 		out, err = cmd.CombinedOutput()
 	}

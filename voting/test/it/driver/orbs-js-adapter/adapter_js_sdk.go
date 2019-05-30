@@ -7,12 +7,9 @@
 package orbs_js_adapter
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
-	"os"
+	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
 	"os/exec"
 	"strings"
 	"time"
@@ -178,7 +175,7 @@ func (gamma *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
 	var out []byte
 	var err error
 	if gamma.debug {
-		out, err = combinedOutputWithStdoutPipe(cmd)
+		out, err = driver.CombinedOutputWithStdoutPipe(cmd)
 	} else {
 		out, err = cmd.CombinedOutput()
 	}
@@ -194,19 +191,4 @@ func (gamma *OrbsJsSdkAdapter) GetMirrorVotingPeriod() int {
 
 func (gamma *OrbsJsSdkAdapter) GetOrbsEnvironment() string {
 	return gamma.env
-}
-
-func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
-	if c.Stdout != nil {
-		return nil, errors.New("exec: Stdout already set")
-	}
-	if c.Stderr != nil {
-		return nil, errors.New("exec: Stderr already set")
-	}
-	var b bytes.Buffer
-	w := io.MultiWriter(&b, os.Stdout)
-	c.Stdout = w
-	c.Stderr = w
-	err := c.Run()
-	return b.Bytes(), err
 }
