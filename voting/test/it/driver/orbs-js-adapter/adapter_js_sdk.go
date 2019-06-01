@@ -51,49 +51,49 @@ type OrbsJsSdkAdapter struct {
 	finalityTimeComponent   time.Duration
 }
 
-func (gamma *OrbsJsSdkAdapter) DeployContract(orbsVotingContractName string) string {
+func (ojs *OrbsJsSdkAdapter) DeployContract(orbsVotingContractName string) string {
 	if orbsVotingContractName == "" {
 		orbsVotingContractName = fmt.Sprintf("OrbsVoting_%d", time.Now().Unix())
 	}
-	gamma.run("deploy ./../../orbs/OrbsVoting/orbs_voting_contract.go -name " + orbsVotingContractName + " -signer user1")
+	ojs.run("deploy ./../../orbs/OrbsVoting/orbs_voting_contract.go -name " + orbsVotingContractName + " -signer user1")
 	return orbsVotingContractName
 }
 
-func (gamma *OrbsJsSdkAdapter) SetContractConstants(orbsVotingContractName string) {
-	gamma.run("send-tx ./gammacli-jsons/set-variables.json -signer user1 -name " + orbsVotingContractName +
-		" -arg1 " + fmt.Sprintf("%d", gamma.voteMirrorPeriod) +
-		" -arg2 " + fmt.Sprintf("%d", gamma.voteValidPeriod) +
-		" -arg3 " + fmt.Sprintf("%d", gamma.electionPeriod) +
-		" -arg4 " + fmt.Sprintf("%d", gamma.maxElectedValidators) +
-		" -arg5 " + fmt.Sprintf("%d", gamma.minElectedValidators))
+func (ojs *OrbsJsSdkAdapter) SetContractConstants(orbsVotingContractName string) {
+	ojs.run("send-tx ./gammacli-jsons/set-variables.json -signer user1 -name " + orbsVotingContractName +
+		" -arg1 " + fmt.Sprintf("%d", ojs.voteMirrorPeriod) +
+		" -arg2 " + fmt.Sprintf("%d", ojs.voteValidPeriod) +
+		" -arg3 " + fmt.Sprintf("%d", ojs.electionPeriod) +
+		" -arg4 " + fmt.Sprintf("%d", ojs.maxElectedValidators) +
+		" -arg5 " + fmt.Sprintf("%d", ojs.minElectedValidators))
 }
 
-func (gamma *OrbsJsSdkAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
-	gamma.run("send-tx ./gammacli-jsons/set-token-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumErc20Address)
+func (ojs *OrbsJsSdkAdapter) BindERC20ContractToEthereum(orbsVotingContractName string, ethereumErc20Address string) {
+	ojs.run("send-tx ./gammacli-jsons/set-token-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumErc20Address)
 }
 
-func (gamma *OrbsJsSdkAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
-	gamma.run("send-tx ./gammacli-jsons/set-validators-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
+func (ojs *OrbsJsSdkAdapter) BindValidatorsContractToEthereum(orbsVotingContractName string, ethereumValidatorsAddress string) {
+	ojs.run("send-tx ./gammacli-jsons/set-validators-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsAddress)
 }
 
-func (gamma *OrbsJsSdkAdapter) BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string) {
-	gamma.run("send-tx ./gammacli-jsons/set-validators-registry-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsRegistryAddress)
+func (ojs *OrbsJsSdkAdapter) BindValidatorsRegistryContractToEthereum(orbsVotingContractName string, ethereumValidatorsRegistryAddress string) {
+	ojs.run("send-tx ./gammacli-jsons/set-validators-registry-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumValidatorsRegistryAddress)
 }
 
-func (gamma *OrbsJsSdkAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
-	gamma.run("send-tx ./gammacli-jsons/set-voting-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
+func (ojs *OrbsJsSdkAdapter) BindVotingContractToEthereum(orbsVotingContractName string, ethereumVotingAddress string) {
+	ojs.run("send-tx ./gammacli-jsons/set-voting-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumVotingAddress)
 }
 
-func (gamma *OrbsJsSdkAdapter) BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string) {
-	gamma.run("send-tx ./gammacli-jsons/set-guardians-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumGuardiansAddress)
+func (ojs *OrbsJsSdkAdapter) BindGuardiansContractToEthereum(orbsVotingContractName string, ethereumGuardiansAddress string) {
+	ojs.run("send-tx ./gammacli-jsons/set-guardians-address.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + ethereumGuardiansAddress)
 }
 
-func (gamma *OrbsJsSdkAdapter) SetElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
-	gamma.run("send-tx ./gammacli-jsons/set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
+func (ojs *OrbsJsSdkAdapter) SetElectionBlockNumber(orbsVotingContractName string, blockHeight int) {
+	ojs.run("send-tx ./gammacli-jsons/set-first-election.json -signer user1 -name " + orbsVotingContractName + " -arg1 " + fmt.Sprintf("%d", blockHeight))
 }
 
-func (gamma *OrbsJsSdkAdapter) GetElectedNodes(orbsVotingContractName string) []string {
-	bytes := gamma.run("run-query ./gammacli-jsons/get-elected.json -signer user1 -name " + orbsVotingContractName)
+func (ojs *OrbsJsSdkAdapter) GetElectedNodes(orbsVotingContractName string) []string {
+	bytes := ojs.run("run-query ./gammacli-jsons/get-elected.json -signer user1 -name " + orbsVotingContractName)
 	out := struct {
 		OutputArguments []*struct {
 			Value string
@@ -113,7 +113,7 @@ func (gamma *OrbsJsSdkAdapter) GetElectedNodes(orbsVotingContractName string) []
 	return respose
 }
 
-func (gamma *OrbsJsSdkAdapter) ForwardElectionResultsToSystem(electedValidatorAddresses []string) {
+func (ojs *OrbsJsSdkAdapter) ForwardElectionResultsToSystem(electedValidatorAddresses []string) {
 	joinedAddresses := "0x"
 	for _, address := range electedValidatorAddresses {
 		if strings.HasPrefix(address, "0x") {
@@ -125,11 +125,11 @@ func (gamma *OrbsJsSdkAdapter) ForwardElectionResultsToSystem(electedValidatorAd
 		panic(fmt.Sprintf("joined addresses is not a multiply of 20 bytes: %s", joinedAddresses))
 	}
 
-	gamma.run("send-tx ./gammacli-jsons/forward-results-to-system.json -signer user1 -arg1 " + joinedAddresses)
+	ojs.run("send-tx ./gammacli-jsons/forward-results-to-system.json -signer user1 -arg1 " + joinedAddresses)
 }
 
-func (gamma *OrbsJsSdkAdapter) SendTransactionGetProof() string {
-	bytes := gamma.run("send-tx ./gammacli-jsons/generic-transaction.json -signer user1")
+func (ojs *OrbsJsSdkAdapter) SendTransactionGetProof() string {
+	bytes := ojs.run("send-tx ./gammacli-jsons/generic-transaction.json -signer user1")
 	out := struct {
 		TxId string
 	}{}
@@ -141,7 +141,7 @@ func (gamma *OrbsJsSdkAdapter) SendTransactionGetProof() string {
 		panic("could not get the TxId after sending a generic transaction")
 	}
 
-	bytes = gamma.run("tx-proof " + out.TxId)
+	bytes = ojs.run("tx-proof " + out.TxId)
 	out2 := struct {
 		PackedProof string
 	}{}
@@ -152,29 +152,28 @@ func (gamma *OrbsJsSdkAdapter) SendTransactionGetProof() string {
 	return out2.PackedProof
 }
 
-func (gamma *OrbsJsSdkAdapter) GetFinalityBlocksComponent() int {
-	return gamma.finalityBlocksComponent
+func (ojs *OrbsJsSdkAdapter) GetFinalityBlocksComponent() int {
+	return ojs.finalityBlocksComponent
 }
 
-func (gamma *OrbsJsSdkAdapter) GetFinalityTimeComponent() time.Duration {
-	return gamma.finalityTimeComponent
+func (ojs *OrbsJsSdkAdapter) GetFinalityTimeComponent() time.Duration {
+	return ojs.finalityTimeComponent
 }
 
-func (gamma *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
-	args += " -env " + gamma.env
-	if gamma.debug {
-		fmt.Println("\n  ### RUNNING: gamma-cli " + args)
+func (ojs *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
+	args += " -env " + ojs.env
+	if ojs.debug {
+		fmt.Println("\n  ### RUNNING: node mock-gamma.js " + args)
 		if len(env) > 0 {
 			fmt.Printf("      ENV: %+v", env)
 		}
 		fmt.Printf("\n  ### OUTPUT:\n\n")
 	}
-	argsArr := strings.Split(args, " ")
-	cmd := exec.Command("gamma-cli", argsArr...)
-	//cmd := exec.Command("/Users/noam/work/src/github.com/orbs-network/gamma-cli/_bin/gamma-cli", argsArr...)
+	argsArr := strings.Split("./driver/orbs-js-adapter/mock-gamma.js "+args, " ")
+	cmd := exec.Command("node", argsArr...)
 	var out []byte
 	var err error
-	if gamma.debug {
+	if ojs.debug {
 		out, err = driver.CombinedOutputWithStdoutPipe(cmd)
 	} else {
 		out, err = cmd.CombinedOutput()
@@ -185,10 +184,10 @@ func (gamma *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
 	return out
 }
 
-func (gamma *OrbsJsSdkAdapter) GetMirrorVotingPeriod() int {
-	return int(gamma.voteMirrorPeriod)
+func (ojs *OrbsJsSdkAdapter) GetMirrorVotingPeriod() int {
+	return int(ojs.voteMirrorPeriod)
 }
 
-func (gamma *OrbsJsSdkAdapter) GetOrbsEnvironment() string {
-	return gamma.env
+func (ojs *OrbsJsSdkAdapter) GetOrbsEnvironment() string {
+	return ojs.env
 }

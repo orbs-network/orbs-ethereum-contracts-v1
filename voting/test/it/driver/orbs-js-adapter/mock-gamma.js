@@ -18,7 +18,6 @@ for (let i = 4; i < process.argv.length; i += 2) {
 }
 
 assert(envFile.Environments[args.env], "unknown -env");
-assert(usersFile[args.signer], "unknown -signer");
 
 const orbsEndpoint = envFile.Environments[args.env].Endpoints[0];
 const orbsVchain = envFile.Environments[args.env].VirtualChain;
@@ -119,7 +118,7 @@ function applyArgsToTxTemplate(tx, args) {
                 arg.typed = Orbs.argString(arg.Value);
                 break;
             case "bytes":
-                arg.typed = Orbs.argBytes(arg.Value);
+                arg.typed = Orbs.argBytes(Orbs.decodeHex(arg.Value));
                 break;
             case "address":
                 arg.typed = Orbs.argAddress(arg.Value);
@@ -128,7 +127,7 @@ function applyArgsToTxTemplate(tx, args) {
                 arg.typed = Orbs.argUint32(arg.Value);
                 break;
             case "uint64":
-                arg.typed = Orbs.argUint32(arg.Value);
+                arg.typed = Orbs.argUint64(arg.Value);
                 break;
             default:
                 throw (`unsupported for argument ${i + 1}:\n${JSON.stringify(arg, null, 2)}`)
