@@ -22,8 +22,8 @@ let endBlock = 0;
 let totalTransfers = 0;
 let totalDelegate = 0;
 
-const gamma = require('./gamma-calls');
-const slack = require('./slack');
+const gamma = require('./src/gamma-calls');
+const slack = require('./src/slack');
 
 function validateInput() {
     if (process.env.VERBOSE) {
@@ -124,7 +124,7 @@ async function filterAndSendOnlyNewEvents(events, orbsContractFunctionJson) {
 }
 
 async function transferEvents(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock) {
-    let events = await require('./node-scripts/findDelegateByTransferEvents')(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock);
+    let events = await require('./src/findDelegateByTransferEvents')(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock);
     totalTransfers += events.length;
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `Found ${events.length} Transfer events`);
@@ -136,7 +136,7 @@ async function transferEvents(ethereumConnectionURL, erc20ContractAddress, start
 }
 
 async function delegateEvents(ethereumConnectionURL, votingContractAddress, startBlock, endBlock) {
-    let events = await require('./node-scripts/findDelegateEvents')(ethereumConnectionURL, votingContractAddress, startBlock, endBlock);
+    let events = await require('./src/findDelegateEvents')(ethereumConnectionURL, votingContractAddress, startBlock, endBlock);
     totalDelegate += events.length;
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `Found ${events.length} Delegate events`);
@@ -185,11 +185,11 @@ async function main() {
 
     let startTime = Date.now();
     if (fullHistory) {
-        startBlock = 7440000;
+        startBlock = 7450000;
         endBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
     } else if (startBlock === 0) {
         endBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
-        startBlock = endBlock - 10000;
+        startBlock = endBlock - 1000;
     } else {
         // use input numbers
     }
