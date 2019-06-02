@@ -9,8 +9,6 @@ package orbs_js_adapter
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
-	"os/exec"
 	"strings"
 	"time"
 )
@@ -158,30 +156,6 @@ func (ojs *OrbsJsSdkAdapter) GetFinalityBlocksComponent() int {
 
 func (ojs *OrbsJsSdkAdapter) GetFinalityTimeComponent() time.Duration {
 	return ojs.finalityTimeComponent
-}
-
-func (ojs *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
-	args += " -env " + ojs.env
-	if ojs.debug {
-		fmt.Println("\n  ### RUNNING: node mock-gamma.js " + args)
-		if len(env) > 0 {
-			fmt.Printf("      ENV: %+v", env)
-		}
-		fmt.Printf("\n  ### OUTPUT:\n\n")
-	}
-	argsArr := strings.Split("./driver/orbs-js-adapter/mock-gamma.js "+args, " ")
-	cmd := exec.Command("node", argsArr...)
-	var out []byte
-	var err error
-	if ojs.debug {
-		out, err = driver.CombinedOutputWithStdoutPipe(cmd)
-	} else {
-		out, err = cmd.CombinedOutput()
-	}
-	if err != nil {
-		panic(err.Error() + "\n" + string(out))
-	}
-	return out
 }
 
 func (ojs *OrbsJsSdkAdapter) GetMirrorVotingPeriod() int {
