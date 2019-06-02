@@ -4,31 +4,19 @@
 // This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 // The above notice should be included in all copies or substantial portions of the software.
 
-package test
+package orbs_js_adapter
 
 import (
 	"encoding/json"
 	"github.com/pkg/errors"
-	"os/exec"
-	"strings"
 )
 
-type gammaCliAdapter struct {
-	env string
+
+type OrbsJsSdkAdapter struct {
+	env                     string
 }
 
-func (g *gammaCliAdapter) run(args string) []byte {
-	args += " -env " + g.env
-	argsArr := strings.Split(args, " ")
-	cmd := exec.Command("gamma-cli", argsArr...)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		panic(err.Error() + "\n" + string(out))
-	}
-	return out
-}
-
-func (g *gammaCliAdapter) sendATransaction() error {
+func (g *OrbsJsSdkAdapter) SendATransaction() error {
 	bytes := g.run("send-tx ./gammacli-jsons/generic-transaction.json -signer user1")
 	out := struct {
 		TxId              string
@@ -47,7 +35,7 @@ func (g *gammaCliAdapter) sendATransaction() error {
 	return nil
 }
 
-func (g *gammaCliAdapter) refreshSubscription(address string) error {
+func (g *OrbsJsSdkAdapter) RefreshSubscription(address string) error {
 	bytes := g.run("send-tx ./gammacli-jsons/refresh-subscription.json -signer user1 -arg1 " + address)
 	out := struct {
 		TxId              string
@@ -64,6 +52,6 @@ func (g *gammaCliAdapter) refreshSubscription(address string) error {
 	return nil
 }
 
-func newGamma() *gammaCliAdapter {
-	return &gammaCliAdapter{env: "experimental"}
+func NewOrbsAdapter() *OrbsJsSdkAdapter {
+	return &OrbsJsSdkAdapter{env: "experimental"}
 }

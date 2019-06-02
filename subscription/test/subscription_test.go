@@ -7,26 +7,29 @@
 package test
 
 import (
+	orbs_js_adapter "github.com/orbs-network/orbs-ethereum-contracts/subscription/test/orbs-js-adapter"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
 
 func TestTransactionsFailWhenSubscriptionIsInvalid(t *testing.T) {
-	orbs := newGamma()
+	orbs := orbs_js_adapter.NewOrbsAdapter()
 	ethereum := newTruffle()
 
-	require.NoError(t, orbs.sendATransaction(), "failed sending a transaction before refreshing subscription")
+	require.NoError(t, orbs.SendATransaction(), "failed sending a transaction before refreshing subscription")
 
 	subscriptionManagerAddress, err := ethereum.deploySubscriptionManager()
 	require.NoError(t, err)
 
-	ethereum.WaitForBlock(10)
+	currentBlock, err := ethereum.GetCurrentBlock()
+	require.NoError(t, err)
+
+	ethereum.WaitForBlock(currentBlock + 10)
 	time.Sleep(2 * time.Second)
 
-	require.NoError(t, orbs.refreshSubscription(subscriptionManagerAddress), "failed refreshing subscription")
+	require.NoError(t, orbs.RefreshSubscription(subscriptionManagerAddress), "failed refreshing subscription")
 
-	require.Error(t, orbs.sendATransaction(), "succeeded sending a transaction after refreshing subscription")
-
+	require.Error(t, orbs.SendATransaction(), "succeeded sending a transaction after refreshing subscription")
 }
 
