@@ -28,6 +28,6 @@ RUN rm -f orbs-gamma-config.json && \
 
 RUN bash /tmp/bring-gamma.sh
 RUN go get ./... && \
-    npm install
+    yarn install
 
 CMD ["/bin/bash", "entrypoint.sh"]
