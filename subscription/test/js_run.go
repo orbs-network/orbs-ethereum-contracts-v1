@@ -1,11 +1,11 @@
-package orbs_js_adapter
+package test
 
 import (
 	"os/exec"
 	"strings"
 )
 
-func (ojs *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
+func (ojs *OrbsJsSdkAdapter) run(args string) []byte {
 	args += " -env " + ojs.env
 	argsArr := strings.Split("./orbs-js-adapter/mock-gamma.js "+args, " ")
 	cmd := exec.Command("node", argsArr...)

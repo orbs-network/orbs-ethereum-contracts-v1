@@ -7,13 +7,10 @@ import (
 	"strings"
 )
 
-func (ojs *OrbsJsSdkAdapter) run(args string, env ...string) []byte {
+func (ojs *OrbsJsSdkAdapter) run(args string) []byte {
 	args += " -env " + ojs.env
 	if ojs.debug {
 		fmt.Println("\n  ### RUNNING: node mock-gamma.js " + args)
-		if len(env) > 0 {
-			fmt.Printf("      ENV: %+v", env)
-		}
 		fmt.Printf("\n  ### OUTPUT:\n\n")
 	}
 	argsArr := strings.Split("./driver/orbs-js-adapter/mock-gamma.js "+args, " ")

@@ -7,14 +7,13 @@
 package test
 
 import (
-	orbs_js_adapter "github.com/orbs-network/orbs-ethereum-contracts/subscription/test/orbs-js-adapter"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
 
 func TestTransactionsFailWhenSubscriptionIsInvalid(t *testing.T) {
-	orbs := orbs_js_adapter.NewOrbsAdapter()
+	orbs := NewOrbsAdapter()
 	ethereum := newTruffle()
 
 	require.NoError(t, orbs.SendATransaction(), "failed sending a transaction before refreshing subscription")
