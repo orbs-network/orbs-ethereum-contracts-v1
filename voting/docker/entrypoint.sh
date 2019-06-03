@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-truffle compile
+./node_modules/.bin/truffle compile
 mkdir -p build/contracts
 cp ../../build/ethereum/*.json ./build/contracts
 

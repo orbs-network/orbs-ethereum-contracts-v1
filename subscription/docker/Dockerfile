@@ -9,8 +9,6 @@ RUN apt-get install -y nodejs
 
 RUN npm install yarn -g
 RUN ls -la /root/.npm/
-RUN npm install truffle -g
-
 
 ENV GAMMA_HOST="gamma"
 
@@ -24,8 +22,8 @@ COPY subscription/ ./subscription/
 COPY voting/ethereum/ ./voting/ethereum/
 
 WORKDIR ./subscription/ethereum
-RUN npm install
-RUN truffle compile
+RUN yarn
+RUN ./node_modules/.bin/truffle compile
 
 WORKDIR ../test
 COPY subscription/docker/entrypoint.sh .
