@@ -7,7 +7,6 @@
 package test
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -103,14 +102,8 @@ func (t *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	// remove first line of output (Using network...)
-	index := bytes.IndexRune(out, '\n')
 
-	if index == -1 {
-		return nil, fmt.Errorf("failed to find fist linefeed in output: %s", string(out))
-	}
-
-	return out[index:], nil
+	return out, nil
 }
 
 func newTruffle() *truffleAdapter {
