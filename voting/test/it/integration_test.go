@@ -10,6 +10,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver"
+	orbs_js_adapter "github.com/orbs-network/orbs-ethereum-contracts/voting/test/it/driver/orbs-js-adapter"
 	"os"
 	"testing"
 	"time"
@@ -36,7 +37,7 @@ func adapterFactory(env string) (orbs driver.OrbsAdapter, ethereum driver.Ethere
 	// ORBS ADAPTER
 	switch env {
 	case ENV_DEV_LATEST, ENV_DEV_STABLE:
-		orbs = driver.NewGammaCliAdapter(
+		orbs = orbs_js_adapter.NewOrbsJsSdkAdapter(
 			true,
 			env,
 			10,
@@ -48,7 +49,7 @@ func adapterFactory(env string) (orbs driver.OrbsAdapter, ethereum driver.Ethere
 			10*time.Second,
 		)
 	case ENV_TESTNET_ROPSTEN, ENV_TESTNET_LIVE:
-		orbs = driver.NewGammaCliAdapter(
+		orbs = orbs_js_adapter.NewOrbsJsSdkAdapter(
 			true,
 			"integrative",
 			30,

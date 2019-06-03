@@ -299,7 +299,7 @@ func (ta *TruffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	var out []byte
 	var err error
 	if ta.debug {
-		out, err = combinedOutputWithStdoutPipe(cmd)
+		out, err = CombinedOutputWithStdoutPipe(cmd)
 	} else {
 		out, err = cmd.CombinedOutput()
 	}
