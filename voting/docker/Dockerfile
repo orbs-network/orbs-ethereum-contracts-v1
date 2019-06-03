@@ -9,7 +9,6 @@ RUN apt-get install -y nodejs
 
 RUN npm install yarn -g
 RUN ls -la /root/.npm/
-RUN npm install truffle -g
 
 ENV GAMMA_HOST="gamma"
 
