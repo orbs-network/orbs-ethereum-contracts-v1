@@ -1,4 +1,4 @@
-const Orbs = require("orbs-client-sdk/dist/lib");
+const Orbs = require("orbs-client-sdk");
 const assert = require("assert");
 const fs = require("fs");
 
