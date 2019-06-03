@@ -32,7 +32,7 @@ RUN rm -f orbs-gamma-config.json && \
     mv truffle-config.docker.js truffle-config.js
 
 RUN bash /tmp/bring-gamma.sh
-RUN go get ./... && \
+RUN go get -t -u ./... && \
     yarn
 
 CMD ["/bin/bash", "entrypoint.sh"]
