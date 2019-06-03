@@ -5,20 +5,26 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const Web3 = require("web3");
 
-module.exports = async function(done) {
-  try {
+(async function () {
+    try {
+        const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
+        const provider = new HDWalletProvider(mnemonic, "http://localhost:7545", 0, 10);
+        const web3 = new Web3(provider);
 
-    let block = await web3.eth.getBlock("latest")
+        const block = await web3.eth.getBlock("latest")
 
-    console.log(JSON.stringify({
-      CurrentBlock: block.number
-    }, null, 2));
+        console.log(JSON.stringify({
+            CurrentBlock: block.number
+        }, null, 2));
+        
+        provider.engine.stop(); // otherwise the code doesn't terminate;
 
-    done();
+    } catch (e) {
+        console.log("caught error", e);
+    }
 
-  } catch (e) {
-    console.log(e);
-    done(e);
-  }
-};
+
+})();

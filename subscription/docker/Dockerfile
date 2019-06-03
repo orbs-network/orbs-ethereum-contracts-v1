@@ -9,8 +9,6 @@ RUN apt-get install -y nodejs
 
 RUN npm install yarn -g
 RUN ls -la /root/.npm/
-RUN npm install truffle -g
-
 
 ENV GAMMA_HOST="gamma"
 
@@ -25,7 +23,7 @@ COPY voting/ethereum/ ./voting/ethereum/
 
 WORKDIR ./subscription/ethereum
 RUN npm install
-RUN truffle compile
+RUN npm run compile
 
 WORKDIR ../test
 COPY subscription/docker/entrypoint.sh .
@@ -37,6 +35,6 @@ RUN rm -f orbs-gamma-config.json && \
 
 RUN bash /tmp/bring-gamma.sh
 RUN go get -t ./... && \
-    npm install
+    yarn install
 
 CMD ["/bin/bash", "entrypoint.sh"]

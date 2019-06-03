@@ -9,7 +9,8 @@
 const blocks = process.env.BLOCKS_TO_MINE;
 
 const util = require('util');
-const sendRpc = util.promisify(web3.currentProvider.send);
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const Web3 = require("web3");
 
 function sleep(ms) {
     return new Promise(resolve => {
@@ -17,7 +18,7 @@ function sleep(ms) {
     })
 }
 
-async function mine() {
+async function mine(sendRpc) {
     await sleep(1010); // must not close two blocks with the same ts
     return sendRpc({
         jsonrpc: '2.0',
@@ -27,21 +28,27 @@ async function mine() {
     });
 }
 
-module.exports = async function(done) {
+(async function () {
     try {
+        const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
+        const provider = new HDWalletProvider(mnemonic, "http://localhost:7545", 0, 10);
+        const web3 = new Web3(provider);
+        const sendRpc = util.promisify(provider.send.bind(provider));
+
         let beforeBlock = await web3.eth.getBlock("latest");
         let n = 0;
         while (n < blocks) {
-            await mine();
+            await mine(sendRpc);
             n++;
         }
         let afterBlock = await web3.eth.getBlock("latest");
-        console.log(`stared at block ${beforeBlock.number}, now ${afterBlock.number} (mined ${afterBlock.number-beforeBlock.number})`);
+        console.log(`stared at block ${beforeBlock.number}, now ${afterBlock.number} (mined ${afterBlock.number - beforeBlock.number})`);
 
-        done();
+        provider.engine.stop(); // otherwise the code doesn't terminate;
 
     } catch (e) {
-        console.log(e);
-        done(e);
+        console.log("caught error", e);
     }
-};
+
+
+})();

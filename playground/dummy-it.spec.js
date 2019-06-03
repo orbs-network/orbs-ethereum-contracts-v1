@@ -94,7 +94,7 @@ describe("Ethereum Integration", () => {
         });
         await deployer.start();
         await deployer.then(async () => {
-            await deployer.deploy(DateTime);
+            const d = await deployer.deploy(DateTime);
             deployer.link(DateTime, LeapYear);
             await deployer.deploy(LeapYear);
         });
