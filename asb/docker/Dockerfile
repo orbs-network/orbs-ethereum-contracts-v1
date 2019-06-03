@@ -9,7 +9,6 @@ RUN apt-get install -y nodejs
 
 RUN npm install yarn -g
 RUN ls -la /root/.npm/
-RUN npm install truffle -g
 
 ENV GAMMA_HOST="gamma"
 
@@ -28,6 +27,6 @@ RUN rm -f orbs-gamma-config.json && \
 
 RUN bash /tmp/bring-gamma.sh
 RUN go get ./... && \
-    npm install
+    yarn
 
 CMD ["/bin/bash", "entrypoint.sh"]
