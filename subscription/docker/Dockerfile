@@ -22,8 +22,8 @@ COPY subscription/ ./subscription/
 COPY voting/ethereum/ ./voting/ethereum/
 
 WORKDIR ./subscription/ethereum
-RUN npm install
-RUN npm run compile
+RUN yarn
+RUN ./node_modules/.bin/truffle compile
 
 WORKDIR ../test
 COPY subscription/docker/entrypoint.sh .
