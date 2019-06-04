@@ -39,6 +39,7 @@ const delegationApiFactory = ethereumClient => {
       }
       res.send(info.delegatedTo);
     } catch (err) {
+      console.error(err);
       res.status(500).send(err.toString());
     }
   });
