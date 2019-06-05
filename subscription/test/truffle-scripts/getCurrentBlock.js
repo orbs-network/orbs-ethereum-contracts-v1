@@ -8,24 +8,39 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const Web3 = require("web3");
 
-(async function () {
+async function getCurrentBlock() {
     try {
         const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
         const ganacheHost = process.env.GANACHE_HOST || "localhost";
         const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
         const web3 = new Web3(provider);
 
-        const block = await web3.eth.getBlock("latest")
+        const block = await web3.eth.getBlock("latest");
 
-        console.log(JSON.stringify({
-            CurrentBlock: block.number
-        }, null, 2));
-        
         provider.engine.stop(); // otherwise the code doesn't terminate;
+
+        return block;
 
     } catch (e) {
         console.log("caught error", e);
     }
 
+};
 
-})();
+module.exports = { getCurrentBlock };
+
+if (!module.parent) {
+    (async function () {
+        try {
+            const block = await getCurrentBlock();
+            console.log(JSON.stringify({
+                CurrentBlock: block.number
+            }, null, 2));
+
+
+        } catch (e) {
+            console.log("caught error", e);
+        }
+
+    })();
+}

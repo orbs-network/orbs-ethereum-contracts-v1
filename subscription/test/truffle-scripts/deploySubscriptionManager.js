@@ -10,52 +10,59 @@ const HDWalletProvider = require("truffle-hdwallet-provider");
 const Resolver = require("truffle-resolver");
 const Web3 = require("web3");
 
-(async function () {
-  try {
-    const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
-    const ganacheHost = process.env.GANACHE_HOST || "localhost";
-    const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
-    const web3 = new Web3(provider);
+async function deploySubscriptionManager() {
+  const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
+  const ganacheHost = process.env.GANACHE_HOST || "localhost";
+  const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
+  const web3 = new Web3(provider);
 
-    const config = {
-      working_directory: path.resolve("."),
-      contracts_build_directory: path.resolve("..", "ethereum", "build", "contracts"),
-      compilers: {
-        solc: {
-          version: '0.4.25',       // Fetch exact version from solc-bin (default: truffle's version)
-          settings: {          // See the solidity docs for advice about optimization and evmVersion
-            optimizer: {
-              enabled: true,
-              runs: 200
-            }
+  const config = {
+    working_directory: path.resolve("."),
+    contracts_build_directory: path.resolve("..", "ethereum", "build", "contracts"),
+    compilers: {
+      solc: {
+        version: '0.4.25',       // Fetch exact version from solc-bin (default: truffle's version)
+        settings: {          // See the solidity docs for advice about optimization and evmVersion
+          optimizer: {
+            enabled: true,
+            runs: 200
           }
         }
-      },
-      provider
-    };
+      }
+    },
+    provider
+  };
 
-    const networkId = await web3.eth.net.getId();
-    const accounts = await web3.eth.getAccounts();
-    config.network_id = networkId;
+  const networkId = await web3.eth.net.getId();
+  const accounts = await web3.eth.getAccounts();
+  config.network_id = networkId;
 
-    const resolver = new Resolver(config);
+  const resolver = new Resolver(config);
 
-    const subscriptionManager = resolver.require('FakeSubscriptionChecker');
-    subscriptionManager.defaults({from: accounts[0]});
+  const subscriptionManager = resolver.require('FakeSubscriptionChecker');
+  subscriptionManager.defaults({from: accounts[0]});
 
-    const instance = await subscriptionManager.new();
+  const instance = await subscriptionManager.new();
 
-    console.log(JSON.stringify({
-      Address: instance.address
-    }, null, 2));
+  provider.engine.stop(); // otherwise the code doesn't terminate;
 
-    provider.engine.stop(); // otherwise the code doesn't terminate;
+  return instance;
+}
 
-  } catch (e) {
-    console.log("caught error", e);
-  }
+module.exports = { deploySubscriptionManager };
 
+if (!module.parent) {
+  (async function () {
+    try {
+      const instance = await deploySubscriptionManager();
+      console.log(JSON.stringify({
+        Address: instance.address
+      }, null, 2));
 
-})();
+    } catch (e) {
+      console.log("caught error", e);
+    }
 
+  })();
+}
 

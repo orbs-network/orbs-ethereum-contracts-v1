@@ -6,7 +6,6 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-const blocks = process.env.BLOCKS_TO_MINE;
 
 const util = require('util');
 const HDWalletProvider = require("truffle-hdwallet-provider");
@@ -18,7 +17,7 @@ function sleep(ms) {
     })
 }
 
-async function mine(sendRpc) {
+async function mineOne(sendRpc) {
     await sleep(1010); // must not close two blocks with the same ts
     return sendRpc({
         jsonrpc: '2.0',
@@ -28,7 +27,8 @@ async function mine(sendRpc) {
     });
 }
 
-(async function () {
+
+async function mine(blocks) {
     try {
         const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
         const ganacheHost = process.env.GANACHE_HOST || "localhost";
@@ -39,7 +39,7 @@ async function mine(sendRpc) {
         let beforeBlock = await web3.eth.getBlock("latest");
         let n = 0;
         while (n < blocks) {
-            await mine(sendRpc);
+            await mineOne(sendRpc);
             n++;
         }
         let afterBlock = await web3.eth.getBlock("latest");
@@ -50,6 +50,20 @@ async function mine(sendRpc) {
     } catch (e) {
         console.log("caught error", e);
     }
+}
 
+module.exports = { mine };
 
-})();
+if (!module.parent) {
+    const blocks = process.env.BLOCKS_TO_MINE;
+
+    (async function () {
+        try {
+            await mine(blocks);
+
+        } catch (e) {
+            console.log("caught error", e);
+        }
+
+    })();
+}
