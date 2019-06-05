@@ -5,42 +5,19 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-const HDWalletProvider = require("truffle-hdwallet-provider");
-const Web3 = require("web3");
 
-async function getCurrentBlock() {
+const {EthereumAdapter} = require("./../ethereumAdapter");
+
+(async function () {
+    let ethereum;
     try {
-        const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
-        const ganacheHost = process.env.GANACHE_HOST || "localhost";
-        const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
-        const web3 = new Web3(provider);
-
-        const block = await web3.eth.getBlock("latest");
-
-        provider.engine.stop(); // otherwise the code doesn't terminate;
-
-        return block;
-
+        ethereum = await EthereumAdapter.build();
+        const block = await ethereum.getLatestBlock();
+        console.log(JSON.stringify({
+            CurrentBlock: block.number
+        }, null, 2));
     } catch (e) {
         console.log("caught error", e);
     }
-
-};
-
-module.exports = { getCurrentBlock };
-
-if (!module.parent) {
-    (async function () {
-        try {
-            const block = await getCurrentBlock();
-            console.log(JSON.stringify({
-                CurrentBlock: block.number
-            }, null, 2));
-
-
-        } catch (e) {
-            console.log("caught error", e);
-        }
-
-    })();
-}
+    ethereum.stop()
+})();

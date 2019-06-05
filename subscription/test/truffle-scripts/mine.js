@@ -6,64 +6,17 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+const {EthereumAdapter} = require("./../ethereumAdapter");
 
-const util = require('util');
-const HDWalletProvider = require("truffle-hdwallet-provider");
-const Web3 = require("web3");
+const blocks = process.env.BLOCKS_TO_MINE;
 
-function sleep(ms) {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms)
-    })
-}
-
-async function mineOne(sendRpc) {
-    await sleep(1010); // must not close two blocks with the same ts
-    return sendRpc({
-        jsonrpc: '2.0',
-        method: 'evm_mine',
-        params: [],
-        id: new Date().getSeconds()
-    });
-}
-
-
-async function mine(blocks) {
+(async function () {
+    let ethereum;
     try {
-        const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
-        const ganacheHost = process.env.GANACHE_HOST || "localhost";
-        const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
-        const web3 = new Web3(provider);
-        const sendRpc = util.promisify(provider.send.bind(provider));
-
-        let beforeBlock = await web3.eth.getBlock("latest");
-        let n = 0;
-        while (n < blocks) {
-            await mineOne(sendRpc);
-            n++;
-        }
-        let afterBlock = await web3.eth.getBlock("latest");
-        console.log(`stared at block ${beforeBlock.number}, now ${afterBlock.number} (mined ${afterBlock.number - beforeBlock.number})`);
-
-        provider.engine.stop(); // otherwise the code doesn't terminate;
-
+        ethereum = await EthereumAdapter.build();
+        await ethereum.mine(blocks);
     } catch (e) {
         console.log("caught error", e);
     }
-}
-
-module.exports = { mine };
-
-if (!module.parent) {
-    const blocks = process.env.BLOCKS_TO_MINE;
-
-    (async function () {
-        try {
-            await mine(blocks);
-
-        } catch (e) {
-            console.log("caught error", e);
-        }
-
-    })();
-}
+    ethereum.stop()
+})();
