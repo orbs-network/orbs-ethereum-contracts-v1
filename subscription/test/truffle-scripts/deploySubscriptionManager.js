@@ -11,7 +11,10 @@ const {EthereumAdapter} = require("./../ethereumAdapter");
     let ethereum;
     try {
         ethereum = await EthereumAdapter.build();
-        const instance = await ethereum.deploySubscriptionManager();
+        const signer = ethereum.accounts[0];
+        const contractName = 'FakeSubscriptionChecker';
+
+        const instance = await ethereum.deploySolidityContract(signer, contractName);
         console.log(JSON.stringify({
             Address: instance.address
         }, null, 2));

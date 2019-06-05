@@ -19,12 +19,12 @@ class EthereumAdapter {
         this.networkId = networkId;
     }
 
-    async deploySubscriptionManager() {
+    async deploySolidityContract(from, import_path, search_path) {
 
-        const subscriptionManager = this.resolver.require('FakeSubscriptionChecker');
-        subscriptionManager.defaults({from: this.accounts[0]});
+        const contract = this.resolver.require(import_path, search_path);
+        contract.defaults({from: from});
 
-        const instance = await subscriptionManager.new();
+        const instance = await contract.new();
 
         return instance;
     }
@@ -48,13 +48,13 @@ class EthereumAdapter {
             const provider = web3.currentProvider;
             const sendRpc = util.promisify(provider.send.bind(provider));
 
-            let beforeBlock = await web3.eth.getBlock("latest");
+            let beforeBlock = await this.getLatestBlock();
             let n = 0;
             while (n < blocks) {
                 await mineOne(sendRpc);
                 n++;
             }
-            let afterBlock = await web3.eth.getBlock("latest");
+            let afterBlock = await this.getLatestBlock();
             console.log(`stared at block ${beforeBlock.number}, now ${afterBlock.number} (mined ${afterBlock.number - beforeBlock.number})`);
 
         } catch (e) {
@@ -67,6 +67,9 @@ class EthereumAdapter {
     }
 
     static async build() {
+
+        // TODO - select network to run against.
+
         const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
         const ganacheHost = process.env.GANACHE_HOST || "localhost";
         const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
