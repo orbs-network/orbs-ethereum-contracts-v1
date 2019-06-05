@@ -141,9 +141,10 @@ class EthereumClientService {
       .reverse()
       .find(({ raw }) => raw['data'] === delegationConstant);
 
-    if (entryWithTransaction === null) {
+    if (!entryWithTransaction) {
       return res;
     }
+    console.log(entryWithTransaction);
 
     const help = entryWithTransaction['raw']['topics'][2];
     res.delegatedTo = '0x' + help.substring(26, 66);

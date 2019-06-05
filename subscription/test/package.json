@@ -11,6 +11,7 @@
   "dependencies": {
     "openzeppelin-solidity": "2.1.3",
     "truffle": "5.0.5",
+    "orbs-client-sdk": "0.0.6",
     "truffle-contract": "^4.0.18",
     "truffle-deployer": "^3.0.19",
     "truffle-hdwallet-provider": "^1.0.10",

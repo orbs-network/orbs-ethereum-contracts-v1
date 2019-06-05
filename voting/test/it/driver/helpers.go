@@ -33,7 +33,7 @@ func logSummary(msg string, args ...interface{}) {
 	fmt.Printf("\x1b[35;1m\n### "+msg+"\x1b[0m\n", args...)
 }
 
-func combinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
+func CombinedOutputWithStdoutPipe(c *exec.Cmd) ([]byte, error) {
 	if c.Stdout != nil {
 		return nil, errors.New("exec: Stdout already set")
 	}
