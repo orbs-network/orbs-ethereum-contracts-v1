@@ -31,7 +31,8 @@ async function mine(sendRpc) {
 (async function () {
     try {
         const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
-        const provider = new HDWalletProvider(mnemonic, "http://localhost:7545", 0, 10);
+        const ganacheHost = process.env.GANACHE_HOST || "localhost";
+        const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
         const web3 = new Web3(provider);
         const sendRpc = util.promisify(provider.send.bind(provider));
 

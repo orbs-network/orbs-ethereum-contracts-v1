@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-go test . -v -count 1
+GANACHE_HOST=ganache go test . -v -count 1

@@ -91,6 +91,7 @@ func (t *truffleAdapter) run(args string, env ...string) []byte {
 }
 
 func (t *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
+	println("running", args)
 	args += " --network " + t.network
 
 	argsArr := strings.Split(args, " ")
