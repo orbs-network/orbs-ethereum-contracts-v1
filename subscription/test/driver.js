@@ -25,7 +25,8 @@ class Driver {
     }
 
     async deploySubscriptionManager() {
-        return await this.ethereum.deploySolidityContract(this.ethereum.accounts[0], 'FakeSubscriptionChecker');
+        const signer = this.ethereum.accounts[0];
+        return await this.ethereum.deploySolidityContract({from: signer}, 'FakeSubscriptionChecker');
     }
 
     async waitForOrbsFinality(targetBlockNumber) {

@@ -19,14 +19,11 @@ class EthereumAdapter {
         this.networkId = networkId;
     }
 
-    async deploySolidityContract(from, import_path, search_path) {
+    async deploySolidityContract(options, import_path, search_path) {
 
         const contract = this.resolver.require(import_path, search_path);
-        contract.defaults({from: from});
 
-        const instance = await contract.new();
-
-        return instance;
+        return await contract.new(options);
     }
 
     //TODO this currently only handles Ganache - for ropsten or mainnet we need to add busywaits with sleeps
