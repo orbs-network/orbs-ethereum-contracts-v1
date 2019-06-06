@@ -1,21 +1,22 @@
-const {expect} = require("chai");
+const {expect, use} = require("chai");
 const {Driver} = require("./driver");
+
+use(require("./transaction-assertions"));
 
 describe("orbs network", async () => {
     let driver;
-    before(async ()=>{
+    before(async () => {
         driver = await Driver.build();
     });
 
-    after(()=>{
+    after(() => {
         driver.stop();
     });
 
     it("rejects transactions after refreshing when subscription in not valid", async () => {
 
         const tx1Result = await driver.sendGenericOrbsTransaction();
-
-        expect(tx1Result.executionResult).to.equal("SUCCESS");
+        expect(tx1Result).to.be.successful;
 
         const subscriptionManager = await driver.deploySubscriptionManager();
         expect(subscriptionManager).to.have.property('address');
@@ -23,9 +24,9 @@ describe("orbs network", async () => {
         await driver.waitForOrbsFinality();
 
         const setSubscriptionManagerResult = await driver.setSubscriptionManager(subscriptionManager.address);
-        expect(setSubscriptionManagerResult.executionResult).to.equal("SUCCESS");
+        expect(setSubscriptionManagerResult).to.be.successful;
 
         const tx2Result = await driver.sendGenericOrbsTransaction();
-        expect(tx2Result.executionResult).to.equal("NOT_EXECUTED");
+        expect(tx2Result).to.be.rejected;
     })
 });
