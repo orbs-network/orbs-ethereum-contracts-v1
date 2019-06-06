@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-const {EthereumAdapter} = require("./../ethereumAdapter");
+const {EthereumAdapter} = require("psilo");
 
 (async function () {
     let ethereum;

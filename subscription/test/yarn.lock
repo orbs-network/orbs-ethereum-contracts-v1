@@ -2731,6 +2731,19 @@ pseudomap@^1.0.2:
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
   integrity sha1-8FKijacOYYkX7wqKw0wa5aaChrM=
 
+"psilo@file:../../psilo":
+  version "1.0.0"
+  dependencies:
+    orbs-client-sdk "0.0.6"
+    truffle "5.0.5"
+    truffle-contract "^4.0.18"
+    truffle-deployer "^3.0.19"
+    truffle-hdwallet-provider "^1.0.10"
+    truffle-legacy-system "^1.0.7"
+    truffle-resolver "^5.0.14"
+    truffle-workflow-compile "^2.0.17"
+    web3 "1.0.0-beta.37"
+
 psl@^1.1.24, psl@^1.1.28:
   version "1.1.32"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.32.tgz#3f132717cf2f9c169724b2b6caf373cf694198db"

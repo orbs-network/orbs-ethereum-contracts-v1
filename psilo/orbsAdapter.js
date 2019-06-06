@@ -1,6 +1,5 @@
 const Orbs = require("orbs-client-sdk");
 
-
 class OrbsAdapter {
     constructor(url, vChainId, finalityCompBlocks, finalityCompSeconds) {
         this.url = url;

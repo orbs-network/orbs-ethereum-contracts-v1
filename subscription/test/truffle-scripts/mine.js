@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-const {EthereumAdapter} = require("./../ethereumAdapter");
+const {EthereumAdapter} = require("psilo");
 
 const blocks = process.env.BLOCKS_TO_MINE;
 

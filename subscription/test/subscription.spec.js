@@ -1,7 +1,8 @@
 const {expect, use} = require("chai");
 const {Driver} = require("./driver");
+const {orbsAssertions} = require("psilo");
 
-use(require("./transaction-assertions"));
+use(orbsAssertions);
 
 describe("orbs network", async () => {
     let driver;

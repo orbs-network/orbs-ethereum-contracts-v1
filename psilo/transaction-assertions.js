@@ -1,4 +1,3 @@
-const {Assertion} = require("chai");
 
 function stringify(tx) {
     return JSON.stringify(tx, (key, value) => {
@@ -6,8 +5,8 @@ function stringify(tx) {
     });
 }
 
-module.exports = function (_chai, utils) {
-    utils.overwriteProperty(Assertion.prototype, 'successful', function (_super) {
+module.exports = function (chai, utils) {
+    utils.overwriteProperty(chai.Assertion.prototype, 'successful', function (_super) {
         return function () {
             const tx = utils.flag(this, 'object');
             if (tx.executionResult) {
@@ -24,7 +23,7 @@ module.exports = function (_chai, utils) {
         }
     });
 
-    utils.overwriteProperty(Assertion.prototype, 'rejected', function (_super) {
+    utils.overwriteProperty(chai.Assertion.prototype, 'rejected', function (_super) {
         return function () {
             const tx = utils.flag(this, 'object');
             if (tx.executionResult && tx.transactionStatus) {

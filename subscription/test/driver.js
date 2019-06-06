@@ -1,6 +1,5 @@
 
-const {EthereumAdapter} = require("./ethereumAdapter");
-const {OrbsAdapter} = require("./orbsAdapter");
+const {EthereumAdapter, OrbsAdapter} = require("psilo");
 
 const Orbs = require("orbs-client-sdk");
 
