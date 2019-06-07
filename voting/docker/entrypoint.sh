@@ -3,4 +3,4 @@
 mkdir -p build/contracts
 cp ../../build/ethereum/*.json ./build/contracts
 
-go test . -run TestFullFlowOnGanache -v -count 1
+go test . -run TestFullFlow -v -count 1 -timeout 0
