@@ -1,7 +1,7 @@
 {
-  "name": "voting",
+  "name": "orbs-subscription-test",
   "version": "1.0.0",
-  "description": "",
+  "description": "An Intgrative test for orbs subscription contract",
   "main": "index.js",
   "scripts": {
     "test": "mocha *.spec.js"

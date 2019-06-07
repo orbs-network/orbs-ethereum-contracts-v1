@@ -15,7 +15,8 @@ class OrbsAdapter {
 
         // TODO - select network to run against.
 
-        return new OrbsAdapter("http://localhost:8080", 42, 10, 2);
+        const gammaUrl = process.env.GAMMA_URL || "http://localhost:8080";
+        return new OrbsAdapter(gammaUrl, 42, 10, 2);
     }
 }
 

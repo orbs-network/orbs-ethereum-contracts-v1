@@ -68,8 +68,8 @@ class EthereumAdapter {
         // TODO - select network to run against.
 
         const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
-        const ganacheHost = process.env.GANACHE_HOST || "localhost";
-        const provider = new HDWalletProvider(mnemonic, `http://${ganacheHost}:7545`, 0, 10);
+        const ganacheUrl = process.env.GANACHE_URL || "http://localhost:7545";
+        const provider = new HDWalletProvider(mnemonic, ganacheUrl, 0, 10);
         const web3 = new Web3(provider);
 
         const config = {

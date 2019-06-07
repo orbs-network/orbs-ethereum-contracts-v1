@@ -10,13 +10,15 @@ RUN apt-get install -y nodejs
 RUN npm install yarn -g
 RUN ls -la /root/.npm/
 
-ENV GAMMA_HOST="gamma"
+ENV GANACHE_URL="http://ganache:7545"
+ENV GAMMA_URL="http://gamma:8080"
 
 COPY voting/docker/bring-gamma.sh /tmp/bring-gamma.sh
 
-WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting
+WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts
 
-COPY voting/ .
+COPY voting/ ./voting/
+COPY psilo/ ./psilo/
 
 WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/voting/processor
 RUN rm -f orbs-gamma-config.json && \
