@@ -30,7 +30,7 @@ func RunMirrorFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Ethe
 
 	logStage("Waiting for finality...")
 	waitForFinality(config.FirstElectionBlockNumber, orbs, ethereum)
-	orbs.GetCurrentSystemBlockSigners() // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
+	orbs.SendTransactionGetProof() // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
 	logStageDone("Election starts at block number %d", config.FirstElectionBlockNumber)
 
 	logStage("Running mirror script...")

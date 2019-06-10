@@ -22,7 +22,7 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 	logStage("Wait for mirror period to end...")
 	beginProcessingAtBlock := config.FirstElectionBlockNumber + orbs.GetMirrorVotingPeriod() + 1
 	waitForFinality(beginProcessingAtBlock, orbs, ethereum)
-	orbs.GetCurrentSystemBlockSigners() // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
+	orbs.SendTransactionGetProof() // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
 	logStageDone("Wait for mirror period to end")
 
 	logStage("Running processing...")
@@ -47,8 +47,8 @@ func RunProcessFlow(t *testing.T, config *Config, orbs OrbsAdapter, ethereum Eth
 
 	logStage("Forwarding results to system...")
 	orbs.ForwardElectionResultsToSystem(winners)
-	signers := orbs.GetCurrentSystemBlockSigners()
-	logStageDone("And the %d signers are.... %v", len(signers), signers)
+	signers := orbs.SendTransactionGetProof()
+	logStageDone("PackedProof (string length %d):\n%s", len(signers), signers)
 
 	logSummary("Process Phase all done.")
 
