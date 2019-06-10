@@ -17,6 +17,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
 import { CopyAddressButton } from '../CopyAddressButton';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   table: {
@@ -35,6 +36,7 @@ const ValidatorsList = ({
   validators,
   classes
 }) => {
+  const { t } = useTranslation();
   return (
     <Table className={classes.table}>
       <TableHead>
@@ -45,20 +47,20 @@ const ValidatorsList = ({
             padding="checkbox"
           />
           <TableCell style={{ width: '25%' }} className={classes.cell}>
-            Name
+            {t('Name')}
           </TableCell>
           <TableCell style={{ width: '2%' }} className={classes.cell} />
           <TableCell style={{ width: '20%' }} className={classes.cell}>
-            Ethereum Address
+            {t('Ethereum Address')}
           </TableCell>
           <TableCell style={{ width: '20%' }} className={classes.cell}>
-            Orbs Address
+            {t('Orbs Address')}
           </TableCell>
           <TableCell style={{ width: '25%' }} className={classes.cell}>
-            Website
+            {t('Website')}
           </TableCell>
           <TableCell style={{ width: '10%' }} className={classes.cell}>
-            Last election votes against (%)
+            {t('Last election votes against (%)')}
           </TableCell>
         </TableRow>
       </TableHead>

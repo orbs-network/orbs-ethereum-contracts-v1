@@ -15,7 +15,9 @@ const resources = {
       'Guardians Description':
         'Anyone can become an active Guardian and participate in the daily voting to approve Validators. Guardians are key players that review validators, monitor their operations and audit the network. Being a Guardian requires commitment and effort.',
       'Validators Description':
-        'Validators run Orbs network. They participate in the block creation and validation and maintain the state and block history. Validators are skilled professionals, capable of maintaining their node security, availability and connectivity and providing the required quality of service.'
+        'Validators run Orbs network. They participate in the block creation and validation and maintain the state and block history. Validators are skilled professionals, capable of maintaining their node security, availability and connectivity and providing the required quality of service.',
+      'Manual Delegation Description':
+        'You can delegate your stake to anyone. They will need to delegate\ntheir own stake & your stake to a guardian. Only stake delegated to a\nvoting guardian will be rewarded.'
     }
   },
   ko: {

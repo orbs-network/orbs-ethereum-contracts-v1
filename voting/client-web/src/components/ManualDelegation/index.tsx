@@ -15,10 +15,12 @@ import { withStyles } from '@material-ui/core/styles';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({});
 
 const DelegateButton = ({ onDelegate }) => {
+  const { t } = useTranslation();
   return (
     <Button
       data-testid={`delegate-button`}
@@ -26,7 +28,7 @@ const DelegateButton = ({ onDelegate }) => {
       variant="outlined"
       color="secondary"
     >
-      Delegate
+      {t('Delegate')}
     </Button>
   );
 };
@@ -34,14 +36,13 @@ const DelegateButton = ({ onDelegate }) => {
 const ManualDelegationDialog = ({ dialogState, onClose, onDelegate }) => {
   const [delegatorAddress, setDelegatorAddress] = useState('');
 
+  const { t } = useTranslation();
   return (
     <Dialog open={dialogState} onClose={onClose} maxWidth="lg" fullWidth={true}>
-      <DialogTitle>Manualy Delegate Your Stake</DialogTitle>
+      <DialogTitle>{'Manualy Delegate Your Stake'}</DialogTitle>
       <DialogContent data-testid="manual-delegation-dialog">
         <Typography variant="body1" color="textPrimary">
-          You can delegate your stake to anyone. They will need to delegate
-          their own stake & your stake to a guardian. Only stake delegated to a
-          voting guardian will be rewarded.
+          {t('Manual Delegation Description')}
         </Typography>
         <TextField
           required
@@ -55,7 +56,7 @@ const ManualDelegationDialog = ({ dialogState, onClose, onDelegate }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{'Cancel'}</Button>
         <DelegateButton onDelegate={() => onDelegate(delegatorAddress)} />
       </DialogActions>
     </Dialog>
