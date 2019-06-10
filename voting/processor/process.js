@@ -12,8 +12,8 @@ let verbose = false;
 let maxNumberOfProcess = 10000;
 let batchSize = 10;
 
-const gamma = require('./gamma-calls');
-const slack = require('./slack');
+const gamma = require('./src/gamma-calls');
+const slack = require('./src/slack');
 
 function validateInput() {
     if (!orbsEnvironment) {

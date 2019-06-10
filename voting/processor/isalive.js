@@ -7,8 +7,8 @@
  */
 
 const Web3 = require('web3');
-const gamma = require('./gamma-calls');
-const slack = require('./slack');
+const gamma = require('./src/gamma-calls');
+const slack = require('./src/slack');
 
 const ethereumConnectionURL = process.env.NETWORK_URL_ON_ETHEREUM;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
