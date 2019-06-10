@@ -14,6 +14,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   table: {
@@ -26,20 +27,21 @@ const styles = () => ({
 });
 
 const ValidatorsList = ({ validators, classes }) => {
+  const { t } = useTranslation();
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
           <TableCell style={{ width: '20%' }} className={classes.cell}>
-            Name
+            {t('Name')}
           </TableCell>
           <TableCell style={{ width: '35%' }} className={classes.cell}>
-            Ethereum Address
+            {t('Ethereum Address')}
           </TableCell>
           <TableCell style={{ width: '35%' }} className={classes.cell}>
-            Orbs Address
+            {t('Orbs Address')}
           </TableCell>
-          <TableCell style={{ width: '10%' }}>Stake</TableCell>
+          <TableCell style={{ width: '10%' }}>{t('Stake')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody data-testid="validators-list">

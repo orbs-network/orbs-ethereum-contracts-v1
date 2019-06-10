@@ -17,6 +17,7 @@ import { Location } from 'history';
 import { parse as parseQuery } from 'querystring';
 import { RewardsTable } from './RewardsTable';
 import { DelegationInfoTable } from './DelegationInfoTable';
+import { useTranslation } from 'react-i18next';
 
 const styles = theme => ({
   form: {
@@ -82,17 +83,18 @@ const RewardsPage = ({
     fetchDelegationInfo(queryParams.address);
   }, []);
 
+  const { t } = useTranslation();
   return (
     <>
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        Rewards & Delegation Info
+        {t('Rewards & Delegation Info')}
       </Typography>
 
       <FormControl className={classes.form} variant="standard" margin="normal">
         <TextField
           required
           className={classes.input}
-          placeholder="Enter the address"
+          placeholder={t('Enter the address')}
           value={address}
           onChange={ev => setAddress(ev.target.value)}
           margin="normal"
@@ -100,7 +102,7 @@ const RewardsPage = ({
         />
         <div className={classes.submit}>
           <Button onClick={submitHandler} variant="outlined">
-            Submit
+            {t('Submit')}
           </Button>
         </div>
       </FormControl>
@@ -112,7 +114,7 @@ const RewardsPage = ({
           gutterBottom
           color="textPrimary"
         >
-          Rewards
+          {t('Rewards')}
         </Typography>
         <RewardsTable rewards={rewards} />
       </section>
@@ -124,7 +126,7 @@ const RewardsPage = ({
           gutterBottom
           color="textPrimary"
         >
-          Delegation Details
+          {t('Delegation Details')}
         </Typography>
         <DelegationInfoTable
           delegatorInfo={delegatorInfo}
@@ -134,7 +136,9 @@ const RewardsPage = ({
 
       <section className={classes.section}>
         <Typography inline variant="subtitle1" color="textPrimary">
-          * The information above corresponds to elections at block number:{' '}
+          {'* '}
+          {t('The information above corresponds to elections at block number')}
+          {': '}
         </Typography>
         <Typography inline variant="subtitle1" color="secondary">
           {electionBlock}

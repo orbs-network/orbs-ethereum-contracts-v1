@@ -12,27 +12,29 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
+import { useTranslation } from 'react-i18next';
 
 export const RewardsTable = ({ rewards }) => {
+  const { t } = useTranslation();
   return (
     <Table padding="none">
       <TableBody>
         <TableRow>
-          <TableCell>Delegator Reward</TableCell>
+          <TableCell>{t('Delegator Reward')}</TableCell>
           <TableCell align="right">{rewards['delegatorReward']}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>Guardian Excellency Reward</TableCell>
+          <TableCell>{t('Guardian Excellency Reward')}</TableCell>
           <TableCell align="right">{rewards['guardianReward']}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>Validator Reward</TableCell>
+          <TableCell>{t('Validator Reward')}</TableCell>
           <TableCell align="right">{rewards['validatorReward']}</TableCell>
         </TableRow>
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell>Total Reward</TableCell>
+          <TableCell>{t('Total Reward')}</TableCell>
           <TableCell align="right">{rewards['totalReward']}</TableCell>
         </TableRow>
       </TableFooter>

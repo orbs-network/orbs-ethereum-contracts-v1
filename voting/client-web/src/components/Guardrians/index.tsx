@@ -18,8 +18,10 @@ import { get, save } from '../../services/vote-storage';
 import { normalizeUrl } from '../../services/urls';
 import { Link } from 'react-router-dom';
 import { ApiService } from '../../api';
+import { useTranslation } from 'react-i18next';
 
 const ReadOnlyVoteButton = () => {
+  const { t } = useTranslation();
   return (
     <Tooltip title="Install Metamask extension to have access to voting capabilities">
       <div>
@@ -29,7 +31,7 @@ const ReadOnlyVoteButton = () => {
           color="secondary"
           disabled={true}
         >
-          Vote Out
+          {t('Vote Out')}
         </Button>
       </div>
     </Tooltip>
@@ -37,6 +39,7 @@ const ReadOnlyVoteButton = () => {
 };
 
 const VoteButton = ({ onVote, disabled }) => {
+  const { t } = useTranslation();
   return (
     <Button
       data-testid="vote-button"
@@ -45,12 +48,13 @@ const VoteButton = ({ onVote, disabled }) => {
       color="secondary"
       disabled={disabled}
     >
-      Vote Out
+      {t('Vote Out')}
     </Button>
   );
 };
 
 const LeaveEveryoneButton = ({ onVote, disabled }) => {
+  const { t } = useTranslation();
   return (
     <Button
       data-testid="leave-everyone-button"
@@ -60,7 +64,7 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
       onClick={onVote}
       disabled={disabled}
     >
-      Keep everyone
+      {t('Keep everyone')}
     </Button>
   );
 };
@@ -111,6 +115,8 @@ const GuardianPage = ({
     }
   };
 
+  const { t } = useTranslation();
+
   const fetchLastVote = async () => {
     try {
       if (hasMetamask()) {
@@ -118,7 +124,7 @@ const GuardianPage = ({
         setLastVote(validators);
       }
     } catch (err) {
-      console.warn('Guardian did not vote before');
+      console.warn(t('Guardian did not vote before'));
     }
   };
 
@@ -169,13 +175,13 @@ const GuardianPage = ({
   return (
     <>
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        Validators List
+        {t('Validators List')}
       </Typography>
 
       {hasMetamask() && (
         <Link to="/guardian/new">
           <Typography variant="overline" color="textSecondary">
-            Become a guardian
+            {t('Become a guardian')}
           </Typography>
         </Link>
       )}
@@ -204,7 +210,8 @@ const GuardianPage = ({
 
       {hasMetamask() && lastVote.length > 0 ? (
         <Typography variant="body1" color="textPrimary">
-          Your most recent vote was against:
+          {t('Your most recent vote was against')}
+          {':'}
           {lastVote.map(address => (
             <Typography
               style={{ lineHeight: 1.7 }}
@@ -218,7 +225,7 @@ const GuardianPage = ({
         </Typography>
       ) : (
         <Typography variant="body1" color="textPrimary">
-          You have not voted yet
+          {t('You have not voted yet')}
         </Typography>
       )}
     </>

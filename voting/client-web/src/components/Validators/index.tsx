@@ -13,6 +13,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Link } from 'react-router-dom';
 import { ApiService } from '../../api';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({});
 
@@ -50,16 +51,17 @@ const ValidatorsPage = ({
     fetchElectedValidators();
   }, []);
 
+  const { t } = useTranslation();
   return (
     <>
       <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
-        Elected Validators
+        {t('Elected Validators')}
       </Typography>
 
       {hasMetamask() && (
         <Link to="/validator/new">
           <Typography variant="overline" color="textSecondary">
-            Become a validator
+            {t('Become a validator')}
           </Typography>
         </Link>
       )}

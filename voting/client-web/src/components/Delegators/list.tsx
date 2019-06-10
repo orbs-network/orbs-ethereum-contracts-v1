@@ -18,6 +18,7 @@ import { Checkbox } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
 import VoteChip from '../VoteChip';
 import { CopyAddressButton } from '../CopyAddressButton';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   table: {
@@ -41,6 +42,7 @@ const GuardiansList = ({
   classes,
   delegatedTo
 }) => {
+  const { t } = useTranslation();
   const [candidate, setCandidate] = useState(delegatedTo);
   const sortedGuardians = Object.values(guardians);
   sortedGuardians.sort(
@@ -56,20 +58,20 @@ const GuardiansList = ({
             padding="checkbox"
           />
           <TableCell style={{ width: '30%' }} className={classes.cell}>
-            Name
+            {t('Name')}
           </TableCell>
           <TableCell style={{ width: '4%' }} />
           <TableCell style={{ width: '20%' }} className={classes.cell}>
-            Address
+            {t('Address')}
           </TableCell>
           <TableCell style={{ width: '25%' }} className={classes.cell}>
-            Website
+            {t('Website')}
           </TableCell>
           <TableCell style={{ width: '10%' }} className={classes.cell}>
-            % in last election
+            {t('% in last election')}
           </TableCell>
           <TableCell style={{ width: '13%' }} className={classes.cell}>
-            Voted for next elections
+            {t('Voted for next elections')}
           </TableCell>
         </TableRow>
       </TableHead>

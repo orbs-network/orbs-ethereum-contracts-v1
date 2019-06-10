@@ -6,35 +6,39 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
-import Main from '../Main';
-import Header from '../Header';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { MuiThemeProvider, withStyles } from '@material-ui/core/styles';
-import theme from './theme';
-import styles from './style';
 import classNames from 'classnames';
+import React from 'react';
+import { I18nextProvider } from 'react-i18next';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { ApiService } from '../../api';
 import { Mode } from '../../api/interface';
+import Header from '../Header';
+import Main from '../Main';
+import i18n from './i18n';
+import styles from './style';
+import theme from './theme';
 
 const App = ({ classes }) => {
   const apiService: ApiService = new ApiService();
   return (
-    <Router basename={process.env.PUBLIC_URL}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <div
-          className={classNames({
-            [classes.root]: true
-          })}
-          data-testid="container"
-        >
-          <Header isReadOnly={apiService.mode === Mode.ReadOnly} />
-          <Main apiService={apiService} />
-        </div>
-      </MuiThemeProvider>
-    </Router>
+    <I18nextProvider i18n={i18n}>
+      <Router basename={`${process.env.PUBLIC_URL}`}>
+        <MuiThemeProvider theme={theme}>
+          <CssBaseline />
+          <div
+            className={classNames({
+              [classes.root]: true
+            })}
+            data-testid="container"
+          >
+            <Header isReadOnly={apiService.mode === Mode.ReadOnly} />
+            <Main apiService={apiService} />
+          </div>
+        </MuiThemeProvider>
+      </Router>
+    </I18nextProvider>
   );
 };
 

@@ -16,6 +16,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import { ApiService } from '../../api';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   checkButton: {
@@ -24,11 +25,12 @@ const styles = () => ({
 });
 
 const DelegationStatusLabel = ({ address }) => {
+  const { t } = useTranslation();
   let label = '';
   if (address === '0x0000000000000000000000000000000000000000') {
-    label = 'Your vote has not been delegated yet.';
+    label = t('Your vote has not been delegated yet.');
   } else {
-    label = 'Your vote has been delegated to ' + address;
+    label = t('Your vote has been delegated to ') + address;
   }
   return (
     <Typography variant="body1" color="secondary" style={{ marginTop: '10px' }}>
@@ -59,6 +61,7 @@ const DelegationStatus = ({
     }
   };
 
+  const { t } = useTranslation();
   return (
     <>
       <Button
@@ -66,7 +69,7 @@ const DelegationStatus = ({
         color="secondary"
         onClick={() => setIsOpened(true)}
       >
-        Check delegation status
+        {t('Check delegation status')}
       </Button>
 
       <Dialog
@@ -76,11 +79,12 @@ const DelegationStatus = ({
         maxWidth="lg"
         fullWidth={true}
       >
-        <DialogTitle>Check your delegation status</DialogTitle>
+        <DialogTitle>{t('Check your delegation status')}</DialogTitle>
         <DialogContent>
           <Typography variant="body1" color="textPrimary" gutterBottom>
-            Enter your address in order to check to whom your stake is
-            delegated.
+            {t(
+              'Enter your address in order to check to whom your stake is delegated.'
+            )}
           </Typography>
           <TextField
             required
@@ -99,12 +103,12 @@ const DelegationStatus = ({
             className={classes.checkButton}
             onClick={() => fetchDelegationStatus(address)}
           >
-            Check
+            {t('Check')}
           </Button>
           {delegatedTo && <DelegationStatusLabel address={delegatedTo} />}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsOpened(false)}>Close</Button>
+          <Button onClick={() => setIsOpened(false)}>{t('Close')}</Button>
         </DialogActions>
       </Dialog>
     </>

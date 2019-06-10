@@ -11,6 +11,7 @@ import JP_FLAG from './jp.png';
 import KO_FLAG from './ko.png';
 import EN_FLAG from './en-us.png';
 import { withStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   list: {
@@ -29,20 +30,39 @@ const styles = () => ({
 });
 
 const Languages = ({ classes }) => {
+  const { t, i18n } = useTranslation();
   return (
     <ul className={classes.list}>
       <li className={classes.item}>
-        <a href="https://orbs-network.github.io/voting">
+        <a
+          href="#"
+          onClick={e => {
+            e.preventDefault();
+            i18n.changeLanguage('en');
+          }}
+        >
           <img src={EN_FLAG} alt="English" />
         </a>
       </li>
       <li className={classes.item}>
-        <a href="https://orbs-network.github.io/voting-jp">
+        <a
+          href="#"
+          onClick={e => {
+            e.preventDefault();
+            i18n.changeLanguage('jp');
+          }}
+        >
           <img src={JP_FLAG} alt="Japanese" />
         </a>
       </li>
       <li className={classes.item}>
-        <a href="https://orbs-network.github.io/voting-ko">
+        <a
+          href="#"
+          onClick={e => {
+            e.preventDefault();
+            i18n.changeLanguage('ko');
+          }}
+        >
           <img src={KO_FLAG} alt="Korean" />
         </a>
       </li>

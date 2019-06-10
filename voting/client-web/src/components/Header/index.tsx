@@ -17,14 +17,16 @@ import classNames from 'classnames';
 import ReadOnlyBanner from '../ReadOnlyBanner';
 import styles, { HOVER_COLOR } from './styles';
 import Languages from './languages';
+import { useTranslation } from 'react-i18next';
 
 const Header = ({ classes, isReadOnly }) => {
+  const { t } = useTranslation();
   const links = [
-    { label: 'Home', url: '/' },
-    { label: 'Guardians', url: '/delegator' },
-    { label: 'Validators', url: '/guardian' },
-    { label: 'Elected Validators', url: '/validator' },
-    { label: 'Rewards', url: '/reward' }
+    { label: t('Home'), url: '/' },
+    { label: t('Guardians'), url: '/delegator' },
+    { label: t('Validators'), url: '/guardian' },
+    { label: t('Elected Validators'), url: '/validator' },
+    { label: t('Rewards'), url: '/reward' }
   ];
 
   return (

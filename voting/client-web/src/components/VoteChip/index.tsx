@@ -11,11 +11,12 @@ import { Chip } from '@material-ui/core';
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 import { withStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   yesChip: {
     width: 50,
-    backgroundColor: green[700]
+    backgroundColor: green[400]
   },
   noChip: {
     width: 50,
@@ -24,10 +25,11 @@ const styles = () => ({
 });
 
 const VoteChip = ({ value, classes }) => {
+  const { t } = useTranslation();
   return (
     <Chip
       className={value ? classes.yesChip : classes.noChip}
-      label={value ? 'Yes' : 'No'}
+      label={value ? t('Yes') : t('No')}
     />
   );
 };

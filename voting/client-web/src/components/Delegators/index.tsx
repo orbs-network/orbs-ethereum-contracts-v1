@@ -16,6 +16,7 @@ import ManualDelegationDialog from '../ManualDelegation';
 import { ApiService } from '../../api';
 import { normalizeUrl } from '../../services/urls';
 import DelegationStatusDialog from '../DelegationStatusDialog';
+import { useTranslation } from 'react-i18next';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
@@ -97,6 +98,8 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     return apiService.mode === Mode.ReadWrite;
   };
 
+  const { t } = useTranslation();
+
   const centerContent = {
     display: 'flex',
     justifyContent: 'space-between',
@@ -113,14 +116,14 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
           gutterBottom
           color="textPrimary"
         >
-          Guardians List
+          {t('Guardians List')}
         </Typography>
         <DelegationStatusDialog apiService={apiService} />
       </header>
 
       <div style={centerContent}>
         <Typography variant="body1" gutterBottom color="textPrimary">
-          Next election round will take place at Ethereum block:{' '}
+          {t('Next election round will take place at Ethereum block') + ':'}{' '}
           <Link
             color="secondary"
             target="_blank"
@@ -132,7 +135,9 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         </Typography>
 
         <Typography variant="body1" gutterBottom color="textPrimary">
-          Participating stake: {totalStake} Orbs
+          {t('Participating stake')}
+          {': '}
+          {totalStake} Orbs
         </Typography>
       </div>
 
@@ -145,14 +150,14 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
       {hasMetamask() && (
         <Typography paragraph variant="body1" color="textPrimary">
-          Want to delegate manually to another address? Click{' '}
+          {t('Want to delegate manually to another address? Click')}{' '}
           <Link
             variant="h6"
             color="secondary"
             data-testid="open-manual-delegation-dialog"
             onClick={() => setManualDelegationDialogState(true)}
           >
-            here
+            {t('here')}
           </Link>
           .
         </Typography>
@@ -171,7 +176,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
             color="secondary"
             onClick={() => delegate(delegationCandidate)}
           >
-            Delegate
+            {t('Delegate')}
           </Button>
         )}
       </div>

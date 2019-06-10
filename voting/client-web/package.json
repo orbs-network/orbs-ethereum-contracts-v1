@@ -7,10 +7,12 @@
     "@material-ui/core": "^3.9.2",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
+    "i18next": "^17.0.3",
     "ip-address": "^5.9.0",
     "query-string": "^6.4.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
+    "react-i18next": "^10.11.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
     "web3": "1.0.0-beta.46"
