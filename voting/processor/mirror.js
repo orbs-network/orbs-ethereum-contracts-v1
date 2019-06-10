@@ -189,7 +189,7 @@ async function main() {
         endBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
     } else if (startBlock === 0) {
         endBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
-        startBlock = endBlock - 1000;
+        startBlock = endBlock - 10000;
     } else {
         // use input numbers
     }
