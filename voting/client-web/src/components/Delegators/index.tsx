@@ -150,14 +150,14 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
       {hasMetamask() && (
         <Typography paragraph variant="body1" color="textPrimary">
-          {t('Want to delegate manually to another address? Click')}{' '}
+          {t('Want to delegate manually to another address?')}{' '}
           <Link
             variant="h6"
             color="secondary"
             data-testid="open-manual-delegation-dialog"
             onClick={() => setManualDelegationDialogState(true)}
           >
-            {t('here')}
+            {t('Click here')}
           </Link>
           .
         </Typography>
