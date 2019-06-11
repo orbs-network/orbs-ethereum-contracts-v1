@@ -26,18 +26,12 @@ describe('Delegators Page', () => {
 
     await waitForElement(() => guardianList.children.length);
 
-    expect(guardianList.children.length).toEqual(
-      Object.keys(guardiansData).length
-    );
+    expect(guardianList.children.length).toEqual(Object.keys(guardiansData).length);
 
     Object.keys(guardiansData).forEach(address => {
-      expect(getByTestId(`guardian-${address}-name`)).toContainHTML(
-        guardiansData[address].name
-      );
+      expect(getByTestId(`guardian-${address}-name`)).toContainHTML(guardiansData[address].name);
       expect(getByTestId(`guardian-${address}-address`)).toContainHTML(address);
-      expect(getByTestId(`guardian-${address}-url`)).toContainHTML(
-        guardiansData[address].website
-      );
+      expect(getByTestId(`guardian-${address}-url`)).toContainHTML(guardiansData[address].website);
     });
   });
 
@@ -53,10 +47,7 @@ describe('Delegators Page', () => {
 
     await waitForElement(() => getByTestId('manual-delegation-dialog'));
 
-    fireEvent.change(
-      getByTestId('delegate-address-field').querySelector('input')!,
-      { target: { value: address } }
-    );
+    fireEvent.change(getByTestId('delegate-address-field').querySelector('input')!, { target: { value: address } });
 
     await getByTestId('delegate-button').click();
 

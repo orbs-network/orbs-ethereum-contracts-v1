@@ -16,17 +16,13 @@ import { withStyles } from '@material-ui/core/styles';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useTranslation } from 'react-i18next';
 
 const styles = () => ({});
 
 const DelegateButton = ({ onDelegate }) => {
   return (
-    <Button
-      data-testid={`delegate-button`}
-      onClick={onDelegate}
-      variant="outlined"
-      color="secondary"
-    >
+    <Button data-testid={`delegate-button`} onClick={onDelegate} variant='outlined' color='secondary'>
       Delegate
     </Button>
   );
@@ -34,14 +30,9 @@ const DelegateButton = ({ onDelegate }) => {
 
 const DisabledDelegateButton = () => {
   return (
-    <Tooltip title="Install Metamask extension to have access to voting capabilities">
+    <Tooltip title='Install Metamask extension to have access to voting capabilities'>
       <div>
-        <Button
-          data-testid="delegate-button"
-          variant="outlined"
-          color="secondary"
-          disabled={true}
-        >
+        <Button data-testid='delegate-button' variant='outlined' color='secondary' disabled={true}>
           Delegate
         </Button>
       </div>
@@ -49,33 +40,22 @@ const DisabledDelegateButton = () => {
   );
 };
 
-const GuardianDialog = ({
-  readOnly,
-  dialogState,
-  guardian,
-  onClose,
-  onDelegate
-}) => {
+const GuardianDialogImpl = ({ readOnly, dialogState, guardian, onClose, onDelegate }) => {
+  const { t } = useTranslation();
   return (
     <Dialog open={dialogState} onClose={onClose}>
       <DialogTitle>
         <span>{guardian.name}</span>
       </DialogTitle>
-      <DialogContent data-testid="guardian-dialog">
-        <Typography variant="h6" color="textPrimary">
+      <DialogContent data-testid='guardian-dialog'>
+        <Typography variant='h6' color='textPrimary'>
           Information about the Guardian:
         </Typography>
         <ul>
-          <Typography variant="body1" color="textPrimary">
+          <Typography variant='body1' color='textPrimary'>
             <li>
               Url:{' '}
-              <Link
-                href={guardian.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                color="secondary"
-                variant="body1"
-              >
+              <Link href={guardian.url} target='_blank' rel='noopener noreferrer' color='secondary' variant='body1'>
                 {guardian.url}
               </Link>
             </li>
@@ -83,15 +63,11 @@ const GuardianDialog = ({
         </ul>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        {readOnly ? (
-          <DisabledDelegateButton />
-        ) : (
-          <DelegateButton onDelegate={onDelegate} />
-        )}
+        <Button onClick={onClose}>{t('Cancel')}</Button>
+        {readOnly ? <DisabledDelegateButton /> : <DelegateButton onDelegate={onDelegate} />}
       </DialogActions>
     </Dialog>
   );
 };
 
-export default withStyles(styles)(GuardianDialog);
+export const GuardianDialog = withStyles(styles)(GuardianDialogImpl);

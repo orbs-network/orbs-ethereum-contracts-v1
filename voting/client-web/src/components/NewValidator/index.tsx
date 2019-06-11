@@ -11,75 +11,70 @@ import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, TextField, Button } from '@material-ui/core';
 import { ApiService } from '../../api';
+import { useTranslation } from 'react-i18next';
 
-const NewValidator = ({
-  classes,
-  apiService
-}: {
-  classes: any;
-  apiService: ApiService;
-}) => {
+const NewValidator = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
   const [ipAddress, setIpAddress] = useState('');
   const [orbsAddress, setOrbsAddress] = useState('');
 
-  const isAddDisabled = () =>
-    [name, website, ipAddress, orbsAddress].some(attr => !attr.length);
+  const isAddDisabled = () => [name, website, ipAddress, orbsAddress].some(attr => !attr.length);
 
   const addValidator = async () => {
     const receipt = await apiService.registerValidator({
       name,
       ipAddress,
       website,
-      orbsAddress
+      orbsAddress,
     });
     console.log(receipt);
   };
 
+  const { t } = useTranslation();
   return (
     <>
-      <FormControl className={classes.form} variant="standard" margin="normal">
+      <FormControl className={classes.form} variant='standard' margin='normal'>
         <TextField
           required
-          placeholder="Your name"
+          placeholder={t('Your name')}
           value={name}
           onChange={ev => setName(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
         />
         <TextField
           required
-          placeholder="Your website"
+          placeholder={t('Your website')}
           value={website}
           onChange={ev => setWebsite(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
         />
         <TextField
           required
-          placeholder="Your IP Address"
+          placeholder={t('Your IP Address')}
           value={ipAddress}
           onChange={ev => setIpAddress(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
         />
         <TextField
           required
-          placeholder="Your Orbs Address"
+          placeholder={t('Your Orbs Address')}
           value={orbsAddress}
           onChange={ev => setOrbsAddress(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
         />
         <Button
           className={classes.add}
-          variant="outlined"
-          color="secondary"
+          variant='outlined'
+          color='secondary'
           onClick={addValidator}
           disabled={isAddDisabled()}
         >
-          Add
+          {t('Add')}
         </Button>
       </FormControl>
     </>

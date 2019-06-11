@@ -17,13 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 const styles = () => ({});
 
-const ValidatorsPage = ({
-  classes,
-  apiService
-}: {
-  classes: any;
-  apiService: ApiService;
-}) => {
+const ValidatorsPageImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
   const [validators, setValidators] = useState({});
 
   const getValidatorsData = async address => {
@@ -54,13 +48,13 @@ const ValidatorsPage = ({
   const { t } = useTranslation();
   return (
     <>
-      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
+      <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Elected Validators')}
       </Typography>
 
       {hasMetamask() && (
-        <Link to="/validator/new">
-          <Typography variant="overline" color="textSecondary">
+        <Link to='/validator/new'>
+          <Typography variant='overline' color='textSecondary'>
             {t('Become a validator')}
           </Typography>
         </Link>
@@ -71,4 +65,4 @@ const ValidatorsPage = ({
   );
 };
 
-export default withStyles(styles)(ValidatorsPage);
+export const ValidatorsPage = withStyles(styles)(ValidatorsPageImpl);

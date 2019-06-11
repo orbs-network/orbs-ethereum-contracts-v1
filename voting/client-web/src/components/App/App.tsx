@@ -15,7 +15,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { ApiService } from '../../api';
 import { Mode } from '../../api/interface';
 import Header from '../Header';
-import Main from '../Main';
+import { Main } from '../Main/Main';
 import i18n from './i18n';
 import styles from './style';
 import theme from './theme';
@@ -25,7 +25,7 @@ function getForcedLanguage() {
   return langMatch ? langMatch[1] : '';
 }
 
-const App = ({ classes }) => {
+const AppImpl = ({ classes }) => {
   const apiService: ApiService = new ApiService();
   const forcedLang = getForcedLanguage();
   let langBaseName = '';
@@ -63,4 +63,4 @@ const App = ({ classes }) => {
   );
 };
 
-export default withStyles(styles)(App);
+export const App = withStyles(styles)(AppImpl);

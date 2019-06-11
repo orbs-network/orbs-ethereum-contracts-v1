@@ -23,14 +23,9 @@ import { useTranslation } from 'react-i18next';
 const ReadOnlyVoteButton = () => {
   const { t } = useTranslation();
   return (
-    <Tooltip title="Install Metamask extension to have access to voting capabilities">
+    <Tooltip title='Install Metamask extension to have access to voting capabilities'>
       <div>
-        <Button
-          data-testid="vote-button"
-          variant="outlined"
-          color="secondary"
-          disabled={true}
-        >
+        <Button data-testid='vote-button' variant='outlined' color='secondary' disabled={true}>
           {t('Vote Out')}
         </Button>
       </div>
@@ -41,13 +36,7 @@ const ReadOnlyVoteButton = () => {
 const VoteButton = ({ onVote, disabled }) => {
   const { t } = useTranslation();
   return (
-    <Button
-      data-testid="vote-button"
-      onClick={onVote}
-      variant="outlined"
-      color="secondary"
-      disabled={disabled}
-    >
+    <Button data-testid='vote-button' onClick={onVote} variant='outlined' color='secondary' disabled={disabled}>
       {t('Vote Out')}
     </Button>
   );
@@ -57,10 +46,10 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   const { t } = useTranslation();
   return (
     <Button
-      data-testid="leave-everyone-button"
+      data-testid='leave-everyone-button'
       style={{ marginRight: 15 }}
-      variant="outlined"
-      color="secondary"
+      variant='outlined'
+      color='secondary'
       onClick={onVote}
       disabled={disabled}
     >
@@ -69,13 +58,7 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-const GuardianPage = ({
-  classes,
-  apiService
-}: {
-  classes: any;
-  apiService: ApiService;
-}) => {
+const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
   const [validators, setValidators] = useState({} as {
     [address: string]: {
       checked: boolean;
@@ -96,7 +79,7 @@ const GuardianPage = ({
       name: data['name'],
       url: normalizeUrl(data['website']),
       orbsAddress: data['orbsAddress'],
-      votesAgainst: data['votesAgainst']
+      votesAgainst: data['votesAgainst'],
     };
     setValidators(Object.assign({}, validators));
   };
@@ -130,9 +113,7 @@ const GuardianPage = ({
 
   const commitVote = async () => {
     const from = await apiService.getCurrentAddress();
-    const stagedValidators = Object.keys(validators).filter(
-      address => validators[address].checked
-    );
+    const stagedValidators = Object.keys(validators).filter(address => validators[address].checked);
     const receipt = await apiService.voteOut(stagedValidators);
     save(from, stagedValidators);
     fetchLastVote();
@@ -164,8 +145,7 @@ const GuardianPage = ({
   const hasMetamask = () => apiService.mode === Mode.ReadWrite;
   const isMetamaskActive = () => ethereum._metamask.isEnabled();
 
-  const hasSomebodySelected = () =>
-    Object.keys(validators).some(address => validators[address].checked);
+  const hasSomebodySelected = () => Object.keys(validators).some(address => validators[address].checked);
 
   useEffect(() => {
     fetchValidators();
@@ -174,13 +154,13 @@ const GuardianPage = ({
 
   return (
     <>
-      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
+      <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Validators List')}
       </Typography>
 
       {hasMetamask() && (
-        <Link to="/guardian/new">
-          <Typography variant="overline" color="textSecondary">
+        <Link to='/guardian/new'>
+          <Typography variant='overline' color='textSecondary'>
             {t('Become a guardian')}
           </Typography>
         </Link>
@@ -197,9 +177,7 @@ const GuardianPage = ({
           <>
             <LeaveEveryoneButton
               onVote={commitVote}
-              disabled={
-                hasSomebodySelected() || Object.keys(validators).length === 0
-              }
+              disabled={hasSomebodySelected() || Object.keys(validators).length === 0}
             />
             <VoteButton onVote={commitVote} disabled={!hasSomebodySelected()} />
           </>
@@ -209,22 +187,17 @@ const GuardianPage = ({
       </div>
 
       {hasMetamask() && lastVote.length > 0 ? (
-        <Typography variant="body1" color="textPrimary">
+        <Typography variant='body1' color='textPrimary'>
           {t('Your most recent vote was against')}
           {':'}
           {lastVote.map(address => (
-            <Typography
-              style={{ lineHeight: 1.7 }}
-              variant="overline"
-              key={address}
-              color="textSecondary"
-            >
+            <Typography style={{ lineHeight: 1.7 }} variant='overline' key={address} color='textSecondary'>
               {address}
             </Typography>
           ))}
         </Typography>
       ) : (
-        <Typography variant="body1" color="textPrimary">
+        <Typography variant='body1' color='textPrimary'>
           {t('You have not voted yet')}
         </Typography>
       )}
@@ -232,4 +205,4 @@ const GuardianPage = ({
   );
 };
 
-export default withStyles(styles)(GuardianPage);
+export const GuardiansPage = withStyles(styles)(GuardiansPageImpl);

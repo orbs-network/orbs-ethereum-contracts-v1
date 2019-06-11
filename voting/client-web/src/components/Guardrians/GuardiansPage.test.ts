@@ -8,8 +8,8 @@ describe('Guardians Page', () => {
   beforeEach(() => {
     window['ethereum'] = {
       _metamask: {
-        isEnabled: () => true
-      }
+        isEnabled: () => true,
+      },
     };
     validatorsData = generateValidatorsData();
     driver = new GuardiansPageDriver(validatorsData);
@@ -21,20 +21,12 @@ describe('Guardians Page', () => {
     const { getByTestId } = await driver.render();
     const validatorsList = getByTestId('validators-list');
 
-    expect(validatorsList.children.length).toEqual(
-      Object.keys(validatorsData).length
-    );
+    expect(validatorsList.children.length).toEqual(Object.keys(validatorsData).length);
 
     Object.keys(validatorsData).forEach(address => {
-      expect(getByTestId(`validator-${address}-name`)).toContainHTML(
-        validatorsData[address].name
-      );
-      expect(getByTestId(`validator-${address}-address`)).toContainHTML(
-        address
-      );
-      expect(getByTestId(`validator-${address}-url`)).toContainHTML(
-        validatorsData[address].website
-      );
+      expect(getByTestId(`validator-${address}-name`)).toContainHTML(validatorsData[address].name);
+      expect(getByTestId(`validator-${address}-address`)).toContainHTML(address);
+      expect(getByTestId(`validator-${address}-url`)).toContainHTML(validatorsData[address].website);
     });
   });
 

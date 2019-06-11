@@ -12,13 +12,13 @@ import Link from '@material-ui/core/Link';
 import { Mode } from '../../api/interface';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import ManualDelegationDialog from '../ManualDelegation';
+import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
 import { ApiService } from '../../api';
 import { normalizeUrl } from '../../services/urls';
-import DelegationStatusDialog from '../DelegationStatusDialog';
+import { DelegationStatusDialog } from '../DelegationStatusDialog/DelegationStatusDialog';
 import { useTranslation, Trans } from 'react-i18next';
 
-const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
+export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
     [address: string]: {
       address: string;
@@ -173,5 +173,3 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     </>
   );
 };
-
-export default DelegatorsPage;

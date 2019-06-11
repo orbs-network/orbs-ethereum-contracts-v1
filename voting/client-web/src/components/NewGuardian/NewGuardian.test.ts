@@ -18,7 +18,7 @@ describe('New Guardian', () => {
   it('should call register guardian', async () => {
     const info = {
       name: 'test',
-      website: 'https://test.com'
+      website: 'https://test.com',
     };
     const spy = jest.spyOn(driver.apiService, 'registerGuardian');
     await driver.render();

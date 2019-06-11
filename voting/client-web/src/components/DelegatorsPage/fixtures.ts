@@ -6,7 +6,7 @@ export const generateGuardiansData = () => {
   return addresses.reduce((acc, currAddress) => {
     acc[currAddress] = {
       name: chance.name(),
-      website: chance.url()
+      website: chance.url(),
     };
     return acc;
   }, {});

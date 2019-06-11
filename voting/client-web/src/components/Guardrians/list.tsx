@@ -16,36 +16,26 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
-import { CopyAddressButton } from '../CopyAddressButton';
+import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
 import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   table: {
-    tableLayout: 'fixed' as any
+    tableLayout: 'fixed' as any,
   },
   cell: {
     overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  }
+    textOverflow: 'ellipsis',
+  },
 });
 
-const ValidatorsList = ({
-  disableAll,
-  readOnly,
-  onToggle,
-  validators,
-  classes
-}) => {
+const ValidatorsList = ({ disableAll, readOnly, onToggle, validators, classes }) => {
   const { t } = useTranslation();
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell
-            style={{ width: '40px' }}
-            className={classes.cell}
-            padding="checkbox"
-          />
+          <TableCell style={{ width: '40px' }} className={classes.cell} padding='checkbox' />
           <TableCell style={{ width: '25%' }} className={classes.cell}>
             {t('Name')}
           </TableCell>
@@ -64,10 +54,10 @@ const ValidatorsList = ({
           </TableCell>
         </TableRow>
       </TableHead>
-      <TableBody data-testid="validators-list">
+      <TableBody data-testid='validators-list'>
         {Object.keys(validators).map(address => (
           <TableRow data-testid={`validator-${address}`} key={address}>
-            <TableCell className={classes.cell} padding="none">
+            <TableCell className={classes.cell} padding='none'>
               {!readOnly && (
                 <Checkbox
                   disabled={!validators[address].checked && disableAll}
@@ -78,52 +68,40 @@ const ValidatorsList = ({
               )}
             </TableCell>
             <TableCell
-              padding="dense"
+              padding='dense'
               className={classes.cell}
-              component="th"
-              scope="row"
+              component='th'
+              scope='row'
               data-testid={`validator-${address}-name`}
             >
               {validators[address].name}
             </TableCell>
-            <TableCell padding="none">
+            <TableCell padding='none'>
               <CopyAddressButton address={address} />
             </TableCell>
-            <TableCell
-              padding="dense"
-              className={classes.cell}
-              data-testid={`validator-${address}-address`}
-            >
-              <Tooltip title={address} placement="top-start" enterDelay={200}>
+            <TableCell padding='dense' className={classes.cell} data-testid={`validator-${address}-address`}>
+              <Tooltip title={address} placement='top-start' enterDelay={200}>
                 <span>{address}</span>
               </Tooltip>
             </TableCell>
-            <TableCell
-              padding="dense"
-              className={classes.cell}
-              data-testid={`validator-${address}-orbsAddress`}
-            >
-              <Tooltip
-                title={validators[address].orbsAddress}
-                placement="top-start"
-                enterDelay={200}
-              >
+            <TableCell padding='dense' className={classes.cell} data-testid={`validator-${address}-orbsAddress`}>
+              <Tooltip title={validators[address].orbsAddress} placement='top-start' enterDelay={200}>
                 <span>{validators[address].orbsAddress}</span>
               </Tooltip>
             </TableCell>
-            <TableCell padding="dense" className={classes.cell}>
+            <TableCell padding='dense' className={classes.cell}>
               <Link
                 data-testid={`validator-${address}-url`}
                 href={validators[address].url}
-                target="_blank"
-                rel="noopener noreferrer"
-                color="secondary"
-                variant="body1"
+                target='_blank'
+                rel='noopener noreferrer'
+                color='secondary'
+                variant='body1'
               >
                 {validators[address].url}
               </Link>
             </TableCell>
-            <TableCell padding="dense" className={classes.cell}>
+            <TableCell padding='dense' className={classes.cell}>
               {validators[address].votesAgainst}
             </TableCell>
           </TableRow>

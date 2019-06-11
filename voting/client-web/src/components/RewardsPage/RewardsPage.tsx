@@ -24,23 +24,23 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'row' as any,
     alignItems: 'baseline',
-    width: '50%'
+    width: '50%',
   },
   input: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   submit: {
-    marginLeft: 30
+    marginLeft: 30,
   },
   section: {
-    marginTop: `${theme.spacing.unit * 8}px`
-  }
+    marginTop: `${theme.spacing.unit * 8}px`,
+  },
 });
 
-const RewardsPage = ({
+const RewardsPageImpl = ({
   classes,
   apiService,
-  location
+  location,
 }: {
   classes: any;
   apiService: ApiService;
@@ -52,8 +52,7 @@ const RewardsPage = ({
   const [guardianInfo, setGuardianInfo] = useState({});
   const [electionBlock, setElectionBlock] = useState('0');
 
-  const fetchRewards = address =>
-    apiService.getRewards(address).then(setRewards);
+  const fetchRewards = address => apiService.getRewards(address).then(setRewards);
 
   const fetchDelegationInfo = async address => {
     const info = await apiService.getCurrentDelegationInfo(address);
@@ -62,8 +61,7 @@ const RewardsPage = ({
     setGuardianInfo(guardianData);
   };
 
-  const fetchPastElectionBlock = () =>
-    apiService.getPastElectionBlockHeight().then(setElectionBlock);
+  const fetchPastElectionBlock = () => apiService.getPastElectionBlockHeight().then(setElectionBlock);
 
   const submitHandler = () => {
     fetchRewards(address);
@@ -86,61 +84,48 @@ const RewardsPage = ({
   const { t } = useTranslation();
   return (
     <>
-      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
+      <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Rewards & Delegation Info')}
       </Typography>
 
-      <FormControl className={classes.form} variant="standard" margin="normal">
+      <FormControl className={classes.form} variant='standard' margin='normal'>
         <TextField
           required
           className={classes.input}
           placeholder={t('Enter the address')}
           value={address}
           onChange={ev => setAddress(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
         />
         <div className={classes.submit}>
-          <Button onClick={submitHandler} variant="outlined">
+          <Button onClick={submitHandler} variant='outlined'>
             {t('Submit')}
           </Button>
         </div>
       </FormControl>
 
       <section className={classes.section}>
-        <Typography
-          variant="h4"
-          component="h4"
-          gutterBottom
-          color="textPrimary"
-        >
+        <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Rewards')}
         </Typography>
         <RewardsTable rewards={rewards} />
       </section>
 
       <section className={classes.section}>
-        <Typography
-          variant="h4"
-          component="h4"
-          gutterBottom
-          color="textPrimary"
-        >
+        <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
         </Typography>
-        <DelegationInfoTable
-          delegatorInfo={delegatorInfo}
-          guardianInfo={guardianInfo}
-        />
+        <DelegationInfoTable delegatorInfo={delegatorInfo} guardianInfo={guardianInfo} />
       </section>
 
       <section className={classes.section}>
-        <Typography inline variant="subtitle1" color="textPrimary">
+        <Typography inline variant='subtitle1' color='textPrimary'>
           {'* '}
           {t('The information above corresponds to elections at block number')}
           {': '}
         </Typography>
-        <Typography inline variant="subtitle1" color="secondary">
+        <Typography inline variant='subtitle1' color='secondary'>
           {electionBlock}
         </Typography>
       </section>
@@ -148,4 +133,4 @@ const RewardsPage = ({
   );
 };
 
-export default withStyles(styles)(RewardsPage);
+export const RewardsPage = withStyles(styles)(RewardsPageImpl);

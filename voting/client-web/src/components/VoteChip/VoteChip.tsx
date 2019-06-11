@@ -16,22 +16,17 @@ import { useTranslation } from 'react-i18next';
 const styles = () => ({
   yesChip: {
     width: 50,
-    backgroundColor: green[400]
+    backgroundColor: green[400],
   },
   noChip: {
     width: 50,
-    backgroundColor: red[700]
-  }
+    backgroundColor: red[700],
+  },
 });
 
-const VoteChip = ({ value, classes }) => {
+const VoteChipImpl = ({ value, classes }) => {
   const { t } = useTranslation();
-  return (
-    <Chip
-      className={value ? classes.yesChip : classes.noChip}
-      label={value ? t('Yes') : t('No')}
-    />
-  );
+  return <Chip className={value ? classes.yesChip : classes.noChip} label={value ? t('Yes') : t('No')} />;
 };
 
-export default withStyles(styles)(VoteChip);
+export const VoteChip = withStyles(styles)(VoteChipImpl);

@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import DelegatorsPage from './index';
+import { DelegatorsPage } from './DelegatorsPage';
 import { render } from 'react-testing-library';
 import { ApiStrategyStub } from '../../api/stub';
 import { IApiStrategy } from '../../api/interface';
@@ -22,7 +22,7 @@ export default class DelegatorsDriver {
     return render(
       <Router>
         <DelegatorsPage apiService={this.apiService} />
-      </Router>
+      </Router>,
     );
   }
 }

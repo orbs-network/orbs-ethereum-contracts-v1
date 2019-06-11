@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import NewGuardian from './index';
+import { NewGuardian } from './NewGuardian';
 import { render, waitForElement, fireEvent } from 'react-testing-library';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { IApiStrategy } from '../../api/interface';
@@ -42,7 +42,7 @@ export default class NewGuardianDriver {
     this.renderResult = render(
       <Router>
         <NewGuardian apiService={this.apiService} />
-      </Router>
+      </Router>,
     );
     return this.renderResult;
   }

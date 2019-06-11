@@ -18,12 +18,12 @@ import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   table: {
-    tableLayout: 'fixed' as any
+    tableLayout: 'fixed' as any,
   },
   cell: {
     overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  }
+    textOverflow: 'ellipsis',
+  },
 });
 
 const ValidatorsList = ({ validators, classes }) => {
@@ -44,34 +44,19 @@ const ValidatorsList = ({ validators, classes }) => {
           <TableCell style={{ width: '10%' }}>{t('Stake')}</TableCell>
         </TableRow>
       </TableHead>
-      <TableBody data-testid="validators-list">
+      <TableBody data-testid='validators-list'>
         {Object.keys(validators).map(id => (
           <TableRow data-testid={`validator-${id}`} key={id}>
-            <TableCell
-              className={classes.cell}
-              component="th"
-              scope="row"
-              data-testid={`validator-${id}-name`}
-            >
+            <TableCell className={classes.cell} component='th' scope='row' data-testid={`validator-${id}-name`}>
               {validators[id].name}
             </TableCell>
-            <TableCell
-              className={classes.cell}
-              data-testid={`validator-${id}-address`}
-            >
-              <Tooltip title={id} placement="top-start" enterDelay={200}>
+            <TableCell className={classes.cell} data-testid={`validator-${id}-address`}>
+              <Tooltip title={id} placement='top-start' enterDelay={200}>
                 <span>{id}</span>
               </Tooltip>
             </TableCell>
-            <TableCell
-              className={classes.cell}
-              data-testid={`validator-${id}-orbs-address`}
-            >
-              <Tooltip
-                title={validators[id].orbsAddress}
-                placement="top-start"
-                enterDelay={200}
-              >
+            <TableCell className={classes.cell} data-testid={`validator-${id}-orbs-address`}>
+              <Tooltip title={validators[id].orbsAddress} placement='top-start' enterDelay={200}>
                 <span>{validators[id].orbsAddress}</span>
               </Tooltip>
             </TableCell>

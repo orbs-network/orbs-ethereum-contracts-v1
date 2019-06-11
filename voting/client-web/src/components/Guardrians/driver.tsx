@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import GuardiansPage from './index';
+import { GuardiansPage } from './GuardiansPage';
 import { render, waitForElement } from 'react-testing-library';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { IApiStrategy } from '../../api/interface';
@@ -32,7 +32,7 @@ export default class GuardiansDriver {
     this.renderResult = render(
       <Router>
         <GuardiansPage apiService={this.apiService} />
-      </Router>
+      </Router>,
     );
     const validatorsList = this.renderResult.getByTestId('validators-list');
     await waitForElement(() => validatorsList.children.length);

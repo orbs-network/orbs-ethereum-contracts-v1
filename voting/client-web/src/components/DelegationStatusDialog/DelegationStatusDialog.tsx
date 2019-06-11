@@ -39,7 +39,7 @@ const DelegationStatusLabel = ({ address }) => {
   );
 };
 
-const DelegationStatus = ({ apiService, classes }: { apiService: ApiService; classes: any }) => {
+const DelegationStatusDialogImpl = ({ apiService, classes }: { apiService: ApiService; classes: any }) => {
   const [isOpened, setIsOpened] = useState(false);
   const [address, setAddress] = useState('');
   const [delegatedTo, setDelegatedTo] = useState('');
@@ -97,4 +97,4 @@ const DelegationStatus = ({ apiService, classes }: { apiService: ApiService; cla
   );
 };
 
-export default withStyles(styles)(DelegationStatus);
+export const DelegationStatusDialog = withStyles(styles)(DelegationStatusDialogImpl);

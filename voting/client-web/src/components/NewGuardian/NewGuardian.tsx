@@ -11,14 +11,9 @@ import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, TextField, Button } from '@material-ui/core';
 import { ApiService } from '../../api';
+import { useTranslation } from 'react-i18next';
 
-const NewGuardian = ({
-  classes,
-  apiService
-}: {
-  classes: any;
-  apiService: ApiService;
-}) => {
+const NewGuardianImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
 
@@ -29,40 +24,41 @@ const NewGuardian = ({
     console.log(receipt);
   };
 
+  const { t } = useTranslation();
   return (
     <>
-      <FormControl className={classes.form} variant="standard" margin="normal">
+      <FormControl className={classes.form} variant='standard' margin='normal'>
         <TextField
           required
-          data-testid="name"
-          placeholder="Your name"
+          data-testid='name'
+          placeholder={t('Your name')}
           value={name}
           onChange={ev => setName(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
         />
         <TextField
           required
-          data-testid="website"
-          placeholder="Your website"
+          data-testid='website'
+          placeholder={t('Your website')}
           value={website}
           onChange={ev => setWebsite(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
         />
         <Button
-          data-testid="submit"
+          data-testid='submit'
           className={classes.add}
-          variant="outlined"
-          color="secondary"
+          variant='outlined'
+          color='secondary'
           onClick={addGuardian}
           disabled={isAddDisabled()}
         >
-          Add
+          {t('Add')}
         </Button>
       </FormControl>
     </>
   );
 };
 
-export default withStyles(styles)(NewGuardian);
+export const NewGuardian = withStyles(styles)(NewGuardianImpl);

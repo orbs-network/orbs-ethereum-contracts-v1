@@ -16,9 +16,7 @@ describe('App component', () => {
     const { getByTestId, queryByTestId } = driver.render();
     expect(getByTestId('header')).toBeVisible();
     expect(getByTestId('main')).toBeVisible();
-    expect(getByTestId('container')).not.toContainElement(
-      queryByTestId('read-only-banner')
-    );
+    expect(getByTestId('container')).not.toContainElement(queryByTestId('read-only-banner'));
   });
 
   it('should render read-only banner if no metamask', () => {

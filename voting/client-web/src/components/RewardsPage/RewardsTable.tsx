@@ -17,25 +17,25 @@ import { useTranslation } from 'react-i18next';
 export const RewardsTable = ({ rewards }) => {
   const { t } = useTranslation();
   return (
-    <Table padding="none">
+    <Table padding='none'>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegator Reward')}</TableCell>
-          <TableCell align="right">{rewards['delegatorReward']}</TableCell>
+          <TableCell align='right'>{rewards['delegatorReward']}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian Excellency Reward')}</TableCell>
-          <TableCell align="right">{rewards['guardianReward']}</TableCell>
+          <TableCell align='right'>{rewards['guardianReward']}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Validator Reward')}</TableCell>
-          <TableCell align="right">{rewards['validatorReward']}</TableCell>
+          <TableCell align='right'>{rewards['validatorReward']}</TableCell>
         </TableRow>
       </TableBody>
       <TableFooter>
         <TableRow>
           <TableCell>{t('Total Reward')}</TableCell>
-          <TableCell align="right">{rewards['totalReward']}</TableCell>
+          <TableCell align='right'>{rewards['totalReward']}</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

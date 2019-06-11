@@ -28,13 +28,13 @@ const DelegateButton = ({ onDelegate }) => {
   );
 };
 
-const ManualDelegationDialog = ({ dialogState, onClose, onDelegate }) => {
+const ManualDelegationDialogImpl = ({ dialogState, onClose, onDelegate }) => {
   const [delegatorAddress, setDelegatorAddress] = useState('');
 
   const { t } = useTranslation();
   return (
     <Dialog open={dialogState} onClose={onClose} maxWidth='lg' fullWidth={true}>
-      <DialogTitle>{'Manualy Delegate Your Stake'}</DialogTitle>
+      <DialogTitle>{t('Manually Delegate Your Stake')}</DialogTitle>
       <DialogContent data-testid='manual-delegation-dialog'>
         <Typography variant='body1' color='textPrimary'>
           {t('Manual Delegation Description')}
@@ -51,11 +51,11 @@ const ManualDelegationDialog = ({ dialogState, onClose, onDelegate }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{'Cancel'}</Button>
+        <Button onClick={onClose}>{t('Cancel')}</Button>
         <DelegateButton onDelegate={() => onDelegate(delegatorAddress)} />
       </DialogActions>
     </Dialog>
   );
 };
 
-export default withStyles(styles)(ManualDelegationDialog);
+export const ManualDelegationDialog = withStyles(styles)(ManualDelegationDialogImpl);

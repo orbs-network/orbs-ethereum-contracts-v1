@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import VoteChip from '../VoteChip';
+import { VoteChip } from '../VoteChip/VoteChip';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
@@ -24,55 +24,44 @@ const formatTimestamp = timestamp =>
     day: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
-    second: 'numeric'
+    second: 'numeric',
   });
 
 export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
   const { t } = useTranslation();
   return (
-    <Table padding="none">
+    <Table padding='none'>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegated To')}</TableCell>
-          <TableCell align="right">{delegatorInfo['delegatedTo']}</TableCell>
+          <TableCell align='right'>{delegatorInfo['delegatedTo']}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t(`Delegator's ORBS Balance`)}</TableCell>
-          <TableCell align="right">
-            {delegatorInfo['delegatorBalance']}
-          </TableCell>
+          <TableCell align='right'>{delegatorInfo['delegatorBalance']}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
-          <TableCell align="right">
-            {guardianInfo['voted'] && (
-              <VoteChip value={guardianInfo['voted']} />
-            )}
-          </TableCell>
+          <TableCell align='right'>{guardianInfo['voted'] && <VoteChip value={guardianInfo['voted']} />}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted for next elections')}</TableCell>
-          <TableCell align="right">
-            {guardianInfo['hasEligibleVote'] && (
-              <VoteChip value={guardianInfo['hasEligibleVote']} />
-            )}
+          <TableCell align='right'>
+            {guardianInfo['hasEligibleVote'] && <VoteChip value={guardianInfo['hasEligibleVote']} />}
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation method')}</TableCell>
-          <TableCell align="right">{delegatorInfo['delegationType']}</TableCell>
+          <TableCell align='right'>{delegatorInfo['delegationType']}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation block number')}</TableCell>
-          <TableCell align="right">
-            {delegatorInfo['delegationBlockNumber']}
-          </TableCell>
+          <TableCell align='right'>{delegatorInfo['delegationBlockNumber']}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation timestamp')}</TableCell>
-          <TableCell align="right">
-            {delegatorInfo['delegationTimestamp'] &&
-              formatTimestamp(delegatorInfo['delegationTimestamp'])}
+          <TableCell align='right'>
+            {delegatorInfo['delegationTimestamp'] && formatTimestamp(delegatorInfo['delegationTimestamp'])}
           </TableCell>
         </TableRow>
       </TableBody>

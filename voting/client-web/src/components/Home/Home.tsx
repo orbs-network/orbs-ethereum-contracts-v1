@@ -15,28 +15,18 @@ import { NavLink } from 'react-router-dom';
 import content from './content';
 import styles from './styles';
 
-const Home = ({ classes }) => {
+const HomeImpl = ({ classes }) => {
   const { t } = useTranslation();
   const translatedContent = content(t);
   return (
     <>
-      <Typography variant="h2" component="h2" gutterBottom color="textPrimary">
+      <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Participation Instructions')}
       </Typography>
-      <Typography
-        className={classes.explanations}
-        variant="body1"
-        gutterBottom
-        color="textPrimary"
-      >
+      <Typography className={classes.explanations} variant='body1' gutterBottom color='textPrimary'>
         {t('Participation Instructions Content1')}
       </Typography>
-      <Typography
-        className={classes.explanations}
-        variant="body1"
-        gutterBottom
-        color="textPrimary"
-      >
+      <Typography className={classes.explanations} variant='body1' gutterBottom color='textPrimary'>
         {t('Participation Instructions Content2')}
       </Typography>
       <article className={classes.article}>
@@ -44,29 +34,19 @@ const Home = ({ classes }) => {
           <React.Fragment key={section.title}>
             <section className={classes.section}>
               <div className={classes.imageBlock}>
-                <img
-                  className={classes.image}
-                  src={section.imageUrl}
-                  alt={section.title}
-                />
+                <img className={classes.image} src={section.imageUrl} alt={section.title} />
               </div>
               <div>
-                <Typography variant="h4" gutterBottom color="textPrimary">
+                <Typography variant='h4' gutterBottom color='textPrimary'>
                   {section.title}
                 </Typography>
-                <Typography variant="body1" gutterBottom color="textPrimary">
+                <Typography variant='body1' gutterBottom color='textPrimary'>
                   {section.text}
                 </Typography>
                 <ul className={classes.links}>
                   {section.links.map((link, idx) => (
                     <li key={idx} className={classes.link}>
-                      <Link
-                        variant="body1"
-                        color="secondary"
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener"
-                      >
+                      <Link variant='body1' color='secondary' href={link.url} target='_blank' rel='noopener'>
                         {link.title}
                       </Link>
                     </li>
@@ -77,16 +57,14 @@ const Home = ({ classes }) => {
                   component={NavLink}
                   to={section.cta.url}
                   className={classes.ctaButton}
-                  variant="body1"
-                  underline="none"
+                  variant='body1'
+                  underline='none'
                 >
                   {section.cta.label}
                 </Link>
               </div>
             </section>
-            {idx === translatedContent.length - 1 ? null : (
-              <hr className={classes.division} />
-            )}
+            {idx === translatedContent.length - 1 ? null : <hr className={classes.division} />}
           </React.Fragment>
         ))}
       </article>
@@ -94,4 +72,4 @@ const Home = ({ classes }) => {
   );
 };
 
-export default withStyles(styles)(Home);
+export const Home = withStyles(styles)(HomeImpl);
