@@ -130,6 +130,13 @@ const resources = {
       'Enter your address in order to check to whom your stake is delegated.':
         '여러분의 주소를 입력하여 누구에게 위임중인지 확인할 수 있습니다.',
       Check: '확인하기',
+      'Delegate Ethereum Address': '위임받을 ETH 주소',
+      Vote: '투표하기',
+      'Your name': '등록할 이름',
+      'Your website': '웹사이트 주소',
+      Add: '추가하기',
+      'Your IP Address': '노드 IP 주소',
+      'Your Orbs Address': 'Orbs 주소',
       Close: '닫기',
       'Guardians List': '가디언즈 목록',
       'Next election round will take place at Ethereum block': '다음 선거가 예정되어 있는 이더리움 블록번호',
