@@ -11,12 +11,12 @@ import { Home } from '../Home/Home';
 import { RewardsPage } from '../RewardsPage/RewardsPage';
 import { GuardiansPage } from '../Guardrians/GuardiansPage';
 import { NewGuardian } from '../NewGuardian/NewGuardian';
-import NewValidator from '../NewValidator';
+import { NewValidator } from '../NewValidator/NewValidator';
 import { DelegatorsPage } from '../DelegatorsPage/DelegatorsPage';
 import { ValidatorsPage } from '../ValidatorsPage/ValidatorsPage';
 import { Route, RouteProps, Redirect, Switch } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import styles from './style';
+import { MainStyles } from './Main.style';
 
 const MainImpl = ({ apiService, classes }) => {
   return (
@@ -59,4 +59,4 @@ const MainImpl = ({ apiService, classes }) => {
   );
 };
 
-export const Main = withStyles(styles)(MainImpl);
+export const Main = withStyles(MainStyles)(MainImpl);

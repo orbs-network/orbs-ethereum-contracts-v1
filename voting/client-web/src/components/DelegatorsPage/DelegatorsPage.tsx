@@ -7,13 +7,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import GuardiansList from './list';
+import { GuardiansList } from './GuardiansList';
 import Link from '@material-ui/core/Link';
 import { Mode } from '../../api/interface';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { normalizeUrl } from '../../services/urls';
 import { DelegationStatusDialog } from '../DelegationStatusDialog/DelegationStatusDialog';
 import { useTranslation, Trans } from 'react-i18next';

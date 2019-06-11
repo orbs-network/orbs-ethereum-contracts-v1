@@ -1,4 +1,4 @@
-import AppDriver from './driver';
+import { AppDriver } from './AppDriver';
 import { cleanup } from 'react-testing-library';
 
 describe('App component', () => {

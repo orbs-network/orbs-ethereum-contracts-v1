@@ -14,35 +14,35 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import ReadOnlyBanner from '../ReadOnlyBanner';
-import styles, { HOVER_COLOR } from './styles';
-import Languages from './languages';
+import { ReadOnlyBanner } from '../ReadOnlyBanner/ReadOnlyBanner';
+import { HeaderStyles, HOVER_COLOR } from './Header.styles';
+import { Languages } from './languages';
 import { useTranslation } from 'react-i18next';
 
-const Header = ({ classes, isReadOnly }) => {
+const HeaderImpl = ({ classes, isReadOnly }) => {
   const { t } = useTranslation();
   const links = [
     { label: t('Home'), url: '/' },
     { label: t('Guardians'), url: '/delegator' },
     { label: t('Validators'), url: '/guardian' },
     { label: t('Elected Validators'), url: '/validator' },
-    { label: t('Rewards'), url: '/reward' }
+    { label: t('Rewards'), url: '/reward' },
   ];
 
   return (
     <AppBar
-      position="fixed"
+      position='fixed'
       className={classNames({
         [classes.appBar]: true,
-        [classes.movedDown]: isReadOnly
+        [classes.movedDown]: isReadOnly,
       })}
-      data-testid="header"
+      data-testid='header'
     >
       {isReadOnly ? <ReadOnlyBanner /> : null}
       <Languages />
       <Toolbar className={classes.toolbar}>
-        <NavLink to="/">
-          <img className={classes.logo} src={logo} alt="Orbs" />
+        <NavLink to='/'>
+          <img className={classes.logo} src={logo} alt='Orbs' />
         </NavLink>
         <nav className={classes.nav}>
           {links.map(({ label, url }, idx) => (
@@ -53,9 +53,9 @@ const Header = ({ classes, isReadOnly }) => {
               exact={true}
               className={classes.link}
               activeStyle={{ color: HOVER_COLOR }}
-              underline="none"
+              underline='none'
               to={url}
-              variant="h6"
+              variant='h6'
               noWrap
             >
               {label}
@@ -67,4 +67,4 @@ const Header = ({ classes, isReadOnly }) => {
   );
 };
 
-export default withStyles(styles)(Header);
+export const Header = withStyles(HeaderStyles)(HeaderImpl);

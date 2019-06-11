@@ -15,7 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { useTranslation } from 'react-i18next';
 
 const styles = () => ({

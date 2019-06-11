@@ -12,13 +12,13 @@ import classNames from 'classnames';
 import React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { Mode } from '../../api/interface';
-import Header from '../Header';
+import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
 import i18n from './i18n';
-import styles from './style';
-import theme from './theme';
+import { AppStyles } from './App.style';
+import { AppTheme } from './App.theme';
 
 function getForcedLanguage() {
   const langMatch = location.pathname.match(/\/(en|ko|jp)\//);
@@ -46,7 +46,7 @@ const AppImpl = ({ classes }) => {
   return (
     <I18nextProvider i18n={i18n}>
       <Router basename={`${process.env.PUBLIC_URL}${langBaseName}`}>
-        <MuiThemeProvider theme={theme}>
+        <MuiThemeProvider theme={AppTheme}>
           <CssBaseline />
           <div
             className={classNames({
@@ -63,4 +63,4 @@ const AppImpl = ({ classes }) => {
   );
 };
 
-export const App = withStyles(styles)(AppImpl);
+export const App = withStyles(AppStyles)(AppImpl);

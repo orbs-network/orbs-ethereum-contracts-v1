@@ -12,8 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import content from './content';
-import styles from './styles';
+import { content } from './content';
+import { HomeStyles } from './Home.styles';
 
 const HomeImpl = ({ classes }) => {
   const { t } = useTranslation();
@@ -72,4 +72,4 @@ const HomeImpl = ({ classes }) => {
   );
 };
 
-export const Home = withStyles(styles)(HomeImpl);
+export const Home = withStyles(HomeStyles)(HomeImpl);

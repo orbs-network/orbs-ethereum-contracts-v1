@@ -13,7 +13,7 @@ import { ApiStrategyStub } from '../../api/stub';
 import { IApiStrategy } from '../../api/interface';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-export default class DelegatorsDriver {
+export class DelegatorsDriver {
   apiService: IApiStrategy;
   constructor(data) {
     this.apiService = new ApiStrategyStub(data, {});

@@ -6,14 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import styles from './styles';
+import { NewValidatorStyles } from './NewValidator.styles';
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, TextField, Button } from '@material-ui/core';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { useTranslation } from 'react-i18next';
 
-const NewValidator = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
+const NewValidatorImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
   const [ipAddress, setIpAddress] = useState('');
@@ -81,4 +81,4 @@ const NewValidator = ({ classes, apiService }: { classes: any; apiService: ApiSe
   );
 };
 
-export default withStyles(styles)(NewValidator);
+export const NewValidator = withStyles(NewValidatorStyles)(NewValidatorImpl);

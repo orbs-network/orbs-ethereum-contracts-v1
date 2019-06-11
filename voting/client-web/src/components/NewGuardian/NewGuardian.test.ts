@@ -1,4 +1,4 @@
-import NewGuardianDriver from './driver';
+import { NewGuardianDriver } from './NewGuardianDriver';
 import { cleanup } from 'react-testing-library';
 
 describe('New Guardian', () => {

@@ -10,7 +10,7 @@ import React from 'react';
 import { App } from './App';
 import { render } from 'react-testing-library';
 
-export default class AppDriver {
+export class AppDriver {
   render() {
     return render(<App />);
   }

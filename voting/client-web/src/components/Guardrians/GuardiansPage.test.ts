@@ -1,9 +1,9 @@
-import GuardiansPageDriver from './driver';
+import { GuardiansDriver } from './GuardiansDriver';
 import { generateValidatorsData } from './fixtures';
 import { cleanup, wait } from 'react-testing-library';
 
 describe('Guardians Page', () => {
-  let driver: GuardiansPageDriver, validatorsData;
+  let driver: GuardiansDriver, validatorsData;
 
   beforeEach(() => {
     window['ethereum'] = {
@@ -12,7 +12,7 @@ describe('Guardians Page', () => {
       },
     };
     validatorsData = generateValidatorsData();
-    driver = new GuardiansPageDriver(validatorsData);
+    driver = new GuardiansDriver(validatorsData);
   });
 
   afterEach(cleanup);

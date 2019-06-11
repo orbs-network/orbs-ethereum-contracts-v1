@@ -29,7 +29,7 @@ const styles = () => ({
   },
 });
 
-const ValidatorsList = ({ disableAll, readOnly, onToggle, validators, classes }) => {
+const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classes }) => {
   const { t } = useTranslation();
   return (
     <Table className={classes.table}>
@@ -111,4 +111,4 @@ const ValidatorsList = ({ disableAll, readOnly, onToggle, validators, classes })
   );
 };
 
-export default withStyles(styles)(ValidatorsList);
+export const ValidatorsList = withStyles(styles)(ValidatorsListImpl);

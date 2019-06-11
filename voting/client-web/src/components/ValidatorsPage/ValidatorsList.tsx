@@ -26,7 +26,7 @@ const styles = () => ({
   },
 });
 
-const ValidatorsList = ({ validators, classes }) => {
+const ValidatorsListImpl = ({ validators, classes }) => {
   const { t } = useTranslation();
   return (
     <Table className={classes.table}>
@@ -68,4 +68,4 @@ const ValidatorsList = ({ validators, classes }) => {
   );
 };
 
-export default withStyles(styles)(ValidatorsList);
+export const ValidatorsList = withStyles(styles)(ValidatorsListImpl);

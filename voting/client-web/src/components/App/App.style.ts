@@ -1,13 +1,12 @@
-export default () => ({
+export const AppStyles = () => ({
   root: {
     display: 'flex',
     backgroundColor: '#06142e',
     backgroundRepeat: 'repeat-y',
-    backgroundImage:
-      'url(https://www.orbs.com/wp-content/uploads/2019/02/technology-background1.png)',
+    backgroundImage: 'url(https://www.orbs.com/wp-content/uploads/2019/02/technology-background1.png)',
     backgroundAttachment: 'scroll',
     backgroundPosition: 'top center',
-    minHeight: '100vh'
+    minHeight: '100vh',
   },
   glass: {
     backgroundColor: 'black',
@@ -17,7 +16,7 @@ export default () => ({
     zIndex: 100000,
     position: 'absolute' as any,
     top: 0,
-    left: 0
+    left: 0,
   },
   glassLabel: {
     width: '100%',
@@ -28,9 +27,9 @@ export default () => ({
     alignItems: 'center',
     position: 'absolute' as any,
     top: 0,
-    left: 0
+    left: 0,
   },
   blurred: {
-    filter: 'blur(2px)'
-  }
+    filter: 'blur(2px)',
+  },
 });

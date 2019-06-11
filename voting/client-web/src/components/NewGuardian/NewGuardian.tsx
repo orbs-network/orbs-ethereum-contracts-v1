@@ -6,11 +6,11 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import styles from './styles';
+import { NewGuardianStyles } from './NewGuardian.styles';
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { FormControl, TextField, Button } from '@material-ui/core';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { useTranslation } from 'react-i18next';
 
 const NewGuardianImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
@@ -61,4 +61,4 @@ const NewGuardianImpl = ({ classes, apiService }: { classes: any; apiService: Ap
   );
 };
 
-export const NewGuardian = withStyles(styles)(NewGuardianImpl);
+export const NewGuardian = withStyles(NewGuardianStyles)(NewGuardianImpl);

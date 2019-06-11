@@ -36,7 +36,7 @@ function addLangToCurrentLocation(location, lang: string) {
     : `${process.env.PUBLIC_URL}/${lang}${location.pathname}`;
 }
 
-const Languages = ({ classes, location }) => {
+const LanguagesImpl = ({ classes, location }) => {
   return (
     <ul className={classes.list}>
       <li className={classes.item}>
@@ -58,4 +58,4 @@ const Languages = ({ classes, location }) => {
   );
 };
 
-export default withRouter(withStyles(styles)(Languages) as any);
+export const Languages = withRouter(withStyles(styles)(LanguagesImpl) as any);

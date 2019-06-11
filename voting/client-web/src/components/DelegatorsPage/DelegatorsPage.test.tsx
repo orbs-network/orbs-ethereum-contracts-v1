@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import DelegatorsDriver from './driver';
+import { DelegatorsDriver } from './DelegatorsDriver';
 import { generateGuardiansData } from './fixtures';
 import { waitForElement, cleanup, fireEvent } from 'react-testing-library';
 

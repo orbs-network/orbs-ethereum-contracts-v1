@@ -19,10 +19,7 @@ export class ApiService implements IApiStrategy {
   constructor() {
     this.mode = window['ethereum'] ? Mode.ReadWrite : Mode.ReadOnly;
     this.remote! = new RemoteService();
-    this.metamask =
-      this.mode === Mode.ReadWrite
-        ? new MetamaskService()
-        : new MetamaskServiceStub();
+    this.metamask = this.mode === Mode.ReadWrite ? new MetamaskService() : new MetamaskServiceStub();
   }
 
   getCurrentAddress() {

@@ -6,8 +6,8 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import styles from './styles';
-import ValidatorsList from './list';
+import { GuardiansPageStyles } from './GuardiansPage.styles';
+import { ValidatorsList } from './ValidatorsList';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Mode } from '../../api/interface';
@@ -17,7 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import { get, save } from '../../services/vote-storage';
 import { normalizeUrl } from '../../services/urls';
 import { Link } from 'react-router-dom';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { useTranslation } from 'react-i18next';
 
 const ReadOnlyVoteButton = () => {
@@ -205,4 +205,4 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
   );
 };
 
-export const GuardiansPage = withStyles(styles)(GuardiansPageImpl);
+export const GuardiansPage = withStyles(GuardiansPageStyles)(GuardiansPageImpl);

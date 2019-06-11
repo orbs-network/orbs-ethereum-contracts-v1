@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { Location } from 'history';
 import { parse as parseQuery } from 'querystring';
 import { RewardsTable } from './RewardsTable';

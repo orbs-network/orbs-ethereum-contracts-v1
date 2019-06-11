@@ -6,19 +6,19 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React, { useState } from 'react';
+import { Checkbox } from '@material-ui/core';
+import blue from '@material-ui/core/colors/blue';
 import Link from '@material-ui/core/Link';
+import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
-import { withStyles } from '@material-ui/core/styles';
-import { Checkbox } from '@material-ui/core';
-import blue from '@material-ui/core/colors/blue';
-import { VoteChip } from '../VoteChip/VoteChip';
-import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
+import TableRow from '@material-ui/core/TableRow';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
+import { VoteChip } from '../VoteChip/VoteChip';
 
 const styles = () => ({
   table: {
@@ -35,10 +35,10 @@ const styles = () => ({
   },
 });
 
-const GuardiansList = ({ enableDelegation, onSelect, guardians, classes, delegatedTo }) => {
+const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, delegatedTo }) => {
   const { t } = useTranslation();
   const [candidate, setCandidate] = useState(delegatedTo);
-  const sortedGuardians = Object.values(guardians);
+  const sortedGuardians = Object.values(guardians as object);
   sortedGuardians.sort((a, b) => parseFloat(b['stake']) - parseFloat(a['stake']));
   return (
     <Table className={classes.table}>
@@ -115,4 +115,4 @@ const GuardiansList = ({ enableDelegation, onSelect, guardians, classes, delegat
   );
 };
 
-export default withStyles(styles)(GuardiansList);
+export const GuardiansList = withStyles(styles)(GuardiansListImpl);

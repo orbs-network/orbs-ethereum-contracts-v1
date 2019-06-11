@@ -6,13 +6,13 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import ValidatorsList from './list';
+import { ValidatorsList } from './ValidatorsList';
 import { Mode } from '../../api/interface';
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Link } from 'react-router-dom';
-import { ApiService } from '../../api';
+import { ApiService } from '../../api/ApiService';
 import { useTranslation } from 'react-i18next';
 
 const styles = () => ({});

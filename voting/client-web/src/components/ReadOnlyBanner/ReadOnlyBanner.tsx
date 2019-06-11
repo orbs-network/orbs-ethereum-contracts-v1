@@ -15,21 +15,21 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = () => ({
   container: {
-    width: '100%'
+    width: '100%',
   },
   banner: {
     backgroundColor: amber[700],
     width: '100%',
     maxWidth: '100%',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 });
 
 const buildMessage = () => {
   return (
     <span>
       Attention! You are in <b>Read Only</b> mode. Please, install{' '}
-      <Link href="https://metamask.io" target="_blank" rel="noreferrer">
+      <Link href='https://metamask.io' target='_blank' rel='noreferrer'>
         <b>Metamask</b>
       </Link>{' '}
       extensions to unlock full functionality.
@@ -37,23 +37,19 @@ const buildMessage = () => {
   );
 };
 
-const ReadOnlyBanner = ({ classes }) => {
+const ReadOnlyBannerImpl = ({ classes }) => {
   return (
     <Snackbar
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'center'
+        horizontal: 'center',
       }}
       open={true}
       className={classes.container}
     >
-      <SnackbarContent
-        data-testid="read-only-banner"
-        className={classes.banner}
-        message={buildMessage()}
-      />
+      <SnackbarContent data-testid='read-only-banner' className={classes.banner} message={buildMessage()} />
     </Snackbar>
   );
 };
 
-export default withStyles(styles)(ReadOnlyBanner);
+export const ReadOnlyBanner = withStyles(styles)(ReadOnlyBannerImpl);

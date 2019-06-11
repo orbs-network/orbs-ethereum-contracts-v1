@@ -13,7 +13,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { IApiStrategy } from '../../api/interface';
 import { ApiStrategyStub } from '../../api/stub';
 
-export default class GuardiansDriver {
+export class GuardiansDriver {
   private renderResult;
   apiService: IApiStrategy;
 
