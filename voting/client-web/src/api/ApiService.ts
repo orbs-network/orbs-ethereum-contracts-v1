@@ -10,73 +10,74 @@ import { IApiStrategy, Mode } from './interface';
 import { RemoteService } from '../services/remote';
 import { MetamaskService } from '../services/metamask';
 import { MetamaskServiceStub } from '../services/metamask-stub';
+import { IMetamask } from '../services/IMetamask';
 
 export class ApiService implements IApiStrategy {
-  private metamask?: MetamaskService | MetamaskServiceStub;
-  private remote?: RemoteService;
+  private metamask: IMetamask;
+  private remote: RemoteService;
   mode: Mode;
 
   constructor() {
     this.mode = window['ethereum'] ? Mode.ReadWrite : Mode.ReadOnly;
-    this.remote! = new RemoteService();
+    this.remote = new RemoteService();
     this.metamask = this.mode === Mode.ReadWrite ? new MetamaskService() : new MetamaskServiceStub();
   }
 
   getCurrentAddress() {
-    return this.metamask!.getCurrentAddress();
+    return this.metamask.getCurrentAddress();
   }
   delegate(address: string) {
-    return this.metamask!.delegate(address);
+    return this.metamask.delegate(address);
   }
   voteOut(addresses: string[]) {
-    return this.metamask!.voteOut(addresses);
+    return this.metamask.voteOut(addresses);
   }
   getGuardians() {
-    return this.remote!!.getGuardians(0, 100);
+    return this.remote.getGuardians(0, 100);
   }
   getGuardianData(address: string) {
-    return this.remote!.getGuardianData(address);
+    return this.remote.getGuardianData(address);
   }
   registerGuardian(info) {
-    return this.metamask!.registerGuardian(info);
+    return this.metamask.registerGuardian(info);
   }
   getValidators() {
-    return this.remote!.getValidators();
+    return this.remote.getValidators();
   }
   getElectedValidators() {
-    return this.remote!.getElectedValidators();
+    return this.remote.getElectedValidators();
   }
   getValidatorData(address: string) {
-    return this.remote!.getValidatorData(address);
+    return this.remote.getValidatorData(address);
   }
   getElectedValidatorData(address: string) {
-    return this.remote!.getElectedValidatorData(address);
+    return this.remote.getElectedValidatorData(address);
   }
   registerValidator(info) {
-    return this.metamask!.registerValidator(info);
+    return this.metamask.registerValidator(info);
   }
   getRewards(address: string) {
-    return this.remote!.getRewards(address);
+    return this.remote.getRewards(address);
   }
   getTotalStake() {
-    return this.remote!.getTotalStake();
+    return this.remote.getTotalStake();
   }
   getCurrentDelegation(address: string) {
-    return this.remote!.getCurrentDelegation(address);
+    return this.remote.getCurrentDelegation(address);
   }
   getCurrentDelegationInfo(address: string) {
-    return this.remote!.getCurrentDelegationInfo(address);
+    return this.remote.getCurrentDelegationInfo(address);
   }
   getLastVote() {
-    return this.metamask!.getLastVote();
+    return this.metamask.getLastVote();
   }
   getNextElectionBlockHeight() {
-    return this.remote!.getNextElectionBlockHeight();
+    return this.remote.getNextElectionBlockHeight();
   }
   getPastElectionBlockHeight() {
-    return this.remote!.getPastElectionBlockHeight();
+    return this.remote.getPastElectionBlockHeight();
   }
   isMainNet() {
-    return this.metamask!.isMainNet();
+    return this.metamask.isMainNet();
   }
 }
