@@ -3,62 +3,57 @@ import axios from 'axios';
 const remoteAddress = 'https://orbs-voting-proxy-server.herokuapp.com/api';
 
 export class RemoteService {
+  private async callRemote(path: string, params?: any) {
+    const config = params ? { params } : undefined;
+    const res = await axios.get(`${remoteAddress}${path}`, config);
+    return res.data;
+  }
+
   getGuardians(offset: number, limit: number) {
-    return axios
-      .get(`${remoteAddress}/guardians`, {
-        params: { limit, offset }
-      })
-      .then(res => res.data);
+    return this.callRemote('/guardians', { limit, offset });
   }
+
   getGuardianData(address: string) {
-    return axios
-      .get(`${remoteAddress}/guardians/${address}`)
-      .then(res => res.data);
+    return this.callRemote(`/guardians/${address}`);
   }
+
   getValidators() {
-    return axios.get(`${remoteAddress}/validators`).then(res => res.data);
+    return this.callRemote(`/validators`);
   }
+
   getElectedValidators() {
-    return axios
-      .get(`${remoteAddress}/validators/elected`)
-      .then(res => res.data);
+    return this.callRemote(`/validators/elected`);
   }
+
   getValidatorData(address: string) {
-    return axios
-      .get(`${remoteAddress}/validators/${address}`)
-      .then(res => res.data);
+    return this.callRemote(`/validators/${address}`);
   }
+
   getElectedValidatorData(address: string) {
-    return axios
-      .get(`${remoteAddress}/validators/elected/${address}`)
-      .then(res => res.data);
+    return this.callRemote(`/validators/elected/${address}`);
   }
+
   getRewards(address: string) {
-    return axios
-      .get(`${remoteAddress}/rewards/${address}`)
-      .then(res => res.data);
+    return this.callRemote(`/rewards/${address}`);
   }
+
   getTotalStake() {
-    return axios.get(`${remoteAddress}/stake/total`).then(res => res.data);
+    return this.callRemote(`/stake/total`);
   }
+
   getNextElectionBlockHeight() {
-    return axios.get(`${remoteAddress}/elections/next`).then(res => res.data);
+    return this.callRemote(`/elections/next`);
   }
+
   getPastElectionBlockHeight() {
-    return axios.get(`${remoteAddress}/elections/past`).then(res => res.data);
+    return this.callRemote(`/elections/past`);
   }
+
   getCurrentDelegation(address: string) {
-    return axios
-      .get(`${remoteAddress}/delegation/status`, {
-        params: { address }
-      })
-      .then(res => res.data);
+    return this.callRemote(`/delegation/status`, { address });
   }
+
   getCurrentDelegationInfo(address: string) {
-    return axios
-      .get(`${remoteAddress}/delegation`, {
-        params: { address }
-      })
-      .then(res => res.data);
+    return this.callRemote(`/delegation`, { address });
   }
 }
