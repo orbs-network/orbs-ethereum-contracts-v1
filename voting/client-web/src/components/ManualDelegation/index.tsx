@@ -22,12 +22,7 @@ const styles = () => ({});
 const DelegateButton = ({ onDelegate }) => {
   const { t } = useTranslation();
   return (
-    <Button
-      data-testid={`delegate-button`}
-      onClick={onDelegate}
-      variant="outlined"
-      color="secondary"
-    >
+    <Button data-testid={`delegate-button`} onClick={onDelegate} variant='outlined' color='secondary'>
       {t('Delegate')}
     </Button>
   );
@@ -38,20 +33,20 @@ const ManualDelegationDialog = ({ dialogState, onClose, onDelegate }) => {
 
   const { t } = useTranslation();
   return (
-    <Dialog open={dialogState} onClose={onClose} maxWidth="lg" fullWidth={true}>
+    <Dialog open={dialogState} onClose={onClose} maxWidth='lg' fullWidth={true}>
       <DialogTitle>{'Manualy Delegate Your Stake'}</DialogTitle>
-      <DialogContent data-testid="manual-delegation-dialog">
-        <Typography variant="body1" color="textPrimary">
+      <DialogContent data-testid='manual-delegation-dialog'>
+        <Typography variant='body1' color='textPrimary'>
           {t('Manual Delegation Description')}
         </Typography>
         <TextField
           required
-          data-testid="delegate-address-field"
-          placeholder="Delegate Ethereum Address"
+          data-testid='delegate-address-field'
+          placeholder={t('Delegate Ethereum Address')}
           value={delegatorAddress}
           onChange={ev => setDelegatorAddress(ev.target.value)}
-          margin="normal"
-          variant="standard"
+          margin='normal'
+          variant='standard'
           style={{ width: '40%' }}
         />
       </DialogContent>

@@ -20,8 +20,8 @@ import { useTranslation } from 'react-i18next';
 
 const styles = () => ({
   checkButton: {
-    margin: '12px 30px'
-  }
+    margin: '12px 30px',
+  },
 });
 
 const DelegationStatusLabel = ({ address }) => {
@@ -30,22 +30,16 @@ const DelegationStatusLabel = ({ address }) => {
   if (address === '0x0000000000000000000000000000000000000000') {
     label = t('Your vote has not been delegated yet.');
   } else {
-    label = t('Your vote has been delegated to ') + address;
+    label = t('Your vote has been delegated to') + ' ' + address;
   }
   return (
-    <Typography variant="body1" color="secondary" style={{ marginTop: '10px' }}>
+    <Typography variant='body1' color='secondary' style={{ marginTop: '10px' }}>
       {label}
     </Typography>
   );
 };
 
-const DelegationStatus = ({
-  apiService,
-  classes
-}: {
-  apiService: ApiService;
-  classes: any;
-}) => {
+const DelegationStatus = ({ apiService, classes }: { apiService: ApiService; classes: any }) => {
   const [isOpened, setIsOpened] = useState(false);
   const [address, setAddress] = useState('');
   const [delegatedTo, setDelegatedTo] = useState('');
@@ -64,42 +58,30 @@ const DelegationStatus = ({
   const { t } = useTranslation();
   return (
     <>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() => setIsOpened(true)}
-      >
+      <Button variant='contained' color='secondary' onClick={() => setIsOpened(true)}>
         {t('Check delegation status')}
       </Button>
 
-      <Dialog
-        open={isOpened}
-        onEnter={prefetch}
-        onClose={() => setIsOpened(false)}
-        maxWidth="lg"
-        fullWidth={true}
-      >
+      <Dialog open={isOpened} onEnter={prefetch} onClose={() => setIsOpened(false)} maxWidth='lg' fullWidth={true}>
         <DialogTitle>{t('Check your delegation status')}</DialogTitle>
         <DialogContent>
-          <Typography variant="body1" color="textPrimary" gutterBottom>
-            {t(
-              'Enter your address in order to check to whom your stake is delegated.'
-            )}
+          <Typography variant='body1' color='textPrimary' gutterBottom>
+            {t('Enter your address in order to check to whom your stake is delegated.')}
           </Typography>
           <TextField
             required
-            placeholder="Enter address 0x00..."
+            placeholder='Enter address 0x00...'
             value={address}
             onChange={ev => {
               setAddress(ev.target.value), setDelegatedTo('');
             }}
-            margin="normal"
-            variant="standard"
+            margin='normal'
+            variant='standard'
             style={{ width: '40%' }}
           />
           <Button
-            variant="contained"
-            color="secondary"
+            variant='contained'
+            color='secondary'
             className={classes.checkButton}
             onClick={() => fetchDelegationStatus(address)}
           >

@@ -16,7 +16,7 @@ import ManualDelegationDialog from '../ManualDelegation';
 import { ApiService } from '../../api';
 import { normalizeUrl } from '../../services/urls';
 import DelegationStatusDialog from '../DelegationStatusDialog';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [guardians, setGuardians] = useState({} as {
@@ -29,10 +29,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     };
   });
 
-  const [
-    manualDelegationDialogState,
-    setManualDelegationDialogState
-  ] = useState(false);
+  const [manualDelegationDialogState, setManualDelegationDialogState] = useState(false);
 
   const [totalStake, setTotalStake] = useState('0');
   const [delegatedTo, setDelegatedTo] = useState('');
@@ -56,7 +53,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
       name: data['name'],
       url: normalizeUrl(data['website']),
       stake: data['stake'],
-      hasEligibleVote: data['hasEligibleVote']
+      hasEligibleVote: data['hasEligibleVote'],
     };
     setGuardians(Object.assign({}, guardians));
   };
@@ -104,37 +101,43 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '15px'
+    marginBottom: '15px',
   };
+
+  const hereElement = (
+    <Link
+      variant='h6'
+      color='secondary'
+      data-testid='open-manual-delegation-dialog'
+      onClick={() => setManualDelegationDialogState(true)}
+    >
+      here
+    </Link>
+  );
 
   return (
     <>
       <header style={centerContent}>
-        <Typography
-          variant="h2"
-          component="h2"
-          gutterBottom
-          color="textPrimary"
-        >
+        <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
           {t('Guardians List')}
         </Typography>
         <DelegationStatusDialog apiService={apiService} />
       </header>
 
       <div style={centerContent}>
-        <Typography variant="body1" gutterBottom color="textPrimary">
+        <Typography variant='body1' gutterBottom color='textPrimary'>
           {t('Next election round will take place at Ethereum block') + ':'}{' '}
           <Link
-            color="secondary"
-            target="_blank"
-            rel="noopener"
+            color='secondary'
+            target='_blank'
+            rel='noopener'
             href={`//etherscan.io/block/countdown/${nextElectionsBlockHeight}`}
           >
             {nextElectionsBlockHeight}
           </Link>
         </Typography>
 
-        <Typography variant="body1" gutterBottom color="textPrimary">
+        <Typography variant='body1' gutterBottom color='textPrimary'>
           {t('Participating stake')}
           {': '}
           {totalStake} Orbs
@@ -149,17 +152,8 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
       />
 
       {hasMetamask() && (
-        <Typography paragraph variant="body1" color="textPrimary">
-          {t('Want to delegate manually to another address?')}{' '}
-          <Link
-            variant="h6"
-            color="secondary"
-            data-testid="open-manual-delegation-dialog"
-            onClick={() => setManualDelegationDialogState(true)}
-          >
-            {t('Click here')}
-          </Link>
-          .
+        <Typography paragraph variant='body1' color='textPrimary'>
+          <Trans i18nKey='delegateMessage'>Want to delegate manually to another address? Click {hereElement}.</Trans>
         </Typography>
       )}
 
@@ -171,11 +165,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
       <div style={{ textAlign: 'center' }}>
         {hasMetamask() && (
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => delegate(delegationCandidate)}
-          >
+          <Button variant='outlined' color='secondary' onClick={() => delegate(delegationCandidate)}>
             {t('Delegate')}
           </Button>
         )}

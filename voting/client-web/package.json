@@ -51,6 +51,14 @@
     "contracts:local": "./scripts/update-contracts-info.js",
     "contracts:prod": "./scripts/copy-contracts.sh"
   },
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "printWidth": 120
+  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --single-quote --write",

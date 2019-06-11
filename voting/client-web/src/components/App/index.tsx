@@ -21,15 +21,8 @@ import styles from './style';
 import theme from './theme';
 
 function getForcedLanguage() {
-  const parts = location.pathname.split('/');
-  if (parts.length >= 2) {
-    const lang = parts[1];
-    if (['en', 'jp', 'ko'].indexOf(lang) > -1) {
-      return lang;
-    }
-  }
-
-  return '';
+  const langMatch = location.pathname.match(/\/(en|ko|jp)\//);
+  return langMatch ? langMatch[1] : '';
 }
 
 const App = ({ classes }) => {
@@ -50,7 +43,6 @@ const App = ({ classes }) => {
     }
   }
 
-  console.log(`${process.env.PUBLIC_URL}${langBaseName}`);
   return (
     <I18nextProvider i18n={i18n}>
       <Router basename={`${process.env.PUBLIC_URL}${langBaseName}`}>
@@ -58,9 +50,9 @@ const App = ({ classes }) => {
           <CssBaseline />
           <div
             className={classNames({
-              [classes.root]: true
+              [classes.root]: true,
             })}
-            data-testid="container"
+            data-testid='container'
           >
             <Header isReadOnly={apiService.mode === Mode.ReadOnly} />
             <Main apiService={apiService} />
