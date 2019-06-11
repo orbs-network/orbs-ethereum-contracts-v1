@@ -46,7 +46,7 @@ const AppImpl = ({ classes }) => {
   return (
     <I18nextProvider i18n={i18n}>
       <Router basename={`${process.env.PUBLIC_URL}${langBaseName}`}>
-        <MuiThemeProvider theme={AppTheme}>
+        <MuiThemeProvider theme={AppTheme(i18n.language)}>
           <CssBaseline />
           <div
             className={classNames({
