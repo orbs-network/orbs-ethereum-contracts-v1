@@ -17,32 +17,27 @@ async function getAllPastTransferEvents(tokenContract, web3, startBlock, endBloc
 
     let mapOfTransfers = {};
     let listOfTransfers = [];
-    try {
-        let events = await tokenContract.getPastEvents('Transfer', options);
-        for (let i = events.length-1; i >= 0;i--) {
-            let event = events[i];
-             if (isTransferADelegateAction(event, web3)) { // its the right amount
-                let delegatorAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);//event.returnValues['0'];
-                let currentDelegateIndex = mapOfTransfers[delegatorAddress];
-                if (typeof currentDelegateIndex === 'number' && isObjectNewerThanTx(listOfTransfers[currentDelegateIndex], event) ) {
-                    continue;
-                }
-                let obj = generateDelegateObject(event.blockNumber, event.transactionIndex, event.transactionHash, delegatorAddress, getAddressFromTopic(event, TOPIC_TO_ADDR), event.event);
+    let events = await tokenContract.getPastEvents('Transfer', options);
+    for (let i = events.length-1; i >= 0;i--) {
+        let event = events[i];
+         if (isTransferADelegateAction(event, web3)) { // its the right amount
+            let delegatorAddress = getAddressFromTopic(event, TOPIC_FROM_ADDR);//event.returnValues['0'];
+            let currentDelegateIndex = mapOfTransfers[delegatorAddress];
+            if (typeof currentDelegateIndex === 'number' && isObjectNewerThanTx(listOfTransfers[currentDelegateIndex], event) ) {
+                continue;
+            }
+            let obj = generateDelegateObject(event.blockNumber, event.transactionIndex, event.transactionHash, delegatorAddress, getAddressFromTopic(event, TOPIC_TO_ADDR), event.event);
 
-                if(typeof currentDelegateIndex === 'number') {
-                    listOfTransfers[currentDelegateIndex] = obj;
-                } else {
-                    mapOfTransfers[delegatorAddress] = listOfTransfers.length;
-                    listOfTransfers.push(obj);
-                }
+            if(typeof currentDelegateIndex === 'number') {
+                listOfTransfers[currentDelegateIndex] = obj;
+            } else {
+                mapOfTransfers[delegatorAddress] = listOfTransfers.length;
+                listOfTransfers.push(obj);
             }
         }
-
-        return listOfTransfers;
-    } catch (error) {
-        console.log(error);
-        return [];
     }
+
+    return listOfTransfers;
 }
 
 function isTransferADelegateAction(event, web3) {
@@ -58,7 +53,7 @@ function getAddressFromTopic(event, i) {
 
 function isObjectNewerThanTx(latestDelegate, event) {
     return latestDelegate.block > event.blockNumber ||
-        (latestDelegate.block > event.blockNumber && latestDelegate.transactionIndex > event.transactionIndex)
+        (latestDelegate.block === event.blockNumber && latestDelegate.transactionIndex > event.transactionIndex)
 }
 
 function generateDelegateObject(block, transactionIndex, txHash, delegatorAddress, delegateeAddress, method) {
@@ -71,5 +66,5 @@ module.exports = async function (networkConnectionUrl, erc20ContractAddress, sta
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkConnectionUrl));
     let tokenContract = await new web3.eth.Contract(TOKEN_ABI, erc20ContractAddress);
 
-    return getAllPastTransferEvents(tokenContract, web3, startBlock, endBlock);
+    return await getAllPastTransferEvents(tokenContract, web3, startBlock, endBlock);
 };

@@ -65,7 +65,7 @@ function getAddressFromTopic(event, i) {
 
 function isObjectNewerThanTx(latestDelegate, event) {
     return latestDelegate.block > event.blockNumber ||
-        (latestDelegate.block > event.blockNumber && latestDelegate.transactionIndex > event.transactionIndex)
+        (latestDelegate.block === event.blockNumber && latestDelegate.transactionIndex > event.transactionIndex)
 }
 
 function generateDelegateObject(block, transactionIndex, txHash, address, delegateeAddress, method) {

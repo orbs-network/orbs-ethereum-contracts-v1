@@ -78,6 +78,7 @@ function _copyAndSums(guardiansMap, delegatorsMap, results) {
     results.guardians = [];
     results.guardiansNonVote = [];
     results.nonDelegators = [];
+    results.delegatorsGuardianLeft = [];
     let guardians = _.values(guardiansMap);
     for (let i = 0; i < guardians.length; i++) {
         let guardian = guardians[i];
@@ -108,6 +109,8 @@ function _copyAndSums(guardiansMap, delegatorsMap, results) {
         let delegator = delegators[i];
         if (!delegator.guardian) {
             results.nonDelegators.push({address: delegator.address, selfStake: Math.trunc(delegator.stake), delegatee: delegator.delegateeAddress });
+        } else if (!guardiansMap[delegator.guardian]) {
+            results.delegatorsGuardianLeft.push({address: delegator.address, selfStake: Math.trunc(delegator.stake), delegatee: delegator.delegateeAddress });
         }
     }
 }
@@ -239,12 +242,16 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
         }
     }
 
-    csvStr += `\nBad Delegation\n`;
+    csvStr += `\nDelegation to Guardian that left\nGuardian,,Delegator,Stake\n`;
+    for (let i = 0; i < result.delegatorsGuardianLeft.length; i++) {
+        let delegator = result.delegatorsGuardianLeft[i];
+        csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},\n`;
+    }
+
+    csvStr += `\nBad Delegation\nGuardian,,Delegator,Stake\n`;
     for (let i = 0; i < result.nonDelegators.length; i++) {
         let delegator = result.nonDelegators[i];
-        if (!delegator.guardian) {
-            csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},\n`;
-        }
+        csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},\n`;
     }
 
     let path = `${filenamePrefix}_${currentElectionBlock}_votes.csv`;

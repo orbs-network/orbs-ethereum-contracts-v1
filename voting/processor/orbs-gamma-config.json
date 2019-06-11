@@ -21,13 +21,19 @@
     "mainnet": {
       "VirtualChain": 1100000,
       "Endpoints": [
+        "http://35.183.225.241/vchains/1100000"
+      ]
+    },
+    "mainnetaudit": {
+      "VirtualChain": 1100000,
+      "Endpoints": [
         "http://18.197.127.2/vchains/1100000"
       ]
     },
     "mainnet101": {
       "VirtualChain": 1000000,
       "Endpoints": [
-        "http://validator.orbs.com/vchains/1000000"
+        "http://3.210.161.251/vchains/1000000"
       ]
     },
     "testnet": {
