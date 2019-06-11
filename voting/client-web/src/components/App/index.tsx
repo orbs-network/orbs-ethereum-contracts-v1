@@ -20,11 +20,40 @@ import i18n from './i18n';
 import styles from './style';
 import theme from './theme';
 
+function getForcedLanguage() {
+  const parts = location.pathname.split('/');
+  if (parts.length >= 2) {
+    const lang = parts[1];
+    if (['en', 'jp', 'ko'].indexOf(lang) > -1) {
+      return lang;
+    }
+  }
+
+  return '';
+}
+
 const App = ({ classes }) => {
   const apiService: ApiService = new ApiService();
+  const forcedLang = getForcedLanguage();
+  let langBaseName = '';
+  if (forcedLang) {
+    langBaseName = `/${forcedLang}/`;
+    if (i18n.language !== forcedLang) {
+      i18n.changeLanguage(forcedLang);
+    }
+  } else {
+    const navigatorLang = navigator.language.split('-')[0];
+    if (['en', 'jp', 'ko'].indexOf(navigatorLang) > -1) {
+      if (i18n.language !== navigatorLang) {
+        i18n.changeLanguage(navigatorLang);
+      }
+    }
+  }
+
+  console.log(`${process.env.PUBLIC_URL}${langBaseName}`);
   return (
     <I18nextProvider i18n={i18n}>
-      <Router basename={`${process.env.PUBLIC_URL}`}>
+      <Router basename={`${process.env.PUBLIC_URL}${langBaseName}`}>
         <MuiThemeProvider theme={theme}>
           <CssBaseline />
           <div

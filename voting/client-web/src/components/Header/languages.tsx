@@ -34,35 +34,17 @@ const Languages = ({ classes }) => {
   return (
     <ul className={classes.list}>
       <li className={classes.item}>
-        <a
-          href="#"
-          onClick={e => {
-            e.preventDefault();
-            i18n.changeLanguage('en');
-          }}
-        >
+        <a href="/en/">
           <img src={EN_FLAG} alt="English" />
         </a>
       </li>
       <li className={classes.item}>
-        <a
-          href="#"
-          onClick={e => {
-            e.preventDefault();
-            i18n.changeLanguage('jp');
-          }}
-        >
+        <a href="/jp/">
           <img src={JP_FLAG} alt="Japanese" />
         </a>
       </li>
       <li className={classes.item}>
-        <a
-          href="#"
-          onClick={e => {
-            e.preventDefault();
-            i18n.changeLanguage('ko');
-          }}
-        >
+        <a href="/ko/">
           <img src={KO_FLAG} alt="Korean" />
         </a>
       </li>
