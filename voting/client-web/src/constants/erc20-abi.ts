@@ -1,4 +1,4 @@
-export default [
+export const erc20Abi = [
   {
     constant: true,
     inputs: [],
@@ -6,19 +6,16 @@ export default [
     outputs: [{ name: '', type: 'string' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
-    inputs: [
-      { name: '_spender', type: 'address' },
-      { name: '_value', type: 'uint256' }
-    ],
+    inputs: [{ name: '_spender', type: 'address' }, { name: '_value', type: 'uint256' }],
     name: 'approve',
     outputs: [{ name: '', type: 'bool' }],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
@@ -27,7 +24,7 @@ export default [
     outputs: [],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
@@ -36,20 +33,16 @@ export default [
     outputs: [{ name: '', type: 'uint256' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
-    inputs: [
-      { name: '_from', type: 'address' },
-      { name: '_to', type: 'address' },
-      { name: '_value', type: 'uint256' }
-    ],
+    inputs: [{ name: '_from', type: 'address' }, { name: '_to', type: 'address' }, { name: '_value', type: 'uint256' }],
     name: 'transferFrom',
     outputs: [{ name: '', type: 'bool' }],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
@@ -58,7 +51,7 @@ export default [
     outputs: [],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
@@ -67,19 +60,16 @@ export default [
     outputs: [{ name: '', type: 'uint8' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
-    inputs: [
-      { name: '_spender', type: 'address' },
-      { name: '_subtractedValue', type: 'uint256' }
-    ],
+    inputs: [{ name: '_spender', type: 'address' }, { name: '_subtractedValue', type: 'uint256' }],
     name: 'decreaseApproval',
     outputs: [{ name: '', type: 'bool' }],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
@@ -88,7 +78,7 @@ export default [
     outputs: [{ name: '', type: 'uint256' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
@@ -97,7 +87,7 @@ export default [
     outputs: [{ name: '', type: 'address' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
@@ -106,7 +96,7 @@ export default [
     outputs: [{ name: '', type: 'uint256' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
@@ -115,56 +105,43 @@ export default [
     outputs: [{ name: '', type: 'string' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
-    inputs: [
-      { name: '_to', type: 'address' },
-      { name: '_value', type: 'uint256' }
-    ],
+    inputs: [{ name: '_to', type: 'address' }, { name: '_value', type: 'uint256' }],
     name: 'transfer',
     outputs: [{ name: '', type: 'bool' }],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
-    inputs: [
-      { name: 'from_', type: 'address' },
-      { name: 'value_', type: 'uint256' },
-      { name: 'data_', type: 'bytes' }
-    ],
+    inputs: [{ name: 'from_', type: 'address' }, { name: 'value_', type: 'uint256' }, { name: 'data_', type: 'bytes' }],
     name: 'tokenFallback',
     outputs: [],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
-    inputs: [
-      { name: '_spender', type: 'address' },
-      { name: '_addedValue', type: 'uint256' }
-    ],
+    inputs: [{ name: '_spender', type: 'address' }, { name: '_addedValue', type: 'uint256' }],
     name: 'increaseApproval',
     outputs: [{ name: '', type: 'bool' }],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: true,
-    inputs: [
-      { name: '_owner', type: 'address' },
-      { name: '_spender', type: 'address' }
-    ],
+    inputs: [{ name: '_owner', type: 'address' }, { name: '_spender', type: 'address' }],
     name: 'allowance',
     outputs: [{ name: '', type: 'uint256' }],
     payable: false,
     stateMutability: 'view',
-    type: 'function'
+    type: 'function',
   },
   {
     constant: false,
@@ -173,41 +150,41 @@ export default [
     outputs: [],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'function'
+    type: 'function',
   },
   {
     inputs: [{ name: '_distributor', type: 'address' }],
     payable: false,
     stateMutability: 'nonpayable',
-    type: 'constructor'
+    type: 'constructor',
   },
   {
     anonymous: false,
     inputs: [
       { indexed: true, name: 'owner', type: 'address' },
       { indexed: true, name: 'spender', type: 'address' },
-      { indexed: false, name: 'value', type: 'uint256' }
+      { indexed: false, name: 'value', type: 'uint256' },
     ],
     name: 'Approval',
-    type: 'event'
+    type: 'event',
   },
   {
     anonymous: false,
     inputs: [
       { indexed: true, name: 'from', type: 'address' },
       { indexed: true, name: 'to', type: 'address' },
-      { indexed: false, name: 'value', type: 'uint256' }
+      { indexed: false, name: 'value', type: 'uint256' },
     ],
     name: 'Transfer',
-    type: 'event'
+    type: 'event',
   },
   {
     anonymous: false,
     inputs: [
       { indexed: true, name: 'previousOwner', type: 'address' },
-      { indexed: true, name: 'newOwner', type: 'address' }
+      { indexed: true, name: 'newOwner', type: 'address' },
     ],
     name: 'OwnershipTransferred',
-    type: 'event'
-  }
+    type: 'event',
+  },
 ];

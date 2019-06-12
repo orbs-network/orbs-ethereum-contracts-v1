@@ -6,8 +6,12 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { App } from './components/App/App';
-
-ReactDOM.render(<App />, document.getElementById('root'));
+export interface IMetamask {
+  isMainNet(): boolean;
+  getCurrentAddress(): Promise<string>;
+  delegate(candidate: string): Promise<any>;
+  voteOut(validators: string[]): Promise<any>;
+  registerGuardian(info): Promise<any>;
+  registerValidator(info): Promise<any>;
+  getLastVote(): Promise<any>;
+}

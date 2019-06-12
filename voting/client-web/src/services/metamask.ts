@@ -11,11 +11,12 @@ import {
   erc20ContractFactory,
   votingContractFactory,
   guardiansContractFactory,
-  validatorsRegistryContractFactory
+  validatorsRegistryContractFactory,
 } from './contracts';
 import { Address4 } from 'ip-address';
+import { IMetamask } from './IMetamask';
 
-export class MetamaskService {
+export class MetamaskService implements IMetamask {
   private web3: Web3;
   private validatorsRegistryContract;
   private guardiansContract;
@@ -24,9 +25,7 @@ export class MetamaskService {
 
   constructor() {
     this.web3 = new Web3(ethereum as any);
-    this.validatorsRegistryContract = validatorsRegistryContractFactory(
-      this.web3
-    );
+    this.validatorsRegistryContract = validatorsRegistryContractFactory(this.web3);
     this.guardiansContract = guardiansContractFactory(this.web3);
     this.votingContract = votingContractFactory(this.web3);
     this.erc20Contract = erc20ContractFactory(this.web3);
@@ -38,65 +37,49 @@ export class MetamaskService {
   }
 
   private enableMetamask(): Promise<string> {
-    return ethereum
-      .enable()
-      .then(
-        (addresses: string[]) => addresses[0],
-        (err: any) => Promise.reject(err)
-      );
+    return ethereum.enable().then((addresses: string[]) => addresses[0], (err: any) => Promise.reject(err));
   }
 
-  isMainNet() {
+  isMainNet(): boolean {
     return ethereum['networkVersion'] === '1';
   }
 
-  getCurrentAddress() {
+  getCurrentAddress(): Promise<string> {
     return this.enableMetamask();
   }
 
-  async delegate(candidate: string) {
+  async delegate(candidate: string): Promise<any> {
     const from = await this.enableMetamask();
     return this.votingContract.methods.delegate(candidate).send({ from });
   }
 
-  async voteOut(validators: string[]) {
+  async voteOut(validators: string[]): Promise<any> {
     const from = await this.enableMetamask();
     return this.votingContract.methods.voteOut(validators).send({ from });
   }
 
-  async registerGuardian(info) {
+  async registerGuardian(info): Promise<any> {
     const { name, website } = info;
     const from = await this.enableMetamask();
-    const requiredDeposit = await this.guardiansContract.methods
-      .registrationDepositWei()
-      .call();
-    const isGuardian = await this.guardiansContract.methods
-      .isGuardian(from)
-      .call({ from });
+    const requiredDeposit = await this.guardiansContract.methods.registrationDepositWei().call();
+    const isGuardian = await this.guardiansContract.methods.isGuardian(from).call({ from });
     const method = isGuardian ? 'update' : 'register';
     return this.guardiansContract.methods[method](name, website).send({
       from,
-      value: requiredDeposit
+      value: requiredDeposit,
     });
   }
 
-  async registerValidator(info) {
+  async registerValidator(info): Promise<any> {
     const { name, ipAddress, website, orbsAddress } = info;
     const from = await this.enableMetamask();
     const ipHex = this.ipAddressToBytes(ipAddress);
-    const isValidator = await this.validatorsRegistryContract.methods
-      .isValidator(from)
-      .call({ from });
+    const isValidator = await this.validatorsRegistryContract.methods.isValidator(from).call({ from });
     const method = isValidator ? 'update' : 'register';
-    return this.validatorsRegistryContract.methods[method](
-      name,
-      ipHex,
-      website,
-      orbsAddress
-    ).send({ from });
+    return this.validatorsRegistryContract.methods[method](name, ipHex, website, orbsAddress).send({ from });
   }
 
-  async getLastVote() {
+  async getLastVote(): Promise<any> {
     const from = await this.enableMetamask();
     return this.votingContract.methods.getCurrentVote(from).call({ from });
   }
