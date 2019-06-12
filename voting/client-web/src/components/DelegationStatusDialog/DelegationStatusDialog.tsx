@@ -30,7 +30,7 @@ const DelegationStatusLabel = ({ address }) => {
   if (address === '0x0000000000000000000000000000000000000000') {
     label = t('Your vote has not been delegated yet.');
   } else {
-    label = t('Your vote has been delegated to') + ' ' + address;
+    label = t('Your vote has been delegated to') + ': ' + address;
   }
   return (
     <Typography variant='body1' color='secondary' style={{ marginTop: '10px' }}>
