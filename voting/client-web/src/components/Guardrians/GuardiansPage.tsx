@@ -10,7 +10,7 @@ import { GuardiansPageStyles } from './GuardiansPage.styles';
 import { ValidatorsList } from './ValidatorsList';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
-import { Mode } from '../../api/interface';
+import { Mode, IApiStrategy } from '../../api/interface';
 import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -58,7 +58,7 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
+const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: IApiStrategy }) => {
   const [validators, setValidators] = useState({} as {
     [address: string]: {
       checked: boolean;
@@ -69,7 +69,7 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
     };
   });
 
-  const [lastVote, setLastVote] = useState([]);
+  const [lastVote, setLastVote] = useState<string[]>([]);
   const [selectionDisabled, setSelectionDisabled] = useState(false);
 
   const fetchValidator = async (address, checked) => {

@@ -6,14 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { NewGuardianStyles } from './NewGuardian.styles';
-import React, { useState } from 'react';
+import { Button, FormControl, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { FormControl, TextField, Button } from '@material-ui/core';
-import { ApiService } from '../../api/ApiService';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IApiStrategy } from '../../api/interface';
+import { NewGuardianStyles } from './NewGuardian.styles';
 
-const NewGuardianImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
+const NewGuardianImpl = ({ classes, apiService }: { classes: any; apiService: IApiStrategy }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
 
