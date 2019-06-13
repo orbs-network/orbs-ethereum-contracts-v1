@@ -6,19 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React, { useState, useEffect } from 'react';
-import { GuardiansList } from './GuardiansList';
-import Link from '@material-ui/core/Link';
-import { Mode } from '../../api/interface';
 import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
-import { ApiService } from '../../api/ApiService';
+import React, { useEffect, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { IApiStrategy, Mode } from '../../api/interface';
 import { normalizeUrl } from '../../services/urls';
 import { DelegationStatusDialog } from '../DelegationStatusDialog/DelegationStatusDialog';
-import { useTranslation, Trans } from 'react-i18next';
+import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
+import { GuardiansList } from './GuardiansList';
 
-export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
+export const DelegatorsPage = ({ apiService }: { apiService: IApiStrategy }) => {
   const [guardians, setGuardians] = useState({} as {
     [address: string]: {
       address: string;
