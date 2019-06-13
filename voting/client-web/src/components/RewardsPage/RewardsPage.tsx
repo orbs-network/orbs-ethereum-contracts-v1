@@ -6,18 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
-import { ApiService } from '../../api/ApiService';
+import FormControl from '@material-ui/core/FormControl';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { Location } from 'history';
 import { parse as parseQuery } from 'querystring';
-import { RewardsTable } from './RewardsTable';
-import { DelegationInfoTable } from './DelegationInfoTable';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useApi } from '../../services/ApiContext';
+import { DelegationInfoTable } from './DelegationInfoTable';
+import { RewardsTable } from './RewardsTable';
 
 const styles = theme => ({
   form: {
@@ -37,31 +37,24 @@ const styles = theme => ({
   },
 });
 
-const RewardsPageImpl = ({
-  classes,
-  apiService,
-  location,
-}: {
-  classes: any;
-  apiService: ApiService;
-  location?: Location;
-}) => {
+const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Location }) => {
+  const { remoteService } = useApi();
   const [address, setAddress] = useState('');
   const [rewards, setRewards] = useState({});
   const [delegatorInfo, setDelegatorInfo] = useState({});
   const [guardianInfo, setGuardianInfo] = useState({});
   const [electionBlock, setElectionBlock] = useState('0');
 
-  const fetchRewards = address => apiService.getRewards(address).then(setRewards);
+  const fetchRewards = address => remoteService.getRewards(address).then(setRewards);
 
   const fetchDelegationInfo = async address => {
-    const info = await apiService.getCurrentDelegationInfo(address);
+    const info = await remoteService.getCurrentDelegationInfo(address);
     setDelegatorInfo(info);
-    const guardianData = await apiService.getGuardianData(info['delegatedTo']);
+    const guardianData = await remoteService.getGuardianData(info['delegatedTo']);
     setGuardianInfo(guardianData);
   };
 
-  const fetchPastElectionBlock = () => apiService.getPastElectionBlockHeight().then(setElectionBlock);
+  const fetchPastElectionBlock = () => remoteService.getPastElectionBlockHeight().then(setElectionBlock);
 
   const submitHandler = () => {
     fetchRewards(address);

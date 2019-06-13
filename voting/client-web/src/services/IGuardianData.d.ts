@@ -6,12 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-export interface IMetamask {
-  isMainNet(): boolean;
-  getCurrentAddress(): Promise<string>;
-  delegate(candidate: string): Promise<void>;
-  voteOut(validators: string[]): Promise<void>;
-  registerGuardian(info: IGuardianData): Promise<void>;
-  registerValidator(info: IValidatorData): Promise<void>;
-  getLastVote(): Promise<{ validators: string[] }>;
+export interface IGuardianData {
+  name: string;
+  website: string;
 }

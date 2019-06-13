@@ -20,7 +20,7 @@ describe('New Guardian', () => {
       name: 'test',
       website: 'https://test.com',
     };
-    const spy = jest.spyOn(driver.apiService, 'registerGuardian');
+    const spy = jest.spyOn(driver.metaMask, 'registerGuardian');
     await driver.render();
     await driver.setName(info.name);
     await driver.setWebsite(info.website);
