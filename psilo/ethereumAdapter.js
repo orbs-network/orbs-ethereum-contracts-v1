@@ -19,11 +19,12 @@ class EthereumAdapter {
         this.networkId = networkId;
     }
 
-    async deploySolidityContract(options, import_path, search_path) {
+    async deploySolidityContract(options, import_path, search_path, ...constructorArguments) {
 
         const contract = this.resolver.require(import_path, search_path);
 
-        return await contract.new(options);
+        const ctorParams = [...constructorArguments, options];
+        return await contract.new(...ctorParams);
     }
 
     //TODO this currently only handles Ganache - for ropsten or mainnet we need to add busywaits with sleeps
@@ -69,7 +70,7 @@ class EthereumAdapter {
 
         const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
         const ganacheUrl = process.env.GANACHE_URL || "http://localhost:7545";
-        const provider = new HDWalletProvider(mnemonic, ganacheUrl, 0, 10);
+        const provider = new HDWalletProvider(mnemonic, ganacheUrl, 0, 25);
         const web3 = new Web3(provider);
 
         const config = {
