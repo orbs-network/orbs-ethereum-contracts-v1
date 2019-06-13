@@ -36,6 +36,12 @@
         "http://3.210.161.251/vchains/1000000"
       ]
     },
+    "main110": {
+      "VirtualChain": 5110,
+      "Endpoints": [
+        "http://35.183.225.241/vchains/5110"
+      ]
+    },
     "testnet": {
       "VirtualChain": 42,
       "Endpoints": [
