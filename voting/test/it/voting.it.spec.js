@@ -25,6 +25,29 @@ const validatorAccounts = [20, 21, 22, 23, 24];
 // 0      1      2,    3,    4,    5,    6,     7, 8,     9,    10,,,,11,12,13,14,15,16,17,18,19,20,,,,,21,,,,,22,,,,,23,,,,24
 // 10000, 10000, 8000, 8000, 6000, 6000, 34000, 0, 20000, 5000, 5000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10000, 20000, 15000, 5000, 7000
 
+async function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
+}
+
+async function advanceByOneBlock(orbs) {
+    const signer = orbs.accounts[0];
+    const [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, "_Info", "isAlive", []);
+    return await orbs.client.sendTransaction(t);
+}
+
+async function waitForOrbsFinality(ethereum, orbs) {
+    const currentBlock = await ethereum.getLatestBlock();
+
+    await ethereum.waitForBlock(currentBlock.number + orbs.finalityCompBlocks);
+    await sleep(orbs.finalityCompSeconds * 1000);
+
+    // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
+    // TODO check if this is really necessary
+    return await advanceByOneBlock(orbs);
+}
+
 async function deployVotingContractToOrbs(orbs, contractName) {
     const b = fs.readFileSync("./../../orbs/OrbsVoting/orbs_voting_contract.go");
     const contractCode = new Uint8Array(b.buffer, b.byteOffset, b.byteLength / Uint8Array.BYTES_PER_ELEMENT);
@@ -80,6 +103,18 @@ async function goodSamaritanProcessesAll() {
 
 function getElectionWinners(whisperedResult) {
     return whisperedResult;
+}
+
+async function setElectionBlockNumber(ethereum, orbs, orbsVotingContractName) {
+    const currentBlock = await ethereum.getLatestBlock();
+
+    const signer = orbs.accounts[0];
+    const electionBlock = currentBlock.number + 1;
+
+    const [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, orbsVotingContractName, "unsafetests_setElectedBlockNumber", [Orbs.argUint64(electionBlock)]);
+    await orbs.client.sendTransaction(t);
+
+    console.log(`Next election block number set to ${electionBlock}`);
 }
 
 describe("voting contracts on orbs and ethereum", async () => {
@@ -139,7 +174,7 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         // sanity - all validators are listed in both contracts
         const orbsValidatorAddresses = await Promise.all((await validators.getValidators()).map(vAddr => validatorsRegistry.getOrbsAddress(vAddr)));
-        expect(orbsValidatorAddresses.map(a=>a.toLowerCase())).to.have.members([v1,v2,v3,v4,v5].map(v=>v.orbsAccount.address.toLowerCase()));
+        expect(orbsValidatorAddresses.map(a => a.toLowerCase())).to.have.members([v1, v2, v3, v4, v5].map(v => v.orbsAccount.address.toLowerCase()));
 
         const g1 = await shf.aGuardian({stake: 6000});
         const g2 = await shf.aGuardian({stake: 34000});
@@ -194,8 +229,10 @@ describe("voting contracts on orbs and ethereum", async () => {
         //     currentBlock := ethereum.GetCurrentBlock()
         //     require.True(t, currentBlock < config.FirstElectionBlockNumber, "Recorded activity will not be included in the current election period")
         // }
+        await setElectionBlockNumber(ethereum, orbs, orbsVotingContractName);
 
         // TODO - something about waiting for finality...?
+        await waitForOrbsFinality(ethereum, orbs);
 
         await goodSamaritanMirrorsAll();
 
@@ -303,6 +340,8 @@ class StakeHolder {
     }
 
     async voteOut(...validators) {
-        // TODO implement
+        const addressesToVoteOut = validators.map(v => v.address);
+        await this.voting.voteOut(addressesToVoteOut, {from: this.address});
+        console.log(`StakeHolder ${this.address} voted out addresses ${addressesToVoteOut}`);
     }
 }
