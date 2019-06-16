@@ -4,6 +4,8 @@ const {Driver} = require("./driver");
 const {orbsAssertions} = require("psilo");
 const fs = require("fs");
 const Orbs = require("orbs-client-sdk");
+const { spawn, exec } = require("child_process");
+const path = require("path");
 
 const helpers = require('./helpers');
 
@@ -93,8 +95,33 @@ async function setVotingContractParams(orbs, contractName, votingMirrorPeriod, v
 
 }
 
-async function goodSamaritanMirrorsAll() {
+function goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, electionBlockNumber) {
+    return new Promise((resolve, reject) => {
+        const child = spawn("node", [path.resolve("..", "..", "processor", "mirror.js")], {
+            env: {
+                "ORBS_VOTING_CONTRACT_NAME": orbsVotingContractName,
+                "ERC20_CONTRACT_ADDRESS": erc20.address,
+                "VOTING_CONTRACT_ADDRESS": voting.address,
+                "START_BLOCK_ON_ETHEREUM": 0, //TODO change for ropsten/mainnet
+                "END_BLOCK_ON_ETHEREUM": electionBlockNumber,
+                "VERBOSE": true,
+                "NETWORK_URL_ON_ETHEREUM": "localhost:7545", //TODO change for ropsten/mainnet
+                "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
+                path: process.env.path
+            },
+            stdio: [process.stdin, "pipe", process.stderr]
+        });
 
+        child.on("error", e => reject(e));
+
+        child.on("close", code => {
+            if (code !== 0) {
+                reject(`Mirror script returned exit code ${code}`);
+            } else {
+                resolve();
+            }
+        })
+    });
 }
 
 async function goodSamaritanProcessesAll() {
@@ -115,6 +142,8 @@ async function setElectionBlockNumber(ethereum, orbs, orbsVotingContractName) {
     await orbs.client.sendTransaction(t);
 
     console.log(`Next election block number set to ${electionBlock}`);
+
+    return electionBlock;
 }
 
 describe("voting contracts on orbs and ethereum", async () => {
@@ -229,12 +258,11 @@ describe("voting contracts on orbs and ethereum", async () => {
         //     currentBlock := ethereum.GetCurrentBlock()
         //     require.True(t, currentBlock < config.FirstElectionBlockNumber, "Recorded activity will not be included in the current election period")
         // }
-        await setElectionBlockNumber(ethereum, orbs, orbsVotingContractName);
+        const nextElectionBlockNumber = await setElectionBlockNumber(ethereum, orbs, orbsVotingContractName);
 
-        // TODO - something about waiting for finality...?
         await waitForOrbsFinality(ethereum, orbs);
 
-        await goodSamaritanMirrorsAll();
+        await goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, nextElectionBlockNumber);
 
         await goodSamaritanProcessesAll();
 
