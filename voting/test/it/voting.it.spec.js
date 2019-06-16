@@ -41,15 +41,14 @@ async function advanceByOneBlock(orbs) {
 
 async function waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, blockToWaitFor) {
     blockToWaitFor = blockToWaitFor || await ethereum.getLatestBlock().number;
-    console.log(`Finality target block ${blockToWaitFor}...`);
+    console.log(`waiting for block ${blockToWaitFor} to reach finality...`);
 
+    // finality - block component
     await ethereum.waitForBlock(blockToWaitFor + orbs.finalityCompBlocks);
+
+    // finality - time component
     await sleep(orbs.finalityCompSeconds * 1000);
-
-    // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
-
-    // TODO check if this is really necessary
-    const result = await advanceByOneBlock(orbs);
+    const result = await advanceByOneBlock(orbs); // applies finality time component by advancing Orbs clock.
 
     // verify finality achieved
     const q = await orbs.client.createQuery(orbs.accounts[0].publicKey, orbsVotingContractName, "getCurrentEthereumBlockNumber", []);
@@ -57,7 +56,7 @@ async function waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, block
     const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
     
     expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
-    console.log(`Orbs now sees block ${currentFinalityBlockNumber}`);
+    console.log(`finality reached for block ${currentFinalityBlockNumber}`);
 
     return result;
 }
@@ -169,15 +168,18 @@ async function getElectionWinners(orbs, orbsVotingContractName) {
     const q = orbs.client.createQuery(signer.publicKey, orbsVotingContractName, "getElectedValidatorsOrbsAddress", []);
     const response = await orbs.client.sendQuery(q);
     expect(response).to.be.successful;
-    const rawOutput = response.outputArguments[0].value.length;
+    const rawOutput = response.outputArguments[0].value;
+    const addressLength = 20;
 
-    const numOfValidators = rawOutput / 40;
-    const winners = [];
+    const numOfValidators = rawOutput.length / addressLength;
+    const rawWinners = [];
     for (let i = 0; i < numOfValidators; i++) {
-        winners.push(new Uint8Array(rawOutput, i * 40, 40));
+        const start = i * addressLength;
+        const end = start + addressLength;
+        rawWinners.push(new Uint8Array(rawOutput.slice(start, end)));
     }
 
-    return winners;
+    return rawWinners.map(addr => Orbs.encodeHex(addr));
 }
 
 async function setElectionBlockNumber(ethereum, orbs, orbsVotingContractName) {
@@ -325,7 +327,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         console.log("Done Processing");
 
         const winners = await getElectionWinners(orbs, orbsVotingContractName);
-        expect(winners).to.have.members([v1, v2, v3, v4].map(v => v.address)); // TODO - which should be voted in???
+        expect(winners).to.have.members([v1, v2, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
         // XXXX end of flow. gamma does not enforce the results of elections on validator committee. it requies an "unsafe_" operation. consider supporting
 

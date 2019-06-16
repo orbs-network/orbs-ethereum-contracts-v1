@@ -46,9 +46,10 @@ let numErrors = 0;
 const maxErrors = 10;
 let numPendings = 0;
 const maxPendings = 25;
+
 async function processResult(result) {
     if (result.RequestStatus === "COMPLETED") {
-        if(result.ExecutionResult === "SUCCESS") {
+        if (result.ExecutionResult === "SUCCESS") {
             let isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
             if (isDone) {
                 console.log('\x1b[36m%s\x1b[0m', `process return with "complete" ...`);
@@ -62,15 +63,19 @@ async function processResult(result) {
     } else if (result.RequestStatus === "IN_PROCESS" && result.ExecutionResult === "NOT_EXECUTED" && result.TransactionStatus === "PENDING") {
         numPendings++;
         if (numPendings >= maxPendings) {
-            console.log('\x1b[31m%s\x1b[0m', `too many pendings quitting ...\n`);
+            const msg = `too many pendings quitting`;
+            console.log('\x1b[31m%s\x1b[0m', `${msg} ...\n`);
             await slack.sendSlack('Warning: Process has finished because too many pending responses for gamma calls, check Validators Network!');
+            throw new Error(msg)
         }
         return numPendings >= maxPendings ? PENDINGS : CONTINUE;
     } else {
         numErrors++;
         if (numErrors >= maxErrors) {
             await slack.sendSlack('Warning: Process has finished because too many error responses for gamma calls, check Validators Network!');
-            console.log('\x1b[31m%s\x1b[0m', `too many errors quitting ...\n`);
+            const msg = `too many errors quitting`;
+            console.log('\x1b[31m%s\x1b[0m', `${msg} ...\n`);
+            throw new Error(msg)
         }
         return numErrors >= maxErrors ? ERRORS : CONTINUE;
     }
@@ -78,9 +83,9 @@ async function processResult(result) {
 
 async function processResults(results) {
     let state = CONTINUE;
-    for(let i = 0;i < results.length;i++) {
+    for (let i = 0; i < results.length; i++) {
         state = await processResult(results[i]);
-        if (state !== CONTINUE){
+        if (state !== CONTINUE) {
             break;
         }
     }
@@ -100,13 +105,13 @@ async function processCall() {
             console.log('\x1b[36m%s\x1b[0m', `send batch of ${batchSize} calls... `);
         }
         let txs = [];
-        for(let i = 0;i < batchSize;i++) {
+        for (let i = 0; i < batchSize; i++) {
             txs.push(gamma.sendTransaction(orbsEnvironment, orbsVotingContractName, 'process-voting.json', []));
         }
         let results = await Promise.all(txs);
         numberOfCalls += batchSize;
 
-        if (await processResults(results) !== CONTINUE){
+        if (await processResults(results) !== CONTINUE) {
             break;
         }
 
@@ -130,7 +135,11 @@ async function getProcessingInfo() {
     let currentBlockNumber = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
     let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsEnvironment, orbsVotingContractName);
 
-    return { isProcessingPeriod : currentBlockNumber >= processStartBlockNumber, currentBlockNumber,  processStartBlockNumber} ;
+    return {
+        isProcessingPeriod: currentBlockNumber >= processStartBlockNumber,
+        currentBlockNumber,
+        processStartBlockNumber
+    };
 }
 
 async function main() {
@@ -145,12 +154,16 @@ async function main() {
     } else {
         console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${processInfo.currentBlockNumber} is before process vote starting block number: ${processInfo.processStartBlockNumber}.
  Processing is not needed please try again later!!\n`);
-   }
+    }
 }
 
 main()
     .then(results => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-        slack.sendSlack(`Warning: process failed with message '${e.message}', check Jenkins!`).then( ()=>{console.error(e);process.exit(-4);});
-    });
+    slack.sendSlack(`Warning: process failed with message '${e.message}', check Jenkins!`).finally(() => {
+            console.error(e);
+            process.exit(-4);
+        }
+    );
+});
