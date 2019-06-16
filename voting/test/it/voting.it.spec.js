@@ -39,15 +39,27 @@ async function advanceByOneBlock(orbs) {
     return await orbs.client.sendTransaction(t);
 }
 
-async function waitForOrbsFinality(ethereum, orbs, blockToWaitFor) {
+async function waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, blockToWaitFor) {
     blockToWaitFor = blockToWaitFor || await ethereum.getLatestBlock().number;
+    console.log(`Finality target block ${blockToWaitFor}...`);
 
     await ethereum.waitForBlock(blockToWaitFor + orbs.finalityCompBlocks);
     await sleep(orbs.finalityCompSeconds * 1000);
 
     // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
+
     // TODO check if this is really necessary
-    return await advanceByOneBlock(orbs);
+    const result = await advanceByOneBlock(orbs);
+
+    // verify finality achieved
+    const q = await orbs.client.createQuery(orbs.accounts[0].publicKey, orbsVotingContractName, "getCurrentEthereumBlockNumber", []);
+    const currentFinalQueryResult = await orbs.client.sendQuery(q);
+    const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
+    
+    expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
+    console.log(`Orbs now sees block ${currentFinalityBlockNumber}`);
+
+    return result;
 }
 
 async function deployVotingContractToOrbs(orbs, contractName) {
@@ -296,15 +308,21 @@ describe("voting contracts on orbs and ethereum", async () => {
         // }
         const nextElectionBlockNumber = await setElectionBlockNumber(ethereum, orbs, orbsVotingContractName);
 
-        await waitForOrbsFinality(ethereum, orbs);
+        await waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, nextElectionBlockNumber);
 
         await goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, nextElectionBlockNumber);
         //TODO return something from mirror and assert
 
+        console.log("Done Mirroring");
+
         const mirrorPeriodEndBlock = nextElectionBlockNumber + votingMirrorPeriod + 1;
-        await waitForOrbsFinality(ethereum, orbs, mirrorPeriodEndBlock);
+
+        await waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, mirrorPeriodEndBlock);
 
         await goodSamaritanProcessesAll(orbsVotingContractName);
+        //TODO return something from process and assert
+
+        console.log("Done Processing");
 
         const winners = await getElectionWinners(orbs, orbsVotingContractName);
         expect(winners).to.have.members([v1, v2, v3, v4].map(v => v.address)); // TODO - which should be voted in???
