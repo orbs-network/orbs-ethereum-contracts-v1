@@ -39,10 +39,10 @@ async function advanceByOneBlock(orbs) {
     return await orbs.client.sendTransaction(t);
 }
 
-async function waitForOrbsFinality(ethereum, orbs) {
-    const currentBlock = await ethereum.getLatestBlock();
+async function waitForOrbsFinality(ethereum, orbs, blockToWaitFor) {
+    blockToWaitFor = blockToWaitFor || await ethereum.getLatestBlock().number;
 
-    await ethereum.waitForBlock(currentBlock.number + orbs.finalityCompBlocks);
+    await ethereum.waitForBlock(blockToWaitFor + orbs.finalityCompBlocks);
     await sleep(orbs.finalityCompSeconds * 1000);
 
     // advance orbs by one block - otherwise gamma doesn't close block and getEthereumBlockNumber in process fails to note ganache advanced
@@ -95,9 +95,10 @@ async function setVotingContractParams(orbs, contractName, votingMirrorPeriod, v
 
 }
 
+//TODO make mirror.js an exported function of the 'processor' module and run in same process
 function goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, electionBlockNumber) {
     return new Promise((resolve, reject) => {
-        const child = spawn("node", [path.resolve("..", "..", "processor", "mirror.js")], {
+        const child = spawn("node", ["mirror.js"], {
             env: {
                 "ORBS_VOTING_CONTRACT_NAME": orbsVotingContractName,
                 "ERC20_CONTRACT_ADDRESS": erc20.address,
@@ -105,11 +106,12 @@ function goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, election
                 "START_BLOCK_ON_ETHEREUM": 0, //TODO change for ropsten/mainnet
                 "END_BLOCK_ON_ETHEREUM": electionBlockNumber,
                 "VERBOSE": true,
-                "NETWORK_URL_ON_ETHEREUM": "localhost:7545", //TODO change for ropsten/mainnet
+                "NETWORK_URL_ON_ETHEREUM": "http://localhost:7545", //TODO change for ropsten/mainnet
                 "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
-                path: process.env.path
+                PATH: process.env.PATH
             },
-            stdio: [process.stdin, "pipe", process.stderr]
+            stdio: "inherit",
+            cwd: path.resolve("..", "..", "processor"),
         });
 
         child.on("error", e => reject(e));
@@ -263,6 +265,10 @@ describe("voting contracts on orbs and ethereum", async () => {
         await waitForOrbsFinality(ethereum, orbs);
 
         await goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, nextElectionBlockNumber);
+        //TODO return something from mirror and assert
+
+        const mirrorPeriodEndBlock = nextElectionBlockNumber + votingMirrorPeriod + 1;
+        await waitForOrbsFinality(ethereum, orbs, mirrorPeriodEndBlock);
 
         await goodSamaritanProcessesAll();
 
