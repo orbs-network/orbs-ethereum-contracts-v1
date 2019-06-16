@@ -1,8 +1,8 @@
-export class MetamaskServiceStub {
+import { IMetamask } from './IMetamask';
+
+export class MetamaskServiceStub implements IMetamask {
   getCurrentAddress() {
-    console.warn(
-      'Method "getCurrentAddress" is not available in read-only mode'
-    );
+    console.warn('Method "getCurrentAddress" is not available in read-only mode');
     return Promise.resolve('');
   }
 
@@ -17,16 +17,12 @@ export class MetamaskServiceStub {
   }
 
   registerGuardian() {
-    console.warn(
-      'Method "registerGuardian" is not available in read-only mode'
-    );
+    console.warn('Method "registerGuardian" is not available in read-only mode');
     return Promise.reject();
   }
 
   registerValidator() {
-    console.warn(
-      'Method "registerValidator" is not available in read-only mode'
-    );
+    console.warn('Method "registerValidator" is not available in read-only mode');
     return Promise.reject();
   }
 

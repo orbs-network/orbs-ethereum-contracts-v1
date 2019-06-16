@@ -172,10 +172,7 @@ async function main() {
         }
         electionNumber++;
     }
-
 }
-
-
 
 main()
     .then(results => {

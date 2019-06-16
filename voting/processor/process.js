@@ -12,7 +12,8 @@ let verbose = false;
 let maxNumberOfProcess = 10000;
 let batchSize = 10;
 
-const gamma = require('./gamma-calls');
+const gamma = require('./src/gamma-calls');
+const slack = require('./src/slack');
 
 function validateInput() {
     if (!orbsEnvironment) {
@@ -51,6 +52,7 @@ async function processResult(result) {
             let isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
             if (isDone) {
                 console.log('\x1b[36m%s\x1b[0m', `process return with "complete" ...`);
+                await slack.sendSlack('Hurrah: :trophy: Election has finished !');
             }
             return isDone ? DONE : CONTINUE;
         } else {
@@ -61,11 +63,13 @@ async function processResult(result) {
         numPendings++;
         if (numPendings >= maxPendings) {
             console.log('\x1b[31m%s\x1b[0m', `too many pendings quitting ...\n`);
+            await slack.sendSlack('Warning: Process has finished because too many pending responses for gamma calls, check Validators Network!');
         }
         return numPendings >= maxPendings ? PENDINGS : CONTINUE;
     } else {
         numErrors++;
         if (numErrors >= maxErrors) {
+            await slack.sendSlack('Warning: Process has finished because too many error responses for gamma calls, check Validators Network!');
             console.log('\x1b[31m%s\x1b[0m', `too many errors quitting ...\n`);
         }
         return numErrors >= maxErrors ? ERRORS : CONTINUE;
@@ -147,4 +151,6 @@ async function main() {
 main()
     .then(results => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
-    }).catch(console.error);
+    }).catch(e => {
+        slack.sendSlack(`Warning: process failed with message '${e.message}', check Jenkins!`).then( ()=>{console.error(e);process.exit(-4);});
+    });

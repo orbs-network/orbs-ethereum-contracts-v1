@@ -1,4 +1,4 @@
-import erc20Abi from '../constants/erc20-abi';
+import { erc20Abi } from '../constants/erc20-abi';
 import * as contractsInfo from '../contracts-info';
 import votingContractJson from '../contracts/OrbsVoting.json';
 import guardiansContractJson from '../contracts/OrbsGuardians.json';
@@ -10,7 +10,7 @@ export const validatorsContractFactory = web3 => {
     validatorsContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsValidators']['address']
-      : contractsInfo.EthereumValidatorsContract.address
+      : contractsInfo.EthereumValidatorsContract.address,
   );
 };
 
@@ -19,7 +19,7 @@ export const validatorsRegistryContractFactory = web3 => {
     validatorsRegistryContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsValidatorsRegistry']['address']
-      : contractsInfo.EthereumValidatorsRegistryContract.address
+      : contractsInfo.EthereumValidatorsRegistryContract.address,
   );
 };
 
@@ -28,7 +28,7 @@ export const guardiansContractFactory = web3 => {
     guardiansContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsGuardians']['address']
-      : contractsInfo.EthereumGuardiansContract.address
+      : contractsInfo.EthereumGuardiansContract.address,
   );
 };
 
@@ -37,13 +37,10 @@ export const votingContractFactory = web3 => {
     votingContractJson.abi as any,
     window['__OrbsContractsInfo__']
       ? window['__OrbsContractsInfo__']['OrbsVoting']['address']
-      : contractsInfo.EthereumVotingContract.address
+      : contractsInfo.EthereumVotingContract.address,
   );
 };
 
 export const erc20ContractFactory = web3 => {
-  return new web3.eth.Contract(
-    erc20Abi,
-    contractsInfo.EthereumErc20Address.address
-  );
+  return new web3.eth.Contract(erc20Abi, contractsInfo.EthereumErc20Address.address);
 };
