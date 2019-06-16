@@ -126,12 +126,46 @@ function goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, election
     });
 }
 
-async function goodSamaritanProcessesAll() {
+async function goodSamaritanProcessesAll(orbsVotingContractName) {
+    return new Promise((resolve, reject) => {
+        const child = spawn("node", ["process.js"], {
+            env: {
+                "ORBS_VOTING_CONTRACT_NAME": orbsVotingContractName,
+                "VERBOSE": true,
+                "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
+                PATH: process.env.PATH
+            },
+            stdio: "inherit",
+            cwd: path.resolve("..", "..", "processor"),
+        });
 
+        child.on("error", e => reject(e));
+
+        child.on("close", code => {
+            if (code !== 0) {
+                reject(`Process script returned exit code ${code}`);
+            } else {
+                resolve();
+            }
+        })
+    });
 }
 
-function getElectionWinners(whisperedResult) {
-    return whisperedResult;
+async function getElectionWinners(orbs, orbsVotingContractName) {
+    const signer = orbs.accounts[0];
+
+    const q = orbs.client.createQuery(signer.publicKey, orbsVotingContractName, "getElectedValidatorsOrbsAddress", []);
+    const response = await orbs.client.sendQuery(q);
+    expect(response).to.be.successful;
+    const rawOutput = response.outputArguments[0].value.length;
+
+    const numOfValidators = rawOutput / 40;
+    const winners = [];
+    for (let i = 0; i < numOfValidators; i++) {
+        winners.push(new Uint8Array(rawOutput, i * 40, 40));
+    }
+
+    return winners;
 }
 
 async function setElectionBlockNumber(ethereum, orbs, orbsVotingContractName) {
@@ -270,10 +304,10 @@ describe("voting contracts on orbs and ethereum", async () => {
         const mirrorPeriodEndBlock = nextElectionBlockNumber + votingMirrorPeriod + 1;
         await waitForOrbsFinality(ethereum, orbs, mirrorPeriodEndBlock);
 
-        await goodSamaritanProcessesAll();
+        await goodSamaritanProcessesAll(orbsVotingContractName);
 
-        const winners = getElectionWinners([v1, v2, v3, v4]);
-        expect(winners).to.have.members([v1, v2, v3, v4]); // TODO - which should be voted in???
+        const winners = await getElectionWinners(orbs, orbsVotingContractName);
+        expect(winners).to.have.members([v1, v2, v3, v4].map(v => v.address)); // TODO - which should be voted in???
 
         // XXXX end of flow. gamma does not enforce the results of elections on validator committee. it requies an "unsafe_" operation. consider supporting
 
