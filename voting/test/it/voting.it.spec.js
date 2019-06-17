@@ -58,32 +58,6 @@ async function waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, block
     return result;
 }
 
-async function deployVotingContractToOrbs(orbs, contractName) {
-    const b = fs.readFileSync("./../../orbs/OrbsVoting/orbs_voting_contract.go");
-    const contractCode = new Uint8Array(b.buffer, b.byteOffset, b.byteLength / Uint8Array.BYTES_PER_ELEMENT);
-    const signer = orbs.accounts[0];
-    return orbs.contract("_Deployments").transact(signer, "deployService", Orbs.argString(contractName), Orbs.argUint32(1), Orbs.argBytes(contractCode));
-}
-
-async function setVotingContractParams(orbs, contractName, votingMirrorPeriod, votingValidityPeriod, electionsPeriod, maxElected, minElected, erc20, guardians, validators, validatorsRegistry, voting) {
-    const signer = orbs.accounts[0];
-    const contract = orbs.contract(contractName);
-
-    const arguments = [];
-    arguments.push(Orbs.argUint64(votingMirrorPeriod));
-    arguments.push(Orbs.argUint64(votingValidityPeriod));
-    arguments.push(Orbs.argUint64(electionsPeriod));
-    arguments.push(Orbs.argUint32(maxElected));
-    arguments.push(Orbs.argUint32(minElected));
-    expect(await contract.transact(signer, "unsafetests_setVariables", ...arguments)).to.be.successful;
-    expect(await contract.transact(signer, "unsafetests_setVotingEthereumContractAddress", Orbs.argString(voting.address))).to.be.successful;
-    expect(await contract.transact(signer, "unsafetests_setGuardiansEthereumContractAddress", Orbs.argString(guardians.address))).to.be.successful;
-    expect(await contract.transact(signer, "unsafetests_setTokenEthereumContractAddress", Orbs.argString(erc20.address))).to.be.successful;
-    expect(await contract.transact(signer, "unsafetests_setValidatorsEthereumContractAddress", Orbs.argString(validators.address))).to.be.successful;
-    expect(await contract.transact(signer, "unsafetests_setValidatorsRegistryEthereumContractAddress", Orbs.argString(validatorsRegistry.address))).to.be.successful;
-
-}
-
 //TODO make mirror.js an exported function of the 'processor' module and run in same process
 function goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, electionBlockNumber) {
     return new Promise((resolve, reject) => {
@@ -168,52 +142,94 @@ async function setElectionBlockNumber(ethereum, orbs, orbsVotingContractName) {
     return electionBlock;
 }
 
+class ElectionContracts {
+    constructor(ethereum, orbs, options) {
+        this.ethereum = ethereum;
+        this.options = options;
+        this.orbs = orbs;
+    }
+
+    async deploy() {
+        //TODO parallelize whatever we can
+        const signer = {from: this.ethereum.accounts[0]};
+        this.erc20 = await this.ethereum.deploySolidityContract(signer, 'TestingERC20', "build/contracts");
+        console.log("ERC20 contract at", this.erc20.address);
+
+        this.voting = await this.ethereum.deploySolidityContract(signer, 'OrbsVoting', "build/contracts", this.options.maxVoteOut);
+        console.log("Voting contract at", this.voting.address);
+
+        this.validatorsRegistry = await this.ethereum.deploySolidityContract(signer, 'OrbsValidatorsRegistry', "build/contracts");
+        console.log("ValidatorsRegistry contract at", this.validatorsRegistry.address);
+
+        this.validators = await this.ethereum.deploySolidityContract(signer, 'OrbsValidators', "build/contracts", this.validatorsRegistry.address, this.options.validatorsLimit);
+        console.log("Validators contract at", this.validators.address);
+
+        const guardianWeiDeposit = helpers.getWeiDeposit(this.ethereum.web3);
+        this.guardians = await this.ethereum.deploySolidityContract(signer, 'OrbsGuardians', "build/contracts", guardianWeiDeposit, this.options.minRegistrationSeconds);
+        console.log("Guardians contract at", this.guardians.address);
+
+        // Deploy Orbs voting contract
+        expect(await this._deployVotingContractToOrbs()).to.be.successful;
+        console.log("deployed Orbs voting contract", this.orbsVotingContractName);
+
+        // set voting contract params
+        // TODO - why are these variables set after construction? are they really variables or constants??
+        await this._setVotingContractParams();
+        console.log("initialized Orbs voting contract params");
+
+    }
+
+    async _deployVotingContractToOrbs() {
+        this.orbsVotingContractName = `OrbsVoting_${new Date().getTime()}`;
+
+        const b = fs.readFileSync("./../../orbs/OrbsVoting/orbs_voting_contract.go");
+        const contractCode = new Uint8Array(b.buffer, b.byteOffset, b.byteLength / Uint8Array.BYTES_PER_ELEMENT);
+        const signer = this.orbs.accounts[0];
+        return this.orbs.contract("_Deployments").transact(signer, "deployService", Orbs.argString(this.orbsVotingContractName), Orbs.argUint32(1), Orbs.argBytes(contractCode));
+    }
+
+    async _setVotingContractParams() {
+        const signer = this.orbs.accounts[0];
+        const contract = this.orbs.contract(this.orbsVotingContractName);
+
+        const args = [];
+        args.push(Orbs.argUint64(this.options.votingMirrorPeriod));
+        args.push(Orbs.argUint64(this.options.votingValidityPeriod));
+        args.push(Orbs.argUint64(this.options.electionsPeriod));
+        args.push(Orbs.argUint32(this.options.maxElected));
+        args.push(Orbs.argUint32(this.options.minElected));
+
+        //TODO parallelize
+        expect(await contract.transact(signer, "unsafetests_setVariables", ...args)).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setVotingEthereumContractAddress", Orbs.argString(this.voting.address))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setGuardiansEthereumContractAddress", Orbs.argString(this.guardians.address))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setTokenEthereumContractAddress", Orbs.argString(this.erc20.address))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setValidatorsEthereumContractAddress", Orbs.argString(this.validators.address))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setValidatorsRegistryEthereumContractAddress", Orbs.argString(this.validatorsRegistry.address))).to.be.successful;
+
+    }
+}
+
 describe("voting contracts on orbs and ethereum", async () => {
 
     it("perform elections to determine the active validators", async () => {
         const ethereum = await EthereumAdapter.build();
         const orbs = await OrbsAdapter.build();
 
-        // deploy ERC20:
-        const erc20 = await ethereum.deploySolidityContract({from: ethereum.accounts[0]}, 'TestingERC20', "build/contracts");
-        console.log("ERC20 contract at", erc20.address);
-
-        // deploy ethereum Voting:
-        const maxVoteOut = 3;
-        const voting = await ethereum.deploySolidityContract({from: ethereum.accounts[0]}, 'OrbsVoting', "build/contracts", maxVoteOut);
-        console.log("Voting contract at", voting.address);
-
-        // deploy ethereum Validators:
-        const validatorsRegistry = await ethereum.deploySolidityContract({from: ethereum.accounts[0]}, 'OrbsValidatorsRegistry', "build/contracts");
-        console.log("ValidatorsRegistry contract at", validatorsRegistry.address);
-
-        // deploy ethereum Validators:
-        const validatorsLimit = 20;
-        const validators = await ethereum.deploySolidityContract({from: ethereum.accounts[0]}, 'OrbsValidators', "build/contracts", validatorsRegistry.address, validatorsLimit);
-        console.log("Validators contract at", validators.address);
-
-        // deploy ethereum Guardians:
-        const minRegistrationSeconds = 0;
-        const guardianWeiDeposit = helpers.getWeiDeposit(ethereum.web3);
-        const guardians = await ethereum.deploySolidityContract({from: ethereum.accounts[0]}, 'OrbsGuardians', "build/contracts", guardianWeiDeposit, minRegistrationSeconds);
-        console.log("Guardians contract at", guardians.address);
-
-
-        // Deploy Orbs voting contract
-        const orbsVotingContractName = `OrbsVoting_${new Date().getTime()}`;
-        const orbsVotingContractDeploymentResult = await deployVotingContractToOrbs(orbs, orbsVotingContractName);
-        expect(orbsVotingContractDeploymentResult).to.be.successful;
-        console.log("deployed Orbs voting contract", orbsVotingContractName);
-
-        // set voting contract params
-        // TODO - why are these variables set after construction? are they really variables or constants??
-        const votingMirrorPeriod = 10;
-        const votingValidityPeriod = 500;
-        const electionsPeriod = 200;
-        const maxElected = 5;
-        const minElected = 3;
-        await setVotingContractParams(orbs, orbsVotingContractName, votingMirrorPeriod, votingValidityPeriod, electionsPeriod, maxElected, minElected, erc20, guardians, validators, validatorsRegistry, voting);
-        console.log("initialized Orbs voting contract params");
+        const options = {
+            maxVoteOut: 3,
+            validatorsLimit: 20,
+            minRegistrationSeconds: 0,
+            votingMirrorPeriod: 10,
+            votingValidityPeriod: 500,
+            electionsPeriod: 200,
+            maxElected: 5,
+            minElected: 3
+        };
+        const electionContracts = new ElectionContracts(ethereum, orbs, options);
+        await electionContracts.deploy();
+        const {erc20, guardians, validators, validatorsRegistry, voting} = electionContracts;
+        const orbsVotingContractName = electionContracts.orbsVotingContractName;
 
         const shf = new StakeHolderFactory(ethereum.web3, ethereum.accounts, erc20, validators, validatorsRegistry, guardians, voting);
 
@@ -289,7 +305,7 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Done Mirroring");
 
-        const mirrorPeriodEndBlock = nextElectionBlockNumber + votingMirrorPeriod + 1;
+        const mirrorPeriodEndBlock = nextElectionBlockNumber + options.votingMirrorPeriod + 1;
 
         await waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, mirrorPeriodEndBlock);
 
