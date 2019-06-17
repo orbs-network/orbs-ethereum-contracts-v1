@@ -34,9 +34,7 @@ async function sleep(ms) {
 }
 
 async function advanceByOneBlock(orbs) {
-    const signer = orbs.accounts[0];
-    const [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, "_Info", "isAlive", []);
-    return await orbs.client.sendTransaction(t);
+    return await orbs.contract("_Info").transact(orbs.accounts[0], "isAlive");
 }
 
 async function waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, blockToWaitFor) {
@@ -51,10 +49,9 @@ async function waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, block
     const result = await advanceByOneBlock(orbs); // applies finality time component by advancing Orbs clock.
 
     // verify finality achieved
-    const q = await orbs.client.createQuery(orbs.accounts[0].publicKey, orbsVotingContractName, "getCurrentEthereumBlockNumber", []);
-    const currentFinalQueryResult = await orbs.client.sendQuery(q);
+    const currentFinalQueryResult = await orbs.contract(orbsVotingContractName).query(orbs.accounts[0], "getCurrentEthereumBlockNumber");
     const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
-    
+
     expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
     console.log(`finality reached for block ${currentFinalityBlockNumber}`);
 
@@ -65,44 +62,25 @@ async function deployVotingContractToOrbs(orbs, contractName) {
     const b = fs.readFileSync("./../../orbs/OrbsVoting/orbs_voting_contract.go");
     const contractCode = new Uint8Array(b.buffer, b.byteOffset, b.byteLength / Uint8Array.BYTES_PER_ELEMENT);
     const signer = orbs.accounts[0];
-    const [t, txid] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, "_Deployments", "deployService", [Orbs.argString(contractName), Orbs.argUint32(1), Orbs.argBytes(contractCode)]);
-    return await orbs.client.sendTransaction(t);
+    return orbs.contract("_Deployments").transact(signer, "deployService", Orbs.argString(contractName), Orbs.argUint32(1), Orbs.argBytes(contractCode));
 }
 
 async function setVotingContractParams(orbs, contractName, votingMirrorPeriod, votingValidityPeriod, electionsPeriod, maxElected, minElected, erc20, guardians, validators, validatorsRegistry, voting) {
     const signer = orbs.accounts[0];
+    const contract = orbs.contract(contractName);
+
     const arguments = [];
-    let result;
-    let t;
     arguments.push(Orbs.argUint64(votingMirrorPeriod));
     arguments.push(Orbs.argUint64(votingValidityPeriod));
     arguments.push(Orbs.argUint64(electionsPeriod));
     arguments.push(Orbs.argUint32(maxElected));
     arguments.push(Orbs.argUint32(minElected));
-
-    [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, contractName, "unsafetests_setVariables", arguments);
-    result = await orbs.client.sendTransaction(t);
-    expect(result).to.be.successful;
-
-    [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, contractName, "unsafetests_setVotingEthereumContractAddress", [Orbs.argString(voting.address)]);
-    result = await orbs.client.sendTransaction(t);
-    expect(result).to.be.successful;
-
-    [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, contractName, "unsafetests_setGuardiansEthereumContractAddress", [Orbs.argString(guardians.address)]);
-    result = await orbs.client.sendTransaction(t);
-    expect(result).to.be.successful;
-
-    [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, contractName, "unsafetests_setTokenEthereumContractAddress", [Orbs.argString(erc20.address)]);
-    result = await orbs.client.sendTransaction(t);
-    expect(result).to.be.successful;
-
-    [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, contractName, "unsafetests_setValidatorsEthereumContractAddress", [Orbs.argString(validators.address)]);
-    result = await orbs.client.sendTransaction(t);
-    expect(result).to.be.successful;
-
-    [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, contractName, "unsafetests_setValidatorsRegistryEthereumContractAddress", [Orbs.argString(validatorsRegistry.address)]);
-    result = await orbs.client.sendTransaction(t);
-    expect(result).to.be.successful;
+    expect(await contract.transact(signer, "unsafetests_setVariables", ...arguments)).to.be.successful;
+    expect(await contract.transact(signer, "unsafetests_setVotingEthereumContractAddress", Orbs.argString(voting.address))).to.be.successful;
+    expect(await contract.transact(signer, "unsafetests_setGuardiansEthereumContractAddress", Orbs.argString(guardians.address))).to.be.successful;
+    expect(await contract.transact(signer, "unsafetests_setTokenEthereumContractAddress", Orbs.argString(erc20.address))).to.be.successful;
+    expect(await contract.transact(signer, "unsafetests_setValidatorsEthereumContractAddress", Orbs.argString(validators.address))).to.be.successful;
+    expect(await contract.transact(signer, "unsafetests_setValidatorsRegistryEthereumContractAddress", Orbs.argString(validatorsRegistry.address))).to.be.successful;
 
 }
 
@@ -163,10 +141,7 @@ async function goodSamaritanProcessesAll(orbsVotingContractName) {
 }
 
 async function getElectionWinners(orbs, orbsVotingContractName) {
-    const signer = orbs.accounts[0];
-
-    const q = orbs.client.createQuery(signer.publicKey, orbsVotingContractName, "getElectedValidatorsOrbsAddress", []);
-    const response = await orbs.client.sendQuery(q);
+    const response = await orbs.contract(orbsVotingContractName).query(orbs.accounts[0], "getElectedValidatorsOrbsAddress")
     expect(response).to.be.successful;
     const rawOutput = response.outputArguments[0].value;
     const addressLength = 20;
@@ -184,12 +159,9 @@ async function getElectionWinners(orbs, orbsVotingContractName) {
 
 async function setElectionBlockNumber(ethereum, orbs, orbsVotingContractName) {
     const currentBlock = await ethereum.getLatestBlock();
-
-    const signer = orbs.accounts[0];
     const electionBlock = currentBlock.number + 1;
 
-    const [t] = orbs.client.createTransaction(signer.publicKey, signer.privateKey, orbsVotingContractName, "unsafetests_setElectedBlockNumber", [Orbs.argUint64(electionBlock)]);
-    await orbs.client.sendTransaction(t);
+    await orbs.contract(orbsVotingContractName).transact(orbs.accounts[0], "unsafetests_setElectedBlockNumber", Orbs.argUint64(electionBlock));
 
     console.log(`Next election block number set to ${electionBlock}`);
 
