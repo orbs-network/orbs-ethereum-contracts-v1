@@ -1,0 +1,330 @@
+{
+  "contractName": "OrbsRewardsDistribution",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x715018a6"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x8da5cb5b"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x8f32d59b"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xf2fde38b"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event",
+      "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+    }
+  ],
+  "bytecode": "0x6080604081905260008054600160a060020a0319163317808255600160a060020a0316917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a361024a806100576000396000f3006080604052600436106100615763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663715018a681146100665780638da5cb5b1461007d5780638f32d59b146100ae578063f2fde38b146100d7575b600080fd5b34801561007257600080fd5b5061007b6100f8565b005b34801561008957600080fd5b50610092610162565b60408051600160a060020a039092168252519081900360200190f35b3480156100ba57600080fd5b506100c3610171565b604080519115158252519081900360200190f35b3480156100e357600080fd5b5061007b600160a060020a0360043516610182565b610100610171565b151561010b57600080fd5b60008054604051600160a060020a03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a36000805473ffffffffffffffffffffffffffffffffffffffff19169055565b600054600160a060020a031690565b600054600160a060020a0316331490565b61018a610171565b151561019557600080fd5b61019e816101a1565b50565b600160a060020a03811615156101b657600080fd5b60008054604051600160a060020a03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a03929092169190911790555600a165627a7a723058201d3913d71c89db784be2d2619b82c98b08df12655def3bbe40a363ee4b0079230029",
+  "deployedBytecode": "0x6080604052600436106100615763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663715018a681146100665780638da5cb5b1461007d5780638f32d59b146100ae578063f2fde38b146100d7575b600080fd5b34801561007257600080fd5b5061007b6100f8565b005b34801561008957600080fd5b50610092610162565b60408051600160a060020a039092168252519081900360200190f35b3480156100ba57600080fd5b506100c3610171565b604080519115158252519081900360200190f35b3480156100e357600080fd5b5061007b600160a060020a0360043516610182565b610100610171565b151561010b57600080fd5b60008054604051600160a060020a03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a36000805473ffffffffffffffffffffffffffffffffffffffff19169055565b600054600160a060020a031690565b600054600160a060020a0316331490565b61018a610171565b151561019557600080fd5b61019e816101a1565b50565b600160a060020a03811615156101b657600080fd5b60008054604051600160a060020a03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a03929092169190911790555600a165627a7a723058201d3913d71c89db784be2d2619b82c98b08df12655def3bbe40a363ee4b0079230029",
+  "sourceMap": "131:74:2:-;;;;;509:6:3;:19;;-1:-1:-1;;;;;;509:19:3;518:10;509:19;;;;-1:-1:-1;;;;;572:6:3;;539:40;;509:6;;539:40;131:74:2;;;;;;",
+  "deployedSourceMap": "131:74:2:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1273:127:3;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1273:127:3;;;;;;639:70;;8:9:-1;5:2;;;30:1;27;20:12;5:2;639:70:3;;;;;;;;-1:-1:-1;;;;;639:70:3;;;;;;;;;;;;;;926:83;;8:9:-1;5:2;;;30:1;27;20:12;5:2;926:83:3;;;;;;;;;;;;;;;;;;;;;;1561:101;;8:9:-1;5:2;;;30:1;27;20:12;5:2;-1:-1;1561:101:3;-1:-1:-1;;;;;1561:101:3;;;;;1273:127;824:9;:7;:9::i;:::-;816:18;;;;;;;;1367:1;1351:6;;1330:40;;-1:-1:-1;;;;;1351:6:3;;;;1330:40;;1367:1;;1330:40;1393:1;1376:19;;-1:-1:-1;;1376:19:3;;;1273:127::o;639:70::-;676:7;698:6;-1:-1:-1;;;;;698:6:3;639:70;:::o;926:83::-;965:4;998:6;-1:-1:-1;;;;;998:6:3;984:10;:20;;926:83::o;1561:101::-;824:9;:7;:9::i;:::-;816:18;;;;;;;;1629:28;1648:8;1629:18;:28::i;:::-;1561:101;:::o;1796:169::-;-1:-1:-1;;;;;1865:22:3;;;;1857:31;;;;;;1920:6;;;1899:38;;-1:-1:-1;;;;;1899:38:3;;;;1920:6;;;1899:38;;;1943:6;:17;;-1:-1:-1;;1943:17:3;-1:-1:-1;;;;;1943:17:3;;;;;;;;;;1796:169::o",
+  "source": "pragma solidity 0.4.25;\n\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\nimport \"./IOrbsRewardsDistribution.sol\";\n\ncontract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {\n\n}",
+  "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/OrbsRewardsDistribution.sol",
+  "ast": {
+    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/OrbsRewardsDistribution.sol",
+    "exportedSymbols": {
+      "OrbsRewardsDistribution": [
+        68
+      ]
+    },
+    "id": 69,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 61,
+        "literals": [
+          "solidity",
+          "0.4",
+          ".25"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:2"
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "id": 62,
+        "nodeType": "ImportDirective",
+        "scope": 69,
+        "sourceUnit": 178,
+        "src": "25:63:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/IOrbsRewardsDistribution.sol",
+        "file": "./IOrbsRewardsDistribution.sol",
+        "id": 63,
+        "nodeType": "ImportDirective",
+        "scope": 69,
+        "sourceUnit": 3,
+        "src": "89:40:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 64,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 177,
+              "src": "167:7:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$177",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 65,
+            "nodeType": "InheritanceSpecifier",
+            "src": "167:7:2"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 66,
+              "name": "IOrbsRewardsDistribution",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2,
+              "src": "176:24:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IOrbsRewardsDistribution_$2",
+                "typeString": "contract IOrbsRewardsDistribution"
+              }
+            },
+            "id": 67,
+            "nodeType": "InheritanceSpecifier",
+            "src": "176:24:2"
+          }
+        ],
+        "contractDependencies": [
+          2,
+          177
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 68,
+        "linearizedBaseContracts": [
+          68,
+          2,
+          177
+        ],
+        "name": "OrbsRewardsDistribution",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 69,
+        "src": "131:74:2"
+      }
+    ],
+    "src": "0:205:2"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/OrbsRewardsDistribution.sol",
+    "exportedSymbols": {
+      "OrbsRewardsDistribution": [
+        68
+      ]
+    },
+    "id": 69,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 61,
+        "literals": [
+          "solidity",
+          "0.4",
+          ".25"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:2"
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "id": 62,
+        "nodeType": "ImportDirective",
+        "scope": 69,
+        "sourceUnit": 178,
+        "src": "25:63:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/IOrbsRewardsDistribution.sol",
+        "file": "./IOrbsRewardsDistribution.sol",
+        "id": 63,
+        "nodeType": "ImportDirective",
+        "scope": 69,
+        "sourceUnit": 3,
+        "src": "89:40:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 64,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 177,
+              "src": "167:7:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$177",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 65,
+            "nodeType": "InheritanceSpecifier",
+            "src": "167:7:2"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 66,
+              "name": "IOrbsRewardsDistribution",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2,
+              "src": "176:24:2",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IOrbsRewardsDistribution_$2",
+                "typeString": "contract IOrbsRewardsDistribution"
+              }
+            },
+            "id": 67,
+            "nodeType": "InheritanceSpecifier",
+            "src": "176:24:2"
+          }
+        ],
+        "contractDependencies": [
+          2,
+          177
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 68,
+        "linearizedBaseContracts": [
+          68,
+          2,
+          177
+        ],
+        "name": "OrbsRewardsDistribution",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 69,
+        "src": "131:74:2"
+      }
+    ],
+    "src": "0:205:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
+  },
+  "networks": {
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x636c2F771FcEd7f4d3701D5585c11c13215A7e44",
+      "transactionHash": "0x2b7de73f096f62f5b2a99e5b28f4d8c53c73cec11bb77005b79c0ec44e21c50b"
+    }
+  },
+  "schemaVersion": "3.0.2",
+  "updatedAt": "2019-06-17T08:14:52.825Z",
+  "devdoc": {
+    "methods": {
+      "isOwner()": {
+        "return": "true if `msg.sender` is the owner of the contract."
+      },
+      "owner()": {
+        "return": "the address of the owner."
+      },
+      "renounceOwnership()": {
+        "details": "Allows the current owner to relinquish control of the contract."
+      },
+      "transferOwnership(address)": {
+        "details": "Allows the current owner to transfer control of the contract to a newOwner.",
+        "params": {
+          "newOwner": "The address to transfer ownership to."
+        }
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {
+      "renounceOwnership()": {
+        "notice": "Renouncing to ownership will leave the contract without an owner. It will not be possible to call the functions with the `onlyOwner` modifier anymore."
+      }
+    }
+  }
+}
