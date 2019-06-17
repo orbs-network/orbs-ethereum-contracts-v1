@@ -37,26 +37,6 @@ async function advanceByOneBlock(orbs) {
     return await orbs.contract("_Info").transact(orbs.accounts[0], "isAlive");
 }
 
-async function waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, blockToWaitFor) {
-    blockToWaitFor = blockToWaitFor || await ethereum.getLatestBlock().number;
-    console.log(`waiting for block ${blockToWaitFor} to reach finality...`);
-
-    // finality - block component
-    await ethereum.waitForBlock(blockToWaitFor + orbs.finalityCompBlocks);
-
-    // finality - time component
-    await sleep(orbs.finalityCompSeconds * 1000);
-    const result = await advanceByOneBlock(orbs); // applies finality time component by advancing Orbs clock.
-
-    // verify finality achieved
-    const currentFinalQueryResult = await orbs.contract(orbsVotingContractName).query(orbs.accounts[0], "getCurrentEthereumBlockNumber");
-    const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
-
-    expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
-    console.log(`finality reached for block ${currentFinalityBlockNumber}`);
-
-    return result;
-}
 
 //TODO make mirror.js an exported function of the 'processor' module and run in same process
 function goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, electionBlockNumber) {
@@ -114,39 +94,15 @@ async function goodSamaritanProcessesAll(orbsVotingContractName) {
     });
 }
 
-async function getElectionWinners(orbs, orbsVotingContractName) {
-    const response = await orbs.contract(orbsVotingContractName).query(orbs.accounts[0], "getElectedValidatorsOrbsAddress")
-    expect(response).to.be.successful;
-    const rawOutput = response.outputArguments[0].value;
-    const addressLength = 20;
-
-    const numOfValidators = rawOutput.length / addressLength;
-    const rawWinners = [];
-    for (let i = 0; i < numOfValidators; i++) {
-        const start = i * addressLength;
-        const end = start + addressLength;
-        rawWinners.push(new Uint8Array(rawOutput.slice(start, end)));
-    }
-
-    return rawWinners.map(addr => Orbs.encodeHex(addr));
-}
-
-async function setElectionBlockNumber(ethereum, orbs, orbsVotingContractName) {
-    const currentBlock = await ethereum.getLatestBlock();
-    const electionBlock = currentBlock.number + 1;
-
-    await orbs.contract(orbsVotingContractName).transact(orbs.accounts[0], "unsafetests_setElectedBlockNumber", Orbs.argUint64(electionBlock));
-
-    console.log(`Next election block number set to ${electionBlock}`);
-
-    return electionBlock;
-}
-
 class ElectionContracts {
     constructor(ethereum, orbs, options) {
         this.ethereum = ethereum;
         this.options = options;
         this.orbs = orbs;
+    }
+
+    newStakeHolderFactory() {
+        return new StakeHolderFactory(this.ethereum.web3, this.ethereum.accounts, this.erc20, this.validators, this.validatorsRegistry, this.guardians, this.voting);
     }
 
     async deploy() {
@@ -208,6 +164,61 @@ class ElectionContracts {
         expect(await contract.transact(signer, "unsafetests_setValidatorsRegistryEthereumContractAddress", Orbs.argString(this.validatorsRegistry.address))).to.be.successful;
 
     }
+
+    async getOrbsValidatorAddresses() {
+        const validators = await this.validators.getValidators();
+        return Promise.all(validators.map(vAddr => this.validatorsRegistry.getOrbsAddress(vAddr)));
+    }
+
+
+    async setElectionBlockNumber() {
+        const currentBlock = await this.ethereum.getLatestBlock();
+        const electionBlock = currentBlock.number + 1;
+
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setElectedBlockNumber", Orbs.argUint64(electionBlock));
+
+        console.log(`Next election block number set to ${electionBlock}`);
+
+        return electionBlock;
+    }
+
+    async waitForOrbsFinality(blockToWaitFor) {
+        blockToWaitFor = blockToWaitFor || await this.ethereum.getLatestBlock().number;
+        console.log(`waiting for block ${blockToWaitFor} to reach finality...`);
+
+        // finality - block component
+        await this.ethereum.waitForBlock(blockToWaitFor + this.orbs.finalityCompBlocks);
+
+        // finality - time component
+        await sleep(this.orbs.finalityCompSeconds * 1000);
+        const result = await advanceByOneBlock(this.orbs); // applies finality time component by advancing Orbs clock.
+
+        // verify finality achieved
+        const currentFinalQueryResult = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentEthereumBlockNumber");
+        const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
+
+        expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
+        console.log(`finality reached for block ${currentFinalityBlockNumber}`);
+
+        return result;
+    }
+
+    async getElectionWinners() {
+        const response = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getElectedValidatorsOrbsAddress")
+        expect(response).to.be.successful;
+        const rawOutput = response.outputArguments[0].value;
+        const addressLength = 20;
+
+        const numOfValidators = rawOutput.length / addressLength;
+        const rawWinners = [];
+        for (let i = 0; i < numOfValidators; i++) {
+            const start = i * addressLength;
+            const end = start + addressLength;
+            rawWinners.push(new Uint8Array(rawOutput.slice(start, end)));
+        }
+
+        return rawWinners.map(addr => Orbs.encodeHex(addr));
+    }
 }
 
 describe("voting contracts on orbs and ethereum", async () => {
@@ -228,10 +239,10 @@ describe("voting contracts on orbs and ethereum", async () => {
         };
         const electionContracts = new ElectionContracts(ethereum, orbs, options);
         await electionContracts.deploy();
-        const {erc20, guardians, validators, validatorsRegistry, voting} = electionContracts;
+        const {erc20, voting} = electionContracts;
         const orbsVotingContractName = electionContracts.orbsVotingContractName;
 
-        const shf = new StakeHolderFactory(ethereum.web3, ethereum.accounts, erc20, validators, validatorsRegistry, guardians, voting);
+        const shf = electionContracts.newStakeHolderFactory();
 
         const v1 = await shf.aValidator({stake: 10000});
         const v2 = await shf.aValidator({stake: 20000});
@@ -240,7 +251,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         const v5 = await shf.aValidator({stake: 7000});
 
         // sanity - all validators are listed in both contracts
-        const orbsValidatorAddresses = await Promise.all((await validators.getValidators()).map(vAddr => validatorsRegistry.getOrbsAddress(vAddr)));
+        const orbsValidatorAddresses = await electionContracts.getOrbsValidatorAddresses();
         expect(orbsValidatorAddresses.map(a => a.toLowerCase())).to.have.members([v1, v2, v3, v4, v5].map(v => v.orbsAccount.address.toLowerCase()));
 
         const g1 = await shf.aGuardian({stake: 6000});
@@ -296,9 +307,9 @@ describe("voting contracts on orbs and ethereum", async () => {
         //     currentBlock := ethereum.GetCurrentBlock()
         //     require.True(t, currentBlock < config.FirstElectionBlockNumber, "Recorded activity will not be included in the current election period")
         // }
-        const nextElectionBlockNumber = await setElectionBlockNumber(ethereum, orbs, orbsVotingContractName);
+        const nextElectionBlockNumber = await electionContracts.setElectionBlockNumber();
 
-        await waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, nextElectionBlockNumber);
+        await electionContracts.waitForOrbsFinality(nextElectionBlockNumber);
 
         await goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, nextElectionBlockNumber);
         //TODO return something from mirror and assert
@@ -307,14 +318,14 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         const mirrorPeriodEndBlock = nextElectionBlockNumber + options.votingMirrorPeriod + 1;
 
-        await waitForOrbsFinality(ethereum, orbs, orbsVotingContractName, mirrorPeriodEndBlock);
+        await electionContracts.waitForOrbsFinality(mirrorPeriodEndBlock);
 
         await goodSamaritanProcessesAll(orbsVotingContractName);
         //TODO return something from process and assert
 
         console.log("Done Processing");
 
-        const winners = await getElectionWinners(orbs, orbsVotingContractName);
+        const winners = await electionContracts.getElectionWinners();
         expect(winners).to.have.members([v1, v2, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
         // XXXX end of flow. gamma does not enforce the results of elections on validator committee. it requies an "unsafe_" operation. consider supporting
