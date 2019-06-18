@@ -40,7 +40,7 @@ contract('OrbsRewardsDistribution', accounts => {
         }
 
         // calculate batch hashes
-        const hashes = batches.map((batch, batchId)=>"0x"+hashBatch(batchId, batch));
+        const hashes = batches.map((batch, batchId)=>hashBatch(batchId, batch));
 
         // announce distribution event with hash batches
 
@@ -90,10 +90,9 @@ function generateRewardsSpec(count) {
 }
 
 function hashBatch(batchId, batch) {
-    const sha = new sjcl.hash.sha256();
-    sha.update(`${batchId}:`);
+    let batchData = `${batchId}:`;
     for (let i=0; i < batch.length; i++) {
-        sha.update(`${batch[i].address}${batch[i].amount}_`);
+        batchData += `${batch[i].address.toLowerCase()}${batch[i].amount}_`;
     }
-    return sjcl.codec.hex.fromBits(sha.finalize());
+    return web3.utils.keccak256(batchData);
 }
