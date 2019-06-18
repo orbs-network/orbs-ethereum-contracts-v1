@@ -74,6 +74,17 @@ jobs:
       - store_test_results:
           path: subscription/ethereum/_reports
 
+  rewards-distribution-solidity-tests:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: cd rewards-distribution/ethereum && ./test.sh
+      - store_artifacts:
+          path: rewards-distribution/ethereum/_out
+      - store_test_results:
+          path: rewards-distribution/ethereum/_reports
+
 workflows:
   version: 2
   voting:
@@ -89,6 +100,9 @@ workflows:
     jobs:
       - subscription-solidity-tests
       - subscription-e2e
+  rewards-distribution:
+    jobs:
+      - rewards-distribution-solidity-tests
   # scheduled_samaritan:
   #   triggers:
   #     - schedule:

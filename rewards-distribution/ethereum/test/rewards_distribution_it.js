@@ -13,9 +13,25 @@ const Erc20 = artifacts.require('./TestingERC20');
 contract('OrbsRewardsDistribution', accounts => {
     const owner = accounts[0];
 
-    it('deploys contract successfully', async () => {
+    it('distributes rewards specified in rewards report', async () => {
         const erc20 = await Erc20.new();
         const instance = await OrbsRewardsDistribution.new(erc20.address, { from: owner });
         expect(instance).to.exist;
+        
+        // parse input file
+        
+        // verify no duplicate recipient
+        
+        // split to batches
+        
+        // calculate batch hashes
+        
+        // announce distribution event with hash batches
+        
+        // transfer tokens to contract
+        
+        // execute all batches
+        
+        // check events
     });
 });
