@@ -92,41 +92,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     }
 
     function calcBatchHash(address[] recipients, uint256[] amounts, uint256 batchNum) private pure returns (bytes32) {
-        string memory data = string(abi.encodePacked(uintToString(batchNum), ":"));
-        for (uint i = 0; i < recipients.length; i++) {
-            data = string(abi.encodePacked(data, addressToString(recipients[i]), uintToString(amounts[i]), "_"));
-        }
-        return keccak256(data);
-    }
-
-    function uintToString(uint i) internal pure returns (string){
-        if (i == 0) return "0";
-        uint j = i;
-        uint length;
-        while (j != 0){
-            length++;
-            j /= 10;
-        }
-        bytes memory bstr = new bytes(length);
-        uint k = length - 1;
-        while (i != 0){
-            bstr[k--] = byte(48 + i % 10);
-            i /= 10;
-        }
-        return string(bstr);
-    }
-
-    function addressToString(address _addr) public pure returns(string) {
-        bytes32 value = bytes32(uint256(_addr));
-        bytes memory alphabet = "0123456789abcdef";
-
-        bytes memory str = new bytes(42);
-        str[0] = '0';
-        str[1] = 'x';
-        for (uint i = 0; i < 20; i++) {
-            str[2+i*2] = alphabet[uint(value[i + 12] >> 4)];
-            str[3+i*2] = alphabet[uint(value[i + 12] & 0x0f)];
-        }
-        return string(str);
+        // TODO - do we really need recipients.length in the hash?...
+        return keccak256(abi.encodePacked(batchNum, recipients.length, recipients, amounts));
     }
 }

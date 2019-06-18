@@ -23,7 +23,7 @@ contract('OrbsRewardsDistribution', accounts => {
         let totalGasUsed = 0;
 
         // parse input file
-        const rewardsCount = 150;
+        const rewardsCount = 1500;
         const rewardsSpec = generateRewardsSpec(rewardsCount);
         const totalAmount = rewardsSpec.reduce((sum, reward) => sum + reward.amount, 0);
 
@@ -32,7 +32,7 @@ contract('OrbsRewardsDistribution', accounts => {
         expect(uniqueRewardRecipients).to.equal(rewardsSpec.length);
 
         // split to batches
-        const batchSize = 30;
+        const batchSize = 150;
         const batches = [];
         const tempRewards = [...rewardsSpec];
         while (tempRewards.length > 0) {
@@ -94,9 +94,16 @@ function generateRewardsSpec(count) {
 }
 
 function hashBatch(batchId, batch) {
-    let batchData = `${batchId}:`;
-    for (let i=0; i < batch.length; i++) {
-        batchData += `${batch[i].address.toLowerCase()}${batch[i].amount}_`;
-    }
-    return web3.utils.keccak256(batchData);
+    let addresses = [];
+    let amounts = [];
+    batch.map((reward, index) => {
+        addresses[index] = {t: 'bytes', v: web3.utils.leftPad(reward.address, 64)};
+        amounts[index] = {t: 'uint256', v: reward.amount};
+    });
+    return web3.utils.soliditySha3(
+        {t: 'uint256', v: batchId},
+        {t: 'uint256', v: batch.length},
+        ...addresses,
+        ...amounts
+    );
 }
