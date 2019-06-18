@@ -23,18 +23,18 @@ contract('OrbsRewardsDistribution', accounts => {
         const instance = await OrbsRewardsDistribution.new(erc20.address, { from: owner });
 
         // parse input file
-        const rewardsCount = 41;
-        const rewards = generateRewards(rewardsCount);
-        const totalAmount = rewards.reduce((sum, reward) => sum + reward.amount, 0);
+        const rewardsCount = 200;
+        const rewardsSpec = generateRewardsSpec(rewardsCount);
+        const totalAmount = rewardsSpec.reduce((sum, reward) => sum + reward.amount, 0);
 
         // verify no duplicate recipient
-        const uniqueRewardRecipients = (new Set(rewards.map(i=>i.address))).size;
-        expect(uniqueRewardRecipients).to.equal(rewards.length);
+        const uniqueRewardRecipients = (new Set(rewardsSpec.map(i=>i.address))).size;
+        expect(uniqueRewardRecipients).to.equal(rewardsSpec.length);
 
         // split to batches
         const batchSize = 13;
         const batches = [];
-        const tempRewards = [...rewards];
+        const tempRewards = [...rewardsSpec];
         while (tempRewards.length > 0) {
             batches.push(tempRewards.splice(0,batchSize))
         }
@@ -61,19 +61,26 @@ contract('OrbsRewardsDistribution', accounts => {
 
         // check balances
         expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(0));
-        rewards.map(async (reward)=>{
+        rewardsSpec.map(async (reward)=>{
             expect(await erc20.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
         });
 
         // check events
         const events = await instance.getPastEvents("RewardsDistributed", {fromBlock: firstBlockNumber});
         const readRewards = events.map(log=>({address: log.args.recipient.toLowerCase(), amount:log.args.amount.toNumber()}));
-        expect(readRewards).to.have.same.deep.members(rewards);
+        expect(readRewards).to.have.same.deep.members(rewardsSpec);
 
+        await sleep(2000); // web3/truffle/ganache bug - after this much work we need to cool off or next test will crash... (???)
     });
 });
 
-function generateRewards(count) {
+function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
+}
+
+function generateRewardsSpec(count) {
     const result = [];
     for (let i=0; i < count; i++) {
         const addr = "0x" + (i+1).toString(16).padStart(40, "0");
