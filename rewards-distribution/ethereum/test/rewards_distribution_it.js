@@ -11,7 +11,6 @@ const chai = require('chai');
 chai.use(require('chai-bn')(BN));
 const expect = chai.expect;
 
-const sjcl = require("sjcl");
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 const ERC20 = artifacts.require('./TestingERC20');
 
@@ -21,9 +20,10 @@ contract('OrbsRewardsDistribution', accounts => {
     it('distributes rewards specified in rewards report', async () => {
         const erc20 = await ERC20.new();
         const instance = await OrbsRewardsDistribution.new(erc20.address, { from: owner });
+        let totalGasUsed = 0;
 
         // parse input file
-        const rewardsCount = 200;
+        const rewardsCount = 150;
         const rewardsSpec = generateRewardsSpec(rewardsCount);
         const totalAmount = rewardsSpec.reduce((sum, reward) => sum + reward.amount, 0);
 
@@ -32,7 +32,7 @@ contract('OrbsRewardsDistribution', accounts => {
         expect(uniqueRewardRecipients).to.equal(rewardsSpec.length);
 
         // split to batches
-        const batchSize = 13;
+        const batchSize = 30;
         const batches = [];
         const tempRewards = [...rewardsSpec];
         while (tempRewards.length > 0) {
@@ -43,21 +43,25 @@ contract('OrbsRewardsDistribution', accounts => {
         const hashes = batches.map((batch, batchId)=>hashBatch(batchId, batch));
 
         // announce distribution event with hash batches
+        let res = await instance.announceDistributionEvent("test", hashes, {from: owner});
+        totalGasUsed += res.receipt.gasUsed;
 
-        await instance.announceDistributionEvent("test", hashes, {from: owner});
         const pendingHashes = await instance.getPendingBatches("test");
 
         expect(pendingHashes).to.deep.equal(hashes);
 
         // transfer tokens to contract
         await erc20.assign(instance.address, totalAmount);
+
         expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(totalAmount));
 
         // execute all batches
         const firstBlockNumber = await web3.eth.getBlockNumber();
         for (let i = 0; i < batches.length; i++) {
-            await instance.executeCommittedBatch("test", batches[i].map(r=>r.address), batches[i].map(r=>r.amount), i);
+            res = await instance.executeCommittedBatch("test", batches[i].map(r=>r.address), batches[i].map(r=>r.amount), i);
+            totalGasUsed += res.receipt.gasUsed;
         }
+        console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
 
         // check balances
         expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(0));
