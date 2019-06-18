@@ -7,14 +7,14 @@
  */
 
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
-const Erc20 = artifacts.require('./TestingERC20');
+const ERC20 = artifacts.require('./TestingERC20');
 
 
 contract('OrbsRewardsDistribution', accounts => {
     const owner = accounts[0];
 
     it('deploys contract successfully', async () => {
-        const erc20 = await Erc20.new();
+        const erc20 = await ERC20.new();
         const instance = await OrbsRewardsDistribution.new(erc20.address, { from: owner });
         expect(instance).to.exist;
     });
