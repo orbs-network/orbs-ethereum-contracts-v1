@@ -1,9 +1,6 @@
 const {EthereumAdapter, OrbsAdapter} = require("psilo");
 const {expect} = require("chai");
 const {ElectionContracts} = require("./driver");
-const { spawn } = require("child_process");
-const path = require("path");
-
 
 describe("voting contracts on orbs and ethereum", async () => {
 
@@ -93,9 +90,7 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         await electionContracts.waitForOrbsFinality(nextElectionBlockNumber);
 
-        const {erc20, voting, orbsVotingContractName} = electionContracts;
-
-        await goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, nextElectionBlockNumber);
+        await electionContracts.goodSamaritanMirrorsAll(nextElectionBlockNumber);
         //TODO return something from mirror and assert
 
         console.log("Done Mirroring");
@@ -104,7 +99,7 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         await electionContracts.waitForOrbsFinality(mirrorPeriodEndBlock);
 
-        await goodSamaritanProcessesAll(orbsVotingContractName);
+        await electionContracts.goodSamaritanProcessesAll();
         //TODO return something from process and assert
 
         console.log("Done Processing");
@@ -118,60 +113,3 @@ describe("voting contracts on orbs and ethereum", async () => {
         ethereum.stop();
     })
 });
-
-
-//TODO make mirror.js an exported function of the 'processor' module and run in same process
-function goodSamaritanMirrorsAll(orbsVotingContractName, erc20, voting, electionBlockNumber) {
-    return new Promise((resolve, reject) => {
-        const child = spawn("node", ["mirror.js"], {
-            env: {
-                "ORBS_VOTING_CONTRACT_NAME": orbsVotingContractName,
-                "ERC20_CONTRACT_ADDRESS": erc20.address,
-                "VOTING_CONTRACT_ADDRESS": voting.address,
-                "START_BLOCK_ON_ETHEREUM": 0, //TODO change for ropsten/mainnet
-                "END_BLOCK_ON_ETHEREUM": electionBlockNumber,
-                "VERBOSE": true,
-                "NETWORK_URL_ON_ETHEREUM": "http://localhost:7545", //TODO change for ropsten/mainnet
-                "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
-                PATH: process.env.PATH
-            },
-            stdio: "inherit",
-            cwd: path.resolve("..", "..", "processor"),
-        });
-
-        child.on("error", e => reject(e));
-
-        child.on("close", code => {
-            if (code !== 0) {
-                reject(`Mirror script returned exit code ${code}`);
-            } else {
-                resolve();
-            }
-        })
-    });
-}
-
-async function goodSamaritanProcessesAll(orbsVotingContractName) {
-    return new Promise((resolve, reject) => {
-        const child = spawn("node", ["process.js"], {
-            env: {
-                "ORBS_VOTING_CONTRACT_NAME": orbsVotingContractName,
-                "VERBOSE": true,
-                "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
-                PATH: process.env.PATH
-            },
-            stdio: "inherit",
-            cwd: path.resolve("..", "..", "processor"),
-        });
-
-        child.on("error", e => reject(e));
-
-        child.on("close", code => {
-            if (code !== 0) {
-                reject(`Process script returned exit code ${code}`);
-            } else {
-                resolve();
-            }
-        })
-    });
-}

@@ -2,6 +2,8 @@ const helpers = require('./helpers');
 const fs = require("fs");
 const Orbs = require("orbs-client-sdk");
 const {expect, use} = require("chai");
+const { spawn } = require("child_process");
+const path = require("path");
 
 const {orbsAssertions} = require("psilo");
 use(orbsAssertions);
@@ -229,6 +231,64 @@ class ElectionContracts {
 
         return rawWinners.map(addr => Orbs.encodeHex(addr));
     }
+
+
+    //TODO make mirror.js an exported function of the 'processor' module and run in same process
+    goodSamaritanMirrorsAll(electionBlockNumber) {
+        return new Promise((resolve, reject) => {
+            const child = spawn("node", ["mirror.js"], {
+                env: {
+                    "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
+                    "ERC20_CONTRACT_ADDRESS": this.erc20.address,
+                    "VOTING_CONTRACT_ADDRESS": this.voting.address,
+                    "START_BLOCK_ON_ETHEREUM": 0, //TODO change for ropsten/mainnet
+                    "END_BLOCK_ON_ETHEREUM": electionBlockNumber,
+                    "VERBOSE": true,
+                    "NETWORK_URL_ON_ETHEREUM": "http://localhost:7545", //TODO change for ropsten/mainnet
+                    "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
+                    PATH: process.env.PATH
+                },
+                stdio: "inherit",
+                cwd: path.resolve("..", "..", "processor"),
+            });
+
+            child.on("error", e => reject(e));
+
+            child.on("close", code => {
+                if (code !== 0) {
+                    reject(`Mirror script returned exit code ${code}`);
+                } else {
+                    resolve();
+                }
+            })
+        });
+    }
+
+    goodSamaritanProcessesAll() {
+        return new Promise((resolve, reject) => {
+            const child = spawn("node", ["process.js"], {
+                env: {
+                    "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
+                    "VERBOSE": true,
+                    "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
+                    PATH: process.env.PATH
+                },
+                stdio: "inherit",
+                cwd: path.resolve("..", "..", "processor"),
+            });
+
+            child.on("error", e => reject(e));
+
+            child.on("close", code => {
+                if (code !== 0) {
+                    reject(`Process script returned exit code ${code}`);
+                } else {
+                    resolve();
+                }
+            })
+        });
+    }
+
 }
 
 
