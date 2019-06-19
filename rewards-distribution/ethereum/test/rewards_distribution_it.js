@@ -17,65 +17,86 @@ const ERC20 = artifacts.require('./TestingERC20');
 contract('OrbsRewardsDistribution', accounts => {
     const owner = accounts[0];
 
-    it('distributes rewards specified in rewards report', async () => {
-        const erc20 = await ERC20.new();
-        const instance = await OrbsRewardsDistribution.new(erc20.address, { from: owner });
-        let totalGasUsed = 0;
+    describe('integration test - full flow', () => {
 
-        // parse input file
-        const rewardsCount = 1500;
-        const rewardsSpec = generateRewardsSpec(rewardsCount);
-        const totalAmount = rewardsSpec.reduce((sum, reward) => sum + reward.amount, 0);
+        it('full flow integration test - distributes rewards specified in rewards report', async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+            let totalGasUsed = 0;
 
-        // verify no duplicate recipient
-        const uniqueRewardRecipients = (new Set(rewardsSpec.map(i=>i.address))).size;
-        expect(uniqueRewardRecipients).to.equal(rewardsSpec.length);
+            // parse input file
+            const rewardsCount = 15;
+            const rewardsSpec = generateRewardsSpec(rewardsCount);
+            const totalAmount = rewardsSpec.reduce((sum, reward) => sum + reward.amount, 0);
 
-        // split to batches
-        const batchSize = 150;
-        const batches = [];
-        const tempRewards = [...rewardsSpec];
-        while (tempRewards.length > 0) {
-            batches.push(tempRewards.splice(0,batchSize))
-        }
+            // verify no duplicate recipient
+            const uniqueRewardRecipients = (new Set(rewardsSpec.map(i => i.address))).size;
+            expect(uniqueRewardRecipients).to.equal(rewardsSpec.length);
 
-        // calculate batch hashes
-        const hashes = batches.map((batch, batchId)=>hashBatch(batchId, batch));
+            // split to batches
+            const batchSize = 3;
+            const batches = [];
+            const tempRewards = [...rewardsSpec];
+            while (tempRewards.length > 0) {
+                batches.push(tempRewards.splice(0, batchSize))
+            }
 
-        // announce distribution event with hash batches
-        let res = await instance.announceDistributionEvent("test", hashes, {from: owner});
-        totalGasUsed += res.receipt.gasUsed;
+            // calculate batch hashes
+            const hashes = batches.map((batch, batchId) => hashBatch(batchId, batch));
 
-        const pendingHashes = await instance.getPendingBatches("test");
-
-        expect(pendingHashes).to.deep.equal(hashes);
-
-        // transfer tokens to contract
-        await erc20.assign(instance.address, totalAmount);
-
-        expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(totalAmount));
-
-        // execute all batches
-        const firstBlockNumber = await web3.eth.getBlockNumber();
-        for (let i = 0; i < batches.length; i++) {
-            res = await instance.executeCommittedBatch("test", batches[i].map(r=>r.address), batches[i].map(r=>r.amount), i);
+            // announce distribution event with hash batches
+            let res = await instance.announceDistributionEvent("test", hashes, {from: owner});
             totalGasUsed += res.receipt.gasUsed;
-        }
-        console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
 
-        // check balances
-        expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(0));
-        rewardsSpec.map(async (reward)=>{
-            expect(await erc20.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
+            const pendingHashes = await instance.getPendingBatches("test");
+
+            expect(pendingHashes).to.deep.equal(hashes);
+
+            // transfer tokens to contract
+            await erc20.assign(instance.address, totalAmount);
+
+            expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(totalAmount));
+
+            // execute all batches
+            const firstBlockNumber = await web3.eth.getBlockNumber();
+            for (let i = 0; i < batches.length; i++) {
+                res = await instance.executeCommittedBatch("test", batches[i].map(r => r.address), batches[i].map(r => r.amount), i);
+                totalGasUsed += res.receipt.gasUsed;
+            }
+            console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
+
+            // check balances
+            expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(0));
+            rewardsSpec.map(async (reward) => {
+                expect(await erc20.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
+            });
+
+            // check events
+            const events = await instance.getPastEvents("RewardsDistributed", {fromBlock: firstBlockNumber});
+            const readRewards = events.map(log => ({
+                address: log.args.recipient.toLowerCase(),
+                amount: log.args.amount.toNumber()
+            }));
+            expect(readRewards).to.have.same.deep.members(rewardsSpec);
+
         });
-
-        // check events
-        const events = await instance.getPastEvents("RewardsDistributed", {fromBlock: firstBlockNumber});
-        const readRewards = events.map(log=>({address: log.args.recipient.toLowerCase(), amount:log.args.amount.toNumber()}));
-        expect(readRewards).to.have.same.deep.members(rewardsSpec);
-
-        await sleep(2000); // web3/truffle/ganache bug - after this much work we need to cool off or next test will crash... (???)
     });
+
+    it('deploys contract successfully with ERC20 instance', async () => {
+        const erc20 = await ERC20.new();
+        const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+        expect(instance).to.exist;
+    });
+
+    describe('announceDistributionEvent', ()=>{
+        it('emits event', async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+
+        });
+    });
+
 });
 
 function sleep(ms) {
@@ -86,8 +107,8 @@ function sleep(ms) {
 
 function generateRewardsSpec(count) {
     const result = [];
-    for (let i=0; i < count; i++) {
-        const addr = "0x" + (i+1).toString(16).padStart(40, "0");
+    for (let i = 0; i < count; i++) {
+        const addr = "0x" + (i + 1).toString(16).padStart(40, "0");
         result.push({address: addr, amount: i});
     }
     return result;
@@ -97,7 +118,8 @@ function hashBatch(batchId, batch) {
     let addresses = [];
     let amounts = [];
     batch.map((reward, index) => {
-        addresses[index] = {t: 'bytes', v: web3.utils.leftPad(reward.address, 64)};
+        const bytes32PaddedAddress = web3.utils.leftPad(reward.address, 64);
+        addresses[index] = {t: 'bytes32',v: bytes32PaddedAddress};
         amounts[index] = {t: 'uint256', v: reward.amount};
     });
     return web3.utils.soliditySha3(
