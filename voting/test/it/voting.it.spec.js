@@ -3,11 +3,18 @@ const {expect} = require("chai");
 const {ElectionContracts} = require("./driver");
 
 describe("voting contracts on orbs and ethereum", async () => {
+    const ethereumUrl = process.env.GANACHE_URL || "http://localhost:7545";
+    let ethereum;
+    let orbs;
+
+    before(async () => {
+        ethereum = await EthereumAdapter.build(ethereumUrl);
+        orbs = await OrbsAdapter.build();
+    })
+
+    after(() => ethereum.stop());
 
     it("perform elections to determine the active validators", async () => {
-        const ethereumUrl = process.env.GANACHE_URL || "http://localhost:7545";
-        const ethereum = await EthereumAdapter.build(ethereumUrl);
-        const orbs = await OrbsAdapter.build();
 
         const options = {
             maxVoteOut: 3,
@@ -109,8 +116,5 @@ describe("voting contracts on orbs and ethereum", async () => {
         expect(winners).to.have.members([v1, v2, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
         // XXXX end of flow. gamma does not enforce the results of elections on validator committee. it requies an "unsafe_" operation. consider supporting
-
-
-        ethereum.stop();
     })
 });

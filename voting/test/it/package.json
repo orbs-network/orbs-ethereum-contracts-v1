@@ -24,7 +24,7 @@
     "diff": true,
     "reporter": "spec",
     "slow": 75,
-    "timeout": 200000,
+    "timeout": 90000,
     "ui": "bdd"
   }
 }
