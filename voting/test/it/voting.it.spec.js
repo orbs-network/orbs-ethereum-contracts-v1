@@ -5,7 +5,8 @@ const {ElectionContracts} = require("./driver");
 describe("voting contracts on orbs and ethereum", async () => {
 
     it("perform elections to determine the active validators", async () => {
-        const ethereum = await EthereumAdapter.build();
+        const ethereumUrl = process.env.GANACHE_URL || "http://localhost:7545";
+        const ethereum = await EthereumAdapter.build(ethereumUrl);
         const orbs = await OrbsAdapter.build();
 
         const options = {
@@ -18,7 +19,7 @@ describe("voting contracts on orbs and ethereum", async () => {
             maxElected: 5,
             minElected: 3
         };
-        const electionContracts = new ElectionContracts(ethereum, orbs, options);
+        const electionContracts = new ElectionContracts(ethereum, orbs, ethereumUrl, options);
         await electionContracts.deploy();
 
         const shf = electionContracts.newStakeHolderFactory();

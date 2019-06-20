@@ -64,13 +64,13 @@ class EthereumAdapter {
         return this.web3.currentProvider.engine.stop();
     }
 
-    static async build() {
+    static async build(ethereumUrl, mnemonic) {
 
         // TODO - select network to run against.
 
-        const mnemonic = "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
-        const ganacheUrl = process.env.GANACHE_URL || "http://localhost:7545";
-        const provider = new HDWalletProvider(mnemonic, ganacheUrl, 0, 25);
+        mnemonic = mnemonic || "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
+        ethereumUrl = ethereumUrl || process.env.GANACHE_URL || "http://localhost:7545";
+        const provider = new HDWalletProvider(mnemonic, ethereumUrl, 0, 25);
         const web3 = new Web3(provider);
 
         const config = {

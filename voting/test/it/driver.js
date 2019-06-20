@@ -107,10 +107,11 @@ class StakeHolder {
 }
 
 class ElectionContracts {
-    constructor(ethereum, orbs, options) {
+    constructor(ethereum, orbs, ethereumUrl, options) {
         this.ethereum = ethereum;
         this.options = options;
         this.orbs = orbs;
+        this.ethereumUrl = ethereumUrl;
     }
 
     newStakeHolderFactory() {
@@ -243,10 +244,10 @@ class ElectionContracts {
                     "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
                     "ERC20_CONTRACT_ADDRESS": this.erc20.address,
                     "VOTING_CONTRACT_ADDRESS": this.voting.address,
-                    "START_BLOCK_ON_ETHEREUM": 0, //TODO change for ropsten/mainnet
+                    "START_BLOCK_ON_ETHEREUM": 1, //TODO change for ropsten/mainnet
                     "END_BLOCK_ON_ETHEREUM": electionBlockNumber,
                     "VERBOSE": true,
-                    "NETWORK_URL_ON_ETHEREUM": "http://localhost:7545", //TODO change for ropsten/mainnet
+                    "NETWORK_URL_ON_ETHEREUM": this.ethereumUrl,
                     "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
                     PATH: process.env.PATH
                 },

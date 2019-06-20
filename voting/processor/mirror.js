@@ -158,7 +158,7 @@ async function iterateOverEvents(start, end, pace) {
             await delegateEvents(ethereumConnectionURL, votingContractAddress, i, minEnd);
         } catch (e) {
             if (verbose) {
-                console.log('\x1b[35m%s\x1b[0m', `too many events, slowing down by factor of 10`);
+                console.log('\x1b[35m%s\x1b[0m', `too many events, slowing down by factor of 10`, e);
             }
             if (pace < 20) { // really should not get here
                 console.log('\x1b[31m%s\x1b[0m', `something is terrible wrong. exit`);
