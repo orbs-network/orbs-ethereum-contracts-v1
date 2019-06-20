@@ -120,20 +120,22 @@ class ElectionContracts {
     async deploy() {
         //TODO parallelize whatever we can
         const signer = {from: this.ethereum.accounts[0]};
+        const votingContractsBuildDir = "../../ethereum/build/contracts";
+
         this.erc20 = await this.ethereum.deploySolidityContract(signer, 'TestingERC20', "build/contracts");
         console.log("ERC20 contract at", this.erc20.address);
 
-        this.voting = await this.ethereum.deploySolidityContract(signer, 'OrbsVoting', "build/contracts", this.options.maxVoteOut);
+        this.voting = await this.ethereum.deploySolidityContract(signer, 'OrbsVoting', votingContractsBuildDir, this.options.maxVoteOut);
         console.log("Voting contract at", this.voting.address);
 
-        this.validatorsRegistry = await this.ethereum.deploySolidityContract(signer, 'OrbsValidatorsRegistry', "build/contracts");
+        this.validatorsRegistry = await this.ethereum.deploySolidityContract(signer, 'OrbsValidatorsRegistry', votingContractsBuildDir);
         console.log("ValidatorsRegistry contract at", this.validatorsRegistry.address);
 
-        this.validators = await this.ethereum.deploySolidityContract(signer, 'OrbsValidators', "build/contracts", this.validatorsRegistry.address, this.options.validatorsLimit);
+        this.validators = await this.ethereum.deploySolidityContract(signer, 'OrbsValidators', votingContractsBuildDir, this.validatorsRegistry.address, this.options.validatorsLimit);
         console.log("Validators contract at", this.validators.address);
 
         const guardianWeiDeposit = helpers.getWeiDeposit(this.ethereum.web3);
-        this.guardians = await this.ethereum.deploySolidityContract(signer, 'OrbsGuardians', "build/contracts", guardianWeiDeposit, this.options.minRegistrationSeconds);
+        this.guardians = await this.ethereum.deploySolidityContract(signer, 'OrbsGuardians', votingContractsBuildDir, guardianWeiDeposit, this.options.minRegistrationSeconds);
         console.log("Guardians contract at", this.guardians.address);
 
         // Deploy Orbs voting contract
