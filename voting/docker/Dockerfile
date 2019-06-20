@@ -17,6 +17,9 @@ WORKDIR /usr/src/orbs-ethereum-contracts
 COPY voting/ ./voting/
 COPY psilo/ ./psilo/
 
+WORKDIR /usr/src/orbs-ethereum-contracts/voting/ethereum
+RUN yarn && yarn compile
+
 WORKDIR /usr/src/orbs-ethereum-contracts/voting/processor
 RUN rm -f orbs-gamma-config.json && \
     mv orbs-gamma-config.docker.json orbs-gamma-config.json
