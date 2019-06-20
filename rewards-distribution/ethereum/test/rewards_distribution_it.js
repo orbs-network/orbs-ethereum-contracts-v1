@@ -11,6 +11,8 @@ const chai = require('chai');
 chai.use(require('chai-bn')(BN));
 const expect = chai.expect;
 
+const {expectRevert} = require('./assertExtensions');
+
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 const ERC20 = artifacts.require('./TestingERC20');
 
@@ -50,7 +52,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
             const pendingHashes = await instance.getPendingBatches("test");
 
-            expect(pendingHashes).to.deep.equal(hashes);
+            expect(pendingHashes.batchHashes).to.deep.equal(hashes);
 
             // transfer tokens to contract
             await erc20.assign(instance.address, totalAmount);
@@ -88,15 +90,81 @@ contract('OrbsRewardsDistribution', accounts => {
         expect(instance).to.exist;
     });
 
-    describe('announceDistributionEvent', ()=>{
-        it('emits event', async () => {
+    const batch1 = generateRewardsSpec(10);
+    const batch2 = batch1.splice(5, 9);
+    const batchHashes = [hashBatch(1, batch1, hashBatch(2, batch2))];
+    const distributionName = "testName";
+    describe('announceDistributionEvent', () => {
+        it('succeeds for new distributions but fails for ongoing distributions', async () => {
             const erc20 = await ERC20.new();
             const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
 
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+            await expectRevert(instance.announceDistributionEvent(distributionName, batchHashes)); // second announcment fails
 
+            await instance.announceDistributionEvent(distributionName + "XX", batchHashes); // a different name works
+
+            await instance.abortDistributionEvent(distributionName);
+            await instance.announceDistributionEvent(distributionName, batchHashes); // succeed after aborting
+        });
+        it('emits RewardsDistributionAnnounced event', async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const result = await instance.announceDistributionEvent(distributionName, batchHashes);
+
+            expect(result.logs).to.have.length(1);
+            const firstEvent = result.logs[0];
+            expect(firstEvent).to.have.property("event", "RewardsDistributionAnnounced");
+            expect(firstEvent.args).to.have.property('distributionName', distributionName);
+            expect(firstEvent.args).to.have.property('batchHash');
+            expect(firstEvent.args).to.have.property('batchCount');
+            expect(firstEvent.args.batchHash).to.deep.equal(batchHashes);
+            expect(firstEvent.args.batchCount).to.be.bignumber.equal(new BN(batchHashes.length));
+
+            const storedHashes = await instance.getPendingBatches(distributionName);
+            expect(storedHashes.batchHashes).to.deep.equal(batchHashes);
+        });
+        it('records batches under the provided distribution name', async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+
+            const storedHashes = await instance.getPendingBatches(distributionName);
+            expect(storedHashes.batchHashes).to.deep.equal(batchHashes);
         });
     });
 
+    describe('abortDistributionEvent', () => {
+        it('emits RewardsDistributionAborted event', async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+            const result = await instance.abortDistributionEvent(distributionName);
+
+            expect(result.logs).to.have.length(1);
+            const firstEvent = result.logs[0];
+            expect(firstEvent).to.have.property("event", "RewardsDistributionAborted");
+            expect(firstEvent.args).to.have.property('distributionName', distributionName);
+            expect(firstEvent.args).to.have.property('abortedBatchHashes');
+            expect(firstEvent.args.abortedBatchHashes).to.deep.equal(batchHashes);
+            expect(firstEvent.args).to.have.property('abortedBatchNums');
+            expect(firstEvent.args.abortedBatchNums.map(n=>n.toNumber())).to.deep.equal(batchHashes.map((h,i)=>i));
+        });
+
+        it('deletes all pending batches', async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+
+            await instance.abortDistributionEvent(distributionName);
+            const batchesAfterAbortion = await instance.getPendingBatches(distributionName);
+            expect(batchesAfterAbortion.batchHashes).to.have.length(0);
+        });
+    });
 });
 
 function sleep(ms) {

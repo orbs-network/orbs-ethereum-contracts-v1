@@ -110,7 +110,7 @@ module.exports = {
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
-    timeout: 100000,
+    enableTimeouts: false,
     reporter: 'mocha-multi-reporters',
     reporterOptions: {
       configFile: './mocha-reporter-config.json',

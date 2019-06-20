@@ -36,14 +36,35 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         for (uint256 i = 0; i < batchLength; i++) {
             batchHashes[i] = _batchHashes[i];
         }
+        emit RewardsDistributionAnnounced(distributionName, _batchHashes, _batchHashes.length);
     }
 
     function abortDistributionEvent(string distributionName) external onlyOwner {
+        Distribution storage distribution = distributions[distributionName];
+        uint256 totalBatches = distribution.totalBatches;
+        mapping(uint256=>bytes32) batchHashes = distribution.batchHashes;
 
+        (bytes32[] memory abortedBatchHahes, uint256[] memory abortedBatchNums) = this.getPendingBatches(distributionName);
+
+        for (uint256 i = 0; i < totalBatches; i++) {
+            if (batchHashes[i] != 0) {
+                delete batchHashes[i];
+            }
+        }
+        delete distributions[distributionName];
+        emit RewardsDistributionAborted(distributionName, abortedBatchHahes, abortedBatchNums);
+    }
+
+    function _distributeFees(string distributionName, address[] recipients, uint256[] amounts) private {
+        uint256 batchSize = recipients.length;
+        for (uint256 i = 0; i < batchSize; i++) {
+            orbs.transfer(recipients[i], amounts[i]);
+            emit RewardsDistributed(distributionName, recipients[i], amounts[i]);
+        }
     }
 
     function distributeFees(string distributionName, address[] recipients, uint256[] amounts) external onlyOwner {
-
+        _distributeFees(distributionName, recipients, amounts);
     }
 
     function executeCommittedBatch(string distributionName, address[] recipients, uint256[] amounts, uint256 batchNum) external {
@@ -54,7 +75,6 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         require(distribution.totalBatches > 0, "distribution is not currently ongoing");
         require(distribution.totalBatches >= batchNum, "batch number out of range");
 
-        // TODO - calculate hash and validate it. then remove it from batchHashes
         bytes32 calculatedHash = calcBatchHash(recipients, amounts, batchNum);
         require(distribution.batchHashes[batchNum] == calculatedHash, "batch hash does not match");
         delete distribution.batchHashes[batchNum];
@@ -64,31 +84,32 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
             delete distributions[distributionName];
         }
 
-        uint256 batchSize = recipients.length;
-        for (uint256 i = 0; i < batchSize; i++) {
-            orbs.transfer(recipients[i], amounts[i]);
-            emit RewardsDistributed(distributionName, recipients[i], amounts[i]);
-        }
+        _distributeFees(distributionName, recipients, amounts);
     }
 
-    function getOngoingDistributionEvents() external view returns (string delimitedNames) {
-
-    }
-
-    function getPendingBatches(string distributionName) external view returns (bytes32[] pendingBatches) {
+    function getPendingBatches(string distributionName) external view returns (bytes32[] batchHashes, uint256[] batchNums) {
         Distribution storage distribution = distributions[distributionName];
 
-        pendingBatches = new bytes32[](distribution.totalBatches);
+        batchHashes = new bytes32[](distribution.pendingBatches);
+        batchNums = new uint256[](distribution.pendingBatches);
 
-        mapping(uint256 => bytes32) batchHashes = distribution.batchHashes;
+        mapping(uint256 => bytes32) batchHashesMap = distribution.batchHashes;
 
-        for (uint256 i = 0; i < pendingBatches.length; i++) {
-            pendingBatches[i] = batchHashes[i];
+        uint256 nextAddAtPos = 0;
+        for (uint256 i = 0; i < batchHashes.length; i++) {
+            bytes32 hash = batchHashesMap[i];
+            if (hash != 0) {
+                batchNums[nextAddAtPos] = i;
+                batchHashes[nextAddAtPos] = hash;
+                nextAddAtPos++;
+            }
         }
     }
 
     function drainOrbs(address to) external onlyOwner {
-
+        require(to != address(0), "to address missing");
+        uint256 balance = orbs.balanceOf(address(this));
+        orbs.transfer(to, balance);
     }
 
     function calcBatchHash(address[] recipients, uint256[] amounts, uint256 batchNum) private pure returns (bytes32) {
