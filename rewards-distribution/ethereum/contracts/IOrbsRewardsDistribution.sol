@@ -2,22 +2,22 @@ pragma solidity 0.4.25;
 
 
 interface IOrbsRewardsDistribution {
-    event RewardsDistributed(string distributionName, address indexed recipient, uint256 amount);
+    event RewardsDistributed(string distributionEvent, address indexed recipient, uint256 amount);
 
-    event RewardsDistributionAnnounced(string distributionName, bytes32[] batchHash, uint256 batchCount);
-    event RewardsBatchExecuted(string distributionName, bytes32 batchHash, uint256 batchNum);
-    event RewardsDistributionAborted(string distributionName, bytes32[] abortedBatchHashes, uint256[] abortedBatchNums);
-    event RewardsDistributionCompleted(string distributionName);
+    event RewardsDistributionAnnounced(string distributionEvent, bytes32[] batchHash, uint256 batchCount);
+    event RewardsBatchExecuted(string distributionEvent, bytes32 batchHash, uint256 batchIndex);
+    event RewardsDistributionAborted(string distributionEvent, bytes32[] abortedBatchHashes, uint256[] abortedBatchIndices);
+    event RewardsDistributionCompleted(string distributionEvent);
 
-    function announceDistributionEvent(string distributionName, bytes32[] batchHashes) external;
-    function abortDistributionEvent(string distributionName) external;
+    function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external;
+    function abortDistributionEvent(string distributionEvent) external;
 
-    function executeCommittedBatch(string distributionName, address[] recipients, uint256[] amounts, uint256 batchNum) external;
+    function executeCommittedBatch(string distributionEvent, address[] recipients, uint256[] amounts, uint256 batchIndex) external;
 
     /**
     * called by owner to bypass distribution announcements and batch hash commitments
     */
-    function distributeFees(string distributionName, address[] recipients, uint256[] amounts) external;
+    function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external;
 
-    function getPendingBatches(string distributionName) external view returns (bytes32[] batchHashes, uint256[] batchNums);
+    function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices);
 }
