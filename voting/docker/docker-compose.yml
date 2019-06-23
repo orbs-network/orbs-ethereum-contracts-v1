@@ -2,6 +2,10 @@ version: "3"
 services:
   gamma:
     image: orbs:unsanitry-gamma
+    entrypoint:
+      - /bin/sh
+      - -c
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && sh /opt/orbs/run-gamma.sh
     ports:
       - 8080:8080
   ganache:

@@ -210,6 +210,7 @@ class ElectionContracts {
 
         // verify finality achieved
         const currentFinalQueryResult = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentEthereumBlockNumber");
+        expect(currentFinalQueryResult).to.be.successful;
         const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
 
         expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
