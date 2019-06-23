@@ -1,0 +1,2 @@
+FROM orbsnetwork/gamma:experimental
+CMD /opt/orbs/gamma-server -override-config "{\"processor-sanitize-deployed-contracts\": false}"

@@ -1,13 +1,12 @@
 #!/bin/bash -x
-export GANACHE_START_TIME=$(node -e "console.log(new Date(new Date() - 1000 * 60 * 25))")
-
 echo "Building the test container for the voting contracts.."
 docker build -t orbs:voting -f voting/docker/Dockerfile .
+docker build -t orbs:unsanitry-gamma -f voting/docker/Dockerfile.gamma .
 
 echo "Starting up test environment.."
 docker-compose -f voting/docker/docker-compose.yml down -v
 docker-compose -f voting/docker/docker-compose.yml up -d
-docker exec voting_gamma_1 sudo echo "ganache host.docker.internal" > /etc/hosts
+#docker exec voting_gamma_1 sudo echo "ganache host.docker.internal" > /etc/hosts
 
 echo "Sleeping for a few seconds to let Ganache and Gamma become ready to accept connections"
 sleep 5

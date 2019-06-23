@@ -1,13 +1,9 @@
 version: "3"
 services:
   gamma:
-    image: orbsnetwork/gamma:experimental
+    image: orbs:unsanitry-gamma
     ports:
       - 8080:8080
-    entrypoint:
-      - /bin/sh
-      - -c
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && /opt/orbs/gamma-server
   ganache:
     image: trufflesuite/ganache-cli
     ports:
