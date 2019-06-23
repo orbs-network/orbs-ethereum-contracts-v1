@@ -11,7 +11,7 @@
 * For Ethereum Mainnet: 
     * Make sure MAINNET_SECRET and MAINNET_URL are set
 * For Ganache: 
-    * To Override localhost set GANACHE_HOST
+    * To Override localhost set GANACHE_URL
 * Run:
 ```
 > mkdir -p build/contracts && cp ../../build/ethereum/* build/contracts/
