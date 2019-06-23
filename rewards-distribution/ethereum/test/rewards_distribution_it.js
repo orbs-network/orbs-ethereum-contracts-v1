@@ -90,6 +90,13 @@ contract('OrbsRewardsDistribution', accounts => {
         expect(instance).to.exist;
     });
 
+    it('is not payable', async () => {
+        const erc20 = await ERC20.new();
+        const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+        await expectRevert(web3.eth.sendTransaction({from:owner, to: instance.address, value: "1"}));
+    });
+
     const batch0 = generateRewardsSpec(10);
     const batch1 = batch0.splice(5, 9);
     const batchHashes = [hashBatch(0, batch0), hashBatch(1, batch1)];
