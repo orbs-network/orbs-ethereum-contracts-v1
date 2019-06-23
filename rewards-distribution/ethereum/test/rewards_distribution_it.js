@@ -62,10 +62,9 @@ contract('OrbsRewardsDistribution', accounts => {
             // execute all batches
             const firstBlockNumber = await web3.eth.getBlockNumber();
             for (let i = 0; i < batches.length; i++) {
-                res = await instance.executeCommittedBatch("test", batches[i].map(r => r.address), batches[i].map(r => r.amount), i);
+                res = await executeBatch(instance, "test", batches[i], i);
                 totalGasUsed += res.receipt.gasUsed;
             }
-            console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
 
             // check balances
             expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(0));
@@ -81,6 +80,7 @@ contract('OrbsRewardsDistribution', accounts => {
             }));
             expect(readRewards).to.have.same.deep.members(rewardsSpec);
 
+            //console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
         });
     });
 
@@ -90,9 +90,9 @@ contract('OrbsRewardsDistribution', accounts => {
         expect(instance).to.exist;
     });
 
-    const batch1 = generateRewardsSpec(10);
-    const batch2 = batch1.splice(5, 9);
-    const batchHashes = [hashBatch(1, batch1, hashBatch(2, batch2))];
+    const batch0 = generateRewardsSpec(10);
+    const batch1 = batch0.splice(5, 9);
+    const batchHashes = [hashBatch(0, batch0), hashBatch(1, batch1)];
     const distributionName = "testName";
     describe('announceDistributionEvent', () => {
         it('succeeds for new distributions but fails for ongoing distributions', async () => {
@@ -151,7 +151,7 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(firstEvent.args).to.have.property('abortedBatchHashes');
             expect(firstEvent.args.abortedBatchHashes).to.deep.equal(batchHashes);
             expect(firstEvent.args).to.have.property('abortedBatchNums');
-            expect(firstEvent.args.abortedBatchNums.map(n=>n.toNumber())).to.deep.equal(batchHashes.map((h,i)=>i));
+            expect(firstEvent.args.abortedBatchNums.map(n => n.toNumber())).to.deep.equal(batchHashes.map((h, i) => i));
         });
 
         it('deletes all pending batches', async () => {
@@ -160,9 +160,122 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await instance.announceDistributionEvent(distributionName, batchHashes);
 
+            const batchesBeforeAbortion = await instance.getPendingBatches(distributionName);
+            expect(batchesBeforeAbortion.batchHashes).to.have.length(batchHashes.length);
+
             await instance.abortDistributionEvent(distributionName);
+
             const batchesAfterAbortion = await instance.getPendingBatches(distributionName);
             expect(batchesAfterAbortion.batchHashes).to.have.length(0);
+        });
+    });
+
+    describe("executeCommittedBatch", () => {
+        it("distributes orbs and logs RewardsDistributed events for each recipient", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+            const executionResult = await executeBatch(instance, distributionName, batch0, 0);
+
+            // check balances
+            expect(await erc20.balanceOf(instance.address)).to.be.bignumber.equal(new BN(0));
+            batch0.map(async (reward) => {
+                expect(await erc20.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
+            });
+
+            // check events
+            const rewardsDistributedLogs = executionResult.logs.filter(log=>log.event === "RewardsDistributed");
+            const readRewards = rewardsDistributedLogs.map(log => ({
+                address: log.args.recipient.toLowerCase(),
+                amount: log.args.amount.toNumber()
+            }));
+            expect(readRewards).to.have.same.deep.members(batch0);
+        });
+
+        it("fails if distributionEvent or was not announced, but succeeds otherwise", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            await expectRevert(executeBatch(instance, distributionName, batch0, 0));
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+            await executeBatch(instance, distributionName, batch0, 0);
+        });
+
+        it("fails if batch or was not announced at exact position, but succeeds for declared batches", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+
+            await expectRevert(executeBatch(instance, distributionName, batch0.slice(1), 0)); // wrong batch list
+
+            await expectRevert(executeBatch(instance, distributionName, batch0, 1)); // wrong batchNum
+
+            await executeBatch(instance, distributionName, batch0, 0);
+        });
+
+        it("fails for zero recipient address or zero amount", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            const batchWithZeroAddr = generateRewardsSpec(10);
+            const batchWithZeroAmount = batchWithZeroAddr.splice(5, 9);
+            batchWithZeroAddr[0].address = batchWithZeroAddr[0].address.replace(/[1-9]/g, "0");
+            batchWithZeroAmount[0].amount = 0;
+
+            const badBatchHashes = [hashBatch(0, batchWithZeroAddr), hashBatch(1, batchWithZeroAmount)];
+            await instance.announceDistributionEvent(distributionName, badBatchHashes);
+
+            await expectRevert(executeBatch(instance, distributionName, batch0, 0));
+            await expectRevert(executeBatch(instance, distributionName, batch1, 1));
+        });
+
+        it("distributes each batch only once", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount * 2);
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+
+            await executeBatch(instance, distributionName, batch0, 0); // first time
+
+            await expectRevert(executeBatch(instance, distributionName, batch0, 0)); // second time
+        });
+
+        it("removes the batch hash from pending batches", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount * 2);
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+
+            const pendingBeforeExecution = await instance.getPendingBatches(distributionName);
+            expect(pendingBeforeExecution.batchHashes).to.deep.equal(batchHashes);
+            expect(pendingBeforeExecution.batchNums.map(i=>i.toNumber())).to.deep.equal([0,1]);
+
+            await executeBatch(instance, distributionName, batch0, 0); // first time
+
+            const pendingAfterExecution = await instance.getPendingBatches(distributionName);
+            expect(pendingAfterExecution.batchHashes).to.deep.equal(batchHashes.slice(1));
+            expect(pendingAfterExecution.batchNums.map(i=>i.toNumber())).to.deep.equal([1]);
         });
     });
 });
@@ -173,11 +286,15 @@ function sleep(ms) {
     })
 }
 
+function executeBatch(instance, distributionName, batch, batchNum) {
+    return instance.executeCommittedBatch(distributionName, batch.map(r => r.address), batch.map(r => r.amount), batchNum);
+}
+
 function generateRewardsSpec(count) {
     const result = [];
     for (let i = 0; i < count; i++) {
         const addr = "0x" + (i + 1).toString(16).padStart(40, "0");
-        result.push({address: addr, amount: i});
+        result.push({address: addr, amount: i+1});
     }
     return result;
 }
@@ -187,7 +304,7 @@ function hashBatch(batchId, batch) {
     let amounts = [];
     batch.map((reward, index) => {
         const bytes32PaddedAddress = web3.utils.leftPad(reward.address, 64);
-        addresses[index] = {t: 'bytes32',v: bytes32PaddedAddress};
+        addresses[index] = {t: 'bytes32', v: bytes32PaddedAddress};
         amounts[index] = {t: 'uint256', v: reward.amount};
     });
     return web3.utils.soliditySha3(
