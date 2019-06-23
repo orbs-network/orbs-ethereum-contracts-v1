@@ -7,6 +7,7 @@ interface IOrbsRewardsDistribution {
     event RewardsDistributionAnnounced(string distributionName, bytes32[] batchHash, uint256 batchCount);
     event RewardsBatchExecuted(string distributionName, bytes32 batchHash, uint256 batchNum);
     event RewardsDistributionAborted(string distributionName, bytes32[] abortedBatchHashes, uint256[] abortedBatchNums);
+    event RewardsDistributionCompleted(string distributionName);
 
     function announceDistributionEvent(string distributionName, bytes32[] batchHashes) external;
     function abortDistributionEvent(string distributionName) external;

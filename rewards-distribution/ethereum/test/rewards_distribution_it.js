@@ -196,6 +196,37 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(readRewards).to.have.same.deep.members(batch0);
         });
 
+        it("emits RewardsDistributionCompleted event", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.concat(batch1).reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+            const firstBatchResult = await executeBatch(instance, distributionName, batch0, 0);
+            const secondBatchResult = await executeBatch(instance, distributionName, batch1, 1);
+
+            const firstBatchCompletedEvents = firstBatchResult.logs.filter(log=>log.event === "RewardsDistributionCompleted");
+            const secondBatchCompletedEvents = secondBatchResult.logs.filter(log=>log.event === "RewardsDistributionCompleted");
+
+            expect(firstBatchCompletedEvents).to.have.length(0);
+            expect(secondBatchCompletedEvents).to.have.length(1);
+            expect(secondBatchCompletedEvents[0].args).to.have.property("distributionName", distributionName);
+        });
+
+        it("supports processing batches out of order", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const totalAmount = batch0.concat(batch1).reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            await instance.announceDistributionEvent(distributionName, batchHashes);
+            await executeBatch(instance, distributionName, batch1, 1);
+            await executeBatch(instance, distributionName, batch0, 0);
+        });
+
         it("fails if distributionEvent or was not announced, but succeeds otherwise", async () => {
             const erc20 = await ERC20.new();
             const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
@@ -225,23 +256,38 @@ contract('OrbsRewardsDistribution', accounts => {
             await executeBatch(instance, distributionName, batch0, 0);
         });
 
-        it("fails for zero recipient address or zero amount", async () => {
+        it("fails for zero recipient", async () => {
             const erc20 = await ERC20.new();
             const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
 
-            const totalAmount = batch0.reduce((sum, reward) => sum + reward.amount, 0);
-            await erc20.assign(instance.address, totalAmount);
 
             const batchWithZeroAddr = generateRewardsSpec(10);
-            const batchWithZeroAmount = batchWithZeroAddr.splice(5, 9);
-            batchWithZeroAddr[0].address = batchWithZeroAddr[0].address.replace(/[1-9]/g, "0");
-            batchWithZeroAmount[0].amount = 0;
+            batchWithZeroAddr[0].address = batchWithZeroAddr[0].address.replace(/[^x]/g, "0");
 
-            const badBatchHashes = [hashBatch(0, batchWithZeroAddr), hashBatch(1, batchWithZeroAmount)];
+            const totalAmount = batchWithZeroAddr.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            const badBatchHashes = [hashBatch(0, batchWithZeroAddr)];
             await instance.announceDistributionEvent(distributionName, badBatchHashes);
 
-            await expectRevert(executeBatch(instance, distributionName, batch0, 0));
-            await expectRevert(executeBatch(instance, distributionName, batch1, 1));
+            const error = await expectRevert(executeBatch(instance, distributionName, batchWithZeroAddr, 0));
+            expect(error).to.have.property("reason", "recipient must be a valid address");
+        });
+
+        it("succeeds for zero amount", async () => {
+            const erc20 = await ERC20.new();
+            const instance = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
+
+            const batchWithZeroAmount = generateRewardsSpec(10);
+            batchWithZeroAmount[0].amount = 0;
+
+            const totalAmount = batchWithZeroAmount.reduce((sum, reward) => sum + reward.amount, 0);
+            await erc20.assign(instance.address, totalAmount);
+
+            const badBatchHashes = [hashBatch(0, batchWithZeroAmount)];
+            await instance.announceDistributionEvent(distributionName, badBatchHashes);
+
+            await executeBatch(instance, distributionName, batchWithZeroAmount, 0);
         });
 
         it("distributes each batch only once", async () => {

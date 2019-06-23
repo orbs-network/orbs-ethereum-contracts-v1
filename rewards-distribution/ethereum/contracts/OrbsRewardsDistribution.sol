@@ -28,17 +28,14 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
         uint256 batchCount = _batchHashes.length;
 
-        for (uint256 i = 0; i < batchCount; i++) {
-            require(_batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
-        }
-
         Distribution storage distribution = distributions[distributionName];
         distribution.totalBatches = batchCount;
         distribution.pendingBatches = batchCount;
 
         mapping(uint256 => bytes32) batchHashes = distribution.batchHashes;
 
-        for (i = 0; i < batchCount; i++) {
+        for (uint256 i = 0; i < batchCount; i++) {
+            require(_batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
             batchHashes[i] = _batchHashes[i];
         }
         emit RewardsDistributionAnnounced(distributionName, _batchHashes, _batchHashes.length);
@@ -66,7 +63,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
         for (uint256 i = 0; i < batchSize; i++) {
             require(recipients[i] != address(0), "recipient must be a valid address");
-            require(amounts[i] > 0, "amount must be a positive value");
+            orbs.transfer(recipients[i], 0);
             orbs.transfer(recipients[i], amounts[i]);
             emit RewardsDistributed(distributionName, recipients[i], amounts[i]);
         }
@@ -82,7 +79,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         require(recipients.length == amounts.length, "array length mismatch");
         require(recipients.length >= 1, "at least one reward must be included in a batch");
         require(distribution.totalBatches > 0, "distribution is not currently ongoing");
-        require(distribution.totalBatches >= batchNum, "batch number out of range");
+        require(distribution.totalBatches > batchNum, "batch number out of range");
         require(distribution.batchHashes[batchNum] != bytes32(0), "specified batch number already executed");
 
         bytes32 calculatedHash = calcBatchHash(recipients, amounts, batchNum);
@@ -91,12 +88,14 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         distribution.pendingBatches--;
         delete distribution.batchHashes[batchNum];
 
+        emit RewardsBatchExecuted(distributionName, calculatedHash, batchNum);
+
         if (distribution.pendingBatches == 0) {
             delete distributions[distributionName];
+            emit RewardsDistributionCompleted(distributionName);
         }
 
         _distributeFees(distributionName, recipients, amounts);
-        emit RewardsBatchExecuted(distributionName, calculatedHash, batchNum);
     }
 
     function getPendingBatches(string distributionName) external view returns (bytes32[] batchHashes, uint256[] batchNums) {

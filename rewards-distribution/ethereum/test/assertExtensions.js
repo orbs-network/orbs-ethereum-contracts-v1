@@ -39,7 +39,7 @@ module.exports.expectRevert = async (promise) => {
 
         assert(invalidOpcode || revert || outOfGas, `Expected revert, got ${error} instead`);
 
-        return;
+        return error;
     }
 
     assert(false, "Expected revert wasn't received");
