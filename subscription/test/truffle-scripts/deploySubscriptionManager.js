@@ -5,21 +5,23 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
+const {EthereumAdapter} = require("psilo");
 
-module.exports = async function(done) {
-  try {
+(async function () {
+    let ethereum;
+    try {
+        ethereum = await EthereumAdapter.build();
+        const signer = ethereum.accounts[0];
+        const contractName = 'FakeSubscriptionChecker';
 
-    const subscriptionManager = artifacts.require('FakeSubscriptionChecker');
-    let instance = await subscriptionManager.new();
+        const instance = await ethereum.deploySolidityContract({from: signer}, contractName);
+        console.log(JSON.stringify({
+            Address: instance.address
+        }, null, 2));
 
-    console.log(JSON.stringify({
-      Address: instance.address
-    }, null, 2));
+    } catch (e) {
+        console.log("caught error", e);
+    }
+    ethereum.stop(); // otherwise the code doesn't terminate;
+})();
 
-    done();
-
-  } catch (e) {
-    console.log(e);
-    done(e);
-  }
-};

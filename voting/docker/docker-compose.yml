@@ -1,13 +1,13 @@
 version: "3"
 services:
   gamma:
-    image: orbsnetwork/gamma:experimental
-    ports:
-      - 8080:8080
+    image: orbs:unsanitry-gamma
     entrypoint:
       - /bin/sh
       - -c
-      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && /opt/orbs/gamma-server
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && sh /opt/orbs/run-gamma.sh
+    ports:
+      - 8080:8080
   ganache:
     image: trufflesuite/ganache-cli
     ports:
@@ -20,4 +20,5 @@ services:
     image: orbs:voting
     command: tail -f /etc/hosts
     environment:
-      GANACHE_HOST: "http://ganache:7545"
+      GANACHE_URL: "http://ganache:7545"
+      GAMMA_URL: "http://gamma:8080"

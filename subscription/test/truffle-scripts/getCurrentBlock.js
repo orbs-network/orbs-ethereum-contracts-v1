@@ -6,19 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-module.exports = async function(done) {
-  try {
+const {EthereumAdapter} = require("psilo");
 
-    let block = await web3.eth.getBlock("latest")
-
-    console.log(JSON.stringify({
-      CurrentBlock: block.number
-    }, null, 2));
-
-    done();
-
-  } catch (e) {
-    console.log(e);
-    done(e);
-  }
-};
+(async function () {
+    let ethereum;
+    try {
+        ethereum = await EthereumAdapter.build();
+        const block = await ethereum.getLatestBlock();
+        console.log(JSON.stringify({
+            CurrentBlock: block.number
+        }, null, 2));
+    } catch (e) {
+        console.log("caught error", e);
+    }
+    ethereum.stop()
+})();

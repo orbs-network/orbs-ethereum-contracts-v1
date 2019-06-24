@@ -1,10 +1,10 @@
 {
-  "name": "voting",
+  "name": "orbs-voting-test",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "An integrative test for orbs voting contracts",
+  "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha *.spec.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,5 +14,17 @@
     "truffle": "5.0.5",
     "truffle-hdwallet-provider": "1.0.3",
     "web3": "1.0.0-beta.47"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "psilo": "file:../../../psilo"
+  },
+  "mocha": {
+    "diff": true,
+    "reporter": "spec",
+    "slow": 75,
+    "timeout": 90000,
+    "ui": "bdd"
   }
 }

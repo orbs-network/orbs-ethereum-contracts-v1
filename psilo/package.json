@@ -1,0 +1,25 @@
+{
+  "name": "psilo",
+  "version": "1.0.0",
+  "description": "A framework for writing integrative tests for Ethereum and Orbs smart contracts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Orbs Ltd.",
+  "license": "ISC",
+  "dependencies": {
+    "orbs-client-sdk": "0.0.6",
+    "truffle": "5.0.5",
+    "truffle-contract": "^4.0.18",
+    "truffle-deployer": "^3.0.19",
+    "truffle-hdwallet-provider": "^1.0.10",
+    "truffle-legacy-system": "^1.0.7",
+    "truffle-resolver": "^5.0.14",
+    "truffle-workflow-compile": "^2.0.17",
+    "web3": "1.0.0-beta.37"
+  },
+  "peerDependencies": {
+    "chai": "^4.2.0"
+  }
+}
