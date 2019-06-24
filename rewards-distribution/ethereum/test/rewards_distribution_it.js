@@ -12,7 +12,7 @@ chai.use(require('chai-bn')(BN));
 const expect = chai.expect;
 
 const {expectRevert} = require('./assertExtensions');
-const {parseBatches, hashBatch, announceRewards, executeBatches} = require('../client/distributionEvent');
+const {RewardsClient} = require('../client/RewardsClient');
 
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 const ERC20 = artifacts.require('./TestingERC20');
@@ -22,28 +22,30 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe('integration test - full flow', () => {
 
-        it('full flow integration test - distributes rewards specified in rewards report', async () => {
+        it('integration test - distributes rewards specified in rewards report', async () => {
             const erc20 = await ERC20.new();
             const rewards = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
             let totalGasUsed = 0;
 
-            const {rewardsToDistribute, batches, hashes} = await parseBatches(web3, "test/dummy_election.csv", 7);
-            const totalAmount = batches.reduce((sum, b) => sum.add(b.reduce((sum, reward) => sum.add(new BN(reward.amount)), new BN(0))), new BN(0));
+            const rewardsClient = new RewardsClient(rewards);
 
-            const announcmentResult = await announceRewards(rewards, owner, distributionEvent, hashes);
+            const {totalAmount, rewardsSuperset, batches, hashes} = await rewardsClient.parseBatches("test/dummy_election.csv", 7);
+
+            // owner action: transfer tokens to contract
+            await erc20.assign(rewards.address, totalAmount);
+            expect(await erc20.balanceOf(rewards.address)).to.be.bignumber.equal(totalAmount);
+
+            // owner action: announce rewards
+            const announcmentResult = await rewards.announceDistributionEvent(distributionEvent, hashes, {from: owner});
             totalGasUsed += announcmentResult.receipt.gasUsed;
 
+            // verify batch hashes were recorded
             const {pendingBatchHashes} = await rewards.getPendingBatches(distributionEvent);
             expect(pendingBatchHashes).to.deep.equal(hashes);
 
-            // transfer tokens to contract
-            await erc20.assign(rewards.address, totalAmount);
-
-            expect(await erc20.balanceOf(rewards.address)).to.be.bignumber.equal(totalAmount);
-
             // execute all batches
             const firstBlockNumber = await web3.eth.getBlockNumber();
-            const batchResults = await executeBatches(rewards, distributionEvent, batches);
+            const batchResults = await rewardsClient.executeBatches(distributionEvent, batches);
 
             batchResults.forEach(res =>{
                 totalGasUsed += res.receipt.gasUsed
@@ -51,7 +53,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
             // check balances
             expect(await erc20.balanceOf(rewards.address)).to.be.bignumber.equal(new BN(0));
-            rewardsToDistribute.map(async (reward) => {
+            rewardsSuperset.map(async (reward) => {
                 expect(await erc20.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
             });
 
@@ -61,7 +63,7 @@ contract('OrbsRewardsDistribution', accounts => {
                 address: log.args.recipient.toLowerCase(),
                 amount: log.args.amount.toNumber()
             }));
-            expect(readRewards).to.have.same.deep.members(rewardsToDistribute);
+            expect(readRewards).to.have.same.deep.members(rewardsSuperset);
 
             //console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
         });
@@ -82,7 +84,10 @@ contract('OrbsRewardsDistribution', accounts => {
 
     const batch0 = generateRewardsSpec(10);
     const batch1 = batch0.splice(5, 9);
-    const batchHashes = [hashBatch(web3, 0, batch0), hashBatch(web3,1, batch1)];
+    const batchHashes = [
+        RewardsClient.hashBatch(0, batch0),
+        RewardsClient.hashBatch(1, batch1)
+    ];
     const distributionEvent = "testName";
     describe('announceDistributionEvent', () => {
         it('succeeds for new distributions but fails for ongoing distributions', async () => {
@@ -257,7 +262,9 @@ contract('OrbsRewardsDistribution', accounts => {
             const totalAmount = batchWithZeroAddr.reduce((sum, reward) => sum + reward.amount, 0);
             await erc20.assign(rewards.address, totalAmount);
 
-            const badBatchHashes = [hashBatch(web3,0, batchWithZeroAddr)];
+            const badBatchHashes = [
+                RewardsClient.hashBatch(0, batchWithZeroAddr)
+            ];
             await rewards.announceDistributionEvent(distributionEvent, badBatchHashes);
 
             const error = await expectRevert(executeBatch(rewards, distributionEvent, batchWithZeroAddr, 0));
@@ -274,7 +281,9 @@ contract('OrbsRewardsDistribution', accounts => {
             const totalAmount = batchWithZeroAmount.reduce((sum, reward) => sum + reward.amount, 0);
             await erc20.assign(rewards.address, totalAmount);
 
-            const badBatchHashes = [hashBatch(web3,0, batchWithZeroAmount)];
+            const badBatchHashes = [
+                RewardsClient.hashBatch(0, batchWithZeroAmount)
+            ];
             await rewards.announceDistributionEvent(distributionEvent, badBatchHashes);
 
             await executeBatch(rewards, distributionEvent, batchWithZeroAmount, 0);

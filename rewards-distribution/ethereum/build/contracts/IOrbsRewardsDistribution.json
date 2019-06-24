@@ -1,20 +1,224 @@
 {
   "contractName": "IOrbsRewardsDistribution",
-  "abi": [],
-  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820d2490b0c0bdeeea172aa15fab4ee7a97775ecbd8650c5a115ed7dd64f45a9d630029",
-  "deployedBytecode": "0x6080604052600080fd00a165627a7a72305820d2490b0c0bdeeea172aa15fab4ee7a97775ecbd8650c5a115ed7dd64f45a9d630029",
-  "sourceMap": "26:39:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;26:39:0;;;;;;;",
-  "deployedSourceMap": "26:39:0:-;;;;;",
-  "source": "pragma solidity 0.4.25;\n\n\ninterface IOrbsRewardsDistribution {\n\n}",
-  "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/IOrbsRewardsDistribution.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "distributionEvent",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardDistributed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "distributionEvent",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "batchHash",
+          "type": "bytes32[]"
+        },
+        {
+          "indexed": false,
+          "name": "batchCount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardsDistributionAnnounced",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "distributionEvent",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "batchHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "batchIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardsBatchExecuted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "distributionEvent",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "abortedBatchHashes",
+          "type": "bytes32[]"
+        },
+        {
+          "indexed": false,
+          "name": "abortedBatchIndices",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "RewardsDistributionAborted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "distributionEvent",
+          "type": "string"
+        }
+      ],
+      "name": "RewardsDistributionCompleted",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "distributionEvent",
+          "type": "string"
+        },
+        {
+          "name": "batchHashes",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "announceDistributionEvent",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "distributionEvent",
+          "type": "string"
+        }
+      ],
+      "name": "abortDistributionEvent",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "distributionEvent",
+          "type": "string"
+        },
+        {
+          "name": "recipients",
+          "type": "address[]"
+        },
+        {
+          "name": "amounts",
+          "type": "uint256[]"
+        },
+        {
+          "name": "batchIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "executeCommittedBatch",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "distributionEvent",
+          "type": "string"
+        },
+        {
+          "name": "recipients",
+          "type": "address[]"
+        },
+        {
+          "name": "amounts",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "distributeRewards",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "distributionEvent",
+          "type": "string"
+        }
+      ],
+      "name": "getPendingBatches",
+      "outputs": [
+        {
+          "name": "pendingBatchHashes",
+          "type": "bytes32[]"
+        },
+        {
+          "name": "pendingBatchIndices",
+          "type": "uint256[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.4.25;\n\n\ninterface IOrbsRewardsDistribution {\n    event RewardDistributed(string distributionEvent, address indexed recipient, uint256 amount);\n\n    event RewardsDistributionAnnounced(string distributionEvent, bytes32[] batchHash, uint256 batchCount);\n    event RewardsBatchExecuted(string distributionEvent, bytes32 batchHash, uint256 batchIndex);\n    event RewardsDistributionAborted(string distributionEvent, bytes32[] abortedBatchHashes, uint256[] abortedBatchIndices);\n    event RewardsDistributionCompleted(string distributionEvent);\n\n    function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external;\n    function abortDistributionEvent(string distributionEvent) external;\n\n    function executeCommittedBatch(string distributionEvent, address[] recipients, uint256[] amounts, uint256 batchIndex) external;\n\n    /**\n    * called by owner to bypass distribution announcements and batch hash commitments\n    */\n    function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external;\n\n    function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices);\n}",
+  "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/ethereum/contracts/IOrbsRewardsDistribution.sol",
   "ast": {
-    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/IOrbsRewardsDistribution.sol",
+    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/ethereum/contracts/IOrbsRewardsDistribution.sol",
     "exportedSymbols": {
       "IOrbsRewardsDistribution": [
-        2
+        89
       ]
     },
-    "id": 3,
+    "id": 90,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -32,28 +236,1044 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": null,
-        "fullyImplemented": true,
-        "id": 2,
+        "fullyImplemented": false,
+        "id": 89,
         "linearizedBaseContracts": [
-          2
+          89
         ],
         "name": "IOrbsRewardsDistribution",
         "nodeType": "ContractDefinition",
-        "nodes": [],
-        "scope": 3,
-        "src": "26:39:0"
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 9,
+            "name": "RewardDistributed",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 8,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9,
+                  "src": "91:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "91:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5,
+                  "indexed": true,
+                  "name": "recipient",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9,
+                  "src": "117:25:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "117:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 7,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9,
+                  "src": "144:14:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "144:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "90:69:0"
+            },
+            "src": "67:93:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 18,
+            "name": "RewardsDistributionAnnounced",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 17,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 11,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 18,
+                  "src": "201:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 10,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "201:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 14,
+                  "indexed": false,
+                  "name": "batchHash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 18,
+                  "src": "227:19:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 12,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "227:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 13,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "227:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16,
+                  "indexed": false,
+                  "name": "batchCount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 18,
+                  "src": "248:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 15,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "248:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "200:67:0"
+            },
+            "src": "166:102:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 26,
+            "name": "RewardsBatchExecuted",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 25,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 20,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26,
+                  "src": "300:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 19,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "300:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22,
+                  "indexed": false,
+                  "name": "batchHash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26,
+                  "src": "326:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 21,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "326:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 24,
+                  "indexed": false,
+                  "name": "batchIndex",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26,
+                  "src": "345:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 23,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "345:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "299:65:0"
+            },
+            "src": "273:92:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 36,
+            "name": "RewardsDistributionAborted",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 35,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "403:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 27,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "403:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 31,
+                  "indexed": false,
+                  "name": "abortedBatchHashes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "429:28:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 29,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "429:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 30,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "429:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 34,
+                  "indexed": false,
+                  "name": "abortedBatchIndices",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "459:29:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 32,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "459:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 33,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "459:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "402:87:0"
+            },
+            "src": "370:120:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 40,
+            "name": "RewardsDistributionCompleted",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 39,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 38,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40,
+                  "src": "530:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 37,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "530:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "529:26:0"
+            },
+            "src": "495:61:0"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 48,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "announceDistributionEvent",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 46,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 42,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "597:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 41,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "597:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 45,
+                  "name": "batchHashes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "623:21:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_calldata_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 43,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "623:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 44,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "623:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "596:49:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 47,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "654:0:0"
+            },
+            "scope": 89,
+            "src": "562:93:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 53,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "abortDistributionEvent",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 51,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 50,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 53,
+                  "src": "692:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 49,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "692:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "691:26:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 52,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "726:0:0"
+            },
+            "scope": 89,
+            "src": "660:67:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 66,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "executeCommittedBatch",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 64,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "764:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 54,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "764:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58,
+                  "name": "recipients",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "790:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 56,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "790:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 57,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "790:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 61,
+                  "name": "amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "812:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 59,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "812:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 60,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "812:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 63,
+                  "name": "batchIndex",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "831:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 62,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "831:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "763:87:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 65,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "859:0:0"
+            },
+            "scope": 89,
+            "src": "733:127:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "called by owner to bypass distribution announcements and batch hash commitments",
+            "id": 77,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "distributeRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 75,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 68,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "994:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 67,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "994:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 71,
+                  "name": "recipients",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "1020:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 69,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1020:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 70,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1020:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 74,
+                  "name": "amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "1042:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 72,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1042:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 73,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1042:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "993:67:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 76,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1069:0:0"
+            },
+            "scope": 89,
+            "src": "967:103:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 88,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getPendingBatches",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 80,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 79,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 88,
+                  "src": "1103:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 78,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1103:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1102:26:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 87,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 83,
+                  "name": "pendingBatchHashes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 88,
+                  "src": "1152:28:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 81,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1152:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 82,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1152:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 86,
+                  "name": "pendingBatchIndices",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 88,
+                  "src": "1182:29:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 84,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1182:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 85,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1182:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1151:61:0"
+            },
+            "scope": 89,
+            "src": "1076:137:0",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 90,
+        "src": "26:1189:0"
       }
     ],
-    "src": "0:65:0"
+    "src": "0:1215:0"
   },
   "legacyAST": {
-    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/contracts/IOrbsRewardsDistribution.sol",
+    "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/ethereum/contracts/IOrbsRewardsDistribution.sol",
     "exportedSymbols": {
       "IOrbsRewardsDistribution": [
-        2
+        89
       ]
     },
-    "id": 3,
+    "id": 90,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -71,19 +1291,1035 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": null,
-        "fullyImplemented": true,
-        "id": 2,
+        "fullyImplemented": false,
+        "id": 89,
         "linearizedBaseContracts": [
-          2
+          89
         ],
         "name": "IOrbsRewardsDistribution",
         "nodeType": "ContractDefinition",
-        "nodes": [],
-        "scope": 3,
-        "src": "26:39:0"
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 9,
+            "name": "RewardDistributed",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 8,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9,
+                  "src": "91:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "91:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5,
+                  "indexed": true,
+                  "name": "recipient",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9,
+                  "src": "117:25:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 4,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "117:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 7,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 9,
+                  "src": "144:14:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "144:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "90:69:0"
+            },
+            "src": "67:93:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 18,
+            "name": "RewardsDistributionAnnounced",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 17,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 11,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 18,
+                  "src": "201:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 10,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "201:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 14,
+                  "indexed": false,
+                  "name": "batchHash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 18,
+                  "src": "227:19:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 12,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "227:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 13,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "227:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 16,
+                  "indexed": false,
+                  "name": "batchCount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 18,
+                  "src": "248:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 15,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "248:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "200:67:0"
+            },
+            "src": "166:102:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 26,
+            "name": "RewardsBatchExecuted",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 25,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 20,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26,
+                  "src": "300:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 19,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "300:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22,
+                  "indexed": false,
+                  "name": "batchHash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26,
+                  "src": "326:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 21,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "326:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 24,
+                  "indexed": false,
+                  "name": "batchIndex",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26,
+                  "src": "345:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 23,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "345:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "299:65:0"
+            },
+            "src": "273:92:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 36,
+            "name": "RewardsDistributionAborted",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 35,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "403:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 27,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "403:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 31,
+                  "indexed": false,
+                  "name": "abortedBatchHashes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "429:28:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 29,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "429:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 30,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "429:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 34,
+                  "indexed": false,
+                  "name": "abortedBatchIndices",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "459:29:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 32,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "459:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 33,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "459:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "402:87:0"
+            },
+            "src": "370:120:0"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 40,
+            "name": "RewardsDistributionCompleted",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 39,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 38,
+                  "indexed": false,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40,
+                  "src": "530:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 37,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "530:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "529:26:0"
+            },
+            "src": "495:61:0"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 48,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "announceDistributionEvent",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 46,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 42,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "597:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 41,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "597:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 45,
+                  "name": "batchHashes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "623:21:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_calldata_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 43,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "623:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 44,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "623:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "596:49:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 47,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "654:0:0"
+            },
+            "scope": 89,
+            "src": "562:93:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 53,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "abortDistributionEvent",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 51,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 50,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 53,
+                  "src": "692:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 49,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "692:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "691:26:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 52,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "726:0:0"
+            },
+            "scope": 89,
+            "src": "660:67:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 66,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "executeCommittedBatch",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 64,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "764:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 54,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "764:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 58,
+                  "name": "recipients",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "790:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 56,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "790:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 57,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "790:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 61,
+                  "name": "amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "812:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 59,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "812:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 60,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "812:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 63,
+                  "name": "batchIndex",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 66,
+                  "src": "831:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 62,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "831:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "763:87:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 65,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "859:0:0"
+            },
+            "scope": 89,
+            "src": "733:127:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "called by owner to bypass distribution announcements and batch hash commitments",
+            "id": 77,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "distributeRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 75,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 68,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "994:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 67,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "994:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 71,
+                  "name": "recipients",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "1020:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 69,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1020:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 70,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1020:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 74,
+                  "name": "amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 77,
+                  "src": "1042:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 72,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1042:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 73,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1042:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "993:67:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 76,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1069:0:0"
+            },
+            "scope": 89,
+            "src": "967:103:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 88,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getPendingBatches",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 80,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 79,
+                  "name": "distributionEvent",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 88,
+                  "src": "1103:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 78,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1103:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1102:26:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 87,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 83,
+                  "name": "pendingBatchHashes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 88,
+                  "src": "1152:28:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 81,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1152:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 82,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1152:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 86,
+                  "name": "pendingBatchIndices",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 88,
+                  "src": "1182:29:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 84,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1182:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 85,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1182:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1151:61:0"
+            },
+            "scope": 89,
+            "src": "1076:137:0",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 90,
+        "src": "26:1189:0"
       }
     ],
-    "src": "0:65:0"
+    "src": "0:1215:0"
   },
   "compiler": {
     "name": "solc",
@@ -91,11 +2327,15 @@
   },
   "networks": {},
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-06-17T08:14:52.255Z",
+  "updatedAt": "2019-06-24T22:26:19.411Z",
   "devdoc": {
     "methods": {}
   },
   "userdoc": {
-    "methods": {}
+    "methods": {
+      "distributeRewards(string,address[],uint256[])": {
+        "notice": "called by owner to bypass distribution announcements and batch hash commitments"
+      }
+    }
   }
 }
