@@ -27,7 +27,7 @@ contract('OrbsRewardsDistribution', accounts => {
             const rewards = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
             let totalGasUsed = 0;
 
-            const {rewardsToDistribute, batches, hashes} = await parseBatches(web3, "/Users/ron/Downloads/election_7968900.csv", 100);
+            const {rewardsToDistribute, batches, hashes} = await parseBatches(web3, "test/dummy_election.csv", 7);
             const totalAmount = batches.reduce((sum, b) => sum.add(b.reduce((sum, reward) => sum.add(new BN(reward.amount)), new BN(0))), new BN(0));
 
             const announcmentResult = await announceRewards(rewards, owner, distributionEvent, hashes);
