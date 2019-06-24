@@ -22,19 +22,19 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         orbs = _orbs;
     }
 
-    function announceDistributionEvent(string distributionEvent, bytes32[] _batchHashes) external onlyOwner {
+    function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external onlyOwner {
         require(distributions[distributionEvent].ongoing == false, "named distribution is currently ongoing");
-        require(_batchHashes.length >= 1, "at least one distribution must be announced");
-        for (uint256 i = 0; i < _batchHashes.length; i++) {
-            require(_batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
+        require(batchHashes.length >= 1, "at least one distribution must be announced");
+        for (uint256 i = 0; i < batchHashes.length; i++) {
+            require(batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
         }
 
         Distribution storage distribution = distributions[distributionEvent];
         distribution.ongoing = true;
-        distribution.pendingBatchCount = _batchHashes.length;
-        distribution.batchHashes = _batchHashes;
+        distribution.pendingBatchCount = batchHashes.length;
+        distribution.batchHashes = batchHashes;
 
-        emit RewardsDistributionAnnounced(distributionEvent, _batchHashes, _batchHashes.length);
+        emit RewardsDistributionAnnounced(distributionEvent, batchHashes, batchHashes.length);
     }
 
     function abortDistributionEvent(string distributionEvent) external onlyOwner {
