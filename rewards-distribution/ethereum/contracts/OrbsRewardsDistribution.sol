@@ -10,9 +10,9 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     IERC20 public orbs;
 
     struct Distribution {
-        uint256 batchCount;
+        bool ongoing;
         uint256 pendingBatchCount;
-        mapping(uint256 => bytes32) batchHashes;
+        bytes32[] batchHashes;
     }
 
     mapping(string => Distribution) distributions;
@@ -23,35 +23,25 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     }
 
     function announceDistributionEvent(string distributionEvent, bytes32[] _batchHashes) external onlyOwner {
-        require(distributions[distributionEvent].batchCount == 0, "named distribution is currently ongoing");
+        require(distributions[distributionEvent].ongoing == false, "named distribution is currently ongoing");
         require(_batchHashes.length >= 1, "at least one distribution must be announced");
-
-        uint256 batchCount = _batchHashes.length;
+        for (uint256 i = 0; i < _batchHashes.length; i++) {
+            require(_batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
+        }
 
         Distribution storage distribution = distributions[distributionEvent];
-        distribution.batchCount = batchCount;
-        distribution.pendingBatchCount = batchCount;
+        distribution.ongoing = true;
+        distribution.pendingBatchCount = _batchHashes.length;
+        distribution.batchHashes = _batchHashes;
 
-        mapping(uint256 => bytes32) batchHashes = distribution.batchHashes;
-
-        for (uint256 i = 0; i < batchCount; i++) {
-            require(_batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
-            batchHashes[i] = _batchHashes[i];
-        }
         emit RewardsDistributionAnnounced(distributionEvent, _batchHashes, _batchHashes.length);
     }
 
     function abortDistributionEvent(string distributionEvent) external onlyOwner {
-        Distribution storage distribution = distributions[distributionEvent];
-        mapping(uint256=>bytes32) batchHashes = distribution.batchHashes;
-
         (bytes32[] memory abortedBatchHashes, uint256[] memory abortedBatchIndices) = this.getPendingBatches(distributionEvent);
-        uint256 abortedBatchCount = abortedBatchIndices.length;
 
-        for (uint256 i = 0; i < abortedBatchCount; i++) {
-            delete batchHashes[abortedBatchIndices[i]];
-        }
         delete distributions[distributionEvent];
+
         emit RewardsDistributionAborted(distributionEvent, abortedBatchHashes, abortedBatchIndices);
     }
 
@@ -62,7 +52,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         for (uint256 i = 0; i < batchSize; i++) {
             require(recipients[i] != address(0), "recipient must be a valid address");
             orbs.transfer(recipients[i], amounts[i]);
-            emit RewardsDistributed(distributionEvent, recipients[i], amounts[i]);
+            emit RewardDistributed(distributionEvent, recipients[i], amounts[i]);
         }
     }
 
@@ -75,15 +65,17 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
         require(recipients.length == amounts.length, "array length mismatch");
         require(recipients.length >= 1, "at least one reward must be included in a batch");
-        require(distribution.batchCount > 0, "distribution is not currently ongoing");
-        require(distribution.batchCount > batchIndex, "batch number out of range");
+        require(distribution.ongoing == true, "distribution is not currently ongoing");
+        require(distribution.batchHashes.length > batchIndex, "batch number out of range");
         require(distribution.batchHashes[batchIndex] != bytes32(0), "specified batch number already executed");
 
         bytes32 calculatedHash = calcBatchHash(recipients, amounts, batchIndex);
         require(distribution.batchHashes[batchIndex] == calculatedHash, "batch hash does not match");
 
         distribution.pendingBatchCount--;
-        delete distribution.batchHashes[batchIndex];
+        distribution.batchHashes[batchIndex] = bytes32(0); // delete
+
+        _distributeRewards(distributionEvent, recipients, amounts);
 
         emit RewardsBatchExecuted(distributionEvent, calculatedHash, batchIndex);
 
@@ -91,22 +83,20 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
             delete distributions[distributionEvent];
             emit RewardsDistributionCompleted(distributionEvent);
         }
-
-        _distributeRewards(distributionEvent, recipients, amounts);
     }
 
     function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices) {
         Distribution storage distribution = distributions[distributionEvent];
-        mapping(uint256 => bytes32) batchHashesMap = distribution.batchHashes;
+        bytes32[] storage batchHashes = distribution.batchHashes;
         uint256 pendingBatchCount = distribution.pendingBatchCount;
-        uint256 totalBatchCount = distribution.batchCount;
+        uint256 batchHashesLength = distribution.batchHashes.length;
 
         pendingBatchHashes = new bytes32[](pendingBatchCount);
         pendingBatchIndices = new uint256[](pendingBatchCount);
 
         uint256 addNextAt = 0;
-        for (uint256 i = 0; i < totalBatchCount; i++) {
-            bytes32 hash = batchHashesMap[i];
+        for (uint256 i = 0; i < batchHashesLength; i++) {
+            bytes32 hash = batchHashes[i];
             if (hash != bytes32(0)) {
                 pendingBatchIndices[addNextAt] = i;
                 pendingBatchHashes[addNextAt] = hash;

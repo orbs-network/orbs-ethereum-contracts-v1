@@ -2,7 +2,7 @@ pragma solidity 0.4.25;
 
 
 interface IOrbsRewardsDistribution {
-    event RewardsDistributed(string distributionEvent, address indexed recipient, uint256 amount);
+    event RewardDistributed(string distributionEvent, address indexed recipient, uint256 amount);
 
     event RewardsDistributionAnnounced(string distributionEvent, bytes32[] batchHash, uint256 batchCount);
     event RewardsBatchExecuted(string distributionEvent, bytes32 batchHash, uint256 batchIndex);
