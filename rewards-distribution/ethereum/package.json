@@ -12,6 +12,7 @@
     "start-ganache": "ganache-cli -p 7545 -i 5777 > _out/ganache.log"
   },
   "dependencies": {
+    "csv-parse": "^4.4.3",
     "openzeppelin-solidity": "2.0.0",
     "truffle": "5.0.5",
     "truffle-hdwallet-provider": "^1.0.3"

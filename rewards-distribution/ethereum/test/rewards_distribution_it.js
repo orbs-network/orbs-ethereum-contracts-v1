@@ -12,6 +12,7 @@ chai.use(require('chai-bn')(BN));
 const expect = chai.expect;
 
 const {expectRevert} = require('./assertExtensions');
+const {parseBatches, hashBatch, announceRewards, executeBatches} = require('../client/distributionEvent');
 
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 const ERC20 = artifacts.require('./TestingERC20');
@@ -26,48 +27,31 @@ contract('OrbsRewardsDistribution', accounts => {
             const rewards = await OrbsRewardsDistribution.new(erc20.address, {from: owner});
             let totalGasUsed = 0;
 
-            // parse input file
-            const rewardsCount = 15;
-            const rewardsSpec = generateRewardsSpec(rewardsCount);
-            const totalAmount = rewardsSpec.reduce((sum, reward) => sum + reward.amount, 0);
+            const {rewardsToDistribute, batches, hashes} = await parseBatches(web3, "/Users/ron/Downloads/election_7968900.csv", 100);
+            const totalAmount = batches.reduce((sum, b) => sum.add(b.reduce((sum, reward) => sum.add(new BN(reward.amount)), new BN(0))), new BN(0));
 
-            // verify no duplicate recipient
-            const uniqueRewardRecipients = (new Set(rewardsSpec.map(i => i.address))).size;
-            expect(uniqueRewardRecipients).to.equal(rewardsSpec.length);
+            const announcmentResult = await announceRewards(rewards, owner, distributionEvent, hashes);
+            totalGasUsed += announcmentResult.receipt.gasUsed;
 
-            // split to batches
-            const batchSize = 3;
-            const batches = [];
-            const tempRewards = [...rewardsSpec];
-            while (tempRewards.length > 0) {
-                batches.push(tempRewards.splice(0, batchSize))
-            }
-
-            // calculate batch hashes
-            const hashes = batches.map((batch, batchId) => hashBatch(batchId, batch));
-
-            // announce distribution event with hash batches
-            let res = await rewards.announceDistributionEvent("test", hashes, {from: owner});
-            totalGasUsed += res.receipt.gasUsed;
-
-            const {pendingBatchHashes} = await rewards.getPendingBatches("test");
+            const {pendingBatchHashes} = await rewards.getPendingBatches(distributionEvent);
             expect(pendingBatchHashes).to.deep.equal(hashes);
 
             // transfer tokens to contract
             await erc20.assign(rewards.address, totalAmount);
 
-            expect(await erc20.balanceOf(rewards.address)).to.be.bignumber.equal(new BN(totalAmount));
+            expect(await erc20.balanceOf(rewards.address)).to.be.bignumber.equal(totalAmount);
 
             // execute all batches
             const firstBlockNumber = await web3.eth.getBlockNumber();
-            for (let i = 0; i < batches.length; i++) {
-                res = await executeBatch(rewards, "test", batches[i], i);
-                totalGasUsed += res.receipt.gasUsed;
-            }
+            const batchResults = await executeBatches(rewards, distributionEvent, batches);
+
+            batchResults.forEach(res =>{
+                totalGasUsed += res.receipt.gasUsed
+            });
 
             // check balances
             expect(await erc20.balanceOf(rewards.address)).to.be.bignumber.equal(new BN(0));
-            rewardsSpec.map(async (reward) => {
+            rewardsToDistribute.map(async (reward) => {
                 expect(await erc20.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
             });
 
@@ -77,7 +61,7 @@ contract('OrbsRewardsDistribution', accounts => {
                 address: log.args.recipient.toLowerCase(),
                 amount: log.args.amount.toNumber()
             }));
-            expect(readRewards).to.have.same.deep.members(rewardsSpec);
+            expect(readRewards).to.have.same.deep.members(rewardsToDistribute);
 
             //console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
         });
@@ -98,7 +82,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
     const batch0 = generateRewardsSpec(10);
     const batch1 = batch0.splice(5, 9);
-    const batchHashes = [hashBatch(0, batch0), hashBatch(1, batch1)];
+    const batchHashes = [hashBatch(web3, 0, batch0), hashBatch(web3,1, batch1)];
     const distributionEvent = "testName";
     describe('announceDistributionEvent', () => {
         it('succeeds for new distributions but fails for ongoing distributions', async () => {
@@ -273,7 +257,7 @@ contract('OrbsRewardsDistribution', accounts => {
             const totalAmount = batchWithZeroAddr.reduce((sum, reward) => sum + reward.amount, 0);
             await erc20.assign(rewards.address, totalAmount);
 
-            const badBatchHashes = [hashBatch(0, batchWithZeroAddr)];
+            const badBatchHashes = [hashBatch(web3,0, batchWithZeroAddr)];
             await rewards.announceDistributionEvent(distributionEvent, badBatchHashes);
 
             const error = await expectRevert(executeBatch(rewards, distributionEvent, batchWithZeroAddr, 0));
@@ -290,7 +274,7 @@ contract('OrbsRewardsDistribution', accounts => {
             const totalAmount = batchWithZeroAmount.reduce((sum, reward) => sum + reward.amount, 0);
             await erc20.assign(rewards.address, totalAmount);
 
-            const badBatchHashes = [hashBatch(0, batchWithZeroAmount)];
+            const badBatchHashes = [hashBatch(web3,0, batchWithZeroAmount)];
             await rewards.announceDistributionEvent(distributionEvent, badBatchHashes);
 
             await executeBatch(rewards, distributionEvent, batchWithZeroAmount, 0);
@@ -351,18 +335,3 @@ function generateRewardsSpec(count) {
     return result;
 }
 
-function hashBatch(batchId, batch) {
-    let addresses = [];
-    let amounts = [];
-    batch.map((reward, index) => {
-        const bytes32PaddedAddress = web3.utils.leftPad(reward.address, 64);
-        addresses[index] = {t: 'bytes32', v: bytes32PaddedAddress};
-        amounts[index] = {t: 'uint256', v: reward.amount};
-    });
-    return web3.utils.soliditySha3(
-        {t: 'uint256', v: batchId},
-        {t: 'uint256', v: batch.length},
-        ...addresses,
-        ...amounts
-    );
-}
