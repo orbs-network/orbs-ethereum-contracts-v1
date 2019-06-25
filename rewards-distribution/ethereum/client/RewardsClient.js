@@ -46,7 +46,7 @@ class RewardsClient {
         };
     }
 
-    async executeBatches(distributionEvent, batches) {
+    async executeBatches(distributionEvent, batches, options) {
         const results = [];
         for (let i = 0; i < batches.length; i++) {
             const batch = batches[i];
@@ -54,9 +54,11 @@ class RewardsClient {
                 distributionEvent,
                 batch.map(r => r.address),
                 batch.map(r => r.amount),
-                i
+                i,
+                options
             );
             results.push(res);
+            console.log(`executed batch ${i+1}/${batches.length}`);
         }
         return results;
     }

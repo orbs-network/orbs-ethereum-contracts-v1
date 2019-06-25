@@ -19,45 +19,56 @@ const ERC20 = artifacts.require('./TestingERC20');
 
 contract('OrbsRewardsDistribution', accounts => {
     const owner = accounts[0];
+    const nonOwner = accounts[1];
 
     describe('integration test - full flow', () => {
-
         it('integration test - distributes rewards specified in rewards report', async () => {
+            let step = 0;
+            console.log("init...", step++);
             const d = await Driver.newWithContracts(owner);
-
             let totalGasUsed = 0;
 
             const rewardsClient = new RewardsClient(d.getRewardsContract());
 
+            console.log("parsing rewards file...", step++);
             const {totalAmount, rewardsSuperset, batches, hashes} = await rewardsClient.parseBatches("test/dummy_election.csv", 7);
 
             // owner action: transfer tokens to contract
+            console.log(`transferring ${totalAmount} tokens to contract`, step++);
             await d.assignTokenToContract(totalAmount);
             expect(await d.balanceOfContract()).to.be.bignumber.equal(totalAmount);
 
             // owner action: announce rewards
-            const announcmentResult = await d.announceDistributionEvent(distributionEvent, hashes);
-            totalGasUsed += announcmentResult.receipt.gasUsed;
+            console.log("committing to batch hashes...", step++);
+            const announcementResult = await d.announceDistributionEvent(distributionEvent, hashes);
+            totalGasUsed += announcementResult.receipt.gasUsed;
 
             // verify batch hashes were recorded
             const {pendingBatchHashes} = await d.getPendingBatches(distributionEvent);
             expect(pendingBatchHashes).to.deep.equal(hashes);
 
             // execute all batches
+            console.log("executing transfers in batches...", step++);
             const firstBlockNumber = await web3.eth.getBlockNumber();
-            const batchResults = await rewardsClient.executeBatches(distributionEvent, batches);
+            const batchResults = await rewardsClient.executeBatches(
+                distributionEvent,
+                batches,
+                {from: nonOwner}
+            );
 
-            batchResults.forEach(res =>{
-                totalGasUsed += res.receipt.gasUsed
+            batchResults.forEach(res => {
+                totalGasUsed += res.receipt.gasUsed;
             });
 
             // check balances
+            console.log("checking balances...", step++);
             expect(await d.balanceOfContract()).to.be.bignumber.equal(new BN(0));
             rewardsSuperset.map(async (reward) => {
                 expect(await d.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
             });
 
             // check events
+            console.log("checking events...", step++);
             const events = await d.getPastEvents("RewardDistributed", {fromBlock: firstBlockNumber});
             const readRewards = events.map(log => ({
                 address: log.args.recipient.toLowerCase(),
@@ -65,7 +76,7 @@ contract('OrbsRewardsDistribution', accounts => {
             }));
             expect(readRewards).to.have.same.deep.members(rewardsSuperset);
 
-            //console.log(`total gas used for ${rewardsCount} rewards in ${batches.length} batches is ${totalGasUsed}`);
+            console.log(`total gas used for ${rewardsSuperset.length} rewards in ${batches.length} batches is ${totalGasUsed}`);
         });
     });
 
@@ -79,7 +90,11 @@ contract('OrbsRewardsDistribution', accounts => {
         const d = await Driver.newWithContracts(owner);
         const rewards = d.getRewardsContract();
 
-        await expectRevert(web3.eth.sendTransaction({from:owner, to: rewards.address, value: "1"}));
+        await expectRevert(web3.eth.sendTransaction({
+            from: owner,
+            to: rewards.address,
+            value: "1"
+        }));
     });
 
 
@@ -120,7 +135,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.announceDistributionEvent(distributionEvent);
 
-            const {pendingBatchHashes} =  await d.getPendingBatches(distributionEvent);
+            const {pendingBatchHashes} = await d.getPendingBatches(distributionEvent);
             expect(pendingBatchHashes).to.deep.equal(d.batchHashes);
         });
     });
@@ -147,7 +162,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.announceDistributionEvent(distributionEvent);
 
-            const beforeAbort =  await d.getPendingBatches(distributionEvent);
+            const beforeAbort = await d.getPendingBatches(distributionEvent);
             expect(beforeAbort.pendingBatchHashes).to.have.length(d.batchHashes.length);
 
             await d.abortDistributionEvent(distributionEvent);
@@ -173,7 +188,7 @@ contract('OrbsRewardsDistribution', accounts => {
             });
 
             // check events
-            const RewardDistributedLogs = executionResult.logs.filter(log=>log.event === "RewardDistributed");
+            const RewardDistributedLogs = executionResult.logs.filter(log => log.event === "RewardDistributed");
             const readRewards = RewardDistributedLogs.map(log => ({
                 address: log.args.recipient.toLowerCase(),
                 amount: log.args.amount.toNumber()
@@ -190,8 +205,8 @@ contract('OrbsRewardsDistribution', accounts => {
             const firstBatchResult = await d.executeBatch(distributionEvent, 0);
             const secondBatchResult = await d.executeBatch(distributionEvent, 1);
 
-            const firstBatchCompletedEvents = firstBatchResult.logs.filter(log=>log.event === "RewardsDistributionCompleted");
-            const secondBatchCompletedEvents = secondBatchResult.logs.filter(log=>log.event === "RewardsDistributionCompleted");
+            const firstBatchCompletedEvents = firstBatchResult.logs.filter(log => log.event === "RewardsDistributionCompleted");
+            const secondBatchCompletedEvents = secondBatchResult.logs.filter(log => log.event === "RewardsDistributionCompleted");
 
             expect(firstBatchCompletedEvents).to.have.length(0);
             expect(secondBatchCompletedEvents).to.have.length(1);
@@ -204,8 +219,8 @@ contract('OrbsRewardsDistribution', accounts => {
             await d.assignTokenToContract(d.getTotalAmount());
 
             await d.announceDistributionEvent(distributionEvent);
-            await d.executeBatch(distributionEvent,1);
-            await d.executeBatch(distributionEvent,0);
+            await d.executeBatch(distributionEvent, 1);
+            await d.executeBatch(distributionEvent, 0);
         });
 
         it("fails if distributionEvent or was not announced, but succeeds otherwise", async () => {
@@ -226,11 +241,11 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.announceDistributionEvent(distributionEvent);
 
-            await expectRevert(d.executeBatch(distributionEvent,0, d.batches[0].slice(1))); // wrong batch list
+            await expectRevert(d.executeBatch(distributionEvent, 0, d.batches[0].slice(1))); // wrong batch list
 
-            await expectRevert(d.executeBatch(distributionEvent,1, d.batches[0])); // wrong batchIndex
+            await expectRevert(d.executeBatch(distributionEvent, 1, d.batches[0])); // wrong batchIndex
 
-            await d.executeBatch(distributionEvent,0, d.batches[0]);
+            await d.executeBatch(distributionEvent, 0, d.batches[0]);
         });
 
         it("fails for zero recipient", async () => {
@@ -242,7 +257,7 @@ contract('OrbsRewardsDistribution', accounts => {
             // set the first address in the batch to 0x0 and correct the hash
             firstBatch[0].address = firstBatch[0].address.replace(/[^x]/g, "0");
             d.batchHashes[0] = RewardsClient.hashBatch(0, firstBatch);
-            
+
             await d.assignTokenToContract(d.getBatchAmount(0));
 
             await d.announceDistributionEvent(distributionEvent);
@@ -265,7 +280,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.announceDistributionEvent(distributionEvent);
 
-            await d.executeBatch(distributionEvent,0);
+            await d.executeBatch(distributionEvent, 0);
         });
 
         it("distributes each batch only once", async () => {
@@ -275,9 +290,9 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.announceDistributionEvent(distributionEvent);
 
-            await d.executeBatch(distributionEvent,0); // first time
+            await d.executeBatch(distributionEvent, 0); // first time
 
-            await expectRevert(d.executeBatch(distributionEvent,0)); // second time
+            await expectRevert(d.executeBatch(distributionEvent, 0)); // second time
         });
 
         it("removes the batch hash from pending batches", async () => {
@@ -289,13 +304,13 @@ contract('OrbsRewardsDistribution', accounts => {
 
             const beforeExec = await d.getPendingBatches(distributionEvent);
             expect(beforeExec.pendingBatchHashes).to.deep.equal(d.batchHashes);
-            expect(beforeExec.pendingBatchIndices.map(i=>i.toNumber())).to.deep.equal([0,1]);
+            expect(beforeExec.pendingBatchIndices.map(i => i.toNumber())).to.deep.equal([0, 1]);
 
             await d.executeBatch(distributionEvent, 0);
 
             const afterExec = await d.getPendingBatches(distributionEvent);
             expect(afterExec.pendingBatchHashes).to.deep.equal(beforeExec.pendingBatchHashes.slice(1));
-            expect(afterExec.pendingBatchIndices.map(i=>i.toNumber())).to.deep.equal([1]);
+            expect(afterExec.pendingBatchIndices.map(i => i.toNumber())).to.deep.equal([1]);
         });
     });
 });
@@ -318,7 +333,7 @@ class Driver {
         const result = [];
         for (let i = 0; i < count; i++) {
             const addr = "0x" + (i + 1).toString(16).padStart(40, "0");
-            result.push({address: addr, amount: i+1});
+            result.push({address: addr, amount: i + 1});
         }
         return result;
     }

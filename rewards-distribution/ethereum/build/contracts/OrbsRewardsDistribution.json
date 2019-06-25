@@ -2,7 +2,7 @@
   "contractName": "OrbsRewardsDistribution",
   "abi": [
     {
-        "constant": false,
+      "constant": false,
       "inputs": [],
       "name": "renounceOwnership",
       "outputs": [],
@@ -14521,6 +14521,136 @@
     "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {
+    "3": {
+      "events": {
+        "0x8b66abc81eb9e4b88acacafcc6d75ece18e30943c5ac9d9fd331ddb42eaffe3c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "distributionEvent",
+              "type": "string"
+            },
+            {
+              "indexed": true,
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "RewardDistributed",
+          "type": "event",
+          "signature": "0x8b66abc81eb9e4b88acacafcc6d75ece18e30943c5ac9d9fd331ddb42eaffe3c"
+        },
+        "0xa579fdc84501715dbb8b66c20b071ad6293e3d6a6be1724a40923b68378870f2": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "distributionEvent",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "batchHash",
+              "type": "bytes32[]"
+            },
+            {
+              "indexed": false,
+              "name": "batchCount",
+              "type": "uint256"
+            }
+          ],
+          "name": "RewardsDistributionAnnounced",
+          "type": "event",
+          "signature": "0xa579fdc84501715dbb8b66c20b071ad6293e3d6a6be1724a40923b68378870f2"
+        },
+        "0xdbb068f2be790bde8da0a5c34dffbaada5c6d015099c0d56a05094bc74332258": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "distributionEvent",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "batchHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "batchIndex",
+              "type": "uint256"
+            }
+          ],
+          "name": "RewardsBatchExecuted",
+          "type": "event",
+          "signature": "0xdbb068f2be790bde8da0a5c34dffbaada5c6d015099c0d56a05094bc74332258"
+        },
+        "0xc66aceae651bf329936acb1a152e2d63abc76aacf5aa28e60fa570fadddeed82": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "distributionEvent",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "abortedBatchHashes",
+              "type": "bytes32[]"
+            },
+            {
+              "indexed": false,
+              "name": "abortedBatchIndices",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "RewardsDistributionAborted",
+          "type": "event",
+          "signature": "0xc66aceae651bf329936acb1a152e2d63abc76aacf5aa28e60fa570fadddeed82"
+        },
+        "0x4f77788c5991c5010b5f53da726ba96a64929d4f29fa8d1e6b848eaf819f84cb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "distributionEvent",
+              "type": "string"
+            }
+          ],
+          "name": "RewardsDistributionCompleted",
+          "type": "event",
+          "signature": "0x4f77788c5991c5010b5f53da726ba96a64929d4f29fa8d1e6b848eaf819f84cb"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event",
+          "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        }
+      },
+      "links": {},
+      "address": "0x5eBf8DE15E3cC927b1815928Dd75694c2A66f67D",
+      "transactionHash": "0xbb39ca95c61dc827b84b0f8254042379095f92564df766d765f76ca47498fd2a"
+    },
     "5777": {
       "events": {
         "0x8b66abc81eb9e4b88acacafcc6d75ece18e30943c5ac9d9fd331ddb42eaffe3c": {
@@ -14653,7 +14783,7 @@
     }
   },
   "schemaVersion": "3.0.2",
-  "updatedAt": "2019-06-24T22:28:53.666Z",
+  "updatedAt": "2019-06-25T13:37:25.567Z",
   "devdoc": {
     "methods": {
       "isOwner()": {

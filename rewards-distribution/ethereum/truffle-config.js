@@ -58,12 +58,13 @@ module.exports = {
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic_ropsten, ropsten_url, 0, 25),
       network_id: '3',
-      gasPrice: 300000000
+      gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
+      gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
     },
     development: {
       host: 'localhost',
       port: 7545,
-      network_id: '5777',
+      network_id: '*',
       accounts: 25,
       gasPrice: 1,
     }
