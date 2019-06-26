@@ -58,8 +58,10 @@ module.exports = {
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic_ropsten, ropsten_url, 0, 25),
       network_id: '3',
-      gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
-      gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
+      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+      //gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
+      //gas: 8000000,           // Gas sent with each transaction (default: ~6700000)
+      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
     },
     development: {
       host: 'localhost',
