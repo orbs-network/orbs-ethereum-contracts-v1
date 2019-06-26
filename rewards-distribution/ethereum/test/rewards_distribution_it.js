@@ -23,23 +23,26 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe('integration test - full flow', () => {
         it('integration test - distributes rewards specified in rewards report', async () => {
-            let step = 0;
-            console.log("init...", step++);
+            console.log("init driver and deploying contracts...");
             const d = await Driver.newWithContracts(owner);
             let totalGasUsed = 0;
 
             const rewardsClient = new RewardsClient(d.getRewardsContract());
 
-            console.log("parsing rewards file...", step++);
-            const {totalAmount, rewardsSuperset, batches, hashes} = await rewardsClient.parseBatches("test/dummy_election.csv", 7);
+            console.log(`deployed rewards contract: ${d.rewards.address}`);
+            console.log(`owner address:             ${owner} (${web3.utils.fromWei(await web3.eth.getBalance(owner), 'ether')} ether)`);
+            console.log(`non-owner address:         ${nonOwner} (${web3.utils.fromWei(await web3.eth.getBalance(nonOwner), 'ether')} ether)`);
+            console.log();
+            console.log("parsing rewards file...");
+            const {totalAmount, rewardsSuperset, batches, hashes} = await rewardsClient.parseBatches("test/dummy_election.csv", 10);
 
             // owner action: transfer tokens to contract
-            console.log(`transferring ${totalAmount} tokens to contract`, step++);
+            console.log(`transferring ${totalAmount} tokens to contract`);
             await d.assignTokenToContract(totalAmount);
             expect(await d.balanceOfContract()).to.be.bignumber.equal(totalAmount);
 
             // owner action: announce rewards
-            console.log("committing to batch hashes...", step++);
+            console.log("committing to batch hashes...");
             const announcementResult = await d.announceDistributionEvent(distributionEvent, hashes);
             totalGasUsed += announcementResult.receipt.gasUsed;
 
@@ -48,7 +51,7 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(pendingBatchHashes).to.deep.equal(hashes);
 
             // execute all batches
-            console.log("executing transfers in batches...", step++);
+            console.log("executing transfers in batches...");
             const firstBlockNumber = await web3.eth.getBlockNumber();
             const batchResults = await rewardsClient.executeBatches(
                 distributionEvent,
@@ -61,14 +64,14 @@ contract('OrbsRewardsDistribution', accounts => {
             });
 
             // check balances
-            console.log("checking balances...", step++);
+            console.log("checking balances...");
             expect(await d.balanceOfContract()).to.be.bignumber.equal(new BN(0));
             rewardsSuperset.map(async (reward) => {
                 expect(await d.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
             });
 
             // check events
-            console.log("checking events...", step++);
+            console.log("checking events...");
             const events = await d.getPastEvents("RewardDistributed", {fromBlock: firstBlockNumber});
             const readRewards = events.map(log => ({
                 address: log.args.recipient.toLowerCase(),
