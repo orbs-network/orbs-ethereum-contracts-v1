@@ -113,6 +113,7 @@ module.exports = {
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
+    bail: true, // stop on first failed test
     enableTimeouts: false,
     reporter: 'mocha-multi-reporters',
     reporterOptions: {

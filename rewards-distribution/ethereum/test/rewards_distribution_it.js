@@ -86,7 +86,17 @@ contract('OrbsRewardsDistribution', accounts => {
     it('deploys contract successfully with ERC20 instance', async () => {
         const d = await Driver.newWithContracts(owner);
 
-        expect(d.getRewardsContract()).to.exist;
+        const rewards = d.getRewardsContract();
+        expect(rewards).to.exist;
+        expect(await (rewards.orbs())).to.equal(d.erc20.address);
+    });
+
+    it('fails to deploy contract with zero ERC20 instance', async () => {
+        const d = await Driver.newWithContracts(owner);
+
+        const zeroAddress = web3.utils.padLeft("0x0", 40);
+        const error = await expectRevert(OrbsRewardsDistribution.new(zeroAddress, {from: owner}));
+        expect(error).to.have.property("reason", "Address must not be 0!");
     });
 
     it('is not payable', async () => {
@@ -141,6 +151,21 @@ contract('OrbsRewardsDistribution', accounts => {
             const {pendingBatchHashes} = await d.getPendingBatches(distributionEvent);
             expect(pendingBatchHashes).to.deep.equal(d.batchHashes);
         });
+
+        it('fails when no batch hash is declared', async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            const error = await expectRevert(d.announceDistributionEvent(distributionEvent, []));
+            expect(error).to.have.property("reason", "at least one batch must be announced");
+        });
+
+        it('fails for zero batch hash', async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            const zeroHash = web3.utils.leftPad("0x0", 64);
+            const error = await expectRevert(d.announceDistributionEvent(distributionEvent, [zeroHash]));
+            expect(error).to.have.property("reason", "batch hash may not be 0x0");
+        });
     });
 
     describe('abortDistributionEvent', () => {
@@ -172,6 +197,13 @@ contract('OrbsRewardsDistribution', accounts => {
 
             const afterAbort = await d.getPendingBatches(distributionEvent);
             expect(afterAbort.pendingBatchHashes).to.have.length(0);
+        });
+
+        it('fails if distribution event is not currently ongoing', async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            const error = await expectRevert(d.abortDistributionEvent(distributionEvent));
+            expect(error).to.have.property('reason', "named distribution is not currently ongoing")
         });
     });
 
@@ -216,6 +248,57 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(secondBatchCompletedEvents[0].args).to.have.property("distributionEvent", distributionEvent);
         });
 
+        it("emits RewardsBatchExecuted events", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getTotalAmount());
+
+            await d.announceDistributionEvent(distributionEvent);
+            const firstBatchResult = await d.executeBatch(distributionEvent, 0);
+            const secondBatchResult = await d.executeBatch(distributionEvent, 1);
+
+            const firstRewardsBatchExecuted = firstBatchResult.logs.filter(log => log.event === "RewardsBatchExecuted");
+            const secondRewardsBatchExecuted = secondBatchResult.logs.filter(log => log.event === "RewardsBatchExecuted");
+
+            expect(firstRewardsBatchExecuted).to.have.length(1);
+            expect(firstRewardsBatchExecuted[0].args).to.have.property('distributionEvent', distributionEvent);
+            expect(firstRewardsBatchExecuted[0].args).to.have.property('batchHash', d.batchHashes[0]);
+            expect(firstRewardsBatchExecuted[0].args.batchIndex).to.be.bignumber.equal(new BN(0));
+
+            expect(secondRewardsBatchExecuted).to.have.length(1);
+            expect(secondRewardsBatchExecuted[0].args).to.have.property('distributionEvent', distributionEvent);
+            expect(secondRewardsBatchExecuted[0].args).to.have.property('batchHash', d.batchHashes[1]);
+            expect(secondRewardsBatchExecuted[0].args.batchIndex).to.be.bignumber.equal(new BN(1));
+        });
+
+        it("emits RewardDistributed events", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getTotalAmount());
+
+            await d.announceDistributionEvent(distributionEvent);
+            const firstBatchResult = await d.executeBatch(distributionEvent, 0);
+            const secondBatchResult = await d.executeBatch(distributionEvent, 1);
+
+            const firstRewardDistributed = firstBatchResult.logs.filter(log => log.event === "RewardDistributed");
+            const secondRewardDistributed = secondBatchResult.logs.filter(log => log.event === "RewardDistributed");
+
+            expect(firstRewardDistributed).to.have.length(d.batches[0].length);
+            expect(secondRewardDistributed).to.have.length(d.batches[1].length);
+            firstRewardDistributed.forEach((l,i)=>{
+                expect(l.args).to.have.property('distributionEvent', distributionEvent);
+                expect(l.args).to.have.property('recipient');
+                expect(l.args.recipient.toLowerCase()).to.equal(d.batches[0][i].address);
+                expect(l.args.amount).to.be.bignumber.equal(new BN(d.batches[0][i].amount));
+            });
+            secondRewardDistributed.forEach((l,i)=>{
+                expect(l.args).to.have.property('distributionEvent', distributionEvent);
+                expect(l.args).to.have.property('recipient');
+                expect(l.args.recipient.toLowerCase()).to.equal(d.batches[1][i].address);
+                expect(l.args.amount).to.be.bignumber.equal(new BN(d.batches[1][i].amount));
+            });
+        });
+
         it("supports processing batches out of order", async () => {
             const d = await Driver.newWithContracts(owner);
 
@@ -249,6 +332,35 @@ contract('OrbsRewardsDistribution', accounts => {
             await expectRevert(d.executeBatch(distributionEvent, 1, d.batches[0])); // wrong batchIndex
 
             await d.executeBatch(distributionEvent, 0, d.batches[0]);
+        });
+
+        it("fails if batch array lengths dont match", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            await d.announceDistributionEvent(distributionEvent);
+
+            const batch = d.batches[0];
+            const error = await expectRevert(d.rewards.executeCommittedBatch(distributionEvent, batch.map(r => r.address), batch.slice(1).map(r => r.amount), 0));
+            expect(error).to.have.property('reason', 'array length mismatch')
+        });
+
+        it("fails if no recipients in batch zero recipient", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            // TODO - instead of violating encapsulation use builder pattern to replace batch
+
+            // set the first address in the batch to 0x0 and correct the hash
+            d.batches[0] = [];
+            d.batchHashes[0] = RewardsClient.hashBatch(0, d.batches[0]);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            await d.announceDistributionEvent(distributionEvent);
+
+            const error = await expectRevert(d.executeBatch(distributionEvent, 0));
+            expect(error).to.have.property("reason", "at least one reward must be included in a batch");
         });
 
         it("fails for zero recipient", async () => {
