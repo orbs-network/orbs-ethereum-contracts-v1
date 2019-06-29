@@ -452,6 +452,98 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(afterExec.pendingBatchIndices.map(i => i.toNumber())).to.deep.equal([1]);
         });
     });
+
+    describe("distributeRewards", () => {
+        it('succeeds only for owner', async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            await expectRevert(d.distributeRewards(distributionEvent, 0, undefined, {from: nonOwner}));
+            await d.distributeRewards(distributionEvent, 0, undefined,{from: owner})
+        });
+
+        it("distributes orbs and logs RewardDistributed events for each recipient", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            const executionResult = await d.distributeRewards(distributionEvent, 0);
+
+            // check balances
+            expect(await d.balanceOfContract()).to.be.bignumber.equal(new BN(0));
+            d.batches[0].map(async (aReward) => {
+                expect(await d.balanceOf(aReward.address)).to.be.bignumber.equal(new BN(aReward.amount));
+            });
+
+            // check events
+            const RewardDistributedLogs = executionResult.logs.filter(log => log.event === "RewardDistributed");
+            const readRewards = RewardDistributedLogs.map(log => ({
+                address: log.args.recipient.toLowerCase(),
+                amount: log.args.amount.toNumber()
+            }));
+            expect(readRewards).to.have.same.deep.members(d.batches[0]);
+        });
+
+        it("emits RewardDistributed events", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getTotalAmount());
+
+            const result = await d.distributeRewards(distributionEvent, 0);
+
+            const rewardDistributedEvents = result.logs.filter(log => log.event === "RewardDistributed");
+
+            expect(rewardDistributedEvents).to.have.length(d.batches[0].length);
+            rewardDistributedEvents.forEach((l, i) => {
+                expect(l.args).to.have.property('distributionEvent', distributionEvent);
+                expect(l.args).to.have.property('recipient');
+                expect(l.args.recipient.toLowerCase()).to.equal(d.batches[0][i].address);
+                expect(l.args.amount).to.be.bignumber.equal(new BN(d.batches[0][i].amount));
+            });
+        });
+
+        it("fails if batch array lengths dont match", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            const batch = d.batches[0];
+            const error = await expectRevert(d.rewards.distributeRewards(distributionEvent, batch.map(r => r.address), batch.slice(1).map(r => r.amount)));
+            expect(error).to.have.property('reason', 'array length mismatch')
+        });
+
+        it("fails for zero recipient", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            // TODO - instead of violating encapsulation use builder pattern to replace batch
+            const firstBatch = d.batches[0];
+
+            // set the first address in the batch to 0x0 and correct the hash
+            firstBatch[0].address = firstBatch[0].address.replace(/[^x]/g, "0");
+            d.batchHashes[0] = RewardsClient.hashBatch(0, firstBatch);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            const error = await expectRevert(d.distributeRewards(distributionEvent, 0));
+            expect(error).to.have.property("reason", "recipient must be a valid address");
+        });
+
+        it("succeeds for zero amount", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            // TODO - instead of violating encapsulation use builder pattern to replace batch
+            const firstBatch = d.batches[0];
+
+            // set the first amount in the batch to 0 and correct the hash
+            firstBatch[0].amount = 0;
+            d.batchHashes[0] = RewardsClient.hashBatch(0, firstBatch);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            await d.distributeRewards(distributionEvent, 0);
+        });
+    });
 });
 
 // TODO use builder pattern to allow creation of batches and also to override batch content
@@ -525,6 +617,15 @@ class Driver {
             batch = this.batches[batchIndex];
         }
         return this.rewards.executeCommittedBatch(distributionEvent, batch.map(r => r.address), batch.map(r => r.amount), batchIndex);
+    }
+
+    async distributeRewards(distributionEvent, batchIndex, batch, options) {
+        if (batch === undefined) {
+            batch = this.batches[batchIndex];
+        }
+        options = Object.assign({from: this.owner}, options);
+
+        return this.rewards.distributeRewards(distributionEvent, batch.map(r => r.address), batch.map(r => r.amount), options);
     }
 
     getTotalAmount() {
