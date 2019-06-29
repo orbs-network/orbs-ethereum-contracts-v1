@@ -544,6 +544,29 @@ contract('OrbsRewardsDistribution', accounts => {
             await d.distributeRewards(distributionEvent, 0);
         });
     });
+
+    describe("drainOrbs", () => {
+        it('succeeds only for owner', async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await d.assignTokenToContract(d.getBatchAmount(0));
+
+            await expectRevert(d.rewards.drainOrbs(owner, {from: nonOwner}));
+            await d.rewards.drainOrbs(owner, {from: owner});
+        });
+
+        it('transfers orbs to requested recipient', async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            const amount = 1000000000;
+            await d.assignTokenToContract(amount);
+
+            expect(await d.erc20.balanceOf(nonOwner)).to.be.bignumber.equal(new BN(0));
+            await d.rewards.drainOrbs(nonOwner, {from: owner});
+            expect(await d.erc20.balanceOf(nonOwner)).to.be.bignumber.equal(new BN(amount));
+            expect(await d.erc20.balanceOf(d.rewards.address)).to.be.bignumber.equal(new BN(0));
+        });
+    });
 });
 
 // TODO use builder pattern to allow creation of batches and also to override batch content
