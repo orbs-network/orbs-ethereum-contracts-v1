@@ -91,6 +91,22 @@ contract('OrbsRewardsDistribution', accounts => {
         expect(await (rewards.orbs())).to.equal(d.erc20.address);
     });
 
+    it('is Ownable', async () => {
+        const d = await Driver.newWithContracts(owner);
+
+        const rewards = d.getRewardsContract();
+        expect(rewards).to.exist;
+        expect(await (rewards.owner())).to.equal(owner);
+        expect(await (rewards.isOwner({from: owner}))).to.be.true;
+        expect(await (rewards.isOwner({from: nonOwner}))).to.be.false;
+
+        const newOwner = accounts[2];
+        await rewards.transferOwnership(newOwner, {from: owner});
+
+        expect(await (rewards.isOwner({from: owner}))).to.be.false;
+        expect(await (rewards.isOwner({from: newOwner}))).to.be.true;
+    });
+
     it('fails to deploy contract with zero ERC20 instance', async () => {
         const d = await Driver.newWithContracts(owner);
 
@@ -123,6 +139,14 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.abortDistributionEvent(distributionEvent);
             await d.announceDistributionEvent(distributionEvent); // succeed after aborting
+        });
+
+        it('succeeds only for owner', async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await expectRevert(d.announceDistributionEvent(distributionEvent, undefined, {from: nonOwner})); // send by non owner
+
+            await d.announceDistributionEvent(distributionEvent); // sends from owner by default
         });
 
         it('emits RewardsDistributionAnnounced event', async () => {
@@ -285,13 +309,13 @@ contract('OrbsRewardsDistribution', accounts => {
 
             expect(firstRewardDistributed).to.have.length(d.batches[0].length);
             expect(secondRewardDistributed).to.have.length(d.batches[1].length);
-            firstRewardDistributed.forEach((l,i)=>{
+            firstRewardDistributed.forEach((l, i) => {
                 expect(l.args).to.have.property('distributionEvent', distributionEvent);
                 expect(l.args).to.have.property('recipient');
                 expect(l.args.recipient.toLowerCase()).to.equal(d.batches[0][i].address);
                 expect(l.args.amount).to.be.bignumber.equal(new BN(d.batches[0][i].amount));
             });
-            secondRewardDistributed.forEach((l,i)=>{
+            secondRewardDistributed.forEach((l, i) => {
                 expect(l.args).to.have.property('distributionEvent', distributionEvent);
                 expect(l.args).to.have.property('recipient');
                 expect(l.args.recipient.toLowerCase()).to.equal(d.batches[1][i].address);
@@ -488,11 +512,12 @@ class Driver {
         return this.rewards.abortDistributionEvent(distributionEvent);
     }
 
-    async announceDistributionEvent(distributionEvent, hashes) {
+    async announceDistributionEvent(distributionEvent, hashes, options) {
         if (hashes === undefined) {
             hashes = this.batchHashes;
         }
-        return this.rewards.announceDistributionEvent(distributionEvent, hashes, {from: this.owner});
+        options = Object.assign({from: this.owner}, options);
+        return this.rewards.announceDistributionEvent(distributionEvent, hashes, options);
     }
 
     async executeBatch(distributionEvent, batchIndex, batch) {
