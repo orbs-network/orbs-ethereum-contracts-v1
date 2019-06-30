@@ -35,9 +35,8 @@ const styles = () => ({
   },
 });
 
-const asPercent = (num: number) => (
-  console.log(num), (num * 100).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + '%'
-);
+const asPercent = (num: number) =>
+  (num * 100).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + '%';
 
 const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, delegatedTo }) => {
   const { t } = useTranslation();
