@@ -121,7 +121,7 @@ class EthereumClientService {
 
   async getOrbsRewardsDistribution(address) {
     const options = {
-      fromBlock: 1,
+      fromBlock: OrbsTDEEthereumBlock,
       toBlock: 'latest',
       filter: { recipient: address }
       // filter: { recipient: ['0x00000000000000000000000000000052B84F3914', '0x000000000000000000000000000000a324a4cF0b'] }
