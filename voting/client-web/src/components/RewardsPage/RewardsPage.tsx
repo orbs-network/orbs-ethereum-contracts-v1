@@ -16,6 +16,7 @@ import { ApiService } from '../../api/ApiService';
 import { Location } from 'history';
 import { parse as parseQuery } from 'querystring';
 import { RewardsTable } from './RewardsTable';
+import { RewardsHistoryTable } from './RewardsHistoryTable';
 import { DelegationInfoTable } from './DelegationInfoTable';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +25,7 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'row' as any,
     alignItems: 'baseline',
-    width: '50%',
+    width: '60%',
   },
   input: {
     flexGrow: 1,
@@ -48,11 +49,13 @@ const RewardsPageImpl = ({
 }) => {
   const [address, setAddress] = useState('');
   const [rewards, setRewards] = useState({});
+  const [rewardsHistory, setRewardsHistory] = useState([]);
   const [delegatorInfo, setDelegatorInfo] = useState({});
   const [guardianInfo, setGuardianInfo] = useState({});
   const [electionBlock, setElectionBlock] = useState('0');
 
   const fetchRewards = address => apiService.getRewards(address).then(setRewards);
+  const fetchRewardsHistory = address => apiService.getRewardsHistory(address).then(setRewardsHistory);
 
   const fetchDelegationInfo = async address => {
     const info = await apiService.getCurrentDelegationInfo(address);
@@ -65,6 +68,7 @@ const RewardsPageImpl = ({
 
   const submitHandler = () => {
     fetchRewards(address);
+    fetchRewardsHistory(address);
     fetchDelegationInfo(address);
   };
 
@@ -110,6 +114,13 @@ const RewardsPageImpl = ({
           {t('Rewards')}
         </Typography>
         <RewardsTable rewards={rewards} />
+      </section>
+
+      <section className={classes.section}>
+        <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
+          {t('Distributed')}
+        </Typography>
+        <RewardsHistoryTable rewardsHistory={rewardsHistory} />
       </section>
 
       <section className={classes.section}>
