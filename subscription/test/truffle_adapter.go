@@ -7,7 +7,6 @@
 package test
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -21,7 +20,7 @@ type truffleAdapter struct {
 }
 
 func (t *truffleAdapter) deploySubscriptionManager() (string, error) {
-	bytes := t.run("exec ./truffle-scripts/deploySubscriptionManager.js")
+	bytes := t.run("./truffle-scripts/deploySubscriptionManager.js")
 	out := struct {
 		Address string
 	}{}
@@ -33,7 +32,7 @@ func (t *truffleAdapter) deploySubscriptionManager() (string, error) {
 }
 
 func (t *truffleAdapter) GetCurrentBlock() (int, error) {
-	bytesOutput := t.run("exec ./truffle-scripts/getCurrentBlock.js")
+	bytesOutput := t.run("./truffle-scripts/getCurrentBlock.js")
 	out := struct {
 		CurrentBlock int
 	}{}
@@ -52,7 +51,7 @@ func (t *truffleAdapter) WaitForBlock(blockNumber int) error {
 		}
 		blocksToMine := blockNumber - currentBlockNumber
 		if blocksToMine > 0 {
-			t.run("exec ./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocksToMine))
+			t.run("./truffle-scripts/mine.js", "BLOCKS_TO_MINE="+fmt.Sprintf("%d", blocksToMine))
 		}
 	} else { // busy wait until block number is reached
 		fmt.Printf("Waiting for block %d...\n", blockNumber)
@@ -92,10 +91,11 @@ func (t *truffleAdapter) run(args string, env ...string) []byte {
 }
 
 func (t *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
+	println("running", args)
 	args += " --network " + t.network
 
 	argsArr := strings.Split(args, " ")
-	cmd := exec.Command("./node_modules/.bin/truffle", argsArr...)
+	cmd := exec.Command("node", argsArr...)
 	cmd.Dir = "."
 	cmd.Env = append(os.Environ(), env...)
 	out, err := cmd.CombinedOutput()
@@ -103,14 +103,8 @@ func (t *truffleAdapter) _run(args string, env ...string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	// remove first line of output (Using network...)
-	index := bytes.IndexRune(out, '\n')
 
-	if index == -1 {
-		return nil, fmt.Errorf("failed to find fist linefeed in output: %s", string(out))
-	}
-
-	return out[index:], nil
+	return out, nil
 }
 
 func newTruffle() *truffleAdapter {
