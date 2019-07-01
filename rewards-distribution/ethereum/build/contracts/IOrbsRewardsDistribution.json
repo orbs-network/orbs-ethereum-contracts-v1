@@ -205,11 +205,12 @@
       "type": "function"
     }
   ],
+  "metadata": "",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.4.25;\n\n\ninterface IOrbsRewardsDistribution {\n    event RewardDistributed(string distributionEvent, address indexed recipient, uint256 amount);\n\n    event RewardsDistributionAnnounced(string distributionEvent, bytes32[] batchHash, uint256 batchCount);\n    event RewardsBatchExecuted(string distributionEvent, bytes32 batchHash, uint256 batchIndex);\n    event RewardsDistributionAborted(string distributionEvent, bytes32[] abortedBatchHashes, uint256[] abortedBatchIndices);\n    event RewardsDistributionCompleted(string distributionEvent);\n\n    function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external;\n    function abortDistributionEvent(string distributionEvent) external;\n\n    function executeCommittedBatch(string distributionEvent, address[] recipients, uint256[] amounts, uint256 batchIndex) external;\n\n    /**\n    * called by owner to bypass distribution announcements and batch hash commitments\n    */\n    function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external;\n\n    function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices);\n}",
+  "source": "pragma solidity 0.4.26;\n\n\ninterface IOrbsRewardsDistribution {\n    event RewardDistributed(string distributionEvent, address indexed recipient, uint256 amount);\n\n    event RewardsDistributionAnnounced(string distributionEvent, bytes32[] batchHash, uint256 batchCount);\n    event RewardsBatchExecuted(string distributionEvent, bytes32 batchHash, uint256 batchIndex);\n    event RewardsDistributionAborted(string distributionEvent, bytes32[] abortedBatchHashes, uint256[] abortedBatchIndices);\n    event RewardsDistributionCompleted(string distributionEvent);\n\n    function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external;\n    function abortDistributionEvent(string distributionEvent) external;\n\n    function executeCommittedBatch(string distributionEvent, address[] recipients, uint256[] amounts, uint256 batchIndex) external;\n\n    /**\n    * called by owner to bypass distribution announcements and batch hash commitments\n    */\n    function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external;\n\n    function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices);\n}",
   "sourcePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/ethereum/contracts/IOrbsRewardsDistribution.sol",
   "ast": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/ethereum/contracts/IOrbsRewardsDistribution.sol",
@@ -226,7 +227,7 @@
         "literals": [
           "solidity",
           "0.4",
-          ".25"
+          ".26"
         ],
         "nodeType": "PragmaDirective",
         "src": "0:23:0"
@@ -1281,7 +1282,7 @@
         "literals": [
           "solidity",
           "0.4",
-          ".25"
+          ".26"
         ],
         "nodeType": "PragmaDirective",
         "src": "0:23:0"
@@ -2323,11 +2324,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
+    "version": "0.4.26+commit.4563c3fc.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.2",
-  "updatedAt": "2019-06-24T22:26:19.411Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2019-07-01T08:14:18.158Z",
   "devdoc": {
     "methods": {}
   },
