@@ -92,9 +92,8 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
     /// Perform a single batch transfer, bypassing announcement/commitment flow.
     /// Only the assigned rewardsDistributor account may call this method.
-    /// Provided to enable another contract or user to implement an alternative
-    /// batch commitment mechanism.
-    /// if needed in the future.
+    /// Provided to allow another contract or user to implement an alternative
+    /// batch commitment mechanism, should on be needed in the future.
     /// @param _distributionEvent string Name of a new distribution event
     /// @param _recipients address[] a list of recipients addresses
     /// @param _amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
@@ -103,10 +102,13 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     }
 
     /// Accepts a batch of payments associated with a distributionEvent.
-    /// Once validated against the batch hash commitment, the batch is cleared from commitment array
-    /// and executed.
-    /// If this was the last batch in distributionEvent, the record is
-    /// cleared and distributionEvent is logged as completed.
+    /// The batch will be executed only if it matches the commitment hash
+    /// published by this contract's owner in a previous
+    /// announceDistributionEvent() call. Once validated against an existing
+    /// batch hash commitment, the commitment is cleared to ensure the batch
+    /// cannot be executed twice.
+    /// If this was the last batch in distributionEvent, the event record is
+    /// cleared logged as completed.
     /// @param _distributionEvent string Name of a new distribution event
     /// @param _recipients address[] a list of recipients addresses
     /// @param _amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
@@ -138,7 +140,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     }
 
     /// Returns all pending (not yet executed) batch hashes and indices
-    /// associated with a distributionEvent
+    /// associated with a distributionEvent.
     /// @param _distributionEvent string Name of a new distribution event
     /// @return pendingBatchHashes bytes32[]
     /// @return pendingBatchIndices uint256[]
@@ -162,7 +164,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         }
     }
 
-    /// For disaster recovery purposes.
+    /// For disaster recovery purposes. transfers all orbs from this contract to owner.
     /// Only the contract owner may call this method.
     /// Transfers away any Orbs balance from this contract to the owners address
     function drainOrbs() external onlyOwner {
@@ -170,7 +172,8 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         orbs.transfer(owner(), balance);
     }
 
-    /// Transfers control of the contract to a newOwner.
+    /// Assigns a new rewards-distributor account.
+    /// To revoke the current rewards-distributor's rights call this method with 0x0.
     /// Only the contract owner may call this method.
     /// @param _newRewardsDistributor The address to set as the new rewards-distributor.
     function reassignRewardsDistributor(address _newRewardsDistributor) external onlyOwner {
