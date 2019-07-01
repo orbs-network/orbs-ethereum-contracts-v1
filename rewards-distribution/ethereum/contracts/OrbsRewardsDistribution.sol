@@ -45,62 +45,62 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @dev Declares a new distribution event. Verifies a distribution
     /// event with the same name is not already ongoing, and records commitments
     /// for all reward payments in the form of batch hashes array to state.
-    /// @param distributionEvent string Name of a new distribution event
-    /// @param batchHashes bytes32[] The address of the OrbsValidators contract.
-    function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external onlyOwner {
-        require(!distributions[distributionEvent].hasPendingBatches, "named distribution is currently ongoing");
-        require(batchHashes.length > 0, "at least one batch must be announced");
+    /// @param _distributionEvent string Name of a new distribution event
+    /// @param _batchHashes bytes32[] The address of the OrbsValidators contract.
+    function announceDistributionEvent(string _distributionEvent, bytes32[] _batchHashes) external onlyOwner {
+        require(!distributions[_distributionEvent].hasPendingBatches, "named distribution is currently ongoing");
+        require(_batchHashes.length > 0, "at least one batch must be announced");
 
-        for (uint256 i = 0; i < batchHashes.length; i++) {
-            require(batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
+        for (uint256 i = 0; i < _batchHashes.length; i++) {
+            require(_batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
         }
 
         // store distribution event record
-        Distribution storage distribution = distributions[distributionEvent];
-        distribution.pendingBatchCount = batchHashes.length;
+        Distribution storage distribution = distributions[_distributionEvent];
+        distribution.pendingBatchCount = _batchHashes.length;
         distribution.hasPendingBatches = true;
-        distribution.batchHashes = batchHashes;
+        distribution.batchHashes = _batchHashes;
 
-        emit RewardsDistributionAnnounced(distributionEvent, batchHashes, batchHashes.length);
+        emit RewardsDistributionAnnounced(_distributionEvent, _batchHashes, _batchHashes.length);
     }
 
     /// @dev Aborts an ongoing distributionEvent and revokes all batch commitments.
-    /// @param distributionEvent string Name of a new distribution event
-    function abortDistributionEvent(string distributionEvent) external onlyOwner {
-        require(distributions[distributionEvent].hasPendingBatches, "named distribution is not currently ongoing");
+    /// @param _distributionEvent string Name of a new distribution event
+    function abortDistributionEvent(string _distributionEvent) external onlyOwner {
+        require(distributions[_distributionEvent].hasPendingBatches, "named distribution is not currently ongoing");
 
-        (bytes32[] memory abortedBatchHashes, uint256[] memory abortedBatchIndices) = this.getPendingBatches(distributionEvent);
+        (bytes32[] memory abortedBatchHashes, uint256[] memory abortedBatchIndices) = this.getPendingBatches(_distributionEvent);
 
-        delete distributions[distributionEvent];
+        delete distributions[_distributionEvent];
 
-        emit RewardsDistributionAborted(distributionEvent, abortedBatchHashes, abortedBatchIndices);
+        emit RewardsDistributionAborted(_distributionEvent, abortedBatchHashes, abortedBatchIndices);
     }
 
     /// @dev Carry out and logs transfers in batch. receives two arrays of same length
     /// representing rewards payments for a list of reward recipients.
     /// distributionEvent is only provided for logging purposes.
-    /// @param distributionEvent string Name of a new distribution event
-    /// @param recipients address[] a list of recipients addresses
-    /// @param amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
-    function _distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) private {
-        uint256 batchSize = recipients.length;
-        require(batchSize == amounts.length, "array length mismatch");
+    /// @param _distributionEvent string Name of a new distribution event
+    /// @param _recipients address[] a list of recipients addresses
+    /// @param _amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
+    function _distributeRewards(string _distributionEvent, address[] _recipients, uint256[] _amounts) private {
+        uint256 batchSize = _recipients.length;
+        require(batchSize == _amounts.length, "array length mismatch");
 
         for (uint256 i = 0; i < batchSize; i++) {
-            require(recipients[i] != address(0), "recipient must be a valid address");
-            require(orbs.transfer(recipients[i], amounts[i]), "transfer failed");
-            emit RewardDistributed(distributionEvent, recipients[i], amounts[i]);
+            require(_recipients[i] != address(0), "recipient must be a valid address");
+            require(orbs.transfer(_recipients[i], _amounts[i]), "transfer failed");
+            emit RewardDistributed(_distributionEvent, _recipients[i], _amounts[i]);
         }
     }
 
     /// @dev Bypasses announcement/commitment process flow for batch payments.
     /// Requires owner privileges to execute. Provided as a mechanism for
     /// alternative batch commitment mechanisms if needed in the future.
-    /// @param distributionEvent string Name of a new distribution event
-    /// @param recipients address[] a list of recipients addresses
-    /// @param amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
-    function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external onlyRewardsDistributor {
-        _distributeRewards(distributionEvent, recipients, amounts);
+    /// @param _distributionEvent string Name of a new distribution event
+    /// @param _recipients address[] a list of recipients addresses
+    /// @param _amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
+    function distributeRewards(string _distributionEvent, address[] _recipients, uint256[] _amounts) external onlyRewardsDistributor {
+        _distributeRewards(_distributionEvent, _recipients, _amounts);
     }
 
     /// @dev Accepts a batch of payments associated with a distributionEvent.
@@ -108,43 +108,43 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// and executed.
     /// If this was the last batch in distributionEvent, the record is
     /// cleared and distributionEvent is logged as completed.
-    /// @param distributionEvent string Name of a new distribution event
-    /// @param recipients address[] a list of recipients addresses
-    /// @param amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
-    /// @param batchIndex uint256 index of the specified batch in commitments array
-    function executeCommittedBatch(string distributionEvent, address[] recipients, uint256[] amounts, uint256 batchIndex) external {
-        Distribution storage distribution = distributions[distributionEvent];
+    /// @param _distributionEvent string Name of a new distribution event
+    /// @param _recipients address[] a list of recipients addresses
+    /// @param _amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
+    /// @param _batchIndex uint256 index of the specified batch in commitments array
+    function executeCommittedBatch(string _distributionEvent, address[] _recipients, uint256[] _amounts, uint256 _batchIndex) external {
+        Distribution storage distribution = distributions[_distributionEvent];
         bytes32[] storage batchHashes = distribution.batchHashes;
 
-        require(recipients.length == amounts.length, "array length mismatch");
-        require(recipients.length > 0, "at least one reward must be included in a batch");
+        require(_recipients.length == _amounts.length, "array length mismatch");
+        require(_recipients.length > 0, "at least one reward must be included in a batch");
         require(distribution.hasPendingBatches, "distribution is not currently ongoing");
-        require(batchHashes.length > batchIndex, "batch number out of range");
-        require(batchHashes[batchIndex] != bytes32(0), "specified batch number already executed");
+        require(batchHashes.length > _batchIndex, "batch number out of range");
+        require(batchHashes[_batchIndex] != bytes32(0), "specified batch number already executed");
 
-        bytes32 calculatedHash = calcBatchHash(recipients, amounts, batchIndex);
-        require(batchHashes[batchIndex] == calculatedHash, "batch hash does not match");
+        bytes32 calculatedHash = calcBatchHash(_recipients, _amounts, _batchIndex);
+        require(batchHashes[_batchIndex] == calculatedHash, "batch hash does not match");
 
         distribution.pendingBatchCount--;
-        batchHashes[batchIndex] = bytes32(0); // delete
+        batchHashes[_batchIndex] = bytes32(0); // delete
 
-        _distributeRewards(distributionEvent, recipients, amounts);
+        _distributeRewards(_distributionEvent, _recipients, _amounts);
 
-        emit RewardsBatchExecuted(distributionEvent, calculatedHash, batchIndex);
+        emit RewardsBatchExecuted(_distributionEvent, calculatedHash, _batchIndex);
 
         if (distribution.pendingBatchCount == 0) {
-            delete distributions[distributionEvent];
-            emit RewardsDistributionCompleted(distributionEvent);
+            delete distributions[_distributionEvent];
+            emit RewardsDistributionCompleted(_distributionEvent);
         }
     }
 
     /// @dev Returns all pending (not yet executed) batch hashes and indices
     /// associated with a distributionEvent
-    /// @param distributionEvent string Name of a new distribution event
+    /// @param _distributionEvent string Name of a new distribution event
     /// @return pendingBatchHashes bytes32[]
     /// @return pendingBatchIndices uint256[]
-    function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices) {
-        Distribution storage distribution = distributions[distributionEvent];
+    function getPendingBatches(string _distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices) {
+        Distribution storage distribution = distributions[_distributionEvent];
         bytes32[] storage batchHashes = distribution.batchHashes;
         uint256 pendingBatchCount = distribution.pendingBatchCount;
         uint256 batchHashesLength = distribution.batchHashes.length;
@@ -171,10 +171,10 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     }
 
     /// @dev Transfers control of the contract to a newOwner.
-    /// @param newRewardsDistributor The address to set as the new rewards-distributor.
-    function reassignRewardsDistributor(address newRewardsDistributor) public onlyOwner {
-        emit RewardsDistributorReassigned(rewardsDistributor, newRewardsDistributor);
-        rewardsDistributor = newRewardsDistributor;
+    /// @param _newRewardsDistributor The address to set as the new rewards-distributor.
+    function reassignRewardsDistributor(address _newRewardsDistributor) public onlyOwner {
+        emit RewardsDistributorReassigned(rewardsDistributor, _newRewardsDistributor);
+        rewardsDistributor = _newRewardsDistributor;
     }
 
     /// return true if `msg.sender` is the assigned rewards-distributor.
@@ -189,11 +189,11 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     }
 
     /// @dev Computes a hash code form a batch payment specification.
-    /// @param recipients address[] a list of recipients addresses
-    /// @param amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
-    /// @param batchIndex uint256 index of the specified batch in commitments array
-    function calcBatchHash(address[] recipients, uint256[] amounts, uint256 batchIndex) private pure returns (bytes32) {
+    /// @param _recipients address[] a list of recipients addresses
+    /// @param _amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
+    /// @param _batchIndex uint256 index of the specified batch in commitments array
+    function calcBatchHash(address[] _recipients, uint256[] _amounts, uint256 _batchIndex) private pure returns (bytes32) {
         // TODO - do length checks
-        return keccak256(abi.encodePacked(batchIndex, recipients.length, recipients, amounts));
+        return keccak256(abi.encodePacked(_batchIndex, _recipients.length, _recipients, _amounts));
     }
 }
