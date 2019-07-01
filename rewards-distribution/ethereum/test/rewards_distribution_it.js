@@ -18,6 +18,7 @@ const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 const ERC20 = artifacts.require('./TestingERC20');
 
 contract('OrbsRewardsDistribution', accounts => {
+    const distributionEvent = "testName";
     const owner = accounts[0];
     const nonOwner = accounts[1];
     const rewardsDistributor = accounts[2];
@@ -132,7 +133,6 @@ contract('OrbsRewardsDistribution', accounts => {
     });
 
 
-    const distributionEvent = "testName";
     describe('announceDistributionEvent', () => {
         it('succeeds for new distributions but fails for ongoing distributions', async () => {
             const d = await Driver.newWithContracts(owner);
@@ -167,9 +167,6 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(firstEvent.args).to.have.property('batchCount');
             expect(firstEvent.args.batchHash).to.deep.equal(d.batchHashes);
             expect(firstEvent.args.batchCount).to.be.bignumber.equal(new BN(d.batchHashes.length));
-
-            const {pendingBatchHashes} = await d.getPendingBatches(distributionEvent);
-            expect(pendingBatchHashes).to.deep.equal(d.batchHashes);
         });
 
         it('records batches under the provided distribution name', async () => {

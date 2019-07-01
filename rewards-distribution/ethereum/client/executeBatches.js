@@ -12,7 +12,7 @@ const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 module.exports = async function() {
   try {
 
-    console.log("usage: truffle exec getBatchHashes.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name]");
+    console.log("usage: truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name]");
     const rewardsAddress = process.argv[3];
     const filename = process.argv[4];
     const batchSize = parseInt(process.argv[5]);

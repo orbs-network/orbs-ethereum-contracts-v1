@@ -110,7 +110,7 @@ function parseCsv(csv) {
 }
 
 function toOrbitons(orbs) {
-    return web3utils.toBN(orbs).mul(web3utils.toBN("1000000000000000000"));
+    return web3utils.toBN(orbs).mul(web3utils.toBN(10**18));
 }
 
 module.exports = {

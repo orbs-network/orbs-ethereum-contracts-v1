@@ -11,7 +11,7 @@ const {RewardsClient} = require('./RewardsClient');
 module.exports = async function() {
   try {
 
-    console.log("usage: truffle exec getBatchHashes.js [rewards csv file] [batchSize]");
+    console.log("usage: truffle exec client/getBatchHashes.js [rewards csv file] [batchSize]");
     const filename = process.argv[4];
     const batchSize = parseInt(process.argv[5]);
 
@@ -30,7 +30,7 @@ module.exports = async function() {
     console.log("---------------------------");
     for (let i = 0, supersetOffset = 2; i < batches.length; supersetOffset += batches[i].length, i++) {
       const idx = batches[i].length - 1;
-      console.log("row:", supersetOffset + idx, "batchIdx:", i, "idx in batch:", idx, "amount:", batches[i][idx].amount, "recipient", batches[i][idx].address);
+      console.log("row:", supersetOffset + idx, "batchIdx:", i, "idx in batch:", idx, "amount:", batches[i][idx].amount.toString(), "recipient", batches[i][idx].address);
     }
 
   } catch (e) {
