@@ -16,9 +16,6 @@ interface IOrbsRewardsDistribution {
 
     function executeCommittedBatch(string distributionEvent, address[] recipients, uint256[] amounts, uint256 batchIndex) external;
 
-    /**
-    * called by owner to bypass distribution announcements and batch hash commitments
-    */
     function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external;
 
     function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices);

@@ -232,7 +232,7 @@ contract('OrbsRewardsDistribution', accounts => {
             const d = await Driver.newWithContracts(owner);
 
             const error = await expectRevert(d.abortDistributionEvent(distributionEvent));
-            expect(error).to.have.property('reason', "named distribution is not currently ongoing")
+            expect(error).to.have.property('reason', "distribution event is not currently ongoing")
         });
     });
 
