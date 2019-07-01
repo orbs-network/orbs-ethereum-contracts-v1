@@ -124,7 +124,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: '0.4.25',
+      version: '0.4.26',
       settings: {          // See the solidity docs for advice about optimization and evmVersion
         optimizer: {
           enabled: true,

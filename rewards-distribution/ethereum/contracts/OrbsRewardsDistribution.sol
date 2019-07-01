@@ -1,4 +1,4 @@
-pragma solidity 0.4.25;
+pragma solidity 0.4.26;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
