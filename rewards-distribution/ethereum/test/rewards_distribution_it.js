@@ -281,20 +281,13 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.announceDistributionEvent(distributionEvent);
             const firstBatchResult = await d.executeBatch(distributionEvent, 0);
-            const secondBatchResult = await d.executeBatch(distributionEvent, 1);
 
             const firstRewardsBatchExecuted = firstBatchResult.logs.filter(log => log.event === "RewardsBatchExecuted");
-            const secondRewardsBatchExecuted = secondBatchResult.logs.filter(log => log.event === "RewardsBatchExecuted");
 
             expect(firstRewardsBatchExecuted).to.have.length(1);
             expect(firstRewardsBatchExecuted[0].args).to.have.property('distributionEvent', distributionEvent);
             expect(firstRewardsBatchExecuted[0].args).to.have.property('batchHash', d.batchHashes[0]);
             expect(firstRewardsBatchExecuted[0].args.batchIndex).to.be.bignumber.equal(new BN(0));
-
-            expect(secondRewardsBatchExecuted).to.have.length(1);
-            expect(secondRewardsBatchExecuted[0].args).to.have.property('distributionEvent', distributionEvent);
-            expect(secondRewardsBatchExecuted[0].args).to.have.property('batchHash', d.batchHashes[1]);
-            expect(secondRewardsBatchExecuted[0].args.batchIndex).to.be.bignumber.equal(new BN(1));
         });
 
         it("emits RewardDistributed events", async () => {
@@ -304,24 +297,16 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.announceDistributionEvent(distributionEvent);
             const firstBatchResult = await d.executeBatch(distributionEvent, 0);
-            const secondBatchResult = await d.executeBatch(distributionEvent, 1);
 
             const firstRewardDistributed = firstBatchResult.logs.filter(log => log.event === "RewardDistributed");
-            const secondRewardDistributed = secondBatchResult.logs.filter(log => log.event === "RewardDistributed");
 
             expect(firstRewardDistributed).to.have.length(d.batches[0].length);
-            expect(secondRewardDistributed).to.have.length(d.batches[1].length);
+
             firstRewardDistributed.forEach((l, i) => {
                 expect(l.args).to.have.property('distributionEvent', distributionEvent);
                 expect(l.args).to.have.property('recipient');
                 expect(l.args.recipient.toLowerCase()).to.equal(d.batches[0][i].address);
                 expect(l.args.amount).to.be.bignumber.equal(new BN(d.batches[0][i].amount));
-            });
-            secondRewardDistributed.forEach((l, i) => {
-                expect(l.args).to.have.property('distributionEvent', distributionEvent);
-                expect(l.args).to.have.property('recipient');
-                expect(l.args.recipient.toLowerCase()).to.equal(d.batches[1][i].address);
-                expect(l.args.amount).to.be.bignumber.equal(new BN(d.batches[1][i].amount));
             });
         });
 
@@ -346,18 +331,18 @@ contract('OrbsRewardsDistribution', accounts => {
             await d.executeBatch(distributionEvent, 0);
         });
 
-        it("fails if batch or was not announced at exact position, but succeeds for declared batches", async () => {
+        it("fails if batch or was not announced at exact position", async () => {
             const d = await Driver.newWithContracts(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
             await d.announceDistributionEvent(distributionEvent);
 
-            await expectRevert(d.executeBatch(distributionEvent, 0, d.batches[0].slice(1))); // wrong batch list
+            const err1 = await expectRevert(d.executeBatch(distributionEvent, 0, d.batches[0].slice(1))); // wrong batch data
+            expect(err1).to.have.property('reason', 'batch hash does not match');
 
-            await expectRevert(d.executeBatch(distributionEvent, 1, d.batches[0])); // wrong batchIndex
-
-            await d.executeBatch(distributionEvent, 0, d.batches[0]);
+            const err2 = await expectRevert(d.executeBatch(distributionEvent, 1, d.batches[0])); // wrong batchIndex
+            expect(err2).to.have.property('reason', 'batch hash does not match');
         });
 
         it("fails if batch array lengths dont match", async () => {
@@ -372,7 +357,7 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(error).to.have.property('reason', 'array length mismatch')
         });
 
-        it("fails if no recipients in batch zero recipient", async () => {
+        it("fails for an empty batch", async () => {
             const d = await Driver.newWithContracts(owner);
 
             // TODO - instead of violating encapsulation use builder pattern to replace batch
@@ -389,7 +374,7 @@ contract('OrbsRewardsDistribution', accounts => {
             expect(error).to.have.property("reason", "at least one reward must be included in a batch");
         });
 
-        it("fails for zero recipient", async () => {
+        it("fails for zero-address recipient", async () => {
             const d = await Driver.newWithContracts(owner);
 
             // TODO - instead of violating encapsulation use builder pattern to replace batch

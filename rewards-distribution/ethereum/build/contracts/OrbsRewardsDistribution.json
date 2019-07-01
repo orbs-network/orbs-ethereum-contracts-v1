@@ -16338,11 +16338,29 @@
           "name": "OwnershipTransferred",
           "type": "event",
           "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+        },
+        "0x97a704c2f293b2209983e270444a46fb8f5096fa511290181aaa7cf074d6f143": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousRewardsDistributor",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newRewardsDistributor",
+              "type": "address"
+            }
+          ],
+          "name": "RewardsDistributorReassigned",
+          "type": "event",
+          "signature": "0x97a704c2f293b2209983e270444a46fb8f5096fa511290181aaa7cf074d6f143"
         }
       },
       "links": {},
-      "address": "0x5eBf8DE15E3cC927b1815928Dd75694c2A66f67D",
-      "transactionHash": "0xbb39ca95c61dc827b84b0f8254042379095f92564df766d765f76ca47498fd2a"
+      "address": "0x00898102030145dd40cBE8F28AdB961EF43CF4e4",
+      "transactionHash": "0xd9df917984e5c6e73368b71fd2099b9e5fb4aab4dc731d7aecfd1cfdacd1a9de"
     },
     "5777": {
       "events": {
@@ -16476,7 +16494,7 @@
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-01T14:51:05.800Z",
+  "updatedAt": "2019-07-01T14:54:22.496Z",
   "devdoc": {
     "methods": {
       "abortDistributionEvent(string)": {
