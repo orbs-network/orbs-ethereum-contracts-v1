@@ -24,16 +24,10 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
     /// Address of an optional rewards-distributor account.
     /// Meant to be used in the future should an alternate implementation of
-    /// batch-transfers locking mechanism will be needed, or for manual
-    /// transfers without batch locking should be required.
-    /// only the address of rewardsDistributor may call distributRewards()
+    /// batch commitment mechanism will be needed, or for manual
+    /// transfers without batch commitment should be required.
+    /// only the address of rewardsDistributor may call distributeRewards()
     address public rewardsDistributor;
-
-    /// indicates a new rewards distributor was selected.
-    event RewardsDistributorReassigned(
-        address indexed previousRewardsDistributor,
-        address indexed newRewardsDistributor
-    );
 
     /// @dev Constructor to set Orbs token contract address.
     /// @param _orbs IERC20 The address of the Orbs token contract.
@@ -126,7 +120,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         require(batchHashes[_batchIndex] == calculatedHash, "batch hash does not match");
 
         distribution.pendingBatchCount--;
-        batchHashes[_batchIndex] = bytes32(0); // delete
+        delete batchHashes[_batchIndex];
 
         _distributeRewards(_distributionEvent, _recipients, _amounts);
 
@@ -172,12 +166,12 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
     /// @dev Transfers control of the contract to a newOwner.
     /// @param _newRewardsDistributor The address to set as the new rewards-distributor.
-    function reassignRewardsDistributor(address _newRewardsDistributor) public onlyOwner {
+    function reassignRewardsDistributor(address _newRewardsDistributor) external onlyOwner {
         emit RewardsDistributorReassigned(rewardsDistributor, _newRewardsDistributor);
         rewardsDistributor = _newRewardsDistributor;
     }
 
-    /// return true if `msg.sender` is the assigned rewards-distributor.
+    /// @dev return true if `msg.sender` is the assigned rewards-distributor.
     function isRewardsDistributor() public view returns(bool) {
         return msg.sender == rewardsDistributor;
     }
@@ -193,7 +187,11 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @param _amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
     /// @param _batchIndex uint256 index of the specified batch in commitments array
     function calcBatchHash(address[] _recipients, uint256[] _amounts, uint256 _batchIndex) private pure returns (bytes32) {
-        // TODO - do length checks
-        return keccak256(abi.encodePacked(_batchIndex, _recipients.length, _recipients, _amounts));
+        bytes memory batchData = abi.encodePacked(_batchIndex, _recipients.length, _recipients, _amounts);
+
+        uint256 expectedLength = 32 * (2 + _recipients.length + _amounts.length);
+        require(batchData.length == expectedLength, "unexpected data length");
+
+        return keccak256(batchData);
     }
 }

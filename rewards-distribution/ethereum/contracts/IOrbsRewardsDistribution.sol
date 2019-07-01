@@ -9,6 +9,8 @@ interface IOrbsRewardsDistribution {
     event RewardsDistributionAborted(string distributionEvent, bytes32[] abortedBatchHashes, uint256[] abortedBatchIndices);
     event RewardsDistributionCompleted(string distributionEvent);
 
+    event RewardsDistributorReassigned(address indexed previousRewardsDistributor, address indexed newRewardsDistributor);
+
     function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external;
     function abortDistributionEvent(string distributionEvent) external;
 
@@ -20,4 +22,6 @@ interface IOrbsRewardsDistribution {
     function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external;
 
     function getPendingBatches(string distributionEvent) external view returns (bytes32[] pendingBatchHashes, uint256[] pendingBatchIndices);
+    function reassignRewardsDistributor(address _newRewardsDistributor) external;
+    function isRewardsDistributor() external returns (bool);
 }

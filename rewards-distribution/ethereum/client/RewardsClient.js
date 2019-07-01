@@ -51,16 +51,24 @@ class RewardsClient {
         for (let i = 0; i < batches.length; i++) {
             console.log(`executing batch ${i+1}/${batches.length}...`);
             const batch = batches[i];
-            const res = await this.rewardsContract.executeCommittedBatch(
-                distributionEvent,
-                batch.map(r => r.address),
-                batch.map(r => r.amount),
-                i,
-                options
-            );
-            results.push(res);
+            try{
+                const res = await this.rewardsContract.executeCommittedBatch(
+                    distributionEvent,
+                    batch.map(r => r.address),
+                    batch.map(r => r.amount),
+                    i,
+                    options
+                );
+                results.push(res);
+            }catch (e) {
+                results.push(e);
+            }
         }
         return results;
+    }
+
+    async getPendingBatches(distributionEvent) {
+        return await this.rewardsContract.getPendingBatches(distributionEvent);
     }
 
     static hashBatch(batchId, batch) {
@@ -87,9 +95,13 @@ function parseCsv(csv) {
                 reject(err);
             }
             resolve(records.map(r=>{
+                const amount = r["total_rewards"] || r["total rewards"];
+                const address = r["address"];
+                assert.ok(amount, "row missing amount column");
+                assert.ok(address, "row missing address column");
                 return {
-                    address: r["address"].toLowerCase(),
-                    amount: parseInt(r["total rewards"].replace(/,/g,""))
+                    address: address.toLowerCase(),
+                    amount: parseInt(amount.replace(/,/g,""))
                 }
             }));
         });
