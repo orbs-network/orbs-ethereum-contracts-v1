@@ -9,8 +9,6 @@
 const {RewardsClient} = require('./RewardsClient');
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 
-function concatHashIndex(hash, index) { return `${hash}_${index}`}
-
 module.exports = async function() {
   try {
 

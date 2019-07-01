@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 const parse = require('csv-parse');
 const assert = require('assert');
@@ -49,9 +48,9 @@ class RewardsClient {
     async executeBatches(distributionEvent, batches, options) {
         const results = [];
         for (let i = 0; i < batches.length; i++) {
-            console.log(`executing batch ${i+1}/${batches.length}...`);
+            console.log(`executing batch ${i + 1}/${batches.length}...`);
             const batch = batches[i];
-            try{
+            try {
                 const res = await this.rewardsContract.executeCommittedBatch(
                     distributionEvent,
                     batch.map(r => r.address),
@@ -60,7 +59,7 @@ class RewardsClient {
                     options
                 );
                 results.push(res);
-            }catch (e) {
+            } catch (e) {
                 results.push(e);
             }
         }
@@ -94,20 +93,24 @@ function parseCsv(csv) {
             if (err) {
                 reject(err);
             }
-            resolve(records.map(r=>{
+            resolve(records.map(r => {
                 const amount = r["total_rewards"] || r["total rewards"];
                 const address = r["address"];
                 assert.ok(amount, "row missing amount column");
                 assert.ok(address, "row missing address column");
                 return {
                     address: address.toLowerCase(),
-                    amount: parseInt(amount.replace(/,/g,""))
+                    amount: toOrbitons(parseInt(amount.replace(/,/g, "")))
                 }
             }));
         });
         parser.write(csv);
         parser.end();
     });
+}
+
+function toOrbitons(orbs) {
+    return web3utils.toBN(orbs).mul(web3utils.toBN("1000000000000000000"));
 }
 
 module.exports = {

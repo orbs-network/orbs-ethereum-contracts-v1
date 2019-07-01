@@ -76,9 +76,13 @@ contract('OrbsRewardsDistribution', accounts => {
             const events = await d.getPastEvents("RewardDistributed", {fromBlock: firstBlockNumber});
             const readRewards = events.map(log => ({
                 address: log.args.recipient.toLowerCase(),
-                amount: log.args.amount.toNumber()
+                amount: log.args.amount.toString()
             }));
-            expect(readRewards).to.have.same.deep.members(rewardsSuperset);
+
+
+            expect(readRewards).to.have.same.deep.members(rewardsSuperset.map(r => {
+                return {address: r.address, amount: r.amount.toString()}
+            }));
 
             console.log(`total gas used for ${rewardsSuperset.length} rewards in ${batches.length} batches is ${totalGasUsed}`);
         });
@@ -463,7 +467,7 @@ contract('OrbsRewardsDistribution', accounts => {
             await d.setRewardsDistributor(rewardsDistributor);
             await expectRevert(d.distributeRewards(distributionEvent, 0, undefined, {from: nonOwner}));
             await expectRevert(d.distributeRewards(distributionEvent, 0, undefined, {from: owner}));
-            await d.distributeRewards(distributionEvent, 0, undefined,{from: rewardsDistributor})
+            await d.distributeRewards(distributionEvent, 0, undefined, {from: rewardsDistributor})
         });
 
         it("distributes orbs and logs RewardDistributed events for each recipient", async () => {
@@ -576,7 +580,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
     });
 
-    describe("defines rewards distributor role", () =>{
+    describe("defines rewards distributor role", () => {
         it("rewards distributor initializes to 0 address", async () => {
             const d = await Driver.newWithContracts(owner);
             expect(await d.rewards.rewardsDistributor()).to.be.equal("0x0000000000000000000000000000000000000000");
