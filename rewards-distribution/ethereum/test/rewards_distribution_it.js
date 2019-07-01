@@ -20,6 +20,7 @@ const ERC20 = artifacts.require('./TestingERC20');
 contract('OrbsRewardsDistribution', accounts => {
     const owner = accounts[0];
     const nonOwner = accounts[1];
+    const rewardsDistributor = accounts[2];
 
     describe('integration test - full flow', () => {
         it('integration test - distributes rewards specified in rewards report', async () => {
@@ -454,19 +455,22 @@ contract('OrbsRewardsDistribution', accounts => {
     });
 
     describe("distributeRewards", () => {
-        it('succeeds only for owner', async () => {
+        it('succeeds only for assigned rewards-distributor', async () => {
             const d = await Driver.newWithContracts(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
+            await d.setRewardsDistributor(rewardsDistributor);
             await expectRevert(d.distributeRewards(distributionEvent, 0, undefined, {from: nonOwner}));
-            await d.distributeRewards(distributionEvent, 0, undefined,{from: owner})
+            await expectRevert(d.distributeRewards(distributionEvent, 0, undefined, {from: owner}));
+            await d.distributeRewards(distributionEvent, 0, undefined,{from: rewardsDistributor})
         });
 
         it("distributes orbs and logs RewardDistributed events for each recipient", async () => {
             const d = await Driver.newWithContracts(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
+            await d.setRewardsDistributor(rewardsDistributor);
 
             const executionResult = await d.distributeRewards(distributionEvent, 0);
 
@@ -489,6 +493,7 @@ contract('OrbsRewardsDistribution', accounts => {
             const d = await Driver.newWithContracts(owner);
 
             await d.assignTokenToContract(d.getTotalAmount());
+            await d.setRewardsDistributor(rewardsDistributor);
 
             const result = await d.distributeRewards(distributionEvent, 0);
 
@@ -507,9 +512,10 @@ contract('OrbsRewardsDistribution', accounts => {
             const d = await Driver.newWithContracts(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
+            await d.setRewardsDistributor(rewardsDistributor);
 
             const batch = d.batches[0];
-            const error = await expectRevert(d.rewards.distributeRewards(distributionEvent, batch.map(r => r.address), batch.slice(1).map(r => r.amount)));
+            const error = await expectRevert(d.rewards.distributeRewards(distributionEvent, batch.map(r => r.address), batch.slice(1).map(r => r.amount), {from: rewardsDistributor}));
             expect(error).to.have.property('reason', 'array length mismatch')
         });
 
@@ -524,6 +530,7 @@ contract('OrbsRewardsDistribution', accounts => {
             d.batchHashes[0] = RewardsClient.hashBatch(0, firstBatch);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
+            await d.setRewardsDistributor(rewardsDistributor);
 
             const error = await expectRevert(d.distributeRewards(distributionEvent, 0));
             expect(error).to.have.property("reason", "recipient must be a valid address");
@@ -540,6 +547,7 @@ contract('OrbsRewardsDistribution', accounts => {
             d.batchHashes[0] = RewardsClient.hashBatch(0, firstBatch);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
+            await d.setRewardsDistributor(rewardsDistributor);
 
             await d.distributeRewards(distributionEvent, 0);
         });
@@ -551,20 +559,62 @@ contract('OrbsRewardsDistribution', accounts => {
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
-            await expectRevert(d.rewards.drainOrbs(owner, {from: nonOwner}));
-            await d.rewards.drainOrbs(owner, {from: owner});
+            await expectRevert(d.rewards.drainOrbs({from: nonOwner}));
+            await d.rewards.drainOrbs({from: owner});
         });
 
-        it('transfers orbs to requested recipient', async () => {
+        it('transfers orbs to owner', async () => {
             const d = await Driver.newWithContracts(owner);
 
             const amount = 1000000000;
             await d.assignTokenToContract(amount);
 
             expect(await d.erc20.balanceOf(nonOwner)).to.be.bignumber.equal(new BN(0));
-            await d.rewards.drainOrbs(nonOwner, {from: owner});
-            expect(await d.erc20.balanceOf(nonOwner)).to.be.bignumber.equal(new BN(amount));
+            await d.rewards.drainOrbs({from: owner});
+            expect(await d.erc20.balanceOf(owner)).to.be.bignumber.equal(new BN(amount));
             expect(await d.erc20.balanceOf(d.rewards.address)).to.be.bignumber.equal(new BN(0));
+        });
+    });
+
+    describe("defines rewards distributor role", () =>{
+        it("rewards distributor initializes to 0 address", async () => {
+            const d = await Driver.newWithContracts(owner);
+            expect(await d.rewards.rewardsDistributor()).to.be.equal("0x0000000000000000000000000000000000000000");
+        });
+
+        it("only owner can assign a rewards distributor", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            await expectRevert(d.rewards.reassignRewardsDistributor(accounts[6], {from: nonOwner}));
+            await d.rewards.reassignRewardsDistributor(accounts[6], {from: owner});
+
+            expect(await d.rewards.rewardsDistributor()).to.be.equal(accounts[6]);
+            expect(await d.rewards.isRewardsDistributor({from: accounts[6]})).to.be.true;
+
+            await expectRevert(d.rewards.reassignRewardsDistributor(accounts[7], {from: nonOwner}));
+            await d.rewards.reassignRewardsDistributor(accounts[7], {from: owner});
+
+            expect(await d.rewards.rewardsDistributor()).to.be.equal(accounts[7]);
+            expect(await d.rewards.isRewardsDistributor({from: accounts[7]})).to.be.true;
+            expect(await d.rewards.isRewardsDistributor({from: accounts[6]})).to.be.false;
+        });
+
+        it("emits event", async () => {
+            const d = await Driver.newWithContracts(owner);
+
+            const currentDistributor = accounts[5];
+            await d.rewards.reassignRewardsDistributor(currentDistributor, {from: owner})
+            expect(await d.rewards.rewardsDistributor()).to.equal(currentDistributor);
+
+            const nextDistributor = accounts[6];
+            const result = await d.rewards.reassignRewardsDistributor(nextDistributor, {from: owner});
+
+            expect(result).to.have.property('logs');
+            expect(result.logs).to.have.length(1);
+            expect(result.logs[0]).to.have.property('event', 'RewardsDistributorReassigned');
+            expect(result.logs[0]).to.have.property('args');
+            expect(result.logs[0].args).to.have.property('previousRewardsDistributor', currentDistributor);
+            expect(result.logs[0].args).to.have.property('newRewardsDistributor', nextDistributor);
         });
     });
 });
@@ -646,9 +696,15 @@ class Driver {
         if (batch === undefined) {
             batch = this.batches[batchIndex];
         }
-        options = Object.assign({from: this.owner}, options);
+        options = Object.assign({from: this.rewardsDistributor}, options);
 
         return this.rewards.distributeRewards(distributionEvent, batch.map(r => r.address), batch.map(r => r.amount), options);
+    }
+
+    async setRewardsDistributor(address) {
+        this.rewardsDistributor = address;
+        await this.rewards.reassignRewardsDistributor(address, {from: this.owner});
+        expect(await this.rewards.rewardsDistributor()).to.equal(address);
     }
 
     getTotalAmount() {

@@ -11,8 +11,8 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     IERC20 public orbs;
 
     struct Distribution {
-        bool ongoing;
         uint256 pendingBatchCount;
+        bool hasPendingBatches;
         bytes32[] batchHashes;
     }
 
@@ -21,6 +21,19 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// for the duration of their execution.
     /// After completion or abortion the same name may be used again.
     mapping(string => Distribution) distributions;
+
+    /// Address of an optional rewards-distributor account.
+    /// Meant to be used in the future should an alternate implementation of
+    /// batch-transfers locking mechanism will be needed, or for manual
+    /// transfers without batch locking should be required.
+    /// only the address of rewardsDistributor may call distributRewards()
+    address public rewardsDistributor;
+
+    /// indicates a new rewards distributor was selected.
+    event RewardsDistributorReassigned(
+        address indexed previousRewardsDistributor,
+        address indexed newRewardsDistributor
+    );
 
     /// @dev Constructor to set Orbs token contract address.
     /// @param _orbs IERC20 The address of the Orbs token contract.
@@ -35,8 +48,8 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @param distributionEvent string Name of a new distribution event
     /// @param batchHashes bytes32[] The address of the OrbsValidators contract.
     function announceDistributionEvent(string distributionEvent, bytes32[] batchHashes) external onlyOwner {
-        require(distributions[distributionEvent].ongoing == false, "named distribution is currently ongoing");
-        require(batchHashes.length >= 1, "at least one batch must be announced");
+        require(!distributions[distributionEvent].hasPendingBatches, "named distribution is currently ongoing");
+        require(batchHashes.length > 0, "at least one batch must be announced");
 
         for (uint256 i = 0; i < batchHashes.length; i++) {
             require(batchHashes[i] != bytes32(0), "batch hash may not be 0x0");
@@ -44,8 +57,8 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
         // store distribution event record
         Distribution storage distribution = distributions[distributionEvent];
-        distribution.ongoing = true;
         distribution.pendingBatchCount = batchHashes.length;
+        distribution.hasPendingBatches = true;
         distribution.batchHashes = batchHashes;
 
         emit RewardsDistributionAnnounced(distributionEvent, batchHashes, batchHashes.length);
@@ -54,7 +67,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @dev Aborts an ongoing distributionEvent and revokes all batch commitments.
     /// @param distributionEvent string Name of a new distribution event
     function abortDistributionEvent(string distributionEvent) external onlyOwner {
-        require(distributions[distributionEvent].ongoing == true, "named distribution is not currently ongoing");
+        require(distributions[distributionEvent].hasPendingBatches, "named distribution is not currently ongoing");
 
         (bytes32[] memory abortedBatchHashes, uint256[] memory abortedBatchIndices) = this.getPendingBatches(distributionEvent);
 
@@ -75,7 +88,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
         for (uint256 i = 0; i < batchSize; i++) {
             require(recipients[i] != address(0), "recipient must be a valid address");
-            orbs.transfer(recipients[i], amounts[i]);
+            require(orbs.transfer(recipients[i], amounts[i]), "transfer failed");
             emit RewardDistributed(distributionEvent, recipients[i], amounts[i]);
         }
     }
@@ -86,8 +99,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @param distributionEvent string Name of a new distribution event
     /// @param recipients address[] a list of recipients addresses
     /// @param amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
-    function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external onlyOwner {
-        // TODO - TBD - replace onlyOwner with a special role - "onlyRewardsDistributer". will simplify future contracts and reduce chances of human error by keeping the owner constant.
+    function distributeRewards(string distributionEvent, address[] recipients, uint256[] amounts) external onlyRewardsDistributor {
         _distributeRewards(distributionEvent, recipients, amounts);
     }
 
@@ -102,18 +114,19 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @param batchIndex uint256 index of the specified batch in commitments array
     function executeCommittedBatch(string distributionEvent, address[] recipients, uint256[] amounts, uint256 batchIndex) external {
         Distribution storage distribution = distributions[distributionEvent];
+        bytes32[] storage batchHashes = distribution.batchHashes;
 
         require(recipients.length == amounts.length, "array length mismatch");
-        require(recipients.length >= 1, "at least one reward must be included in a batch");
-        require(distribution.ongoing == true, "distribution is not currently ongoing");
-        require(distribution.batchHashes.length > batchIndex, "batch number out of range");
-        require(distribution.batchHashes[batchIndex] != bytes32(0), "specified batch number already executed");
+        require(recipients.length > 0, "at least one reward must be included in a batch");
+        require(distribution.hasPendingBatches, "distribution is not currently ongoing");
+        require(batchHashes.length > batchIndex, "batch number out of range");
+        require(batchHashes[batchIndex] != bytes32(0), "specified batch number already executed");
 
         bytes32 calculatedHash = calcBatchHash(recipients, amounts, batchIndex);
-        require(distribution.batchHashes[batchIndex] == calculatedHash, "batch hash does not match");
+        require(batchHashes[batchIndex] == calculatedHash, "batch hash does not match");
 
         distribution.pendingBatchCount--;
-        distribution.batchHashes[batchIndex] = bytes32(0); // delete
+        batchHashes[batchIndex] = bytes32(0); // delete
 
         _distributeRewards(distributionEvent, recipients, amounts);
 
@@ -150,15 +163,29 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         }
     }
 
-    /// @dev Transfers away any Orbs balance from this contract to the specified address
-    /// @param to address address
-    /// @return pendingBatchHashes bytes32[]
-    /// @return pendingBatchIndices uint256[]
-    function drainOrbs(address to) external onlyOwner {
-        // TODO - TBD - allow draining only to owners account?
-        require(to != address(0), "to address missing");
+    /// @dev For disaster recovery purposes.
+    /// Transfers away any Orbs balance from this contract to the owners address
+    function drainOrbs() external onlyOwner {
         uint256 balance = orbs.balanceOf(address(this));
-        orbs.transfer(to, balance);
+        orbs.transfer(owner(), balance);
+    }
+
+    /// @dev Transfers control of the contract to a newOwner.
+    /// @param newRewardsDistributor The address to set as the new rewards-distributor.
+    function reassignRewardsDistributor(address newRewardsDistributor) public onlyOwner {
+        emit RewardsDistributorReassigned(rewardsDistributor, newRewardsDistributor);
+        rewardsDistributor = newRewardsDistributor;
+    }
+
+    /// return true if `msg.sender` is the assigned rewards-distributor.
+    function isRewardsDistributor() public view returns(bool) {
+        return msg.sender == rewardsDistributor;
+    }
+
+    ///@dev Throws if called by any account other than the rewards-distributor.
+    modifier onlyRewardsDistributor() {
+        require(isRewardsDistributor(), "only the assigned rewards-distributor may call this method");
+        _;
     }
 
     /// @dev Computes a hash code form a batch payment specification.
@@ -166,7 +193,7 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @param amounts uint256[] a list of amounts to transfer each recipient at the corresponding array index
     /// @param batchIndex uint256 index of the specified batch in commitments array
     function calcBatchHash(address[] recipients, uint256[] amounts, uint256 batchIndex) private pure returns (bytes32) {
-        // TODO - do we really need recipients.length in the hash?...
+        // TODO - do length checks
         return keccak256(abi.encodePacked(batchIndex, recipients.length, recipients, amounts));
     }
 }
