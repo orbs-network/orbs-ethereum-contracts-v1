@@ -181,12 +181,12 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         rewardsDistributor = _newRewardsDistributor;
     }
 
-    /// return true if `msg.sender` is the assigned rewards-distributor.
+    /// Return true if `msg.sender` is the assigned rewards-distributor.
     function isRewardsDistributor() public view returns(bool) {
         return msg.sender == rewardsDistributor;
     }
 
-    ///Throws if called by any account other than the rewards-distributor.
+    /// Throws if called by any account other than the rewards-distributor.
     modifier onlyRewardsDistributor() {
         require(isRewardsDistributor(), "only the assigned rewards-distributor may call this method");
         _;
