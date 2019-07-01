@@ -9,27 +9,32 @@
 const {RewardsClient} = require('./RewardsClient');
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 
-module.exports = async function() {
+module.exports = async function(done) {
   try {
 
     console.log("usage: truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name]");
-    const rewardsAddress = process.argv[3];
-    const filename = process.argv[4];
-    const batchSize = parseInt(process.argv[5]);
-    const distributionEvent = parseInt(process.argv[6]);
+    const rewardsAddress = process.argv[4];
+    const filename = process.argv[5];
+    const batchSize = parseInt(process.argv[6]);
+    const distributionEvent = process.argv[7];
+
+    console.log("OrbsRewardsDistribution address:", rewardsAddress);
+    console.log("filename:", filename);
+    console.log("batch size:", batchSize);
+    console.log("distributionEvent:", distributionEvent);
 
     const rewards = await OrbsRewardsDistribution.at(rewardsAddress);
     const rewardsClient = new RewardsClient(rewards);
 
-    const {batches} = await RewardsClient.parseBatches(filename, batchSize);
+    const {batches} = await rewardsClient.parseBatches(filename, batchSize);
 
     const accounts = await web3.eth.getAccounts();
     const result = await rewardsClient.executeBatches(distributionEvent, batches, {from: accounts[0]});
 
     console.log("executionResult", JSON.stringify(result, null, 2));
-
    // TODO print results in a nice way...
 
+    done()
   } catch (e) {
     console.log(e);
     done(e);

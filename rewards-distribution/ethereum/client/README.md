@@ -88,9 +88,38 @@ row: 1514 batchIdx: 30 idx in batch: 12 amount: 0 recipient 0xfb390441ff968f7569
 ```
 * Review total amounts, number of batches and rewards, and sample rows, the filename parsed, etc. 
 * Transfer `total rewards amount` orbitons to the address of `OrbsRewardsDistribution` contract
-* Send a transaction to `OrbsRewardsDistribution.announceDistributionEvent` providing the following parameters:
-    * distributionName - name to appear in event logs relating to payments in current distribution
-    * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section.
-* Run batch execution script:
+* Send a transaction to `OrbsRewardsDistribution.announceDistributionEvent` 
+    * Switch off automatic gas calculation if using MyCrypto. use a high gas limit...
+    * providing the following parameters:
+        * distributionName - name to appear in event logs relating to payments in current distribution
+        * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section.
+* Run batch execution script. Make sure your truffle networks are configured and that any required environment variable is set:
 ```$bash
-truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name]```
+truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network ropsten/mainnet/development
+```
+Typical output will be:
+```
+➜  ethereum git:(rewards-distribution) ✗ truffle exec client/executeBatches.js "0x00898102030145dd40cBE8F28AdB961EF43CF4e4" test/dummy_election.csv 7 Test --network ropsten
+Using network 'ropsten'.
+
+usage: truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name]
+OrbsRewardsDistribution address: 0x00898102030145dd40cBE8F28AdB961EF43CF4e4
+filename: test/dummy_election.csv
+batch size: 7
+distributionEvent: Test
+executing batch 1/10...
+executing batch 2/10...
+executing batch 3/10...
+executing batch 4/10...
+executing batch 5/10...
+executing batch 6/10...
+executing batch 7/10...
+executing batch 8/10...
+executing batch 9/10...
+executing batch 10/10...
+executionResult [
+...
+]
+```
+
+Note that the results array may contain errors as well as success objects

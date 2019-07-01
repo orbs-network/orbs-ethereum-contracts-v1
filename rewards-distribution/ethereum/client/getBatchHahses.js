@@ -22,7 +22,7 @@ module.exports = async function() {
     console.log("# rewards:", rewardsSuperset.length);
     console.log("# batches:", batches.length);
     console.log("---------------------------");
-    console.log("batch hashes:\n", hashes);
+    console.log("batch hashes:\n", JSON.stringify(hashes));
     console.log("---------------------------");
 
     console.log();

@@ -7,14 +7,14 @@ import "./IOrbsRewardsDistribution.sol";
 /// @title Orbs rewards distribution smart contract.
 contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
 
-    /// The Orbs token smart contract address.
-    IERC20 public orbs;
-
     struct Distribution {
         uint256 pendingBatchCount;
         bool hasPendingBatches;
         bytes32[] batchHashes;
     }
+
+    /// The Orbs token smart contract address.
+    IERC20 public orbs;
 
     /// Mapping of all ongoing distribution events.
     /// Distribution events are identified by a unique string
@@ -129,14 +129,13 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
         distribution.pendingBatchCount--;
         batchHashes[_batchIndex] = bytes32(0); // delete
 
-        _distributeRewards(_distributionEvent, _recipients, _amounts);
-
-        emit RewardsBatchExecuted(_distributionEvent, calculatedHash, _batchIndex);
-
         if (distribution.pendingBatchCount == 0) {
             delete distributions[_distributionEvent];
             emit RewardsDistributionCompleted(_distributionEvent);
         }
+        emit RewardsBatchExecuted(_distributionEvent, calculatedHash, _batchIndex);
+
+        _distributeRewards(_distributionEvent, _recipients, _amounts);
     }
 
     /// Returns all pending (not yet executed) batch hashes and indices
