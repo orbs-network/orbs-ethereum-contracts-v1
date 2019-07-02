@@ -23,7 +23,7 @@ export const DelegatorsPage = ({ apiService }: { apiService: IApiStrategy }) => 
       address: string;
       name: string;
       url: string;
-      stake: string;
+      stake: number;
       hasEligibleVote: boolean;
     };
   });

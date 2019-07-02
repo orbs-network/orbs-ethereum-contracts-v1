@@ -21,7 +21,7 @@ const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
       address: string;
       name: string;
       url: string;
-      stake: string;
+      stake: number;
       hasEligibleVote: boolean;
     };
   });
