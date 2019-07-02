@@ -59,6 +59,9 @@ export class ApiService implements IApiStrategy {
   getRewards(address: string) {
     return this.remote.getRewards(address);
   }
+  getRewardsHistory(address: string) {
+    return this.remote.getRewardsHistory(address);
+  }
   getTotalStake() {
     return this.remote.getTotalStake();
   }

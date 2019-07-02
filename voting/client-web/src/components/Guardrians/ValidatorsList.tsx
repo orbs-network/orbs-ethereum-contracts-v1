@@ -102,7 +102,7 @@ const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classe
               </Link>
             </TableCell>
             <TableCell padding='dense' className={classes.cell}>
-              {validators[address].votesAgainst}
+              {validators[address].votesAgainst}%
             </TableCell>
           </TableRow>
         ))}
