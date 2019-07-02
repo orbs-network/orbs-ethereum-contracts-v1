@@ -33,6 +33,8 @@ contract OrbsRewardsDistribution is Ownable, IOrbsRewardsDistribution {
     /// @param _orbs IERC20 The address of the Orbs token contract.
     constructor(IERC20 _orbs) public {
         require(address(_orbs) != address(0), "Address must not be 0!");
+
+        rewardsDistributor = address(0);
         orbs = _orbs;
     }
 
