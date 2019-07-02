@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { IRemoteService } from './IRemoteService';
 
+// const remoteAddress = 'http://localhost:5678/api';
 const remoteAddress = 'https://orbs-voting-proxy-server.herokuapp.com/api';
 
 export class RemoteService implements IRemoteService {
@@ -36,6 +37,10 @@ export class RemoteService implements IRemoteService {
 
   getRewards(address: string) {
     return this.callRemote(`/rewards/${address}`);
+  }
+
+  getRewardsHistory(address: string) {
+    return this.callRemote(`/rewards/history/${address}`);
   }
 
   getTotalStake() {

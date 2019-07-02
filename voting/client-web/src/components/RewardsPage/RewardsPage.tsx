@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import { Location } from 'history';
 import { parse as parseQuery } from 'querystring';
 import React, { useEffect, useState } from 'react';
+import { RewardsHistoryTable } from './RewardsHistoryTable';
 import { useTranslation } from 'react-i18next';
 import { useApi } from '../../services/ApiContext';
 import { DelegationInfoTable } from './DelegationInfoTable';
@@ -24,7 +25,7 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'row' as any,
     alignItems: 'baseline',
-    width: '50%',
+    width: '60%',
   },
   input: {
     flexGrow: 1,
@@ -41,11 +42,13 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
   const { remoteService } = useApi();
   const [address, setAddress] = useState('');
   const [rewards, setRewards] = useState({});
+  const [rewardsHistory, setRewardsHistory] = useState([]);
   const [delegatorInfo, setDelegatorInfo] = useState({});
   const [guardianInfo, setGuardianInfo] = useState({});
   const [electionBlock, setElectionBlock] = useState('0');
 
   const fetchRewards = address => remoteService.getRewards(address).then(setRewards);
+  const fetchRewardsHistory = address => remoteService.getRewardsHistory(address).then(setRewardsHistory);
 
   const fetchDelegationInfo = async address => {
     const info = await remoteService.getCurrentDelegationInfo(address);
@@ -58,6 +61,7 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
 
   const submitHandler = () => {
     fetchRewards(address);
+    fetchRewardsHistory(address);
     fetchDelegationInfo(address);
   };
 
@@ -103,6 +107,13 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
           {t('Rewards')}
         </Typography>
         <RewardsTable rewards={rewards} />
+      </section>
+
+      <section className={classes.section}>
+        <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
+          {t('Distributed')}
+        </Typography>
+        <RewardsHistoryTable rewardsHistory={rewardsHistory} />
       </section>
 
       <section className={classes.section}>

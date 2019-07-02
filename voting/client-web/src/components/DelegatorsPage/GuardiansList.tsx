@@ -35,11 +35,14 @@ const styles = () => ({
   },
 });
 
+const asPercent = (num: number) =>
+  (num * 100).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + '%';
+
 const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, delegatedTo }) => {
   const { t } = useTranslation();
   const [candidate, setCandidate] = useState(delegatedTo);
   const sortedGuardians = Object.values(guardians as object);
-  sortedGuardians.sort((a, b) => parseFloat(b['stake']) - parseFloat(a['stake']));
+  sortedGuardians.sort((a, b) => b.stake - a.stake);
   return (
     <Table className={classes.table}>
       <TableHead>
@@ -104,7 +107,7 @@ const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, del
                 {guardian['url']}
               </Link>
             </TableCell>
-            <TableCell padding='dense'>{guardian['stake']}%</TableCell>
+            <TableCell padding='dense'>{asPercent(guardian['stake'])}</TableCell>
             <TableCell padding='dense' className={classes.cell}>
               <VoteChip value={guardian['hasEligibleVote']} />
             </TableCell>

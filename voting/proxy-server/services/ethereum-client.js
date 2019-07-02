@@ -10,6 +10,7 @@ const Web3 = require('web3');
 const contractsInfo = require('../contracts-info');
 const erc20ContactAbi = require('../constants/erc20-abi');
 const votingContractJSON = require('../contracts/OrbsVoting.json');
+const orbsRewardsDistributionContractJSON = require('../contracts/OrbsRewardsDistribution.json');
 const guardiansContractJSON = require('../contracts/OrbsGuardians.json');
 const validatorsContractJSON = require('../contracts/OrbsValidators.json');
 const validatorsRegistryContractJSON = require('../contracts/OrbsValidatorsRegistry.json');
@@ -30,6 +31,10 @@ class EthereumClientService {
     this.votingContract = new this.web3.eth.Contract(
       votingContractJSON.abi,
       contractsInfo.EthereumVotingContract.address
+    );
+    this.orbsRewardsDistributionContract = new this.web3.eth.Contract(
+      orbsRewardsDistributionContractJSON.abi,
+      contractsInfo.EthereumOrbsRewardsDistributionContract.address
     );
     this.validatorsContract = new this.web3.eth.Contract(
       validatorsContractJSON.abi,
@@ -112,6 +117,32 @@ class EthereumClientService {
     const { timestamp } = await this.web3.eth.getBlock(lastEvent.blockNumber);
     res.delegationTimestamp = timestamp * 1000;
     return res;
+  }
+
+  async getOrbsRewardsDistribution(address) {
+    const options = {
+      fromBlock: OrbsTDEEthereumBlock,
+      toBlock: 'latest',
+      filter: { recipient: address }
+      // filter: { recipient: ['0x00000000000000000000000000000052B84F3914', '0x000000000000000000000000000000a324a4cF0b'] }
+    };
+    
+    const events = await this.orbsRewardsDistributionContract.getPastEvents(
+      'RewardDistributed',
+      // 'allEvents',
+      options
+    );
+
+    const readRewards = events.map(log => {
+      return {
+        distributionEvent: log.returnValues.distributionEvent,
+        amount: parseInt(log.returnValues.amount, 10),
+        transactionHash: log.transactionHash
+      };
+    });
+
+
+    return readRewards;
   }
 
   async getCurrentDelegationByTransfer(address) {

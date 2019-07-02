@@ -9,6 +9,7 @@ export interface IRemoteService {
   getValidatorData(address: string): Promise<IValidatorData>;
   getElectedValidatorData(address: string): Promise<{}>;
   getRewards(address: string): Promise<any>;
+  getRewardsHistory(address: string): Promise<any>;
   getTotalStake(): Promise<string>;
   getNextElectionBlockHeight(): Promise<string>;
   getPastElectionBlockHeight(): Promise<string>;
