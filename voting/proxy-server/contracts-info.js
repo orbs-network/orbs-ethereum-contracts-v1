@@ -20,7 +20,7 @@ module.exports = {
     address: '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d'
   },
   EthereumOrbsRewardsDistributionContract: {
-    address: '0x4f480a1354262b64C2DE8811eaa05644b834b51D'
+    address: '0xb2969e54668394bcA9B8AF61bC39B92754b7A7a0'
   },
   EthereumErc20Address: {
     address: '0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA'
