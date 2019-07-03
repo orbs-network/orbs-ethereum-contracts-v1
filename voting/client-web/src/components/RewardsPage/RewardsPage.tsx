@@ -137,7 +137,7 @@ const RewardsPageImpl = ({
           {': '}
         </Typography>
         <Typography inline variant='subtitle1' color='secondary'>
-          {electionBlock}
+          {parseInt(electionBlock, 10).toLocaleString()}
         </Typography>
       </section>
     </>
