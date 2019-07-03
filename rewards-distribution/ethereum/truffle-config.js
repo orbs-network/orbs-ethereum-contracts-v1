@@ -51,9 +51,10 @@ module.exports = {
 
   networks: {
     mainnet: {
-      provider: () => new HDWalletProvider(mnemonic_mainnet, mainnet_url, 0, 25),
+      provider: () => new HDWalletProvider(mnemonic_mainnet, mainnet_url),
       network_id: '1',
-      gasPrice: 300000000,
+      gasPrice: 6000000000, // 6 gwei
+      gas: 2500000
     },
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic_ropsten, ropsten_url, 0, 25),
