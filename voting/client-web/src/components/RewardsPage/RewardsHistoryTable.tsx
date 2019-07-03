@@ -44,7 +44,7 @@ export const RewardsHistoryTable = ({ rewardsHistory }) => {
                   {r.transactionHash}
                 </Link>
               </TableCell>
-              <TableCell align='right'>{r.amount.toLocaleString()} ORBS</TableCell>
+              <TableCell align='right'>{(r.amount || 0).toLocaleString()} ORBS</TableCell>
             </TableRow>
           );
         })}
@@ -53,7 +53,7 @@ export const RewardsHistoryTable = ({ rewardsHistory }) => {
         <TableRow>
           <TableCell>{t('Total Distributed')}</TableCell>
           <TableCell />
-          <TableCell align='right'>{totalAmount.toLocaleString()} ORBS</TableCell>
+          <TableCell align='right'>{(totalAmount || 0).toLocaleString()} ORBS</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

@@ -56,7 +56,7 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation block number')}</TableCell>
-          <TableCell align='right'>{delegatorInfo['delegationBlockNumber'].toLocaleString()}</TableCell>
+          <TableCell align='right'>{(delegatorInfo.delegationBlockNumber || 0).toLocaleString()}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation timestamp')}</TableCell>
