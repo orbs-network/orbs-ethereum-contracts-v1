@@ -136,7 +136,7 @@ class EthereumClientService {
     const readRewards = events.map(log => {
       return {
         distributionEvent: log.returnValues.distributionEvent,
-        amount: parseInt(log.returnValues.amount, 10),
+        amount: parseInt(log.returnValues.amount / (10 ** 18), 10),
         transactionHash: log.transactionHash
       };
     });
