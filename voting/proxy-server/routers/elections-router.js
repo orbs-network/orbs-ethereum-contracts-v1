@@ -8,7 +8,7 @@
 
 const express = require('express');
 
-const electionsApiFactory = (ethereumService, orbsClientService) => {
+const electionsRouter = electionsApi => {
   const router = express.Router();
 
   /**
@@ -23,9 +23,9 @@ const electionsApiFactory = (ethereumService, orbsClientService) => {
    *      '200':
    *        description: Ethereum block height of next elections
    */
-  router.get('/elections/next', async (req, res) => {
+  router.get('/elections/next', async (_, res) => {
     try {
-      const nextElections = await ethereumService.getNextElectionsBlockHeight();
+      const nextElections = await electionsApi.getNextElectionsBlockHeight();
       res.send(nextElections.toString());
     } catch (err) {
       res.status(500).send(err.toString());
@@ -44,9 +44,9 @@ const electionsApiFactory = (ethereumService, orbsClientService) => {
    *      '200':
    *        description: Ethereum block height of past elections
    */
-  router.get('/elections/past', async (req, res) => {
+  router.get('/elections/past', async (_, res) => {
     try {
-      const blockNumber = await orbsClientService.getEffectiveElectionBlockNumber();
+      const blockNumber = await electionsApi.getPastElectionBlockHeight();
       res.send(blockNumber.toString());
     } catch (err) {
       res.status(500).send(err.toString());
@@ -56,4 +56,4 @@ const electionsApiFactory = (ethereumService, orbsClientService) => {
   return router;
 };
 
-module.exports = electionsApiFactory;
+module.exports = electionsRouter;
