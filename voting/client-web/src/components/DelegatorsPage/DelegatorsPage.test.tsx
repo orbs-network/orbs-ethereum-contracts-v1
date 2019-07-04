@@ -36,7 +36,7 @@ describe('Delegators Page', () => {
   });
 
   it('should be able to delegate manually', async () => {
-    const delegateSpy = jest.spyOn(driver.apiService, 'delegate');
+    const delegateSpy = jest.spyOn(driver.metaMask, 'delegate');
     const address = '0xa8F0f2A5D6E3799D5a0Bed1d1B3C61d21B163EFD';
 
     const { getByTestId } = driver.render();

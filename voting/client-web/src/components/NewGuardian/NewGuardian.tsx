@@ -10,18 +10,21 @@ import { Button, FormControl, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IApiStrategy } from '../../api/interface';
+import { useApi } from '../../services/ApiContext';
 import { NewGuardianStyles } from './NewGuardian.styles';
 
-const NewGuardianImpl = ({ classes, apiService }: { classes: any; apiService: IApiStrategy }) => {
+const NewGuardianImpl = ({ classes }: { classes: any }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
+  const { metamask } = useApi();
 
   const isAddDisabled = () => !(name.length > 0 && website.length > 0);
 
   const addGuardian = async () => {
-    const receipt = await apiService.registerGuardian({ name, website });
-    console.log(receipt);
+    if (metamask) {
+      const receipt = await metamask.registerGuardian({ name, website });
+      console.log(receipt);
+    }
   };
 
   const { t } = useTranslation();

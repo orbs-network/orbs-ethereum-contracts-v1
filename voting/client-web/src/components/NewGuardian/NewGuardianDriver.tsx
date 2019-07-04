@@ -7,18 +7,23 @@
  */
 
 import React from 'react';
-import { NewGuardian } from './NewGuardian';
-import { render, waitForElement, fireEvent } from 'react-testing-library';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { IApiStrategy } from '../../api/interface';
-import { ApiStrategyStub } from '../../api/stub';
+import { fireEvent, render } from 'react-testing-library';
+import { ApiContext } from '../../services/ApiContext';
+import { IMetamask } from '../../services/IMetamask';
+import { IRemoteService } from '../../services/IRemoteService';
+import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
+import { RemoteServiceMock } from '../../services/RemoteServiceMock';
+import { NewGuardian } from './NewGuardian';
 
 export class NewGuardianDriver {
+  public remoteService: IRemoteService;
+  public metaMask: IMetamask;
   private renderResult;
-  apiService: IApiStrategy;
 
   constructor() {
-    this.apiService = new ApiStrategyStub({}, {});
+    this.remoteService = new RemoteServiceMock({}, {});
+    this.metaMask = new MetamaskServiceMock();
   }
 
   setName(name) {
@@ -41,7 +46,9 @@ export class NewGuardianDriver {
   async render() {
     this.renderResult = render(
       <Router>
-        <NewGuardian apiService={this.apiService} />
+        <ApiContext.Provider value={{ remoteService: this.remoteService, metamask: this.metaMask }}>
+          <NewGuardian />
+        </ApiContext.Provider>
       </Router>,
     );
     return this.renderResult;

@@ -6,19 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { useApi } from '../../services/ApiContext';
+import { normalizeUrl } from '../../services/urls';
+import { get, save } from '../../services/vote-storage';
 import { GuardiansPageStyles } from './GuardiansPage.styles';
 import { ValidatorsList } from './ValidatorsList';
-import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
-import { Mode, IApiStrategy } from '../../api/interface';
-import React, { useEffect, useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { get, save } from '../../services/vote-storage';
-import { normalizeUrl } from '../../services/urls';
-import { Link } from 'react-router-dom';
-import { ApiService } from '../../api/ApiService';
-import { useTranslation } from 'react-i18next';
 
 const ReadOnlyVoteButton = () => {
   const { t } = useTranslation();
@@ -58,7 +57,8 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: IApiStrategy }) => {
+const GuardiansPageImpl = ({ classes }: { classes: any }) => {
+  const { remoteService, metamask } = useApi();
   const [validators, setValidators] = useState({} as {
     [address: string]: {
       checked: boolean;
@@ -73,7 +73,7 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
   const [selectionDisabled, setSelectionDisabled] = useState(false);
 
   const fetchValidator = async (address, checked) => {
-    const data = await apiService.getValidatorData(address);
+    const data = await remoteService.getValidatorData(address);
     validators[address] = {
       checked,
       name: data['name'],
@@ -85,10 +85,10 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
   };
 
   const fetchValidators = async () => {
-    const validatorsInState = await apiService.getValidators();
+    const validatorsInState = await remoteService.getValidators();
 
-    if (hasMetamask() && isMetamaskActive()) {
-      const from = await apiService.getCurrentAddress();
+    if (metamask && isMetamaskActive()) {
+      const from = await metamask.getCurrentAddress();
       const validatorsInStorage = get(from);
       validatorsInState.forEach(address => {
         fetchValidator(address, validatorsInStorage.indexOf(address) > -1);
@@ -102,8 +102,8 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
 
   const fetchLastVote = async () => {
     try {
-      if (hasMetamask()) {
-        const { validators } = await apiService.getLastVote();
+      if (metamask) {
+        const { validators } = await metamask.getLastVote();
         setLastVote(validators);
       }
     } catch (err) {
@@ -112,12 +112,14 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
   };
 
   const commitVote = async () => {
-    const from = await apiService.getCurrentAddress();
-    const stagedValidators = Object.keys(validators).filter(address => validators[address].checked);
-    const receipt = await apiService.voteOut(stagedValidators);
-    save(from, stagedValidators);
-    fetchLastVote();
-    console.log(receipt);
+    if (metamask) {
+      const from = await metamask.getCurrentAddress();
+      const stagedValidators = Object.keys(validators).filter(address => validators[address].checked);
+      const receipt = await metamask.voteOut(stagedValidators);
+      save(from, stagedValidators);
+      fetchLastVote();
+      console.log(receipt);
+    }
   };
 
   const validateVoteOutAmount = (validators): boolean => {
@@ -142,7 +144,6 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
     }
   };
 
-  const hasMetamask = () => apiService.mode === Mode.ReadWrite;
   const isMetamaskActive = () => ethereum._metamask.isEnabled();
 
   const hasSomebodySelected = () => Object.keys(validators).some(address => validators[address].checked);
@@ -158,7 +159,7 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
         {t('Validators List')}
       </Typography>
 
-      {hasMetamask() && (
+      {metamask && (
         <Link to='/guardian/new'>
           <Typography variant='overline' color='textSecondary'>
             {t('Become a guardian')}
@@ -168,12 +169,12 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
 
       <ValidatorsList
         disableAll={selectionDisabled}
-        readOnly={!hasMetamask()}
+        readOnly={!metamask}
         validators={validators}
         onToggle={address => toggleCheck(address)}
       />
       <div className={classes.voteButton}>
-        {hasMetamask() ? (
+        {metamask ? (
           <>
             <LeaveEveryoneButton
               onVote={commitVote}
@@ -186,7 +187,7 @@ const GuardiansPageImpl = ({ classes, apiService }: { classes: any; apiService: 
         )}
       </div>
 
-      {hasMetamask() && lastVote.length > 0 ? (
+      {metamask && lastVote.length > 0 ? (
         <Typography variant='body1' color='textPrimary'>
           {t('Your most recent vote was against')}
           {':'}

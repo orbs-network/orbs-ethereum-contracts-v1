@@ -6,29 +6,32 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { NewValidatorStyles } from './NewValidator.styles';
-import React, { useState } from 'react';
+import { Button, FormControl, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { FormControl, TextField, Button } from '@material-ui/core';
-import { ApiService } from '../../api/ApiService';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { NewValidatorStyles } from './NewValidator.styles';
+import { useApi } from '../../services/ApiContext';
 
-const NewValidatorImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
+const NewValidatorImpl = ({ classes }: { classes: any }) => {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
   const [ipAddress, setIpAddress] = useState('');
   const [orbsAddress, setOrbsAddress] = useState('');
+  const { metamask } = useApi();
 
   const isAddDisabled = () => [name, website, ipAddress, orbsAddress].some(attr => !attr.length);
 
   const addValidator = async () => {
-    const receipt = await apiService.registerValidator({
-      name,
-      ipAddress,
-      website,
-      orbsAddress,
-    });
-    console.log(receipt);
+    if (metamask) {
+      const receipt = await metamask.registerValidator({
+        name,
+        ipAddress,
+        website,
+        orbsAddress,
+      });
+      console.log(receipt);
+    }
   };
 
   const { t } = useTranslation();
