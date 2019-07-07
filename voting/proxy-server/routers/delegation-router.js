@@ -7,9 +7,8 @@
  */
 
 const express = require('express');
-const { NON_DELEGATED } = require('../services/ethereum-client');
 
-const delegationApiFactory = ethereumClient => {
+const delegationRouter = delegationApi => {
   const router = express.Router();
 
   /**
@@ -32,14 +31,9 @@ const delegationApiFactory = ethereumClient => {
   router.get('/delegation/status', async (req, res) => {
     try {
       const address = req.query['address'];
-      let info;
-      info = await ethereumClient.getCurrentDelegationByDelegate(address);
-      if (info.delegatedTo === NON_DELEGATED) {
-        info = await ethereumClient.getCurrentDelegationByTransfer(address);
-      }
-      res.send(info.delegatedTo);
+      const result = await delegationApi.getDelegationStatus(address);
+      res.send(result);
     } catch (err) {
-      console.error(err);
       res.status(500).send(err.toString());
     }
   });
@@ -85,19 +79,9 @@ const delegationApiFactory = ethereumClient => {
   router.get('/delegation', async (req, res) => {
     try {
       const address = req.query['address'];
-      let info;
-      info = await ethereumClient.getCurrentDelegationByDelegate(address);
-      if (info.delegatedTo === NON_DELEGATED) {
-        info = await ethereumClient.getCurrentDelegationByTransfer(address);
-        info.delegationType = 'Transfer';
-      } else {
-        info.delegationType = 'Delegate';
-      }
-      const balance = await ethereumClient.getOrbsBalance(address);
-      info.delegatorBalance = new Intl.NumberFormat('en').format(balance);
+      const info = await delegationApi.getDelegationInfo(address);
       res.send(info);
     } catch (err) {
-      console.error(err);
       res.status(500).send(err.toString());
     }
   });
@@ -105,4 +89,4 @@ const delegationApiFactory = ethereumClient => {
   return router;
 };
 
-module.exports = delegationApiFactory;
+module.exports = delegationRouter;

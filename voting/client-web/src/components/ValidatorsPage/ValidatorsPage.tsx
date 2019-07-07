@@ -6,22 +6,22 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { ValidatorsList } from './ValidatorsList';
-import { Mode } from '../../api/interface';
-import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { Link } from 'react-router-dom';
-import { ApiService } from '../../api/ApiService';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { useApi } from '../../services/ApiContext';
+import { ValidatorsList } from './ValidatorsList';
 
 const styles = () => ({});
 
-const ValidatorsPageImpl = ({ classes, apiService }: { classes: any; apiService: ApiService }) => {
+const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
   const [validators, setValidators] = useState({});
+  const { remoteService, metamask } = useApi();
 
   const getValidatorsData = async address => {
-    const data = await apiService.getElectedValidatorData(address);
+    const data = await remoteService.getElectedValidatorData(address);
     if (!validators[address]) {
       validators[address] = {};
     }
@@ -35,11 +35,9 @@ const ValidatorsPageImpl = ({ classes, apiService }: { classes: any; apiService:
   };
 
   const fetchElectedValidators = async () => {
-    const ids = await apiService.getElectedValidators();
+    const ids = await remoteService.getElectedValidators();
     ids.map(getValidatorsData);
   };
-
-  const hasMetamask = () => apiService.mode === Mode.ReadWrite;
 
   useEffect(() => {
     fetchElectedValidators();
@@ -52,7 +50,7 @@ const ValidatorsPageImpl = ({ classes, apiService }: { classes: any; apiService:
         {t('Elected Validators')}
       </Typography>
 
-      {hasMetamask() && (
+      {metamask && (
         <Link to='/validator/new'>
           <Typography variant='overline' color='textSecondary'>
             {t('Become a validator')}

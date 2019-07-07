@@ -7,18 +7,23 @@
  */
 
 import React from 'react';
-import { GuardiansPage } from './GuardiansPage';
-import { render, waitForElement } from 'react-testing-library';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { IApiStrategy } from '../../api/interface';
-import { ApiStrategyStub } from '../../api/stub';
+import { render, waitForElement } from 'react-testing-library';
+import { ApiContext } from '../../services/ApiContext';
+import { IMetamask } from '../../services/IMetamask';
+import { IRemoteService } from '../../services/IRemoteService';
+import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
+import { RemoteServiceMock } from '../../services/RemoteServiceMock';
+import { GuardiansPage } from './GuardiansPage';
 
 export class GuardiansDriver {
   private renderResult;
-  apiService: IApiStrategy;
+  public remoteService: IRemoteService;
+  public metaMask: IMetamask;
 
   constructor(data) {
-    this.apiService = new ApiStrategyStub({}, data);
+    this.remoteService = new RemoteServiceMock({}, data);
+    this.metaMask = new MetamaskServiceMock();
   }
 
   chooseValidator(address) {
@@ -31,7 +36,9 @@ export class GuardiansDriver {
   async render() {
     this.renderResult = render(
       <Router>
-        <GuardiansPage apiService={this.apiService} />
+        <ApiContext.Provider value={{ remoteService: this.remoteService, metamask: this.metaMask }}>
+          <GuardiansPage />
+        </ApiContext.Provider>
       </Router>,
     );
     const validatorsList = this.renderResult.getByTestId('validators-list');

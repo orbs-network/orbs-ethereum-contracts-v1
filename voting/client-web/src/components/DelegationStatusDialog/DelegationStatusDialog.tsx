@@ -16,7 +16,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IApiStrategy } from '../../api/interface';
+import { IRemoteService } from '../../services/IRemoteService';
 
 const styles = () => ({
   checkButton: {
@@ -39,13 +39,13 @@ const DelegationStatusLabel = ({ address }) => {
   );
 };
 
-const DelegationStatusDialogImpl = ({ apiService, classes }: { apiService: IApiStrategy; classes: any }) => {
+const DelegationStatusDialogImpl = ({ remoteService, classes }: { remoteService: IRemoteService; classes: any }) => {
   const [isOpened, setIsOpened] = useState(false);
   const [address, setAddress] = useState('');
   const [delegatedTo, setDelegatedTo] = useState('');
 
   const fetchDelegationStatus = address => {
-    apiService.getCurrentDelegation(address).then(setDelegatedTo);
+    remoteService.getCurrentDelegation(address).then(setDelegatedTo);
   };
 
   const prefetch = () => {

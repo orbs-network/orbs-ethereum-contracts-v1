@@ -8,7 +8,7 @@
 
 const express = require('express');
 
-const guardiansApiFactory = (ethereumClient, orbsClientService) => {
+const guardiansRouter = (guardiansApi) => {
   const router = express.Router();
 
   /**
@@ -35,7 +35,7 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
   router.get('/guardians', async (req, res) => {
     try {
       const { offset, limit } = req.query;
-      const guardians = await ethereumClient.getGuardians(offset, limit);
+      const guardians = await guardiansApi.getGuardiansList(offset, limit);
       res.json(guardians);
     } catch (err) {
       res.status(500).send(err.toString());
@@ -62,24 +62,9 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
   router.get('/guardians/:address', async (req, res) => {
     try {
       const address = req.params['address'];
-      const data = await ethereumClient.getGuardianData(address);
-
-      const [votingWeightResults, totalStakeResults] = await Promise.all([
-        orbsClientService.getGuardianVoteWeight(address),
-        orbsClientService.getTotalStake()
-      ]);
-
-      data['voted'] = votingWeightResults !== 0n;
-
-      if (totalStakeResults === 0n) {
-        data['stake'] = 0;
-      } else {
-        data['stake'] = Number(votingWeightResults) / Number(totalStakeResults);
-      }
-
+      const data = await guardiansApi.getGuardianInfo(address);
       res.json(data);
     } catch (err) {
-      console.error(err.toString());
       res.status(500).send(err.toString());
     }
   });
@@ -87,4 +72,4 @@ const guardiansApiFactory = (ethereumClient, orbsClientService) => {
   return router;
 };
 
-module.exports = guardiansApiFactory;
+module.exports = guardiansRouter;

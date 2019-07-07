@@ -8,7 +8,7 @@
 
 const express = require('express');
 
-const validatorsApiFactory = (ethereumClient, orbsClientService) => {
+const validatorsRouter = apiService => {
   const router = express.Router();
 
   /**
@@ -24,8 +24,12 @@ const validatorsApiFactory = (ethereumClient, orbsClientService) => {
    *        description: The list of validators
    */
   router.get('/validators', async (req, res) => {
-    const validators = await ethereumClient.getValidators();
-    res.json(validators);
+    try {
+      const validators = await apiService.getValidators();
+      res.json(validators);
+    } catch (err) {
+      res.status(500).send(err.toString());
+    }
   });
 
   /**
@@ -48,25 +52,9 @@ const validatorsApiFactory = (ethereumClient, orbsClientService) => {
   router.get('/validators/:address', async (req, res) => {
     try {
       const address = req.params['address'];
-      const data = await ethereumClient.getValidatorData(address);
-
-      const [validatorVotesResults, totalStakeResults] = await Promise.all([
-        orbsClientService.getValidatorVotes(address),
-        orbsClientService.getTotalStake()
-      ]);
-
-      if (totalStakeResults === 0n) {
-        data['votesAgainst'] = '0';
-      } else {
-        data['votesAgainst'] = (
-          (100n * validatorVotesResults) /
-          totalStakeResults
-        ).toString();
-      }
-
+      const data = await apiService.getValidatorInfo(address);
       res.json(data);
     } catch (err) {
-      console.log(err);
       res.status(500).send(err.toString());
     }
   });
@@ -74,4 +62,4 @@ const validatorsApiFactory = (ethereumClient, orbsClientService) => {
   return router;
 };
 
-module.exports = validatorsApiFactory;
+module.exports = validatorsRouter;
