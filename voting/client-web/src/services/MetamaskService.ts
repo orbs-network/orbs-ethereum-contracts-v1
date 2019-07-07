@@ -8,7 +8,6 @@
 
 import Web3 from 'web3';
 import {
-  erc20ContractFactory,
   votingContractFactory,
   guardiansContractFactory,
   validatorsRegistryContractFactory,
@@ -21,14 +20,12 @@ export class MetamaskService implements IMetamask {
   private validatorsRegistryContract;
   private guardiansContract;
   private votingContract;
-  private erc20Contract;
 
   constructor() {
     this.web3 = new Web3(ethereum as any);
     this.validatorsRegistryContract = validatorsRegistryContractFactory(this.web3);
     this.guardiansContract = guardiansContractFactory(this.web3);
     this.votingContract = votingContractFactory(this.web3);
-    this.erc20Contract = erc20ContractFactory(this.web3);
   }
 
   private ipAddressToBytes(address: string) {
