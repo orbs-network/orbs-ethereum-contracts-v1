@@ -1,11 +1,11 @@
 version: 2
 jobs:
-  asb-e2e:
-    machine: true
-    steps:
-      - checkout
-      - run: ./.circleci/asb.sh
-
+# asb-e2e:
+#   machine: true
+#   steps:
+#     - checkout
+#     - run: ./.circleci/asb.sh
+#
   voting-orbs-tests:
     docker:
       - image: circleci/golang:1.11.4
@@ -74,6 +74,17 @@ jobs:
       - store_test_results:
           path: subscription/ethereum/_reports
 
+  rewards-distribution-solidity-tests:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: cd rewards-distribution/ethereum && ./test.sh
+      - store_artifacts:
+          path: rewards-distribution/ethereum/_out
+      - store_test_results:
+          path: rewards-distribution/ethereum/_reports
+
 workflows:
   version: 2
   voting:
@@ -82,13 +93,13 @@ workflows:
       - voting-orbs-tests
       - voting-client-tests
       - voting-e2e
-  asb:
-    jobs:
-      - asb-e2e
   subscription:
     jobs:
       - subscription-solidity-tests
       - subscription-e2e
+  rewards-distribution:
+    jobs:
+      - rewards-distribution-solidity-tests
   # scheduled_samaritan:
   #   triggers:
   #     - schedule:

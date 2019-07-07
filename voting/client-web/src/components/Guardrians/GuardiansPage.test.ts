@@ -51,7 +51,7 @@ describe('Guardians Page', () => {
   });
 
   it('should vote out with chosen addresses', async () => {
-    const spy = jest.spyOn(driver.apiService, 'voteOut');
+    const spy = jest.spyOn(driver.metaMask, 'voteOut');
 
     const { getByTestId } = await driver.render();
 
@@ -66,7 +66,7 @@ describe('Guardians Page', () => {
   });
 
   it('should vote out with empty list', async () => {
-    const spy = jest.spyOn(driver.apiService, 'voteOut');
+    const spy = jest.spyOn(driver.metaMask, 'voteOut');
     const { getByTestId } = await driver.render();
     await getByTestId('leave-everyone-button').click();
     await wait();

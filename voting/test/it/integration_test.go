@@ -71,7 +71,7 @@ func adapterFactory(env string) (orbs driver.OrbsAdapter, ethereum driver.Ethere
 			true,
 			".",
 			"ganache",
-			getEnv("GANACHE_HOST", "http://127.0.0.1:7545"),
+			getEnv("GANACHE_URL", "http://127.0.0.1:7545"),
 			0,
 		)
 	case ENV_TESTNET_ROPSTEN:

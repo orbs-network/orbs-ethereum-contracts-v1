@@ -7,21 +7,29 @@
  */
 
 import React from 'react';
-import { DelegatorsPage } from './DelegatorsPage';
-import { render } from 'react-testing-library';
-import { ApiStrategyStub } from '../../api/stub';
-import { IApiStrategy } from '../../api/interface';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { render } from 'react-testing-library';
+import { ApiContext } from '../../services/ApiContext';
+import { IMetamask } from '../../services/IMetamask';
+import { IRemoteService } from '../../services/IRemoteService';
+import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
+import { RemoteServiceMock } from '../../services/RemoteServiceMock';
+import { DelegatorsPage } from './DelegatorsPage';
 
 export class DelegatorsDriver {
-  apiService: IApiStrategy;
+  public remoteService: IRemoteService;
+  public metaMask: IMetamask;
+
   constructor(data) {
-    this.apiService = new ApiStrategyStub(data, {});
+    this.remoteService = new RemoteServiceMock(data, {});
+    this.metaMask = new MetamaskServiceMock();
   }
   render() {
     return render(
       <Router>
-        <DelegatorsPage apiService={this.apiService} />
+        <ApiContext.Provider value={{ remoteService: this.remoteService, metamask: this.metaMask }}>
+          <DelegatorsPage />
+        </ApiContext.Provider>
       </Router>,
     );
   }

@@ -38,7 +38,7 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
         </TableRow>
         <TableRow>
           <TableCell>{t(`Delegator's ORBS Balance`)}</TableCell>
-          <TableCell align='right'>{delegatorInfo['delegatorBalance']}</TableCell>
+          <TableCell align='right'>{delegatorInfo['delegatorBalance']} ORBS</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
@@ -56,7 +56,7 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation block number')}</TableCell>
-          <TableCell align='right'>{delegatorInfo['delegationBlockNumber']}</TableCell>
+          <TableCell align='right'>{(delegatorInfo.delegationBlockNumber || 0).toLocaleString()}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation timestamp')}</TableCell>

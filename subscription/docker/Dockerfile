@@ -10,13 +10,15 @@ RUN apt-get install -y nodejs
 RUN npm install yarn -g
 RUN ls -la /root/.npm/
 
-ENV GAMMA_HOST="gamma"
+ENV GANACHE_URL="http://ganache:7545"
+ENV GAMMA_URL="http://gamma:8080"
 
 COPY subscription/docker/bring-gamma.sh /tmp/bring-gamma.sh
 
 WORKDIR ./orbs-ethereum-contracts
 
 COPY subscription/ ./subscription/
+COPY psilo/ ./psilo/
 
 # required because subscription depends on IOrbsValidators
 COPY voting/ethereum/ ./voting/ethereum/
@@ -35,6 +37,6 @@ RUN rm -f orbs-gamma-config.json && \
 
 RUN bash /tmp/bring-gamma.sh
 RUN go get -t ./... && \
-    npm install
+    yarn install
 
 CMD ["/bin/bash", "entrypoint.sh"]

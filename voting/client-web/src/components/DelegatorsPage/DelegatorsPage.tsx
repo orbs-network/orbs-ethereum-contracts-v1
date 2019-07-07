@@ -6,25 +6,25 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React, { useState, useEffect } from 'react';
-import { GuardiansList } from './GuardiansList';
-import Link from '@material-ui/core/Link';
-import { Mode } from '../../api/interface';
 import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
-import { ApiService } from '../../api/ApiService';
+import React, { useEffect, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useApi } from '../../services/ApiContext';
 import { normalizeUrl } from '../../services/urls';
 import { DelegationStatusDialog } from '../DelegationStatusDialog/DelegationStatusDialog';
-import { useTranslation, Trans } from 'react-i18next';
+import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
+import { GuardiansList } from './GuardiansList';
 
-export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
+export const DelegatorsPage = () => {
+  const { remoteService, metamask } = useApi();
   const [guardians, setGuardians] = useState({} as {
     [address: string]: {
       address: string;
       name: string;
       url: string;
-      stake: string;
+      stake: number;
       hasEligibleVote: boolean;
     };
   });
@@ -37,17 +37,17 @@ export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   const [nextElectionsBlockHeight, setNextElectionsBlockHeight] = useState('');
 
   const fetchNextElectionsBlockHeight = async () => {
-    const res = await apiService.getNextElectionBlockHeight();
+    const res = await remoteService.getNextElectionBlockHeight();
     setNextElectionsBlockHeight(res);
   };
 
   const fetchTotalStake = async () => {
-    const totalStake = await apiService.getTotalStake();
+    const totalStake = await remoteService.getTotalStake();
     setTotalStake(totalStake);
   };
 
   const fetchGuardian = async address => {
-    const data = await apiService.getGuardianData(address);
+    const data = await remoteService.getGuardianData(address);
     guardians[address] = {
       address,
       name: data['name'],
@@ -59,14 +59,14 @@ export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   };
 
   const fetchGuardians = async () => {
-    const addresses = await apiService.getGuardians();
+    const addresses = await remoteService.getGuardians();
     addresses.forEach(address => fetchGuardian(address));
   };
 
   const fetchDelegatedTo = async () => {
-    if (hasMetamask()) {
-      const address = await apiService.getCurrentAddress();
-      const res = await apiService.getCurrentDelegation(address);
+    if (metamask) {
+      const address = await metamask.getCurrentAddress();
+      const res = await remoteService.getCurrentDelegation(address);
       setDelegatedTo(res);
     }
   };
@@ -79,9 +79,11 @@ export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
   }, []);
 
   const delegate = async candidate => {
-    const receipt = await apiService.delegate(candidate);
-    fetchDelegatedTo();
-    console.log(receipt);
+    if (metamask) {
+      const receipt = await metamask.delegate(candidate);
+      fetchDelegatedTo();
+      console.log(receipt);
+    }
   };
 
   const manualDelegateHandler = address => {
@@ -89,10 +91,6 @@ export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
     setTimeout(() => {
       setManualDelegationDialogState(false);
     }, 100);
-  };
-
-  const hasMetamask = () => {
-    return apiService.mode === Mode.ReadWrite;
   };
 
   const { t } = useTranslation();
@@ -121,7 +119,7 @@ export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
         <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
           {t('Guardians List')}
         </Typography>
-        <DelegationStatusDialog apiService={apiService} />
+        <DelegationStatusDialog remoteService={remoteService} />
       </header>
 
       <div style={centerContent}>
@@ -146,12 +144,12 @@ export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
 
       <GuardiansList
         delegatedTo={delegatedTo}
-        enableDelegation={hasMetamask()}
+        enableDelegation={metamask !== undefined}
         guardians={guardians}
         onSelect={setDelegationCandidate}
       />
 
-      {hasMetamask() && (
+      {metamask && (
         <Typography paragraph variant='body1' color='textPrimary'>
           <Trans i18nKey='delegateMessage'>Want to delegate manually to another address? Click {hereElement}.</Trans>
         </Typography>
@@ -164,7 +162,7 @@ export const DelegatorsPage = ({ apiService }: { apiService: ApiService }) => {
       />
 
       <div style={{ textAlign: 'center' }}>
-        {hasMetamask() && (
+        {metamask && (
           <Button variant='outlined' color='secondary' onClick={() => delegate(delegationCandidate)}>
             {t('Delegate')}
           </Button>

@@ -1,0 +1,3 @@
+FROM orbsnetwork/gamma:experimental
+COPY voting/docker/run-gamma.sh /opt/orbs/
+CMD sh /opt/orbs/run-gamma.sh

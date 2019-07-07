@@ -6,17 +6,17 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Typography from '@material-ui/core/Typography';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { ApiService } from '../../api/ApiService';
+import Typography from '@material-ui/core/Typography';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IRemoteService } from '../../services/IRemoteService';
 
 const styles = () => ({
   checkButton: {
@@ -30,7 +30,7 @@ const DelegationStatusLabel = ({ address }) => {
   if (address === '0x0000000000000000000000000000000000000000') {
     label = t('Your vote has not been delegated yet.');
   } else {
-    label = t('Your vote has been delegated to') + ' ' + address;
+    label = t('Your vote has been delegated to') + ': ' + address;
   }
   return (
     <Typography variant='body1' color='secondary' style={{ marginTop: '10px' }}>
@@ -39,13 +39,13 @@ const DelegationStatusLabel = ({ address }) => {
   );
 };
 
-const DelegationStatusDialogImpl = ({ apiService, classes }: { apiService: ApiService; classes: any }) => {
+const DelegationStatusDialogImpl = ({ remoteService, classes }: { remoteService: IRemoteService; classes: any }) => {
   const [isOpened, setIsOpened] = useState(false);
   const [address, setAddress] = useState('');
   const [delegatedTo, setDelegatedTo] = useState('');
 
   const fetchDelegationStatus = address => {
-    apiService.getCurrentDelegation(address).then(setDelegatedTo);
+    remoteService.getCurrentDelegation(address).then(setDelegatedTo);
   };
 
   const prefetch = () => {

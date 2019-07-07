@@ -19,9 +19,6 @@ module.exports = {
   EthereumVotingContract: {
     address: '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d'
   },
-  EthereumErc20Address: {
-    address: '0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA'
-  },
   OrbsVotingContract: {
     name: '_Elections'
   }

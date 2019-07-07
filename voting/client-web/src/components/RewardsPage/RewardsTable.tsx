@@ -21,21 +21,21 @@ export const RewardsTable = ({ rewards }) => {
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegator Reward')}</TableCell>
-          <TableCell align='right'>{rewards['delegatorReward']}</TableCell>
+          <TableCell align='right'>{(rewards.delegatorReward || 0).toLocaleString()} ORBS</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian Excellency Reward')}</TableCell>
-          <TableCell align='right'>{rewards['guardianReward']}</TableCell>
+          <TableCell align='right'>{(rewards.guardianReward || 0).toLocaleString()} ORBS</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Validator Reward')}</TableCell>
-          <TableCell align='right'>{rewards['validatorReward']}</TableCell>
+          <TableCell align='right'>{(rewards.validatorReward || 0).toLocaleString()} ORBS</TableCell>
         </TableRow>
       </TableBody>
       <TableFooter>
         <TableRow>
           <TableCell>{t('Total Reward')}</TableCell>
-          <TableCell align='right'>{rewards['totalReward']}</TableCell>
+          <TableCell align='right'>{(rewards.totalReward || 0).toLocaleString()} ORBS</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

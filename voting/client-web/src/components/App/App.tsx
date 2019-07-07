@@ -12,21 +12,23 @@ import classNames from 'classnames';
 import React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ApiService } from '../../api/ApiService';
-import { Mode } from '../../api/interface';
+import { ApiContext } from '../../services/ApiContext';
+import { IRemoteService } from '../../services/IRemoteService';
+import { RemoteService } from '../../services/RemoteService';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
-import i18n from './i18n';
 import { AppStyles } from './App.style';
 import { AppTheme } from './App.theme';
-
+import i18n from './i18n';
+import { MetamaskService } from '../../services/MetamaskService';
 function getForcedLanguage() {
   const langMatch = location.pathname.match(/\/(en|ko|jp)\//);
   return langMatch ? langMatch[1] : '';
 }
 
 const AppImpl = ({ classes }) => {
-  const apiService: ApiService = new ApiService();
+  const remoteService: IRemoteService = new RemoteService();
+  const metamask = window['ethereum'] ? new MetamaskService() : undefined;
   const forcedLang = getForcedLanguage();
   let langBaseName = '';
   if (forcedLang) {
@@ -47,16 +49,18 @@ const AppImpl = ({ classes }) => {
     <I18nextProvider i18n={i18n}>
       <Router basename={`${process.env.PUBLIC_URL}${langBaseName}`}>
         <MuiThemeProvider theme={AppTheme(i18n.language)}>
-          <CssBaseline />
-          <div
-            className={classNames({
-              [classes.root]: true,
-            })}
-            data-testid='container'
-          >
-            <Header isReadOnly={apiService.mode === Mode.ReadOnly} />
-            <Main apiService={apiService} />
-          </div>
+          <ApiContext.Provider value={{ remoteService, metamask }}>
+            <CssBaseline />
+            <div
+              className={classNames({
+                [classes.root]: true,
+              })}
+              data-testid='container'
+            >
+              <Header isReadOnly={!metamask} />
+              <Main />
+            </div>
+          </ApiContext.Provider>
         </MuiThemeProvider>
       </Router>
     </I18nextProvider>
