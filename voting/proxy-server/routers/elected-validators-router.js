@@ -8,19 +8,8 @@
 
 const express = require('express');
 
-const ADDRESS_LENGTH = 20;
-
-const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
+const electedValidatorsRouter = (electedValidatorsApi) => {
   const router = express.Router();
-
-  const getElectedValidators = async () => {
-    const data = await orbsClientService.getElectedValidators();
-    const addresses = [];
-    for (let i = 0; i < data.length; i += ADDRESS_LENGTH) {
-      addresses.push(`0x${data.slice(i, i + ADDRESS_LENGTH).toString('hex')}`);
-    }
-    return addresses;
-  };
 
   /**
    * @swagger
@@ -35,7 +24,7 @@ const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
    *        description: The list of elected validators
    */
   router.get('/validators/elected', async (req, res) => {
-    const data = await getElectedValidators();
+    const data = await electedValidatorsApi.getElectedValidators();
     res.json(data);
   });
 
@@ -59,12 +48,7 @@ const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
   router.get('/validators/elected/:address', async (req, res) => {
     try {
       const address = req.params['address'];
-      const validatorData = await ethereumClient.getValidatorData(address);
-      const stake = await orbsClientService.getValidatorStake(address);
-
-      const result = Object.assign({}, validatorData, {
-        stake: stake.toString()
-      });
+      const result = await electedValidatorsApi.getElectedValidatorInfo(address);
       res.json(result);
     } catch (err) {
       console.log(err);
@@ -75,4 +59,4 @@ const electedValidatorsApiFactory = (ethereumClient, orbsClientService) => {
   return router;
 };
 
-module.exports = electedValidatorsApiFactory;
+module.exports = electedValidatorsRouter;

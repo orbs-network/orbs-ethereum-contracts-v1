@@ -8,7 +8,7 @@
 
 const express = require('express');
 
-const stakeApiFactory = orbsClientService => {
+const stakeRouter = apiService => {
   const router = express.Router();
   const numberFormatter = new Intl.NumberFormat('en');
 
@@ -26,7 +26,7 @@ const stakeApiFactory = orbsClientService => {
    */
   router.get('/stake/total', async (req, res) => {
     try {
-      const totalStake = await orbsClientService.getTotalStake();
+      const totalStake = await apiService.getTotalStake();
       res.send(numberFormatter.format(totalStake.toString()));
     } catch (err) {
       res.status(500).send(err.toString());
@@ -38,4 +38,4 @@ const stakeApiFactory = orbsClientService => {
   return router;
 };
 
-module.exports = stakeApiFactory;
+module.exports = stakeRouter;
