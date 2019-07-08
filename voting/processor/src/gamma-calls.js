@@ -51,27 +51,41 @@ async function sendTransaction(orbsEnvironment, orbsVotingContractName, orbsCont
     return result;
 }
 
-async function getNumberResult(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson) {
-    let blockNumber = 0;
+async function runQueryParseNumberResult(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, args) {
+    let resultInt = 0;
     try {
-        let result = await runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson);
+        let result = await runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, args);
         if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
             console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n`, result);
             return 0;
         }
-        blockNumber = parseInt(result.OutputArguments[0].Value)
+        resultInt = parseInt(result.OutputArguments[0].Value)
     } catch (e){
         console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n` + e);
     }
-    return blockNumber;
+    return resultInt;
+}
+
+async function runQueryParseStringResult(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, args) {
+    try {
+        let result = await runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, args);
+        if (!(result.RequestStatus === "COMPLETED" && result.ExecutionResult === "SUCCESS")) {
+            console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n`, result);
+            return 0;
+        }
+        return result.OutputArguments[0].Value
+    } catch (e){
+        console.log(`Could not get valid number result for ${orbsContractFunctionJson}. Error OUTPUT:\n` + e);
+    }
+    return "";
 }
 
 async function getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName) {
-    return await getNumberResult(orbsEnvironment, orbsVotingContractName, 'get-current-block.json');
+    return await runQueryParseNumberResult(orbsEnvironment, orbsVotingContractName, 'get-current-block.json');
 }
 
 async function getProcessingStartBlockNumber(orbsEnvironment, orbsVotingContractName) {
-    return await getNumberResult(orbsEnvironment, orbsVotingContractName, 'get-processing-start-block.json');
+    return await runQueryParseNumberResult(orbsEnvironment, orbsVotingContractName, 'get-processing-start-block.json');
 }
 
 module.exports = {
@@ -79,4 +93,6 @@ module.exports = {
     sendTransaction,
     getCurrentBlockNumber,
     getProcessingStartBlockNumber,
+    runQueryParseNumberResult,
+    runQueryParseStringResult
 };

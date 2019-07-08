@@ -41,7 +41,7 @@ function validateInput() {
     }
 }
 
-const CONTINUE = 0, DONE = 1, ERRORS = 2, PENDINGS = 3;
+const CONTINUE = 0, DONE = 1;
 let numErrors = 0;
 const maxErrors = 10;
 let numPendings = 0;
@@ -53,7 +53,6 @@ async function processResult(result) {
             let isDone = result.OutputArguments[0].Value === "1" ? 1 : 0;
             if (isDone) {
                 console.log('\x1b[36m%s\x1b[0m', `process return with "complete" ...`);
-                await slack.sendSlack('Hurrah: :trophy: Election has finished !');
             }
             return isDone ? DONE : CONTINUE;
         } else {
@@ -68,7 +67,7 @@ async function processResult(result) {
             await slack.sendSlack('Warning: Process has finished because too many pending responses for gamma calls, check Validators Network!');
             throw new Error(msg)
         }
-        return numPendings >= maxPendings ? PENDINGS : CONTINUE;
+        return CONTINUE;
     } else {
         numErrors++;
         if (numErrors >= maxErrors) {
@@ -77,7 +76,7 @@ async function processResult(result) {
             console.log('\x1b[31m%s\x1b[0m', `${msg} ...\n`);
             throw new Error(msg)
         }
-        return numErrors >= maxErrors ? ERRORS : CONTINUE;
+        return CONTINUE;
     }
 }
 
@@ -97,6 +96,7 @@ async function processCall() {
         console.log('\x1b[34m%s\x1b[0m', `\nStarted Processing...`);
     }
 
+    let isDone = false;
     let processInfo = {};
     let numberOfCalls = 0;
     do {
@@ -112,6 +112,7 @@ async function processCall() {
         numberOfCalls += batchSize;
 
         if (await processResults(results) !== CONTINUE) {
+            isDone = true;
             break;
         }
 
@@ -125,6 +126,10 @@ async function processCall() {
         }
         processInfo = await getProcessingInfo();
     } while (processInfo.isProcessingPeriod);
+
+    if (isDone) {
+        await sendSuccessSlack();
+    }
 
     if (verbose) {
         console.log(`Processing was called ${numberOfCalls} times.`);
@@ -140,6 +145,70 @@ async function getProcessingInfo() {
         currentBlockNumber,
         processStartBlockNumber
     };
+}
+
+function parseElected(electedStr) {
+    let elected = [];
+    for(let i = 2; i < electedStr.length;i+=40) {
+        elected.push(electedStr.substr(i, 40));
+    }
+    return elected;
+}
+
+async function sendSuccessSlack() {
+    let election = await gamma.runQueryParseNumberResult(orbsEnvironment, orbsVotingContractName, "get-election-number.json");
+    let text = `Hurrah: :trophy: Election ${election} has finished!\n`;
+        let query = [
+        gamma.runQueryParseNumberResult(orbsEnvironment, orbsVotingContractName, "get-total-vote.json"),
+        gamma.runQueryParseStringResult(orbsEnvironment, orbsVotingContractName, "get-elected.json", [election]),
+        gamma.runQueryParseStringResult(orbsEnvironment, orbsVotingContractName, "get-elected.json", [election-1])
+    ];
+    let results = await Promise.all(query);
+
+    let totalVote = results[0];
+    text += `Total Voting Weight: ${totalVote.toLocaleString()}\n`;
+    let electedNow = parseElected(results[1]);
+    text += `Number of elected validators: ${electedNow.length}\n`;
+    let electedBefore = parseElected(results[2]);
+
+    let newElected = [];
+    for (let i = 0;i < electedNow.length;i++) {
+        if(results[2].indexOf(electedNow[i]) === -1) {
+            newElected.push('0x'+electedNow[i]);
+        }
+    }
+    if (newElected.length !== 0) {
+        text += `Validators(Ethereum Address) newly added: ${newElected}\n`;
+    }
+
+    let votedOutElected = [];
+    for (let i = 0;i < electedBefore.length;i++) {
+        if(results[1].indexOf(electedBefore[i]) === -1) {
+            votedOutElected.push('0x'+electedBefore[i]);
+        }
+    }
+    if (votedOutElected.length !== 0) {
+        text += `Validators(Ethereum Address) voted out: ${votedOutElected}\n`;
+    }
+
+    query = [];
+    for (let i = 0;i < electedNow.length;i++) {
+        query.push(gamma.runQueryParseNumberResult(orbsEnvironment, orbsVotingContractName, "get-validator-stake.json", [electedNow[i]]))
+    }
+    let validatorStakes = await Promise.all(query);
+    let minValidatorStake = validatorStakes[0];
+    let minValidatorAddress = electedNow[0];
+    let totalValidatorStake = 0;
+    for (let i = 0;i < validatorStakes.length;i++) {
+        totalValidatorStake += validatorStakes[i];
+        if (validatorStakes[i] < minValidatorStake) {
+            minValidatorStake = validatorStakes[i];
+            minValidatorAddress = electedNow[i];
+        }
+    }
+    text += `Total Validators stake: ${totalValidatorStake.toLocaleString()}\nValidator(Ethereum Address) 0x${minValidatorAddress} has minimum stake: ${minValidatorStake.toLocaleString()}`;
+
+    await slack.sendSlack(text);
 }
 
 async function main() {
@@ -158,7 +227,7 @@ async function main() {
 }
 
 main()
-    .then(results => {
+    .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
     slack.sendSlack(`Warning: process failed with message '${e.message}', check Jenkins!`).finally(() => {

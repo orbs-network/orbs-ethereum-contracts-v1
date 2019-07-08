@@ -1,0 +1,10 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "getElectedValidatorsEthereumAddressByIndex",
+    "Arguments": [
+        {
+            "Type": "uint32",
+            "Value": "1"
+        }
+    ]
+}
