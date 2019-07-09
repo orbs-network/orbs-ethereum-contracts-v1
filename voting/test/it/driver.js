@@ -8,6 +8,8 @@ const path = require("path");
 const {orbsAssertions} = require("psilo");
 use(orbsAssertions);
 
+const nanos = 1000 * 1000 * 1000;
+
 class StakeHolderFactory {
     constructor(web3, accounts, erc20, validators, validatorsRegistry, guardians, voting) {
         this.erc20 = erc20;
@@ -164,9 +166,9 @@ class ElectionContracts {
         const contract = this.orbs.contract(this.orbsVotingContractName);
 
         const args = [];
-        args.push(Orbs.argUint64(this.options.votingMirrorPeriod));
-        args.push(Orbs.argUint64(this.options.votingValidityPeriod));
-        args.push(Orbs.argUint64(this.options.electionsPeriod));
+        args.push(Orbs.argUint64(this.options.votingMirrorPeriod || 10));
+        args.push(Orbs.argUint64(this.options.votingValidityPeriod || 500));
+        args.push(Orbs.argUint64(this.options.electionsPeriod || 200));
         args.push(Orbs.argUint32(this.options.maxElected));
         args.push(Orbs.argUint32(this.options.minElected));
 
@@ -195,6 +197,31 @@ class ElectionContracts {
         console.log(`Next election block number set to ${electionBlock}`);
 
         return electionBlock;
+    }
+
+    async setElectionTimeToCurrentEthereumTime() {
+        const currentBlock = await this.ethereum.getLatestBlock();
+        await this.ethereum.waitForBlock(currentBlock.number + 1);
+
+        const nextBlockForCalculatingElectionTime = await this.ethereum.getLatestBlock();
+        const blockTimeInSeconds = nextBlockForCalculatingElectionTime.timestamp;
+
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setElectionTimeNanos", Orbs.argUint64(blockTimeInSeconds * nanos));
+
+        console.log(`Next block number set to ${nextBlockForCalculatingElectionTime.number}`);
+
+        return nextBlockForCalculatingElectionTime.number;
+    }
+
+    async markMirrorPeriodOver() {
+        const currentFinalQueryResult = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentElectionTimeInNanos");
+        expect(currentFinalQueryResult).to.be.successful;
+        const currentElectionTime = Number(currentFinalQueryResult.outputArguments[0].value);
+        const currentBlock = await this.ethereum.getLatestBlock();
+        const mirrorPeriodInNanos = (currentBlock.timestamp * nanos - currentElectionTime) / 2;
+
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setElectionMirrorPeriodInNanos", Orbs.argUint64(mirrorPeriodInNanos));
+        return currentBlock.number;
     }
 
     async waitForOrbsFinality(blockToWaitFor) {
