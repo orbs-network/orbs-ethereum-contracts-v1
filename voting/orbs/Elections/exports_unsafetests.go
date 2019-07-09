@@ -16,9 +16,11 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
 	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress, unsafetests_setValidatorsRegistryEthereumContractAddress,
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber,
+	unsafetests_setElectionTimeNanos, unsafetests_setElectionMirrorPeriodInNanos,
 	mirrorDelegationByTransfer, mirrorDelegation,
 	processVoting,
 	getElectionPeriod, getCurrentElectionBlockNumber, getNextElectionBlockNumber, getEffectiveElectionBlockNumber, getNumberOfElections,
+	getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 	getCurrentEthereumBlockNumber, getProcessingStartBlockNumber, getMirroringEndBlockNumber,
 	getElectedValidatorsOrbsAddress, getElectedValidatorsEthereumAddress, getElectedValidatorsEthereumAddressByBlockNumber, getElectedValidatorsOrbsAddressByBlockHeight,
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
@@ -65,4 +67,12 @@ func unsafetests_setValidatorsRegistryEthereumContractAddress(addr string) {
 
 func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 	ETHEREUM_GUARDIANS_ADDR = addr
+}
+
+func unsafetests_setElectionTimeNanos(time uint64) {
+	state.WriteUint64(_formatEffectiveElectionTimeKey(), safeuint64.Sub(time, getElectionPeriodInNanos()))
+}
+
+func unsafetests_setElectionMirrorPeriodInNanos(period uint64) {
+	MIRROR_PERIOD_LENGTH_IN_NANOS = period
 }

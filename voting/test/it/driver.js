@@ -265,7 +265,10 @@ class ElectionContracts {
 
 
     //TODO make mirror.js an exported function of the 'processor' module and run in same process
-    goodSamaritanMirrorsAll(electionBlockNumber) {
+    async goodSamaritanMirrorsAll(electionBlockNumber) {
+        if (!electionBlockNumber) {
+            electionBlockNumber = (await this.ethereum.getLatestBlock()).number;
+        }
         return new Promise((resolve, reject) => {
             const child = spawn("node", ["mirror.js"], {
                 env: {

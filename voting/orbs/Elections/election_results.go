@@ -17,8 +17,12 @@ import (
 /*****
  * Election results
  */
-func getElectionPeriod() uint64 {
+func getElectionPeriod() uint64 { // TODO dep
 	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
+}
+
+func getElectionPeriodInNanos() uint64 {
+	return ELECTION_PERIOD_LENGTH_IN_NANOS
 }
 
 func getElectedValidatorsOrbsAddress() []byte {
@@ -169,7 +173,7 @@ func getEffectiveElectionBlockNumber() uint64 {
 	return getElectedValidatorsBlockNumberByIndex(getNumberOfElections())
 }
 
-func _formatElectionBlockNumberKey() []byte {
+func _formatElectionBlockNumberKey() []byte { // TODO dep
 	return []byte("Election_Block_Number")
 }
 
@@ -200,4 +204,20 @@ func getProcessingStartBlockNumber() uint64 {
 
 func getMirroringEndBlockNumber() uint64 {
 	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
+}
+
+func _formatEffectiveElectionTimeKey() []byte {
+	return []byte("Effective_Election_Time")
+}
+
+func getEffectiveElectionTimeInNanos() uint64 {
+	return state.ReadUint64(_formatEffectiveElectionTimeKey())
+}
+
+func getCurrentElectionTimeInNanos() uint64 {
+	return safeuint64.Add(getEffectiveElectionTimeInNanos(), getElectionPeriodInNanos())
+}
+
+func getNextElectionTimeInNanos() uint64 {
+	return safeuint64.Add(getCurrentElectionTimeInNanos(), getElectionPeriodInNanos())
 }

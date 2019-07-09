@@ -203,7 +203,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         const blockBeforeElection = await electionContracts.setElectionTimeToCurrentEthereumTime();
         await electionContracts.waitForOrbsFinality(blockBeforeElection);
 
-        await electionContracts.goodSamaritanMirrorsAll("latest");
+        await electionContracts.goodSamaritanMirrorsAll();
         //TODO return something from mirror and assert
 
         console.log("Done Mirroring");
@@ -230,7 +230,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         const blockBeforeElection2 = await electionContracts.setElectionTimeToCurrentEthereumTime();
         await electionContracts.waitForOrbsFinality(blockBeforeElection2);
 
-        await electionContracts.goodSamaritanMirrorsAll("latest");
+        await electionContracts.goodSamaritanMirrorsAll();
         //TODO return something from mirror and assert
 
         console.log("Done Mirroring1");

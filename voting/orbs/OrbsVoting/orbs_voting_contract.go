@@ -22,8 +22,12 @@ import (
 /*****
  * Election results
  */
-func getElectionPeriod() uint64 {
+func getElectionPeriod() uint64 { // TODO dep
 	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
+}
+
+func getElectionPeriodInNanos() uint64 {
+	return ELECTION_PERIOD_LENGTH_IN_NANOS
 }
 
 func getElectedValidatorsOrbsAddress() []byte {
@@ -174,7 +178,7 @@ func getEffectiveElectionBlockNumber() uint64 {
 	return getElectedValidatorsBlockNumberByIndex(getNumberOfElections())
 }
 
-func _formatElectionBlockNumberKey() []byte {
+func _formatElectionBlockNumberKey() []byte { // TODO dep
 	return []byte("Election_Block_Number")
 }
 
@@ -205,6 +209,22 @@ func getProcessingStartBlockNumber() uint64 {
 
 func getMirroringEndBlockNumber() uint64 {
 	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
+}
+
+func _formatEffectiveElectionTimeKey() []byte {
+	return []byte("Effective_Election_Time")
+}
+
+func getEffectiveElectionTimeInNanos() uint64 {
+	return state.ReadUint64(_formatEffectiveElectionTimeKey())
+}
+
+func getCurrentElectionTimeInNanos() uint64 {
+	return safeuint64.Add(getEffectiveElectionTimeInNanos(), getElectionPeriodInNanos())
+}
+
+func getNextElectionTimeInNanos() uint64 {
+	return safeuint64.Add(getCurrentElectionTimeInNanos(), getElectionPeriodInNanos())
 }
 
 // Copyright 2019 the orbs-ethereum-contracts authors
@@ -274,9 +294,11 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
 	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress, unsafetests_setValidatorsRegistryEthereumContractAddress,
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber,
+	unsafetests_setElectionTimeNanos, unsafetests_setElectionMirrorPeriodInNanos,
 	mirrorDelegationByTransfer, mirrorDelegation,
 	processVoting,
 	getElectionPeriod, getCurrentElectionBlockNumber, getNextElectionBlockNumber, getEffectiveElectionBlockNumber, getNumberOfElections,
+	getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 	getCurrentEthereumBlockNumber, getProcessingStartBlockNumber, getMirroringEndBlockNumber,
 	getElectedValidatorsOrbsAddress, getElectedValidatorsEthereumAddress, getElectedValidatorsEthereumAddressByBlockNumber, getElectedValidatorsOrbsAddressByBlockHeight,
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
@@ -323,6 +345,14 @@ func unsafetests_setValidatorsRegistryEthereumContractAddress(addr string) {
 
 func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 	ETHEREUM_GUARDIANS_ADDR = addr
+}
+
+func unsafetests_setElectionTimeNanos(time uint64) {
+	state.WriteUint64(_formatEffectiveElectionTimeKey(), safeuint64.Sub(time, getElectionPeriodInNanos()))
+}
+
+func unsafetests_setElectionMirrorPeriodInNanos(period uint64) {
+	MIRROR_PERIOD_LENGTH_IN_NANOS = period
 }
 
 // Copyright 2019 the orbs-ethereum-contracts authors
@@ -725,6 +755,10 @@ var FIRST_ELECTION_BLOCK = uint64(7528900)
 var MAX_ELECTED_VALIDATORS = 22
 var MIN_ELECTED_VALIDATORS = 7
 var VOTE_OUT_WEIGHT_PERCENT = uint64(70)
+
+var NANOS = 1000 * 1000 * 1000
+var ELECTION_PERIOD_LENGTH_IN_NANOS = uint64(3 * 24 * 60 * 60 * NANOS)
+var MIRROR_PERIOD_LENGTH_IN_NANOS = uint64(2 * 60 * NANOS)
 
 func _init() {
 }
