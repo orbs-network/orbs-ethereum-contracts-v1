@@ -1,0 +1,10 @@
+{
+    "ContractName": "orbs_voting",
+    "MethodName": "getValidatorStake",
+    "Arguments": [
+        {
+            "Type": "bytes",
+            "Value": "0xf7ae622C77D0580f02Bcb2f92380d61e3F6e466c"
+        }
+    ]
+}
