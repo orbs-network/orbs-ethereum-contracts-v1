@@ -27,8 +27,8 @@ class Orbs {
         return Number(await this.queryResult("getCurrentEthereumBlockNumber"));
     }
 
-    async getProcessingStartBlockNumber() {
-        return Number(await this.queryResult("getProcessingStartBlockNumber"));
+    async isElectionsOverDue() {
+        return Number(await this.queryResult("isElectionOverdue")) > 0;
     }
 
     async getElectedValidators(electionNumber) {
@@ -59,7 +59,7 @@ class Orbs {
     }
 
     async isProcessingPeriod() {
-        return Number(await this.queryResult("isProcessingPeriod")) === 1;
+        return Number(await this.queryResult("isProcessingPeriod")) > 0;
     }
 
     async processVote() {

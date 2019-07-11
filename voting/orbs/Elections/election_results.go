@@ -35,6 +35,16 @@ func getElectedValidatorsEthereumAddress() []byte {
 	return getElectedValidatorsEthereumAddressByIndex(index)
 }
 
+func isElectionOverdue() uint32 {
+	processStartBlockNumber := getProcessingStartBlockNumber()
+	currentBlockNumber := getCurrentEthereumBlockNumber()
+
+	if processStartBlockNumber == 0 || currentBlockNumber >= safeuint64.Add(processStartBlockNumber, 600) {
+		return 1
+	}
+	return 0
+}
+
 func getElectedValidatorsEthereumAddressByBlockNumber(blockNumber uint64) []byte {
 	numberOfElections := getNumberOfElections()
 	for i := numberOfElections; i > 0; i-- {
