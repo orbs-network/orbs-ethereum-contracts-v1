@@ -18,6 +18,16 @@ import (
 /***
  * processing
  */
+func isProcessingPeriod() uint32 {
+	currentBlockNumber := getCurrentEthereumBlockNumber()
+	processStartBlockNumber := getProcessingStartBlockNumber()
+
+	if currentBlockNumber >= processStartBlockNumber {
+		return 1
+	}
+	return 0
+}
+
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {

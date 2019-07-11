@@ -296,7 +296,7 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber,
 	unsafetests_setElectionTimeNanos, unsafetests_setElectionMirrorPeriodInNanos,
 	mirrorDelegationByTransfer, mirrorDelegation,
-	processVoting,
+	processVoting, isProcessingPeriod,
 	getElectionPeriod, getCurrentElectionBlockNumber, getNextElectionBlockNumber, getEffectiveElectionBlockNumber, getNumberOfElections,
 	getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 	getCurrentEthereumBlockNumber, getProcessingStartBlockNumber, getMirroringEndBlockNumber,
@@ -1094,6 +1094,16 @@ func (s guardianArray) Less(i, j int) bool {
 /***
  * processing
  */
+func isProcessingPeriod() uint32 {
+	currentBlockNumber := getCurrentEthereumBlockNumber()
+	processStartBlockNumber := getProcessingStartBlockNumber()
+
+	if currentBlockNumber >= processStartBlockNumber {
+		return 1
+	}
+	return 0
+}
+
 func processVoting() uint64 {
 	currentBlock := ethereum.GetBlockNumber()
 	if !_isAfterElectionMirroring(currentBlock) {

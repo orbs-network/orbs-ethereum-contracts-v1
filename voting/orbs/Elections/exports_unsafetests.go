@@ -18,7 +18,7 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber,
 	unsafetests_setElectionTimeNanos, unsafetests_setElectionMirrorPeriodInNanos,
 	mirrorDelegationByTransfer, mirrorDelegation,
-	processVoting,
+	processVoting, isProcessingPeriod,
 	getElectionPeriod, getCurrentElectionBlockNumber, getNextElectionBlockNumber, getEffectiveElectionBlockNumber, getNumberOfElections,
 	getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 	getCurrentEthereumBlockNumber, getProcessingStartBlockNumber, getMirroringEndBlockNumber,

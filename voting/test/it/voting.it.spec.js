@@ -118,7 +118,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         // XXXX end of flow. gamma does not enforce the results of elections on validator committee. it requies an "unsafe_" operation. consider supporting
     });
 
-    it.only("perform time based elections", async () => {
+    it("perform time based elections", async () => {
 
         const options = {
             maxVoteOut: 3,

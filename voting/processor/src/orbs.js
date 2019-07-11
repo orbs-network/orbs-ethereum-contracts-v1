@@ -58,6 +58,10 @@ class Orbs {
         return Number(await this.queryResult("getValidatorStake", OrbsClientSdk.argBytes(addr)));
     }
 
+    async isProcessingPeriod() {
+        return Number(await this.queryResult("isProcessingPeriod")) === 1;
+    }
+
     async processVote() {
         let response = await this.transact("processVoting");
         if (response.requestStatus === "COMPLETED") {
