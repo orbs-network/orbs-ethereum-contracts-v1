@@ -6,26 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-const Web3 = require('web3');
-const gamma = require('./src/gamma-calls');
-const slack = require('./src/slack');
-
-const ethereumConnectionURL = process.env.NETWORK_URL_ON_ETHEREUM;
+const orbsUrl = process.env.ORBS_URL;
+const orbsVchain = process.env.ORBS_VCHAINID;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
-let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
+const ethereumConnectionURL = process.env.NETWORK_URL_ON_ETHEREUM;
+
+const orbs = require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
+const Web3 = require('web3');
+const slack = require('./src/slack');
 
 function validateInput() {
     if (!ethereumConnectionURL) {
         throw("missing env variable NETWORK_URL_ON_ETHEREUM");
-    }
-
-    if (!orbsVotingContractName) {
-        throw("missing env variable ORBS_VOTING_CONTRACT_NAME");
-    }
-
-    if (!orbsEnvironment) {
-        console.log('No ORBS environment found using default value "local"\n');
-        orbsEnvironment = "local";
     }
 }
 
@@ -33,7 +25,7 @@ async function main() {
     validateInput();
     let web3 = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));
 
-    let currentBlockNumberByOrbs = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
+    let currentBlockNumberByOrbs = await orbs.getCurrentBlockNumber();
     let currentBlockNumberByEthereum = 0;
     try {
         currentBlockNumberByEthereum = await web3.eth.getBlockNumber();
@@ -49,7 +41,7 @@ async function main() {
         process.exit(-3)
     }
 
-    let processStartBlockNumber = await gamma.getProcessingStartBlockNumber(orbsEnvironment, orbsVotingContractName);
+    let processStartBlockNumber = await orbs.getProcessingStartBlockNumber();
     if (processStartBlockNumber === 0 || currentBlockNumberByOrbs >= (processStartBlockNumber + 600) ) {
         let message = `Warning: Current block number: ${currentBlockNumberByOrbs} is well after process vote starting block number: ${processStartBlockNumber}.
  Something is wrong with elections, it seems stuck.\n`;
@@ -65,7 +57,7 @@ Election processing start block: ${processStartBlockNumber}.`);
 }
 
 main()
-    .then(results => {
+    .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\nAll Good Done!!");
     }).catch(e => {
         slack.sendSlack(`Warning: isalive failed with message '${e.message}', check Jenkins!`).then( ()=>{console.error(e);process.exit(-4);});
