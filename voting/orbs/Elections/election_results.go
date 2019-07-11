@@ -9,7 +9,6 @@ package elections_systemcontract
 import (
 	"fmt"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/env"
-	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 )
@@ -181,39 +180,6 @@ func _setElectedValidatorsOrbsAddressAtIndex(index uint32, elected []byte) {
 
 func getEffectiveElectionBlockNumber() uint64 {
 	return getElectedValidatorsBlockNumberByIndex(getNumberOfElections())
-}
-
-func _formatElectionBlockNumberKey() []byte { // TODO dep
-	return []byte("Election_Block_Number")
-}
-
-func _getCurrentElectionBlockNumber() uint64 {
-	initCurrentElectionBlockNumber()
-	return getCurrentElectionBlockNumber()
-}
-
-func _setCurrentElectionBlockNumber(BlockNumber uint64) {
-	state.WriteUint64(_formatElectionBlockNumberKey(), BlockNumber)
-}
-
-func getCurrentElectionBlockNumber() uint64 {
-	return state.ReadUint64(_formatElectionBlockNumberKey())
-}
-
-func getNextElectionBlockNumber() uint64 {
-	return safeuint64.Add(getCurrentElectionBlockNumber(), getElectionPeriod())
-}
-
-func getCurrentEthereumBlockNumber() uint64 {
-	return ethereum.GetBlockNumber()
-}
-
-func getProcessingStartBlockNumber() uint64 {
-	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
-}
-
-func getMirroringEndBlockNumber() uint64 {
-	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 func _formatEffectiveElectionTimeKey() []byte {

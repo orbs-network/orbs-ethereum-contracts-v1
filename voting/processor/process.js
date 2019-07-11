@@ -95,7 +95,7 @@ async function processCall() {
             isDone = true;
             break;
         }
-        
+
         if (maxNumberOfProcess !== -1 && maxNumberOfProcess <= numberOfCalls) {
             console.log('\x1b[31m%s\x1b[0m', `note processing votes: did not finish after ${numberOfCalls} tries.`);
             break;
@@ -168,8 +168,7 @@ async function main() {
         await processCall();
     } else {
         let currentBlockNumber = await orbs.getCurrentBlockNumber();
-        let processStartBlockNumber = await orbs.getProcessingStartBlockNumber();
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block number: ${processStartBlockNumber}.
+        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block.
  Processing is not needed please try again later!!\n`);
     }
 }
