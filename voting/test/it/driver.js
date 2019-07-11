@@ -242,14 +242,15 @@ class ElectionContracts {
         return new Promise((resolve, reject) => {
             const child = spawn("node", ["mirror.js"], {
                 env: {
-                    "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
                     "ERC20_CONTRACT_ADDRESS": this.erc20.address,
                     "VOTING_CONTRACT_ADDRESS": this.voting.address,
                     "START_BLOCK_ON_ETHEREUM": 1, //TODO change for ropsten/mainnet
                     "END_BLOCK_ON_ETHEREUM": electionBlockNumber,
                     "VERBOSE": true,
                     "NETWORK_URL_ON_ETHEREUM": this.ethereumUrl,
-                    "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
+                    "ORBS_URL": process.env.GAMMA_URL || "http://localhost:8080", //TODO change for other networks,
+                    "ORBS_VCHAINID": process.env.GAMMA_VCHAIN || 42, //TODO change for other networks,
+                    "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
                     PATH: process.env.PATH
                 },
                 stdio: "inherit",
@@ -272,9 +273,10 @@ class ElectionContracts {
         return new Promise((resolve, reject) => {
             const child = spawn("node", ["process.js"], {
                 env: {
-                    "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
                     "VERBOSE": true,
-                    "ORBS_ENVIRONMENT": "experimental", //TODO change for other networks,
+                    "ORBS_URL": process.env.GAMMA_URL || "http://localhost:8080", //TODO change for other networks,
+                    "ORBS_VCHAINID": process.env.GAMMA_VCHAIN || 42, //TODO change for other networks,
+                    "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
                     PATH: process.env.PATH
                 },
                 stdio: "inherit",

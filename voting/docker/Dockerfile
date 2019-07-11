@@ -21,16 +21,12 @@ WORKDIR /usr/src/orbs-ethereum-contracts/voting/ethereum
 RUN yarn && yarn compile
 
 WORKDIR /usr/src/orbs-ethereum-contracts/voting/processor
-RUN rm -f orbs-gamma-config.json && \
-    mv orbs-gamma-config.docker.json orbs-gamma-config.json
 RUN yarn
 
 WORKDIR /usr/src/orbs-ethereum-contracts/voting/test/it
 COPY voting/docker/entrypoint.sh .
 
-RUN rm -f orbs-gamma-config.json && \
-    rm -f truffle-config.js && \
-    mv orbs-gamma-config.docker.json orbs-gamma-config.json && \
+RUN rm -f truffle-config.js && \
     mv truffle-config.docker.js truffle-config.js
 
 RUN bash /tmp/bring-gamma.sh
