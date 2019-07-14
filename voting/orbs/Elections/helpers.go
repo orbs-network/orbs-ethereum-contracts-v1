@@ -7,8 +7,7 @@
 package elections_systemcontract
 
 import (
-	"fmt"
-	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
+	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 )
 
 /***
@@ -20,13 +19,28 @@ func _addressSliceToArray(a []byte) [20]byte {
 	return array
 }
 
-func _isAfterElectionMirroring(blockNumber uint64) bool {
-	return blockNumber > getMirroringEndBlockNumber()
+func _formatIsTimeBasedElections() []byte {
+	return []byte("Is_Time_Based_Elections")
 }
 
-func _mirrorPeriodValidator() {
-	currentBlock := ethereum.GetBlockNumber()
-	if _getVotingProcessState() != "" && _isAfterElectionMirroring(currentBlock) {
-		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, _getCurrentElectionBlockNumber()))
+func startTimeBasedElections() {
+	if state.ReadUint64(_formatIsTimeBasedElections()) == 0 {
+
 	}
+	state.WriteUint32(_formatIsTimeBasedElections(), 1)
 }
+
+func _isTimeBasedElections() bool {
+	return state.ReadUint64(_formatIsTimeBasedElections()) == 1
+}
+
+//func _isAfterElectionMirroring(blockNumber uint64) bool {
+//	return blockNumber > getMirroringEndBlockNumber()
+//}
+//
+//func _mirrorPeriodValidator() {
+//	currentBlock := ethereum.GetBlockNumber()
+//	if _getVotingProcessState() != "" && _isAfterElectionMirroring(currentBlock) {
+//		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, initCurrentElectionBlockNumber()))
+//	}
+//}

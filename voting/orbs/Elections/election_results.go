@@ -16,10 +16,6 @@ import (
 /*****
  * Election results
  */
-func getElectionPeriod() uint64 { // TODO dep
-	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
-}
-
 func getElectionPeriodInNanos() uint64 {
 	return ELECTION_PERIOD_LENGTH_IN_NANOS
 }
@@ -64,8 +60,7 @@ func getElectedValidatorsOrbsAddressByBlockHeight(blockHeight uint64) []byte {
 	return _getDefaultElectionResults()
 }
 
-func _setElectedValidators(elected [][20]byte) {
-	electionBlockNumber := _getCurrentElectionBlockNumber()
+func _setElectedValidators(elected [][20]byte, electionBlockNumber uint64) {
 	index := getNumberOfElections()
 	if getElectedValidatorsBlockNumberByIndex(index) > electionBlockNumber {
 		panic(fmt.Sprintf("Election results rejected as new election happend at block %d which is older than last election %d",
@@ -93,25 +88,30 @@ func _translateElectedAddressesToOrbsAddressesAndConcat(elected [][20]byte) []by
 	electedForSave := make([]byte, 0, len(elected)*20)
 	for i := range elected {
 		electedOrbsAddress := _getValidatorOrbsAddress(elected[i][:])
-		fmt.Printf("elections %10d: translate %x to %x\n", _getCurrentElectionBlockNumber(), elected[i][:], electedOrbsAddress)
+		// TODO NOAM remove this or finde other way don't use getcurr
+		//		fmt.Printf("elections %10d: translate %x to %x\n", getCurrentElectionBlockNumber(), elected[i][:], electedOrbsAddress)
 		electedForSave = append(electedForSave, electedOrbsAddress[:]...)
 	}
 	return electedForSave
 }
 
-func initCurrentElectionBlockNumber() {
-	if getCurrentElectionBlockNumber() == 0 {
+func initCurrentElectionBlockNumber() uint64 {
+	currentElectionBlockNumber := getCurrentElectionBlockNumber()
+	if currentElectionBlockNumber == 0 {
 		currBlock := getCurrentEthereumBlockNumber()
 		if currBlock < FIRST_ELECTION_BLOCK {
 			_setCurrentElectionBlockNumber(FIRST_ELECTION_BLOCK)
+			return FIRST_ELECTION_BLOCK
 		} else {
 			blocksSinceFirstEver := safeuint64.Sub(currBlock, FIRST_ELECTION_BLOCK)
 			blocksSinceStartOfAnElection := safeuint64.Mod(blocksSinceFirstEver, getElectionPeriod())
 			blocksUntilNextElection := safeuint64.Sub(getElectionPeriod(), blocksSinceStartOfAnElection)
 			nextElectionBlock := safeuint64.Add(currBlock, blocksUntilNextElection)
 			_setCurrentElectionBlockNumber(nextElectionBlock)
+			return nextElectionBlock
 		}
 	}
+	return currentElectionBlockNumber
 }
 
 func _getDefaultElectionResults() []byte {
@@ -184,6 +184,10 @@ func getEffectiveElectionBlockNumber() uint64 {
 
 func _formatEffectiveElectionTimeKey() []byte {
 	return []byte("Effective_Election_Time")
+}
+
+func _setEffectiveElectionTimeInNanos(time uint64) {
+	state.WriteUint64(_formatEffectiveElectionTimeKey(), time)
 }
 
 func getEffectiveElectionTimeInNanos() uint64 {

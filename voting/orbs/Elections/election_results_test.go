@@ -52,11 +52,10 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 		_init()
 		setPastElection(currIndex, currBlockNumber, currentBlockHeight, currElected, currOrbsElected)
 		_setNumberOfElections(currIndex)
-		_setCurrentElectionBlockNumber(newBlockNumber)
 		_setValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
-		_setElectedValidators(newElected)
+		_setElectedValidators(newElected, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, currIndex+1, getNumberOfElections())
@@ -77,11 +76,10 @@ func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setCurrentElectionBlockNumber(newBlockNumber)
 		_setValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
-		_setElectedValidators(newElected)
+		_setElectedValidators(newElected, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, 1, getNumberOfElections())
@@ -99,13 +97,12 @@ func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *t
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		_setCurrentElectionBlockNumber(newBlockNumber)
 		_setElectedValidatorsBlockNumberAtIndex(currIndex, currBlockNumber)
 		_setNumberOfElections(currIndex)
 
 		// call
 		require.Panics(t, func() {
-			_setElectedValidators(newElected)
+			_setElectedValidators(newElected, newBlockNumber)
 		}, "should panic because newer blocknumber is in past")
 	})
 }
@@ -181,29 +178,4 @@ func setPastElection(index uint32, blockNumber uint64, blockHeight uint64, elect
 	_setElectedValidatorsBlockHeightAtIndex(index, blockHeight)
 	_setElectedValidatorsOrbsAddressAtIndex(index, electedOrbs)
 	_setElectedValidatorsEthereumAddressAtIndex(index, elected)
-}
-
-func TestOrbsVotingContract_initCurrentElectionBlockNumber(t *testing.T) {
-	tests := []struct {
-		name                     string
-		expectCurrentBlockNumber uint64
-		ethereumBlockNumber      uint64
-	}{
-		{"before is 0", FIRST_ELECTION_BLOCK, 0},
-		{"before is a small number", FIRST_ELECTION_BLOCK, 5000000},
-		{"before is after first but before second", FIRST_ELECTION_BLOCK + ELECTION_PERIOD_LENGTH_IN_BLOCKS, FIRST_ELECTION_BLOCK + 5000},
-		{"before is after second", FIRST_ELECTION_BLOCK + 2*ELECTION_PERIOD_LENGTH_IN_BLOCKS, FIRST_ELECTION_BLOCK + ELECTION_PERIOD_LENGTH_IN_BLOCKS + 5000},
-	}
-	for i := range tests {
-		cTest := tests[i]
-		t.Run(cTest.name, func(t *testing.T) {
-			InServiceScope(nil, nil, func(m Mockery) {
-				_init()
-				_setCurrentElectionBlockNumber(0)
-				m.MockEthereumGetBlockNumber(int(cTest.ethereumBlockNumber))
-				after := _getCurrentElectionBlockNumber()
-				require.EqualValues(t, cTest.expectCurrentBlockNumber, after, "'%s' failed ", cTest.name)
-			})
-		})
-	}
 }

@@ -198,28 +198,28 @@ func TestOrbsVotingContract_mirrorDelegationData_EventBlockNumberAfterElection(t
 	})
 }
 
-func TestOrbsVotingContract_preMirrorDelegationData_MirrorPeriodEnded(t *testing.T) {
+func TestOrbsVotingContract_mirrorDelegation_processStarted(t *testing.T) {
+	txHex := "0xabcd"
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 		// prepare
-		_setCurrentElectionBlockNumber(150)
 		_setVotingProcessState("x")
-		m.MockEthereumGetBlockNumber(5000)
 
 		require.Panics(t, func() {
-			_mirrorPeriodValidator()
+			mirrorDelegation(txHex)
 		}, "should panic because mirror period should have ended")
 	})
 }
 
-func TestOrbsVotingContract_preMirrorDelegationData_MirrorPeriodNotEndIfNotProcessStart(t *testing.T) {
+func TestOrbsVotingContract_mirrorDelegationByTransfer_processStarted(t *testing.T) {
+	txHex := "0xabcd"
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 		// prepare
-		_setCurrentElectionBlockNumber(150)
-		m.MockEthereumGetBlockNumber(5000)
-
-		_mirrorPeriodValidator()
+		_setVotingProcessState("x")
+		require.Panics(t, func() {
+			mirrorDelegationByTransfer(txHex)
+		}, "should panic because mirror period should have ended")
 	})
 }
 
@@ -227,15 +227,15 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 	txHex := "0xabcd"
 	delegatorAddr := [20]byte{0x01}
 	agentAddr := [20]byte{0x02}
-	BlockNumber := 100
+	blockNumber := 100
 	txIndex := 10
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setTimingInMirror(m)
+		_setCurrentElectionBlockNumber(uint64(blockNumber + 1))
 
 		// prepare
-		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, DELEGATION_NAME, BlockNumber, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getVotingEthereumContractAddress(), getVotingAbi(), txHex, DELEGATION_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*Delegate)
 			v.Delegator = delegatorAddr
 			v.To = agentAddr
@@ -246,7 +246,7 @@ func TestOrbsVotingContract_mirrorDelegation(t *testing.T) {
 		// assert
 		m.VerifyMocks()
 		require.EqualValues(t, agentAddr[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr[:])))
-		require.EqualValues(t, BlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr[:])))
+		require.EqualValues(t, blockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr[:])))
 		require.EqualValues(t, txIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr[:])))
 		require.EqualValues(t, DELEGATION_NAME, state.ReadString(_formatDelegatorMethod(delegatorAddr[:])))
 	})
@@ -257,15 +257,15 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 	delegatorAddr := [20]byte{0x01}
 	agentAddr := [20]byte{0x02}
 	value := DELEGATION_BY_TRANSFER_VALUE
-	BlockNumber := 100
+	blockNumber := 100
 	txIndex := 10
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setTimingInMirror(m)
+		_setCurrentElectionBlockNumber(uint64(blockNumber + 1))
 
 		// prepare
-		m.MockEthereumLog(getTokenEthereumContractAddress(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, BlockNumber, txIndex, func(out interface{}) {
+		m.MockEthereumLog(getTokenEthereumContractAddress(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, blockNumber, txIndex, func(out interface{}) {
 			v := out.(*Transfer)
 			v.From = delegatorAddr
 			v.To = agentAddr
@@ -278,7 +278,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer(t *testing.T) {
 		// assert
 		m.VerifyMocks()
 		require.EqualValues(t, agentAddr[:], state.ReadBytes(_formatDelegatorAgentKey(delegatorAddr[:])))
-		require.EqualValues(t, BlockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr[:])))
+		require.EqualValues(t, blockNumber, state.ReadUint64(_formatDelegatorBlockNumberKey(delegatorAddr[:])))
 		require.EqualValues(t, txIndex, state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegatorAddr[:])))
 		require.EqualValues(t, DELEGATION_BY_TRANSFER_NAME, state.ReadBytes(_formatDelegatorMethod(delegatorAddr[:])))
 	})
@@ -290,7 +290,7 @@ func TestOrbsVotingContract_mirrorDelegationByTransfer_WrongValue(t *testing.T) 
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setTimingInMirror(m)
+		//		setTimingInMirror(m)
 
 		// prepare
 		m.MockEthereumLog(getTokenEthereumContractAddress(), getTokenAbi(), txHex, DELEGATION_BY_TRANSFER_NAME, 100, 10, func(out interface{}) {

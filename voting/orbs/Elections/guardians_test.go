@@ -73,7 +73,7 @@ func TestOrbsVotingContract_guardians_setTwiceWithEmptyList(t *testing.T) {
 }
 
 func TestOrbsVotingContract_processVote_clearGuardians(t *testing.T) {
-	h := newHarness()
+	h := newHarnessBlockBased()
 	h.electionBlock = uint64(60000)
 
 	var g1 = h.addGuardian(100)
@@ -82,11 +82,10 @@ func TestOrbsVotingContract_processVote_clearGuardians(t *testing.T) {
 		_init()
 
 		// prepare
-		h.setupOrbsStateBeforeProcess()
+		h.setupOrbsStateBeforeProcessMachine()
 		_setCandidates(g1.address[:], [][20]byte{{0xdd}})
 		_setGuardianStake(g1.address[:], 100)
 		_setGuardianVoteBlockNumber(g1.address[:], h.electionBlock)
-		_setCurrentElectionBlockNumber(h.electionBlock)
 
 		// call
 		_clearGuardians()

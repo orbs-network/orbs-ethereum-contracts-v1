@@ -25,7 +25,11 @@ type Transfer struct {
 }
 
 func mirrorDelegationByTransfer(hexEncodedEthTxHash string) {
-	_mirrorPeriodValidator()
+	//initCurrentElectionBlockNumber()
+	if hasProcessingStarted() == 1 {
+		panic(fmt.Errorf("proccessing has started cannot mirror now, resubmit next election"))
+	}
+
 	e := &Transfer{}
 	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getTokenEthereumContractAddress(), getTokenAbi(), hexEncodedEthTxHash, DELEGATION_BY_TRANSFER_NAME, e)
 
@@ -42,7 +46,11 @@ type Delegate struct {
 }
 
 func mirrorDelegation(hexEncodedEthTxHash string) {
-	_mirrorPeriodValidator()
+	//initCurrentElectionBlockNumber()
+	if hasProcessingStarted() == 1 {
+		panic(fmt.Errorf("proccessing has started cannot mirror now, resubmit next election"))
+	}
+
 	e := &Delegate{}
 	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getVotingEthereumContractAddress(), getVotingAbi(), hexEncodedEthTxHash, DELEGATION_NAME, e)
 
@@ -50,7 +58,7 @@ func mirrorDelegation(hexEncodedEthTxHash string) {
 }
 
 func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint64, eventBlockTxIndex uint32, eventName string) {
-	electionBlockNumber := _getCurrentElectionBlockNumber()
+	electionBlockNumber := getCurrentElectionBlockNumber()
 	if eventBlockNumber > electionBlockNumber {
 		panic(fmt.Errorf("delegate with medthod %s from %v to %v failed since it happened in block number %d which is after election date (%d), resubmit next election",
 			eventName, delegator, agent, eventBlockNumber, electionBlockNumber))

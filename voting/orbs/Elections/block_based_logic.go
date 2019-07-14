@@ -6,13 +6,12 @@ import (
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 )
 
-func _formatElectionBlockNumberKey() []byte {
-	return []byte("Election_Block_Number")
+func getElectionPeriod() uint64 {
+	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
 }
 
-func _getCurrentElectionBlockNumber() uint64 {
-	initCurrentElectionBlockNumber()
-	return getCurrentElectionBlockNumber()
+func _formatElectionBlockNumberKey() []byte {
+	return []byte("Election_Block_Number")
 }
 
 func _setCurrentElectionBlockNumber(BlockNumber uint64) {
@@ -37,4 +36,14 @@ func getProcessingStartBlockNumber() uint64 {
 
 func getMirroringEndBlockNumber() uint64 {
 	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
+}
+
+func _isProcessingPeriodBlockBased() uint32 {
+	currentBlockNumber := getCurrentEthereumBlockNumber()
+	processStartBlockNumber := getProcessingStartBlockNumber()
+
+	if currentBlockNumber >= processStartBlockNumber {
+		return 1
+	}
+	return 0
 }
