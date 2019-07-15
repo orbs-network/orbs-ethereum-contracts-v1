@@ -9,8 +9,10 @@
 const ethereumConnectionURL = process.env.NETWORK_URL_ON_ETHEREUM;
 const erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
 const votingContractAddress = process.env.VOTING_CONTRACT_ADDRESS;
+const orbsUrl = process.env.ORBS_URL;
+const orbsVchain = process.env.ORBS_VCHAINID;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
-let orbsEnvironment = process.env.ORBS_ENVIRONMENT;
+
 let verbose = false;
 let fullHistory = false;
 let paceGammaTx = 10;
@@ -22,7 +24,7 @@ let endBlock = 0;
 let totalTransfers = 0;
 let totalDelegate = 0;
 
-const gamma = require('./src/gamma-calls');
+const orbs = require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 const slack = require('./src/slack');
 
 function validateInput() {
@@ -46,15 +48,6 @@ function validateInput() {
         throw("missing env variable VOTING_CONTRACT_ADDRESS");
     }
 
-    if (!orbsEnvironment) {
-        console.log('No ORBS environment found using default value "local"\n');
-        orbsEnvironment = "local";
-    }
-
-    if (!orbsVotingContractName) {
-        throw("missing env variable ORBS_VOTING_CONTRACT_NAME");
-    }
-
     if (process.env.PACE_ETHEREUM) {
         console.log(`reset value of pace in ethereum to ${process.env.PACE_ETHEREUM}\n`);
         paceEthereum = parseInt(process.env.PACE_ETHEREUM);
@@ -71,20 +64,20 @@ function validateInput() {
     }
 }
 
-async function findNewEvents(events, orbsContractFunctionJson) {
+async function findNewEvents(events, mirrorFunction) {
     let newEvents = [];
     for (let i = 0;i < events.length;i=i+paceGammaQuery) {
         let txs = [];
         for (let j = 0; j < paceGammaQuery && i + j < events.length; j++) {
-            txs.push(gamma.runQuery(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, [events[i+j].txHash]).then(result => {
+            txs.push(orbs.query(mirrorFunction, orbs.helpers.argString(events[i+j].txHash)).then(result => {
                 return {txHash: events[i+j].txHash, result: result};
             }));
         }
         let queryResults = await Promise.all(txs);
         for (let k = 0; k < queryResults.length; k++) {
             let queryResult = queryResults[k];
-            if (queryResult.result.RequestStatus === "COMPLETED" && queryResult.result.ExecutionResult === "ERROR_SMART_CONTRACT") {
-                if (queryResult.result.OutputArguments[0].Value === "write attempted without write access: ACCESS_SCOPE_READ_ONLY") {
+            if (queryResult.result.requestStatus === "COMPLETED" && queryResult.result.executionResult === "ERROR_SMART_CONTRACT") {
+                if (queryResult.result.outputArguments[0].value === "write attempted without write access: ACCESS_SCOPE_READ_ONLY") {
                     newEvents.push(queryResult.txHash);
                 }
             } else {
@@ -96,7 +89,7 @@ async function findNewEvents(events, orbsContractFunctionJson) {
     return newEvents;
 }
 
-async function sendEventsBatch(events, orbsContractFunctionJson) {
+async function sendEventsBatch(events, mirrorFunction) {
     for (let i = 0;i < events.length;i=i+paceGammaTx) {
         try {
             let txs = [];
@@ -104,7 +97,7 @@ async function sendEventsBatch(events, orbsContractFunctionJson) {
                 if (verbose) {
                     console.log('\x1b[32m%s\x1b[0m', `event ${i + j + 1}:`, events[i+j]);
                 }
-                txs.push(gamma.sendTransaction(orbsEnvironment, orbsVotingContractName, orbsContractFunctionJson, [events[i+j]]));
+                txs.push(orbs.transact(mirrorFunction, orbs.helpers.argString(events[i+j])));
             }
             await Promise.all(txs);
         } catch (e){
@@ -113,13 +106,13 @@ async function sendEventsBatch(events, orbsContractFunctionJson) {
     }
 }
 
-async function filterAndSendOnlyNewEvents(events, orbsContractFunctionJson) {
-    let newEvents = await findNewEvents(events, orbsContractFunctionJson);
+async function filterAndSendOnlyNewEvents(events, mirrorFunction) {
+    let newEvents = await findNewEvents(events, mirrorFunction);
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `Found ${newEvents.length} NEW events`);
     }
     if (newEvents.length > 0) {
-        await sendEventsBatch(newEvents, orbsContractFunctionJson);
+        await sendEventsBatch(newEvents, mirrorFunction);
     }
 }
 
@@ -131,7 +124,7 @@ async function transferEvents(ethereumConnectionURL, erc20ContractAddress, start
     }
 
     if (events.length > 0) {
-        await filterAndSendOnlyNewEvents(events, 'mirror-transfer.json');
+        await filterAndSendOnlyNewEvents(events, "mirrorDelegationByTransfer");
     }
 }
 
@@ -143,7 +136,7 @@ async function delegateEvents(ethereumConnectionURL, votingContractAddress, star
     }
 
     if (events.length > 0) {
-        await filterAndSendOnlyNewEvents(events, 'mirror-delegate.json');
+        await filterAndSendOnlyNewEvents(events, "mirrorDelegation");
     }
 }
 
@@ -186,9 +179,9 @@ async function main() {
     let startTime = Date.now();
     if (fullHistory) {
         startBlock = 7450000;
-        endBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
+        endBlock = await orbs.getCurrentBlockNumber();
     } else if (startBlock === 0) {
-        endBlock = await gamma.getCurrentBlockNumber(orbsEnvironment, orbsVotingContractName);
+        endBlock = await orbs.getCurrentBlockNumber();
         startBlock = endBlock - 10000;
     } else {
         // use input numbers
@@ -204,7 +197,7 @@ async function main() {
 }
 
 main()
-    .then(results => {
+    .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
         slack.sendSlack(`Warning: mirror failed with message '${e.message}', check Jenkins!`).then(console.error(e));
