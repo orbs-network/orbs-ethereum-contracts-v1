@@ -4,7 +4,6 @@ const Orbs = require("orbs-client-sdk");
 const {expect, use} = require("chai");
 const { spawn } = require("child_process");
 const path = require("path");
-const axios = require('axios');
 
 const {orbsAssertions} = require("psilo");
 use(orbsAssertions);
@@ -55,7 +54,7 @@ class StakeHolderFactory {
         console.log("initial stakes assigned");
     }
 
-    async initStakeHolder({stake}) {
+    initStakeHolder({stake}) {
         const sh = new StakeHolder({
             web3: this.web3,
             erc20: this.erc20,
@@ -213,9 +212,7 @@ class ElectionContracts {
         // finality - block component
         await this.ethereum.waitForBlock(blockToWaitFor + orbsFinalityInBlocksPerSecond);
 
-        // move orbs into the future
-        await axios.post("http://localhost:8080/debug/gamma/inc-time?seconds-to-add=" + orbsFinalityInBlocksPerSecond);
-
+        await this.orbs.increaseTime(orbsFinalityInBlocksPerSecond);
         // finality - time component
         await sleep(this.orbs.finalityCompSeconds * 1000);
         const result = await advanceByOneBlock(this.orbs); // applies finality time component by advancing Orbs clock.
