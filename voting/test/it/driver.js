@@ -123,21 +123,28 @@ class ElectionContracts {
         const signer = {from: this.ethereum.accounts[0]};
         const votingContractsBuildDir = "../../ethereum/build/contracts";
 
-        this.erc20 = await this.ethereum.deploySolidityContract(signer, 'TestingERC20', "build/contracts");
+        // intentionally do not await for these deployments
+        const deployErc20 = this.ethereum.deploySolidityContract(signer, 'TestingERC20', "build/contracts");
+        const deployVoting = this.ethereum.deploySolidityContract(signer, 'OrbsVoting', votingContractsBuildDir, this.options.maxVoteOut);
+        const deployRegistry = this.ethereum.deploySolidityContract(signer, 'OrbsValidatorsRegistry', votingContractsBuildDir);
+        const guardianWeiDeposit = helpers.getWeiDeposit(this.ethereum.web3);
+        const deployGuardians = this.ethereum.deploySolidityContract(signer, 'OrbsGuardians', votingContractsBuildDir, guardianWeiDeposit, this.options.minRegistrationSeconds);
+
+        this.erc20 = await deployErc20;
         console.log("ERC20 contract at", this.erc20.address);
 
-        this.voting = await this.ethereum.deploySolidityContract(signer, 'OrbsVoting', votingContractsBuildDir, this.options.maxVoteOut);
+        this.voting = await deployVoting;
         console.log("Voting contract at", this.voting.address);
 
-        this.validatorsRegistry = await this.ethereum.deploySolidityContract(signer, 'OrbsValidatorsRegistry', votingContractsBuildDir);
+        this.validatorsRegistry = await deployRegistry;
         console.log("ValidatorsRegistry contract at", this.validatorsRegistry.address);
 
-        this.validators = await this.ethereum.deploySolidityContract(signer, 'OrbsValidators', votingContractsBuildDir, this.validatorsRegistry.address, this.options.validatorsLimit);
-        console.log("Validators contract at", this.validators.address);
-
-        const guardianWeiDeposit = helpers.getWeiDeposit(this.ethereum.web3);
-        this.guardians = await this.ethereum.deploySolidityContract(signer, 'OrbsGuardians', votingContractsBuildDir, guardianWeiDeposit, this.options.minRegistrationSeconds);
+        this.guardians = await deployGuardians;
         console.log("Guardians contract at", this.guardians.address);
+
+        const deployValidators = this.ethereum.deploySolidityContract(signer, 'OrbsValidators', votingContractsBuildDir, this.validatorsRegistry.address, this.options.validatorsLimit);
+        this.validators = await deployValidators;
+        console.log("Validators contract at", this.validators.address);
 
         // Deploy Orbs voting contract
         expect(await this._deployVotingContractToOrbs()).to.be.successful;
