@@ -4,6 +4,7 @@ const Orbs = require("orbs-client-sdk");
 const {expect, use} = require("chai");
 const { spawn } = require("child_process");
 const path = require("path");
+const axios = require('axios');
 
 const {orbsAssertions} = require("psilo");
 use(orbsAssertions);
@@ -119,7 +120,6 @@ class ElectionContracts {
     }
 
     async deploy() {
-        //TODO parallelize whatever we can
         const signer = {from: this.ethereum.accounts[0]};
         const votingContractsBuildDir = "../../ethereum/build/contracts";
 
@@ -201,8 +201,13 @@ class ElectionContracts {
         blockToWaitFor = blockToWaitFor || await this.ethereum.getLatestBlock().number;
         console.log(`waiting for block ${blockToWaitFor} to reach finality...`);
 
+        const orbsFinalityInBlocksPerSecond = this.orbs.finalityCompBlocks + 2;
+
         // finality - block component
-        await this.ethereum.waitForBlock(blockToWaitFor + this.orbs.finalityCompBlocks);
+        await this.ethereum.waitForBlock(blockToWaitFor + orbsFinalityInBlocksPerSecond);
+
+        // move orbs into the future
+        await axios.post("http://localhost:8080/debug/gamma/inc-time?seconds-to-add=" + orbsFinalityInBlocksPerSecond);
 
         // finality - time component
         await sleep(this.orbs.finalityCompSeconds * 1000);
