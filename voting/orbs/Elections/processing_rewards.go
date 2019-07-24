@@ -20,14 +20,13 @@ import (
  * Rewards constants are annual!!
  */
 
-var ELECTION_PARTICIPATION_MAX_REWARD = uint64(60000000)
-var ELECTION_PARTICIPATION_MAX_STAKE_REWARD_PERCENT = uint64(8)
-var ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD = uint64(40000000)
-var ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT = uint64(10)
-var ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER = 10
-var ELECTION_VALIDATOR_INTRODUCTION_REWARD = uint64(1000000)
-var ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT = uint64(4)
-var ANNUAL_TO_ELECTION_FACTOR = uint64(11723)
+const ELECTION_PARTICIPATION_MAX_REWARD = uint64(60000000)
+const ELECTION_PARTICIPATION_MAX_STAKE_REWARD_PERCENT = uint64(8)
+const ELECTION_GUARDIAN_EXCELLENCE_MAX_REWARD = uint64(40000000)
+const ELECTION_GUARDIAN_EXCELLENCE_MAX_STAKE_REWARD_PERCENT = uint64(10)
+const ELECTION_GUARDIAN_EXCELLENCE_MAX_NUMBER = 10
+const ELECTION_VALIDATOR_INTRODUCTION_REWARD = uint64(1000000)
+const ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT = uint64(4)
 
 func _processRewards(totalVotes uint64, elected [][20]byte, participants [][20]byte, participantStakes map[[20]byte]uint64, guardiansAccumulatedStake map[[20]byte]uint64) {
 	_processRewardsParticipants(totalVotes, participants, participantStakes)
@@ -63,12 +62,12 @@ func _processRewardsGuardians(totalVotes uint64, guardiansAccumulatedStake map[[
 }
 
 func _processRewardsValidators(elected [][20]byte) {
-	electionValidatorIntroduction := safeuint64.Div(safeuint64.Mul(ELECTION_VALIDATOR_INTRODUCTION_REWARD, 100), ANNUAL_TO_ELECTION_FACTOR)
+	electionValidatorIntroduction := _annualFactorize(safeuint64.Mul(ELECTION_VALIDATOR_INTRODUCTION_REWARD, 100))
 	validatorsStake := _getValidatorsStake()
 	fmt.Printf("elections %10d rewards: %d validadator introduction reward %d\n", _getProcessCurrentElectionBlockNumber(), len(validatorsStake), electionValidatorIntroduction)
 	for _, elected := range elected {
 		stake := validatorsStake[elected]
-		reward := safeuint64.Add(electionValidatorIntroduction, safeuint64.Div(safeuint64.Mul(stake, ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT), ANNUAL_TO_ELECTION_FACTOR))
+		reward := safeuint64.Add(electionValidatorIntroduction, _annualFactorize(safeuint64.Mul(stake, ELECTION_VALIDATOR_MAX_STAKE_REWARD_PERCENT)))
 		fmt.Printf("elections %10d rewards: validator %x, stake %d adding %d\n", _getProcessCurrentElectionBlockNumber(), elected, stake, reward)
 		_addCumulativeValidatorReward(elected[:], reward)
 	}
@@ -87,13 +86,24 @@ func _getValidatorsStake() (validatorsStake map[[20]byte]uint64) {
 }
 
 func _maxRewardForGroup(upperMaximum, totalVotes, percent uint64) uint64 {
-	upperMaximumPerElection := safeuint64.Div(safeuint64.Mul(upperMaximum, 100), ANNUAL_TO_ELECTION_FACTOR)
-	calcMaximumPerElection := safeuint64.Div(safeuint64.Mul(totalVotes, percent), ANNUAL_TO_ELECTION_FACTOR)
+	upperMaximumPerElection := _annualFactorize(safeuint64.Mul(upperMaximum, 100))
+	calcMaximumPerElection := _annualFactorize(safeuint64.Mul(totalVotes, percent))
 	fmt.Printf("elections %10d rewards: uppperMax %d vs. %d = totalVotes %d * percent %d / number of annual election \n", _getProcessCurrentElectionBlockNumber(), upperMaximumPerElection, calcMaximumPerElection, totalVotes, percent)
 	if calcMaximumPerElection < upperMaximumPerElection {
 		return calcMaximumPerElection
 	}
 	return upperMaximumPerElection
+}
+
+const ANNUAL_TO_ELECTION_FACTOR_TIMEBASED = uint64(12174)
+const ANNUAL_TO_ELECTION_FACTOR_BLOCKBASED = uint64(11723)
+
+func _annualFactorize(input uint64) uint64 {
+	if _isTimeBasedElections() {
+		return safeuint64.Div(input, ANNUAL_TO_ELECTION_FACTOR_TIMEBASED)
+	} else {
+		return safeuint64.Div(input, ANNUAL_TO_ELECTION_FACTOR_BLOCKBASED)
+	}
 }
 
 func _formatCumulativeParticipationReward(delegator []byte) []byte {

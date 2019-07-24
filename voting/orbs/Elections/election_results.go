@@ -9,6 +9,7 @@ package elections_systemcontract
 import (
 	"fmt"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/env"
+	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 )
@@ -31,13 +32,14 @@ func getElectedValidatorsEthereumAddress() []byte {
 }
 
 func isElectionOverdue() uint32 {
-	processStartBlockNumber := getProcessingStartBlockNumber()
-	currentBlockNumber := getCurrentEthereumBlockNumber()
-
-	if processStartBlockNumber == 0 || currentBlockNumber >= safeuint64.Add(processStartBlockNumber, 600) {
-		return 1
+	if _isTimeBasedElections() {
+		if ethereum.GetBlockTime() > safeuint64.Add(getCurrentElectionTimeInNanos(), 3*MIRROR_PERIOD_LENGTH_IN_NANOS) {
+			return 1
+		}
+		return 0
+	} else {
+		return _isElectionOverdueBlockBased()
 	}
-	return 0
 }
 
 func getElectedValidatorsEthereumAddressByBlockNumber(blockNumber uint64) []byte {
@@ -60,13 +62,14 @@ func getElectedValidatorsOrbsAddressByBlockHeight(blockHeight uint64) []byte {
 	return _getDefaultElectionResults()
 }
 
-func _setElectedValidators(elected [][20]byte, electionBlockNumber uint64) {
+func _setElectedValidators(elected [][20]byte, electionTime uint64, electionBlockNumber uint64) {
 	index := getNumberOfElections()
 	if getElectedValidatorsBlockNumberByIndex(index) > electionBlockNumber {
 		panic(fmt.Sprintf("Election results rejected as new election happend at block %d which is older than last election %d",
 			electionBlockNumber, getElectedValidatorsBlockNumberByIndex(index)))
 	}
 	index++
+	_setElectedValidatorsTimeInNanosAtIndex(index, electionTime)
 	_setElectedValidatorsBlockNumberAtIndex(index, electionBlockNumber)
 	_setElectedValidatorsBlockHeightAtIndex(index, env.GetBlockHeight()+TRANSITION_PERIOD_LENGTH_IN_BLOCKS)
 	electedOrbsAddresses := _translateElectedAddressesToOrbsAddressesAndConcat(elected)
@@ -88,30 +91,9 @@ func _translateElectedAddressesToOrbsAddressesAndConcat(elected [][20]byte) []by
 	electedForSave := make([]byte, 0, len(elected)*20)
 	for i := range elected {
 		electedOrbsAddress := _getValidatorOrbsAddress(elected[i][:])
-		// TODO NOAM remove this or finde other way don't use getcurr
-		//		fmt.Printf("elections %10d: translate %x to %x\n", getCurrentElectionBlockNumber(), elected[i][:], electedOrbsAddress)
 		electedForSave = append(electedForSave, electedOrbsAddress[:]...)
 	}
 	return electedForSave
-}
-
-func initCurrentElectionBlockNumber() uint64 {
-	currentElectionBlockNumber := getCurrentElectionBlockNumber()
-	if currentElectionBlockNumber == 0 {
-		currBlock := getCurrentEthereumBlockNumber()
-		if currBlock < FIRST_ELECTION_BLOCK {
-			_setCurrentElectionBlockNumber(FIRST_ELECTION_BLOCK)
-			return FIRST_ELECTION_BLOCK
-		} else {
-			blocksSinceFirstEver := safeuint64.Sub(currBlock, FIRST_ELECTION_BLOCK)
-			blocksSinceStartOfAnElection := safeuint64.Mod(blocksSinceFirstEver, getElectionPeriod())
-			blocksUntilNextElection := safeuint64.Sub(getElectionPeriod(), blocksSinceStartOfAnElection)
-			nextElectionBlock := safeuint64.Add(currBlock, blocksUntilNextElection)
-			_setCurrentElectionBlockNumber(nextElectionBlock)
-			return nextElectionBlock
-		}
-	}
-	return currentElectionBlockNumber
 }
 
 func _getDefaultElectionResults() []byte {
@@ -128,6 +110,18 @@ func getNumberOfElections() uint32 {
 
 func _setNumberOfElections(index uint32) {
 	state.WriteUint32(_formatElectionsNumber(), index)
+}
+
+func _formatElectionTimeInNanos(index uint32) []byte {
+	return []byte(fmt.Sprintf("Election_%d_Time", index))
+}
+
+func getElectedValidatorsTimeInNanosByIndex(index uint32) uint64 {
+	return state.ReadUint64(_formatElectionTimeInNanos(index))
+}
+
+func _setElectedValidatorsTimeInNanosAtIndex(index uint32, timestamp uint64) {
+	state.WriteUint64(_formatElectionTimeInNanos(index), timestamp)
 }
 
 func _formatElectionBlockNumber(index uint32) []byte {
@@ -182,16 +176,8 @@ func getEffectiveElectionBlockNumber() uint64 {
 	return getElectedValidatorsBlockNumberByIndex(getNumberOfElections())
 }
 
-func _formatEffectiveElectionTimeKey() []byte {
-	return []byte("Effective_Election_Time")
-}
-
-func _setEffectiveElectionTimeInNanos(time uint64) {
-	state.WriteUint64(_formatEffectiveElectionTimeKey(), time)
-}
-
 func getEffectiveElectionTimeInNanos() uint64 {
-	return state.ReadUint64(_formatEffectiveElectionTimeKey())
+	return getElectedValidatorsTimeInNanosByIndex(getNumberOfElections())
 }
 
 func getCurrentElectionTimeInNanos() uint64 {

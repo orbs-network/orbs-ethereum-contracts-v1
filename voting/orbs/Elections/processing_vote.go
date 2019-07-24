@@ -18,105 +18,57 @@ import (
 /***
  * processing
  */
-func isProcessingPeriod() uint32 {
-	if _isTimeBasedElections() {
-		return 0 // TODO NOAM
-	} else {
-		return _isProcessingPeriodBlockBased()
-	}
-}
-
-func hasProcessingStarted() uint32 {
-	if len(_getVotingProcessState()) > 0 {
-		return 1
-	}
-	return 0
-}
-
-func _formatProcessCurrentElectionBlockNumber() []byte {
-	return []byte("Current_Election_Block_Number")
-}
-
-func _setProcessCurrentElectionBlockNumber(blockNumber uint64) {
-	state.WriteUint64(_formatProcessCurrentElectionBlockNumber(), blockNumber)
-}
-
-func _getProcessCurrentElectionBlockNumber() uint64 {
-	return state.ReadUint64(_formatProcessCurrentElectionBlockNumber())
-}
-
-func _formatProcessCurrentElectionEarliestValidVoteBlockNumber() []byte {
-	return []byte("Election_Last_Valid_Block_Number")
-}
-
-func _setProcessCurrentElectionEarliestValidVoteBlockNumber(blockNumber uint64) {
-	state.WriteUint64(_formatProcessCurrentElectionEarliestValidVoteBlockNumber(), blockNumber)
-}
-
-func _getProcessCurrentElectionEarliestValidVoteBlockNumber() uint64 {
-	return state.ReadUint64(_formatProcessCurrentElectionEarliestValidVoteBlockNumber())
-}
-
-func _calculateProcessCurrentElectionValues() {
-	if _isTimeBasedElections() {
-
-	} else {
-		_setProcessCurrentElectionBlockNumber(getCurrentElectionBlockNumber())
-		_setProcessCurrentElectionEarliestValidVoteBlockNumber(safeuint64.Sub(getCurrentElectionBlockNumber(), VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS+1))
-	}
-}
 func processVoting() uint64 {
-	initCurrentElectionBlockNumber()
+	_initCurrentElection()
 	if isProcessingPeriod() == 0 {
-		panic(fmt.Sprintf("mirror period (%d - %d) did not end (now %d). cannot start processing", getCurrentElectionBlockNumber(), getMirroringEndBlockNumber(), getCurrentEthereumBlockNumber()))
+		panic(fmt.Sprintf("mirror period of election %d did not end. cannot start processing", getNumberOfElections()))
 	}
 
 	_calculateProcessCurrentElectionValues()
-	electedValidators, electionBlock := _processVotingStateMachine()
+	electedValidators := _processVotingStateMachine()
 	if electedValidators != nil {
-		_setProcessCurrentElectionBlockNumber(0) // clear state
-		_setElectedValidators(electedValidators, electionBlock)
+		_setElectedValidators(electedValidators, _getProcessCurrentElectionTime(), _getProcessCurrentElectionBlockNumber())
+		_setProcessCurrentElection(0, 0, 0) // clear state
 		return 1
 	} else {
 		return 0
 	}
 }
 
-func _processVotingStateMachine() ([][20]byte, uint64) {
+func _processVotingStateMachine() [][20]byte {
 	processState := _getVotingProcessState()
 	if processState == "" {
 		_readValidatorsFromEthereumToState()
 		_nextProcessVotingState(VOTING_PROCESS_STATE_GUARDIANS)
-		return nil, 0
+		return nil
 	} else if processState == VOTING_PROCESS_STATE_GUARDIANS {
 		_clearGuardians() // cleanup last elections
 		_readGuardiansFromEthereumToState()
 		_nextProcessVotingState(VOTING_PROCESS_STATE_VALIDATORS)
-		return nil, 0
+		return nil
 	} else if processState == VOTING_PROCESS_STATE_VALIDATORS {
 		if _collectNextValidatorDataFromEthereum() {
 			_nextProcessVotingState(VOTING_PROCESS_STATE_GUARDIANS_DATA)
 		}
-		return nil, 0
+		return nil
 	} else if processState == VOTING_PROCESS_STATE_GUARDIANS_DATA {
 		if _collectNextGuardiansDataFromEthereum() {
 			_nextProcessVotingState(VOTING_PROCESS_STATE_DELEGATORS)
 		}
-		return nil, 0
+		return nil
 	} else if processState == VOTING_PROCESS_STATE_DELEGATORS {
 		if _collectNextDelegatorStakeFromEthereum() {
 			_nextProcessVotingState(VOTING_PROCESS_STATE_CALCULATIONS)
 		}
-		return nil, 0
+		return nil
 	} else if processState == VOTING_PROCESS_STATE_CALCULATIONS {
 		candidateVotes, totalVotes, participants, participantStakes, guardiansAccumulatedStake := _calculateVotes()
 		elected := _processValidatorsSelection(candidateVotes, totalVotes)
 		_processRewards(totalVotes, elected, participants, participantStakes, guardiansAccumulatedStake)
-		electionBlockNumber := _getProcessCurrentElectionBlockNumber()
 		_setVotingProcessState("") // clear state
-		return elected, electionBlockNumber
+		return elected
 	}
-	return nil, 0
+	return nil
 }
 
 func _nextProcessVotingState(stage string) {

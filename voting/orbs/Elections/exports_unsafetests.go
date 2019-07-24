@@ -15,10 +15,10 @@ import (
 var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
 	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
 	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress, unsafetests_setValidatorsRegistryEthereumContractAddress,
-	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setElectedBlockNumber,
-	unsafetests_setElectionTimeNanos, unsafetests_setElectionMirrorPeriodInNanos,
+	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setCurrentElectedBlockNumber,
+	unsafetests_setCurrentElectionTimeNanos, unsafetests_setElectionMirrorPeriodInSeconds, unsafetests_setElectionVotePeriodInSeconds, unsafetests_setElectionPeriodInSeconds,
 	mirrorDelegationByTransfer, mirrorDelegation,
-	processVoting, isProcessingPeriod,
+	processVoting, isProcessingPeriod, hasProcessingStarted,
 	getElectionPeriod, getCurrentElectionBlockNumber, getNextElectionBlockNumber, getEffectiveElectionBlockNumber, getNumberOfElections,
 	getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 	getCurrentEthereumBlockNumber, getProcessingStartBlockNumber, isElectionOverdue, getMirroringEndBlockNumber,
@@ -26,6 +26,10 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
 	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 	getGuardianStake, getGuardianVotingWeight, getTotalStake, getValidatorStake, getValidatorVote, getExcellenceProgramGuardians,
+	startTimeBasedElections,
+
+	unsafetests_convertTimeToBlock, unsafetests_convertBlockToTime,
+	unsafetests_getBlock, unsafetests_getTime,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -45,8 +49,8 @@ func unsafetests_setElectedValidators(joinedAddresses []byte) {
 	_setElectedValidatorsOrbsAddressAtIndex(index, joinedAddresses)
 }
 
-func unsafetests_setElectedBlockNumber(blockNumber uint64) {
-	_setCurrentElectionBlockNumber(blockNumber)
+func unsafetests_setCurrentElectedBlockNumber(blockNumber uint64) {
+	_setElectedValidatorsBlockNumberAtIndex(getNumberOfElections(), safeuint64.Sub(blockNumber, getElectionPeriod()))
 }
 
 func unsafetests_setTokenEthereumContractAddress(addr string) {
@@ -69,10 +73,42 @@ func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 	ETHEREUM_GUARDIANS_ADDR = addr
 }
 
-func unsafetests_setElectionTimeNanos(time uint64) {
-	state.WriteUint64(_formatEffectiveElectionTimeKey(), safeuint64.Sub(time, getElectionPeriodInNanos()))
+func unsafetests_getBlock() uint64 {
+	fmt.Printf("elections : curr block %d\n", ethereum.GetBlockNumber())
+	return ethereum.GetBlockNumber()
 }
 
-func unsafetests_setElectionMirrorPeriodInNanos(period uint64) {
-	MIRROR_PERIOD_LENGTH_IN_NANOS = period
+func unsafetests_getTime() uint64 {
+	fmt.Printf("elections : curr time block %d\n", ethereum.GetBlockTime())
+	return ethereum.GetBlockTime()
+}
+
+func unsafetests_convertTimeToBlock(time uint64) uint64 {
+	calculatedBlock := ethereum.GetBlockNumberByTime(time)
+	fmt.Printf("elections : convertTimeToBlock time block %d was converted to block number %d\n", time, calculatedBlock)
+	return calculatedBlock
+}
+
+func unsafetests_convertBlockToTime(block uint64) uint64 {
+	calculateTime := ethereum.GetBlockTimeByNumber(block)
+	fmt.Printf("elections : convertBlockToTime block number %d converted to time block %d\n", block, calculateTime)
+	return calculateTime
+}
+
+func unsafetests_setCurrentElectionTimeNanos(time uint64) {
+	fmt.Printf("elections : set electiontime to %d period %d\n", time, getElectionPeriodInNanos())
+	_setElectedValidatorsTimeInNanosAtIndex(getNumberOfElections(), safeuint64.Sub(time, getElectionPeriodInNanos()))
+	fmt.Printf("elections : compare to current block %d, current block time :%d\n", ethereum.GetBlockNumber(), ethereum.GetBlockTime())
+}
+
+func unsafetests_setElectionMirrorPeriodInSeconds(period uint64) {
+	MIRROR_PERIOD_LENGTH_IN_NANOS = period * NANOS
+}
+
+func unsafetests_setElectionVotePeriodInSeconds(period uint64) {
+	VOTE_PERIOD_LENGTH_IN_NANOS = period * NANOS
+}
+
+func unsafetests_setElectionPeriodInSeconds(period uint64) {
+	ELECTION_PERIOD_LENGTH_IN_NANOS = period * NANOS
 }

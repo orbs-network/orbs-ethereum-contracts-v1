@@ -12,56 +12,62 @@ import (
 	"testing"
 )
 
-func TestOrbsElectionResultsContract_getEffectiveElectionBlockNumber_emptyElection(t *testing.T) {
+func TestOrbsElectionResultsContract_isElectionOverDue_Yes(t *testing.T) {
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
+		electionTime := startTimeBasedGetElectionTime()
+		m.MockEthereumGetBlockTime(int(electionTime) + 3*int(MIRROR_PERIOD_LENGTH_IN_NANOS) + 1)
 
 		// call
-		b := getEffectiveElectionBlockNumber()
+		b := isElectionOverdue()
+
+		// assert
+		require.EqualValues(t, 1, b)
+	})
+}
+
+func TestOrbsElectionResultsContract_isElectionOverDue_No(t *testing.T) {
+	InServiceScope(nil, nil, func(m Mockery) {
+		_init()
+		electionTime := startTimeBasedGetElectionTime()
+		m.MockEthereumGetBlockTime(int(electionTime) + 3*int(MIRROR_PERIOD_LENGTH_IN_NANOS) - 1)
+
+		// call
+		b := isElectionOverdue()
 
 		// assert
 		require.EqualValues(t, 0, b)
 	})
 }
 
-func TestOrbsElectionResultsContract_getEffectiveElectionBlockNumber(t *testing.T) {
-	InServiceScope(nil, nil, func(m Mockery) {
-		_init()
-		setPastElection(1, 10000, 50, []byte{}, []byte{})
-		_setNumberOfElections(1)
-
-		// call
-		b := getEffectiveElectionBlockNumber()
-
-		// assert
-		require.EqualValues(t, 10000, b)
-	})
-}
-
 func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 	currIndex := uint32(2)
+	currTime := uint64(50000)
 	currBlockNumber := uint64(10000)
 	currentBlockHeight := uint64(1000)
 	currElected := []byte{0x01}
 	currOrbsElected := []byte{0xa1}
+	newTime := uint64(60000)
 	newBlockNumber := uint64(20000)
 	newElected := [][20]byte{{0x02}}
 	newElectedOrbs := [][20]byte{{0xb2}}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setPastElection(currIndex, currBlockNumber, currentBlockHeight, currElected, currOrbsElected)
+		setPastElection(currIndex, currTime, currBlockNumber, currentBlockHeight, currElected, currOrbsElected)
 		_setNumberOfElections(currIndex)
 		_setValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
-		_setElectedValidators(newElected, newBlockNumber)
+		_setElectedValidators(newElected, newTime, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, currIndex+1, getNumberOfElections())
+		require.EqualValues(t, newTime, getElectedValidatorsTimeInNanosByIndex(currIndex+1))
 		require.EqualValues(t, newBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex+1))
 		require.EqualValues(t, _translateElectedAddressesToOrbsAddressesAndConcat(newElected), getElectedValidatorsOrbsAddressByIndex(currIndex+1))
 		require.EqualValues(t, _concatElectedEthereumAddresses(newElected), getElectedValidatorsEthereumAddressByIndex(currIndex+1))
+		require.EqualValues(t, currTime, getElectedValidatorsTimeInNanosByIndex(currIndex))
 		require.EqualValues(t, currBlockNumber, getElectedValidatorsBlockNumberByIndex(currIndex))
 		require.EqualValues(t, currentBlockHeight, getElectedValidatorsBlockHeightByIndex(currIndex))
 		require.EqualValues(t, currElected, getElectedValidatorsEthereumAddressByIndex(currIndex))
@@ -70,6 +76,7 @@ func TestOrbsElectionResultsContract_updateElectionResults(t *testing.T) {
 }
 
 func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
+	newTime := uint64(30000)
 	newBlockNumber := uint64(20000)
 	newElected := [][20]byte{{0x02}}
 	newElectedOrbs := [][20]byte{{0xb2}}
@@ -79,10 +86,11 @@ func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 		_setValidatorOrbsAddress(newElected[0][:], newElectedOrbs[0][:])
 
 		// call
-		_setElectedValidators(newElected, newBlockNumber)
+		_setElectedValidators(newElected, newTime, newBlockNumber)
 
 		// assert
 		require.EqualValues(t, 1, getNumberOfElections())
+		require.EqualValues(t, newTime, getElectedValidatorsTimeInNanosByIndex(1))
 		require.EqualValues(t, newBlockNumber, getElectedValidatorsBlockNumberByIndex(1))
 		require.EqualValues(t, _translateElectedAddressesToOrbsAddressesAndConcat(newElected), getElectedValidatorsOrbsAddressByIndex(1))
 		require.EqualValues(t, _concatElectedEthereumAddresses(newElected), getElectedValidatorsEthereumAddressByIndex(1))
@@ -92,6 +100,7 @@ func TestOrbsElectionResultsContract_updateElectionResults_Empty(t *testing.T) {
 func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *testing.T) {
 	currIndex := uint32(2)
 	currBlockNumber := uint64(10000)
+	newTime := uint64(500)
 	newBlockNumber := uint64(500)
 	newElected := [][20]byte{{0x02}}
 
@@ -102,7 +111,7 @@ func TestOrbsElectionResultsContract_updateElectionResults_WrongBlockNumber(t *t
 
 		// call
 		require.Panics(t, func() {
-			_setElectedValidators(newElected, newBlockNumber)
+			_setElectedValidators(newElected, newTime, newBlockNumber)
 		}, "should panic because newer blocknumber is in past")
 	})
 }
@@ -120,9 +129,9 @@ func TestOrbsElectionResultsContract_getElectionResultsByBlockNumber_getSeveralV
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setPastElection(1, blockNumber1, 1, elected1, electedOrbs1)
-		setPastElection(2, blockNumber2, 100, elected2, electedOrbs2)
-		setPastElection(3, blockNumber3, 200, elected3, electedOrbs3)
+		setPastElection(1, 100, blockNumber1, 1, elected1, electedOrbs1)
+		setPastElection(2, 200, blockNumber2, 100, elected2, electedOrbs2)
+		setPastElection(3, 300, blockNumber3, 200, elected3, electedOrbs3)
 
 		_setNumberOfElections(3)
 
@@ -153,9 +162,9 @@ func TestOrbsElectionResultsContract_getElectionResultsByBlockHeight_getSeveralV
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
-		setPastElection(1, 100, blockHeight1, elected1, electedOrbs1)
-		setPastElection(2, 200, blockHeight2, elected2, electedOrbs2)
-		setPastElection(3, 300, blockHeight3, elected3, electedOrbs3)
+		setPastElection(1, 100, 100, blockHeight1, elected1, electedOrbs1)
+		setPastElection(2, 200, 200, blockHeight2, elected2, electedOrbs2)
+		setPastElection(3, 300, 300, blockHeight3, elected3, electedOrbs3)
 
 		_setNumberOfElections(3)
 
@@ -173,7 +182,8 @@ func TestOrbsElectionResultsContract_getElectionResultsByBlockHeight_getSeveralV
 	})
 }
 
-func setPastElection(index uint32, blockNumber uint64, blockHeight uint64, elected []byte, electedOrbs []byte) {
+func setPastElection(index uint32, time uint64, blockNumber uint64, blockHeight uint64, elected []byte, electedOrbs []byte) {
+	_setElectedValidatorsTimeInNanosAtIndex(index, time)
 	_setElectedValidatorsBlockNumberAtIndex(index, blockNumber)
 	_setElectedValidatorsBlockHeightAtIndex(index, blockHeight)
 	_setElectedValidatorsOrbsAddressAtIndex(index, electedOrbs)

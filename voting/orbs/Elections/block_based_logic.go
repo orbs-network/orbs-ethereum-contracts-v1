@@ -3,23 +3,14 @@ package elections_systemcontract
 import (
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
-	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 )
 
 func getElectionPeriod() uint64 {
 	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
 }
 
-func _formatElectionBlockNumberKey() []byte {
-	return []byte("Election_Block_Number")
-}
-
-func _setCurrentElectionBlockNumber(BlockNumber uint64) {
-	state.WriteUint64(_formatElectionBlockNumberKey(), BlockNumber)
-}
-
 func getCurrentElectionBlockNumber() uint64 {
-	return state.ReadUint64(_formatElectionBlockNumberKey())
+	return safeuint64.Add(getEffectiveElectionBlockNumber(), getElectionPeriod())
 }
 
 func getNextElectionBlockNumber() uint64 {
@@ -46,4 +37,29 @@ func _isProcessingPeriodBlockBased() uint32 {
 		return 1
 	}
 	return 0
+}
+
+func _isElectionOverdueBlockBased() uint32 {
+	processStartBlockNumber := getProcessingStartBlockNumber()
+	currentBlockNumber := getCurrentEthereumBlockNumber()
+
+	if processStartBlockNumber == 0 || currentBlockNumber >= safeuint64.Add(processStartBlockNumber, 600) {
+		return 1
+	}
+	return 0
+}
+
+func _initCurrentElectionBlockNumber() {
+	currentElectionBlockNumber := getEffectiveElectionBlockNumber()
+	if currentElectionBlockNumber == 0 {
+		currBlock := getCurrentEthereumBlockNumber()
+		nextElectionBlock := FIRST_ELECTION_BLOCK
+		if currBlock > FIRST_ELECTION_BLOCK {
+			blocksSinceFirstEver := safeuint64.Sub(currBlock, FIRST_ELECTION_BLOCK)
+			blocksSinceStartOfAnElection := safeuint64.Mod(blocksSinceFirstEver, getElectionPeriod())
+			blocksUntilNextElection := safeuint64.Sub(getElectionPeriod(), blocksSinceStartOfAnElection)
+			nextElectionBlock = safeuint64.Add(currBlock, blocksUntilNextElection)
+		}
+		_setElectedValidatorsBlockNumberAtIndex(0, safeuint64.Sub(nextElectionBlock, getElectionPeriod()))
+	}
 }

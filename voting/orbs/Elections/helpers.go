@@ -7,6 +7,9 @@
 package elections_systemcontract
 
 import (
+	"fmt"
+	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
+	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 )
 
@@ -24,23 +27,30 @@ func _formatIsTimeBasedElections() []byte {
 }
 
 func startTimeBasedElections() {
-	if state.ReadUint64(_formatIsTimeBasedElections()) == 0 {
+	if state.ReadUint32(_formatIsTimeBasedElections()) == 0 {
+		fmt.Println("elections : startTimeBasedElections has been called switching to time based elections")
 
+		state.WriteUint32(_formatIsTimeBasedElections(), 1)
 	}
-	state.WriteUint32(_formatIsTimeBasedElections(), 1)
 }
 
 func _isTimeBasedElections() bool {
-	return state.ReadUint64(_formatIsTimeBasedElections()) == 1
+	return state.ReadUint32(_formatIsTimeBasedElections()) == 1
 }
 
-//func _isAfterElectionMirroring(blockNumber uint64) bool {
-//	return blockNumber > getMirroringEndBlockNumber()
-//}
-//
-//func _mirrorPeriodValidator() {
-//	currentBlock := ethereum.GetBlockNumber()
-//	if _getVotingProcessState() != "" && _isAfterElectionMirroring(currentBlock) {
-//		panic(fmt.Errorf("current block number (%d) indicates mirror period for election (%d) has ended, resubmit next election", currentBlock, initCurrentElectionBlockNumber()))
-//	}
-//}
+func _initCurrentElection() {
+	if _isTimeBasedElections() {
+		if getEffectiveElectionTimeInNanos() == 0 {
+			currTime := ethereum.GetBlockTime()
+			effectiveElectionTime := safeuint64.Sub(FIRST_ELECTION_TIME_IN_NANOS, getElectionPeriodInNanos())
+			if currTime > FIRST_ELECTION_TIME_IN_NANOS {
+				timeSinceFirstEver := safeuint64.Sub(currTime, FIRST_ELECTION_TIME_IN_NANOS)
+				numberOfFullElections := safeuint64.Div(timeSinceFirstEver, getElectionPeriodInNanos())
+				effectiveElectionTime = safeuint64.Add(FIRST_ELECTION_TIME_IN_NANOS, safeuint64.Mul(numberOfFullElections, getElectionPeriodInNanos()))
+			}
+			_setElectedValidatorsTimeInNanosAtIndex(0, effectiveElectionTime)
+		}
+	} else {
+		_initCurrentElectionBlockNumber()
+	}
+}

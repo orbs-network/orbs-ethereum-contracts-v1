@@ -174,12 +174,16 @@ class ElectionContracts {
 
         //TODO parallelize
         expect(await contract.transact(signer, "unsafetests_setVariables", ...args)).to.be.successful;
+
         expect(await contract.transact(signer, "unsafetests_setVotingEthereumContractAddress", Orbs.argString(this.voting.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setGuardiansEthereumContractAddress", Orbs.argString(this.guardians.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setTokenEthereumContractAddress", Orbs.argString(this.erc20.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setValidatorsEthereumContractAddress", Orbs.argString(this.validators.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setValidatorsRegistryEthereumContractAddress", Orbs.argString(this.validatorsRegistry.address))).to.be.successful;
 
+        expect(await contract.transact(signer, "unsafetests_setElectionMirrorPeriodInSeconds", Orbs.argUint64(this.options.votingMirrorPeriodInSeconds || 3))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setElectionVotePeriodInSeconds", Orbs.argUint64(this.options.votingValidityPeriodInSeconds || 140))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setElectionPeriodInSeconds", Orbs.argUint64(this.options.electionsPeriodInSeconds || 20))).to.be.successful;
     }
 
     async getOrbsValidatorAddresses() {
@@ -187,12 +191,16 @@ class ElectionContracts {
         return Promise.all(validators.map(vAddr => this.validatorsRegistry.getOrbsAddress(vAddr)));
     }
 
+    async getOrbsValidatorReward(addr) {
+        let result = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCumulativeValidatorReward", Orbs.argBytes(addr));
+        return Number(result.outputArguments[0].value)
+    }
 
     async setElectionBlockNumber() {
         const currentBlock = await this.ethereum.getLatestBlock();
         const electionBlock = currentBlock.number + 1;
 
-        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setElectedBlockNumber", Orbs.argUint64(electionBlock));
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setCurrentElectedBlockNumber", Orbs.argUint64(electionBlock));
 
         console.log(`Next election block number set to ${electionBlock}`);
 
@@ -206,26 +214,46 @@ class ElectionContracts {
         const nextBlockForCalculatingElectionTime = await this.ethereum.getLatestBlock();
         const blockTimeInSeconds = nextBlockForCalculatingElectionTime.timestamp;
 
-        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setElectionTimeNanos", Orbs.argUint64(blockTimeInSeconds * nanos));
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "startTimeBasedElections");
+        expect(await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setCurrentElectionTimeNanos", Orbs.argUint64(blockTimeInSeconds * nanos))).to.be.successful;
+
+        // let x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_getBlock");
+        // let cblock = Number(x.outputArguments[0].value)
+        // console.log('cblock', cblock);
+        // x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_getTime");
+        // let ctime = Number(x.outputArguments[0].value)
+        // console.log('ctime', ctime);
+        // x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_convertTimeToBlock", Orbs.argUint64(ctime));
+        // console.log(x);
+        // let calcblock = Number(x.outputArguments[0].value)
+        // console.log('calcblock', calcblock);
+        // x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_convertBlockToTime", Orbs.argUint64(cblock));
+        // let calctime = Number(x.outputArguments[0].value)
+        // console.log('calctime', calctime);
 
         console.log(`Next block number set to ${nextBlockForCalculatingElectionTime.number}`);
 
         return nextBlockForCalculatingElectionTime.number;
     }
 
-    async markMirrorPeriodOver() {
-        const currentFinalQueryResult = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentElectionTimeInNanos");
-        expect(currentFinalQueryResult).to.be.successful;
-        const currentElectionTime = Number(currentFinalQueryResult.outputArguments[0].value);
+    async waitForMirrorPeriodOver() {
+        let isDone = 0;
+        do {
+            const currentBlock = await this.ethereum.getLatestBlock();
+            await this.ethereum.waitForBlock(currentBlock.number + 1);
+            let result = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "isProcessingPeriod");
+            isDone = Number(result.outputArguments[0].value);
+        } while(isDone === 0);
         const currentBlock = await this.ethereum.getLatestBlock();
-        const mirrorPeriodInNanos = (currentBlock.timestamp * nanos - currentElectionTime) / 2;
-
-        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setElectionMirrorPeriodInNanos", Orbs.argUint64(mirrorPeriodInNanos));
+        console.log(`ready for processing at block ${currentBlock.number} ...`);
         return currentBlock.number;
     }
 
     async waitForOrbsFinality(blockToWaitFor) {
-        blockToWaitFor = blockToWaitFor || await this.ethereum.getLatestBlock().number;
+        if (blockToWaitFor === undefined) {
+            const currentBlock = await this.ethereum.getLatestBlock();
+            blockToWaitFor = currentBlock.number; // default to current top
+        }
         console.log(`waiting for block ${blockToWaitFor} to reach finality...`);
 
         // finality - block component
@@ -240,7 +268,7 @@ class ElectionContracts {
         expect(currentFinalQueryResult).to.be.successful;
         const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
 
-        expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
+        //expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
         console.log(`finality reached for block ${currentFinalityBlockNumber}`);
 
         return result;
@@ -307,6 +335,7 @@ class ElectionContracts {
                     "ORBS_URL": process.env.GAMMA_URL || "http://localhost:8080", //TODO change for other networks,
                     "ORBS_VCHAINID": process.env.GAMMA_VCHAIN || 42, //TODO change for other networks,
                     "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
+                    "BATCH_SIZE": 12,
                     PATH: process.env.PATH
                 },
                 stdio: "inherit",
@@ -325,6 +354,9 @@ class ElectionContracts {
         });
     }
 
+    addressWithoutChecksum(hexAddr) {
+        return Uint8Array.from(Buffer.from(hexAddr.substr(2), 'hex'))
+    }
 }
 
 
