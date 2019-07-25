@@ -34,10 +34,15 @@ class EthereumAdapter {
         if (blocksToMine) {
             await this.mine(blocksToMine);
         }
+        return blocksToMine;
     }
 
     async getLatestBlock() {
         return await this.web3.eth.getBlock("latest");
+    }
+
+    async getBlock(blockNumber) {
+        return await this.web3.eth.getBlock(blockNumber);
     }
 
     async mine(blocks) {

@@ -86,30 +86,18 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint
 		panic(fmt.Errorf("delegate with medthod %s from %v to %v failed since already have delegation with method %s",
 			eventName, delegator, agent, stateMethod))
 	} else if stateMethod == DELEGATION_BY_TRANSFER_NAME && eventName == DELEGATION_NAME {
-		//if eventName == DELEGATION_NAME {
-		//	fmt.Printf("elections : state was transfer now change to , del %v, event block %d, state block %d, \n", delegator, eventBlockNumber, stateBlockNumber)
-		//}
 		stateBlockNumber = eventBlockNumber
 	} else if stateMethod == eventName {
 		stateBlockNumber = state.ReadUint64(_formatDelegatorBlockNumberKey(delegator))
 		stateBlockTxIndex := state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegator))
-		//if eventName == DELEGATION_NAME {
-		//	fmt.Printf("elections : state and event have same name, del %v, event block %d, state block %d, txid event %d state %d \n", delegator, eventBlockNumber, stateBlockNumber, eventBlockTxIndex, stateBlockTxIndex)
-		//}
 		if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex >= eventBlockTxIndex) {
 			panic(fmt.Errorf("delegate from %v to %v with block-height %d and tx-index %d failed since current delegation is from block-height %d and tx-index %d",
 				delegator, agent, eventBlockNumber, eventBlockTxIndex, stateBlockNumber, stateBlockTxIndex))
 		}
 	}
-	//if eventName == DELEGATION_NAME {
-	//	fmt.Printf("elections : del %v, event block %d, state block %d, \n", delegator, eventBlockNumber, stateBlockNumber)
-	//}
 
 	if stateBlockNumber == 0 { // new delegator
 		numOfDelegators := _getNumberOfDelegators()
-		//if eventName == DELEGATION_NAME {
-		//	fmt.Printf("elections : current number of del %d, adding %v\n", numOfDelegators, delegator)
-		//}
 		_setDelegatorAtIndex(numOfDelegators, delegator)
 		_setNumberOfDelegators(numOfDelegators + 1)
 	}

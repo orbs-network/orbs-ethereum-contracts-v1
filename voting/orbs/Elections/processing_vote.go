@@ -21,7 +21,7 @@ import (
 func processVoting() uint64 {
 	_initCurrentElection()
 	if isProcessingPeriod() == 0 {
-		panic(fmt.Sprintf("mirror period of election %d did not end. cannot start processing", getNumberOfElections()))
+		panic(fmt.Sprintf("mirror period of election %d did not end. cannot start processing", getNumberOfElections()+1))
 	}
 
 	_calculateProcessCurrentElectionValues()

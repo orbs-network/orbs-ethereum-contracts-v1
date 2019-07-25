@@ -9,6 +9,7 @@ const {orbsAssertions} = require("psilo");
 use(orbsAssertions);
 
 const nanos = 1000 * 1000 * 1000;
+const minBlocks = 250;
 
 class StakeHolderFactory {
     constructor(web3, accounts, erc20, validators, validatorsRegistry, guardians, voting) {
@@ -242,13 +243,28 @@ class ElectionContracts {
         return nextBlockForCalculatingElectionTime.number;
     }
 
+    async waitForMinimumBlocksAndPeriod() {
+        const currentBlock = await this.ethereum.getLatestBlock();
+        if (currentBlock.number < minBlocks) {
+            console.log(`\nEthereum interface doesn't have enough fake history, generating some...`);
+            await this.waitForOrbsFinality(minBlocks-currentBlock.number);
+        }
+    }
+
     async waitForMirrorPeriodOver() {
         let isDone = 0;
+        let numberOfRounds = 0;
         do {
             const currentBlock = await this.ethereum.getLatestBlock();
             await this.ethereum.waitForBlock(currentBlock.number + 1);
             let result = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "isProcessingPeriod");
             isDone = Number(result.outputArguments[0].value);
+            numberOfRounds++;
+            if (numberOfRounds > 25) {
+                console.log(`waiting too long for mirror ...`);
+                //throw new Error("waiting too long for mirror")
+                break;
+            }
         } while(isDone === 0);
         const currentBlock = await this.ethereum.getLatestBlock();
         console.log(`ready for processing at block ${currentBlock.number} ...`);
@@ -262,14 +278,39 @@ class ElectionContracts {
         }
         console.log(`waiting for block ${blockToWaitFor} to reach finality...`);
 
-        const orbsFinalityInBlocksPerSecond = this.orbs.finalityCompBlocks + 2;
+        const orbsFinalityInBlocksPerSecond = this.orbs.finalityCompBlocks + this.orbs.finalityCompSeconds;
 
         // finality - block component
-        await this.ethereum.waitForBlock(blockToWaitFor + orbsFinalityInBlocksPerSecond);
+        const minedBlocks = await this.ethereum.waitForBlock(blockToWaitFor + orbsFinalityInBlocksPerSecond);
+        if (minedBlocks > 0) {
+            console.log(`fast-forward Ethereum ${minedBlocks} blocks/seconds`);
+            await this.orbs.increaseTime(minedBlocks)
 
-        await this.orbs.increaseTime(orbsFinalityInBlocksPerSecond);
+            // TRY 3
+            // const currentFinal = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentEthereumBlockNumber");
+            // expect(currentFinal).to.be.successful;
+            // const currentFinalNumber = Number(currentFinal.outputArguments[0].value);
+            // const orbsMine = blockToWaitFor - currentFinalNumber + 2;
+            // if (orbsMine > 0) {
+            //      console.log(`current orbs ${currentFinalNumber}, fast-forward Orbs ${orbsMine} seconds`);
+            //     await this.orbs.increaseTime(orbsMine)
+            // }
+
+            // TRY 2
+            // const orbsTime = await this.getOrbsCurrentTimeInSeconds();
+            // console.log(orbsTime);
+            // console.log(targetBlock.timestamp);
+            // const diffTime = targetBlock.timestamp - orbsTime;
+            // if (diffTime > 0) {
+            //     console.log(`fast-forward Orbs ${diffTime} seconds`);
+            //     await this.orbs.increaseTime(diffTime);
+            // } else {
+            //     // todo fail ?
+            //     console.log(`Warning Ethereum time ${targetBlock.timestamp} seems to be in the past compared to orbs ${orbsTime}`)
+            // }
+        }
         // finality - time component
-        await sleep(this.orbs.finalityCompSeconds * 1000);
+        //await sleep(this.orbs.finalityCompSeconds * 1000);
         const result = await advanceByOneBlock(this.orbs); // applies finality time component by advancing Orbs clock.
 
         // verify finality achieved
@@ -300,6 +341,11 @@ class ElectionContracts {
         return rawWinners.map(addr => Orbs.encodeHex(addr));
     }
 
+    async getOrbsCurrentTimeInSeconds() {
+        const response = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getNumberOfElections")
+        expect(response).to.be.successful;
+        return Math.floor((new Date(response.blockTimestamp)).getTime() / 1000);
+    }
 
     //TODO make mirror.js an exported function of the 'processor' module and run in same process
     async goodSamaritanMirrorsAll(electionBlockNumber) {
