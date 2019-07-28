@@ -223,21 +223,7 @@ class ElectionContracts {
 
         await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "startTimeBasedElections");
         expect(await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setCurrentElectionTimeNanos", Orbs.argUint64(blockTimeInSeconds * nanos))).to.be.successful;
-
-        // let x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_getBlock");
-        // let cblock = Number(x.outputArguments[0].value)
-        // console.log('cblock', cblock);
-        // x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_getTime");
-        // let ctime = Number(x.outputArguments[0].value)
-        // console.log('ctime', ctime);
-        // x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_convertTimeToBlock", Orbs.argUint64(ctime));
-        // console.log(x);
-        // let calcblock = Number(x.outputArguments[0].value)
-        // console.log('calcblock', calcblock);
-        // x = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "unsafetests_convertBlockToTime", Orbs.argUint64(cblock));
-        // let calctime = Number(x.outputArguments[0].value)
-        // console.log('calctime', calctime);
-
+        
         console.log(`Next block number set to ${nextBlockForCalculatingElectionTime.number}`);
 
         return nextBlockForCalculatingElectionTime.number;
@@ -280,37 +266,11 @@ class ElectionContracts {
 
         const orbsFinalityInBlocksPerSecond = this.orbs.finalityCompBlocks + this.orbs.finalityCompSeconds;
 
-        // finality - block component
         const minedBlocks = await this.ethereum.waitForBlock(blockToWaitFor + orbsFinalityInBlocksPerSecond);
         if (minedBlocks > 0) {
             console.log(`fast-forward Ethereum ${minedBlocks} blocks/seconds`);
             await this.orbs.increaseTime(minedBlocks)
-
-            // TRY 3
-            // const currentFinal = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentEthereumBlockNumber");
-            // expect(currentFinal).to.be.successful;
-            // const currentFinalNumber = Number(currentFinal.outputArguments[0].value);
-            // const orbsMine = blockToWaitFor - currentFinalNumber + 2;
-            // if (orbsMine > 0) {
-            //      console.log(`current orbs ${currentFinalNumber}, fast-forward Orbs ${orbsMine} seconds`);
-            //     await this.orbs.increaseTime(orbsMine)
-            // }
-
-            // TRY 2
-            // const orbsTime = await this.getOrbsCurrentTimeInSeconds();
-            // console.log(orbsTime);
-            // console.log(targetBlock.timestamp);
-            // const diffTime = targetBlock.timestamp - orbsTime;
-            // if (diffTime > 0) {
-            //     console.log(`fast-forward Orbs ${diffTime} seconds`);
-            //     await this.orbs.increaseTime(diffTime);
-            // } else {
-            //     // todo fail ?
-            //     console.log(`Warning Ethereum time ${targetBlock.timestamp} seems to be in the past compared to orbs ${orbsTime}`)
-            // }
         }
-        // finality - time component
-        //await sleep(this.orbs.finalityCompSeconds * 1000);
         const result = await advanceByOneBlock(this.orbs); // applies finality time component by advancing Orbs clock.
 
         // verify finality achieved

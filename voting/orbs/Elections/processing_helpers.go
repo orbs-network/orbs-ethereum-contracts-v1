@@ -73,7 +73,7 @@ func _calculateProcessCurrentElectionValues() {
 		label := "time based"
 		if _isTimeBasedElections() {
 			electionBlockTime = getCurrentElectionTimeInNanos()
-			electionBlockNumber = ethereum.GetBlockNumberByTime(electionBlockTime) + 1 // TODO NOAM this needs discussion
+			electionBlockNumber = ethereum.GetBlockNumberByTime(electionBlockTime) + 1
 			earliestValidVoteBlockNumber = ethereum.GetBlockNumberByTime(getCurrentElectionTimeInNanos()-VOTE_PERIOD_LENGTH_IN_NANOS) + 1
 		} else {
 			label = "block based"
