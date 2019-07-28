@@ -237,26 +237,6 @@ class ElectionContracts {
         }
     }
 
-    async waitForMirrorPeriodOver() {
-        let isDone = 0;
-        let numberOfRounds = 0;
-        do {
-            const currentBlock = await this.ethereum.getLatestBlock();
-            await this.ethereum.waitForBlock(currentBlock.number + 1);
-            let result = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "isProcessingPeriod");
-            isDone = Number(result.outputArguments[0].value);
-            numberOfRounds++;
-            if (numberOfRounds > 25) {
-                console.log(`waiting too long for mirror ...`);
-                //throw new Error("waiting too long for mirror")
-                break;
-            }
-        } while(isDone === 0);
-        const currentBlock = await this.ethereum.getLatestBlock();
-        console.log(`ready for processing at block ${currentBlock.number} ...`);
-        return currentBlock.number;
-    }
-
     async waitForOrbsFinality(blockToWaitFor) {
         if (blockToWaitFor === undefined) {
             const currentBlock = await this.ethereum.getLatestBlock();

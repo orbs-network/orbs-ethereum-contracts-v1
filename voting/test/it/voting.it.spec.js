@@ -96,6 +96,8 @@ describe("voting contracts on orbs and ethereum", async () => {
             d2.voteOut(v5, v2, v3), // not an guardian
         ]);
 
+        console.log("Start First Block Election");
+
         const nextElectionBlockNumber = await electionContracts.setElectionBlockNumber();
 
         await electionContracts.waitForOrbsFinality(nextElectionBlockNumber);
@@ -123,7 +125,7 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Done First Election\n");
 
-        console.log("Start Second Election");
+        console.log("Start Second Block Election");
         // change election
         await g1.voteOut(v1);
         await g2.voteOut(v1);
@@ -155,11 +157,10 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         // check reward  added to v1 and v2 with time based values.
         expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8533); // +0
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(2*8536); // +8536
+        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(2*8536); // +8536
     });
 
     it("perform two time based elections", async () => {
-
         const options = {
             maxVoteOut: 3,
             validatorsLimit: 20,
@@ -241,7 +242,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         ]);
 
         await electionContracts.waitForOrbsFinality();
-        console.log("\nStart First Election");
+        console.log("\nStart First Time Election");
 
         const blockBeforeElection = await electionContracts.setElectionTimeToCurrentEthereumTime();
         await electionContracts.waitForOrbsFinality(blockBeforeElection);
@@ -251,7 +252,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         console.log("Done Mirroring\n");
 
         console.log("Await time to start processing ...");
-        await electionContracts.waitForMirrorPeriodOver();
+        await electionContracts.waitForOrbsFinality(blockBeforeElection + options.votingMirrorPeriodInSeconds);
 
         await electionContracts.goodSamaritanProcessesAll();
         //TODO return something from process and assert
@@ -267,7 +268,7 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Done First Election\n");
 
-        console.log("Start Second Election");
+        console.log("Start Second Time Election");
         // change election
         await g1.voteOut(v1);
         await g2.voteOut(v1);
@@ -284,7 +285,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         console.log("Done Mirroring\n");
 
         console.log("Await time to start processing ...");
-        await electionContracts.waitForMirrorPeriodOver();
+        await electionContracts.waitForOrbsFinality(blockBeforeSecondElection + options.votingMirrorPeriodInSeconds);
 
         await electionContracts.goodSamaritanProcessesAll();
         //TODO return something from process and assert
@@ -294,11 +295,11 @@ describe("voting contracts on orbs and ethereum", async () => {
         const winnersSecond = await electionContracts.getElectionWinners();
         expect(winnersSecond).to.have.members([v2, v3, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
+        console.log("Done Second Election");
+
         // check reward not added to v1 (vote out), added to v2
         expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8217); // +0
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(2*8220); // +8220
-
-        console.log("Done Second Election");
+        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(2*8220); // +8220
     });
 
     it("perform block based elections then time based elections", async () => {
@@ -385,6 +386,8 @@ describe("voting contracts on orbs and ethereum", async () => {
             d2.voteOut(v5, v2, v3), // not an guardian
         ]);
 
+        console.log("Start A Block Election as first");
+
         const nextElectionBlockNumber = await electionContracts.setElectionBlockNumber();
 
         await electionContracts.waitForOrbsFinality(nextElectionBlockNumber);
@@ -412,7 +415,7 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Done First Election\n");
 
-        console.log("Start Second Election");
+        console.log("Start A Time Election as second");
 
         // change election
         await g1.voteOut(v1);
@@ -430,7 +433,7 @@ describe("voting contracts on orbs and ethereum", async () => {
         console.log("Done Mirroring\n");
 
         console.log("Await time to start processing ...");
-        await electionContracts.waitForMirrorPeriodOver();
+        await electionContracts.waitForOrbsFinality(blockBeforeSecondElection + options.votingMirrorPeriodInSeconds);
 
         await electionContracts.goodSamaritanProcessesAll();
         //TODO return something from process and assert
@@ -440,11 +443,11 @@ describe("voting contracts on orbs and ethereum", async () => {
         const winnersSecond = await electionContracts.getElectionWinners();
         expect(winnersSecond).to.have.members([v2, v3, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
+        console.log("Done Second Election");
+
         // check reward not added to v1 (vote out), added to v2
         expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8533); // +0
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(8536+8220); // +8220
-
-        console.log("Done Second Election");
+        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(8536+8220); // +8220
     });
 
 });
