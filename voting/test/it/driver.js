@@ -223,7 +223,7 @@ class ElectionContracts {
 
         await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "startTimeBasedElections");
         expect(await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setCurrentElectionTimeNanos", Orbs.argUint64(blockTimeInSeconds * nanos))).to.be.successful;
-        
+
         console.log(`Next block number set to ${nextBlockForCalculatingElectionTime.number}`);
 
         return nextBlockForCalculatingElectionTime.number;
@@ -269,9 +269,21 @@ class ElectionContracts {
         const minedBlocks = await this.ethereum.waitForBlock(blockToWaitFor + orbsFinalityInBlocksPerSecond);
         if (minedBlocks > 0) {
             console.log(`fast-forward Ethereum ${minedBlocks} blocks/seconds`);
-            await this.orbs.increaseTime(minedBlocks)
+
+            const result = await advanceByOneBlock(this.orbs); // refresh orbs
+            const orbsTime =  Math.floor((new Date(result.blockTimestamp)).getTime() / 1000);
+            const targetBlock = await this.ethereum.getBlock(blockToWaitFor);
+
+            const diffTime = targetBlock.timestamp - orbsTime + orbsFinalityInBlocksPerSecond;
+            if (diffTime > 0) {
+                await this.orbs.increaseTime(diffTime);
+                console.log(`fast-forward Orbs ${diffTime} seconds`);
+            } else {
+                // todo fail ?
+                console.log(`Warning Ethereum time ${targetBlock.timestamp} seems to be in the past compared to orbs ${orbsTime}`)
+            }
+            await advanceByOneBlock(this.orbs); // refresh orbs
         }
-        const result = await advanceByOneBlock(this.orbs); // applies finality time component by advancing Orbs clock.
 
         // verify finality achieved
         const currentFinalQueryResult = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentEthereumBlockNumber");
@@ -280,8 +292,6 @@ class ElectionContracts {
 
         //expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
         console.log(`finality reached for block ${currentFinalityBlockNumber}`);
-
-        return result;
     }
 
     async getElectionWinners() {
@@ -299,12 +309,6 @@ class ElectionContracts {
         }
 
         return rawWinners.map(addr => Orbs.encodeHex(addr));
-    }
-
-    async getOrbsCurrentTimeInSeconds() {
-        const response = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getNumberOfElections")
-        expect(response).to.be.successful;
-        return Math.floor((new Date(response.blockTimestamp)).getTime() / 1000);
     }
 
     //TODO make mirror.js an exported function of the 'processor' module and run in same process

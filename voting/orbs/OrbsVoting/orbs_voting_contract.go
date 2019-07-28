@@ -14,14 +14,23 @@ import (
 )
 
 func getElectionPeriod() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Election priod time in nanoseconds: %d", getElectionPeriodInNanos()))
+	}
 	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
 }
 
 func getCurrentElectionBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Current election time in nanoseconds: %d", getCurrentElectionTimeInNanos()))
+	}
 	return safeuint64.Add(getEffectiveElectionBlockNumber(), getElectionPeriod())
 }
 
 func getNextElectionBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Next election time in nanoseconds: %d", getNextElectionTimeInNanos()))
+	}
 	return safeuint64.Add(getCurrentElectionBlockNumber(), getElectionPeriod())
 }
 
@@ -30,10 +39,16 @@ func getCurrentEthereumBlockNumber() uint64 {
 }
 
 func getProcessingStartBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Processing start time in nanoseconds: %d", safeuint64.Add(getCurrentElectionTimeInNanos(), MIRROR_PERIOD_LENGTH_IN_NANOS)))
+	}
 	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 func getMirroringEndBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Mirroring end time in nanoseconds: %d", safeuint64.Add(getCurrentElectionTimeInNanos(), MIRROR_PERIOD_LENGTH_IN_NANOS)))
+	}
 	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
@@ -949,7 +964,6 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint
 		agent = emptyAddr[:]
 	}
 
-	fmt.Printf("elections : del %x block %d index %d\n", delegator, eventBlockNumber, eventBlockTxIndex)
 	state.WriteBytes(_formatDelegatorAgentKey(delegator), agent)
 	state.WriteUint64(_formatDelegatorBlockNumberKey(delegator), eventBlockNumber)
 	state.WriteUint32(_formatDelegatorBlockTxIndexKey(delegator), eventBlockTxIndex)
@@ -1079,9 +1093,6 @@ func _calculateProcessCurrentElectionValues() {
 			label = "block based"
 			electionBlockNumber = getCurrentElectionBlockNumber()
 			electionBlockTime = ethereum.GetBlockTimeByNumber(electionBlockNumber)
-			fmt.Printf("elections : election block % time %d\n", electionBlockNumber, electionBlockTime)
-			fmt.Printf("elections : election block %d voteval %d\n", electionBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS-1)
-
 			earliestValidVoteBlockNumber = safeuint64.Sub(electionBlockNumber, VOTE_VALID_PERIOD_LENGTH_IN_BLOCKS-1)
 		}
 		_setProcessCurrentElection(electionBlockTime, electionBlockNumber, earliestValidVoteBlockNumber)

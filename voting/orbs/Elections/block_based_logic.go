@@ -1,19 +1,29 @@
 package elections_systemcontract
 
 import (
+	"fmt"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
 )
 
 func getElectionPeriod() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Election priod time in nanoseconds: %d", getElectionPeriodInNanos()))
+	}
 	return ELECTION_PERIOD_LENGTH_IN_BLOCKS
 }
 
 func getCurrentElectionBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Current election time in nanoseconds: %d", getCurrentElectionTimeInNanos()))
+	}
 	return safeuint64.Add(getEffectiveElectionBlockNumber(), getElectionPeriod())
 }
 
 func getNextElectionBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Next election time in nanoseconds: %d", getNextElectionTimeInNanos()))
+	}
 	return safeuint64.Add(getCurrentElectionBlockNumber(), getElectionPeriod())
 }
 
@@ -22,10 +32,16 @@ func getCurrentEthereumBlockNumber() uint64 {
 }
 
 func getProcessingStartBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Processing start time in nanoseconds: %d", safeuint64.Add(getCurrentElectionTimeInNanos(), MIRROR_PERIOD_LENGTH_IN_NANOS)))
+	}
 	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
 func getMirroringEndBlockNumber() uint64 {
+	if _isTimeBasedElections() {
+		panic(fmt.Sprintf("Mirroring end time in nanoseconds: %d", safeuint64.Add(getCurrentElectionTimeInNanos(), MIRROR_PERIOD_LENGTH_IN_NANOS)))
+	}
 	return safeuint64.Add(getCurrentElectionBlockNumber(), VOTE_MIRROR_PERIOD_LENGTH_IN_BLOCKS)
 }
 
