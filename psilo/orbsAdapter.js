@@ -1,4 +1,5 @@
 const Orbs = require("orbs-client-sdk");
+const axios = require('axios');
 
 class OrbsAdapter {
     constructor(url, vChainId, finalityCompBlocks, finalityCompSeconds) {
@@ -13,6 +14,11 @@ class OrbsAdapter {
 
     contract(name) {
         return new OrbsContract(name, this.client);
+    }
+
+    increaseTime(deltaInSeconds) {
+        // move orbs into the future
+        return axios.post(this.url + "/debug/gamma/inc-time?seconds-to-add=" + deltaInSeconds);
     }
 
     static async build() {

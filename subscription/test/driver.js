@@ -34,6 +34,8 @@ class Driver {
             targetBlockNumber = currentBlock.number; // default to current top
         }
         await this.ethereum.waitForBlock(targetBlockNumber + this.orbs.finalityCompBlocks);
+        await this.orbs.increaseTime(this.orbs.finalityCompBlocks);
+
         await sleep(this.orbs.finalityCompSeconds * 1000);
     }
 

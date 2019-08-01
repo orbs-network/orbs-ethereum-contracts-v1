@@ -8,6 +8,9 @@ const path = require("path");
 const {orbsAssertions} = require("psilo");
 use(orbsAssertions);
 
+const nanos = 1000 * 1000 * 1000;
+const minBlocks = 250;
+
 class StakeHolderFactory {
     constructor(web3, accounts, erc20, validators, validatorsRegistry, guardians, voting) {
         this.erc20 = erc20;
@@ -54,7 +57,7 @@ class StakeHolderFactory {
         console.log("initial stakes assigned");
     }
 
-    async initStakeHolder({stake}) {
+    initStakeHolder({stake}) {
         const sh = new StakeHolder({
             web3: this.web3,
             erc20: this.erc20,
@@ -119,25 +122,31 @@ class ElectionContracts {
     }
 
     async deploy() {
-        //TODO parallelize whatever we can
         const signer = {from: this.ethereum.accounts[0]};
         const votingContractsBuildDir = "../../ethereum/build/contracts";
 
-        this.erc20 = await this.ethereum.deploySolidityContract(signer, 'TestingERC20', "build/contracts");
+        // intentionally do not await for these deployments
+        const deployErc20 = this.ethereum.deploySolidityContract(signer, 'TestingERC20', "build/contracts");
+        const deployVoting = this.ethereum.deploySolidityContract(signer, 'OrbsVoting', votingContractsBuildDir, this.options.maxVoteOut);
+        const deployRegistry = this.ethereum.deploySolidityContract(signer, 'OrbsValidatorsRegistry', votingContractsBuildDir);
+        const guardianWeiDeposit = helpers.getWeiDeposit(this.ethereum.web3);
+        const deployGuardians = this.ethereum.deploySolidityContract(signer, 'OrbsGuardians', votingContractsBuildDir, guardianWeiDeposit, this.options.minRegistrationSeconds);
+
+        this.erc20 = await deployErc20;
         console.log("ERC20 contract at", this.erc20.address);
 
-        this.voting = await this.ethereum.deploySolidityContract(signer, 'OrbsVoting', votingContractsBuildDir, this.options.maxVoteOut);
+        this.voting = await deployVoting;
         console.log("Voting contract at", this.voting.address);
 
-        this.validatorsRegistry = await this.ethereum.deploySolidityContract(signer, 'OrbsValidatorsRegistry', votingContractsBuildDir);
+        this.validatorsRegistry = await deployRegistry;
         console.log("ValidatorsRegistry contract at", this.validatorsRegistry.address);
 
-        this.validators = await this.ethereum.deploySolidityContract(signer, 'OrbsValidators', votingContractsBuildDir, this.validatorsRegistry.address, this.options.validatorsLimit);
-        console.log("Validators contract at", this.validators.address);
-
-        const guardianWeiDeposit = helpers.getWeiDeposit(this.ethereum.web3);
-        this.guardians = await this.ethereum.deploySolidityContract(signer, 'OrbsGuardians', votingContractsBuildDir, guardianWeiDeposit, this.options.minRegistrationSeconds);
+        this.guardians = await deployGuardians;
         console.log("Guardians contract at", this.guardians.address);
+
+        const deployValidators = this.ethereum.deploySolidityContract(signer, 'OrbsValidators', votingContractsBuildDir, this.validatorsRegistry.address, this.options.validatorsLimit);
+        this.validators = await deployValidators;
+        console.log("Validators contract at", this.validators.address);
 
         // Deploy Orbs voting contract
         expect(await this._deployVotingContractToOrbs()).to.be.successful;
@@ -164,20 +173,24 @@ class ElectionContracts {
         const contract = this.orbs.contract(this.orbsVotingContractName);
 
         const args = [];
-        args.push(Orbs.argUint64(this.options.votingMirrorPeriod));
-        args.push(Orbs.argUint64(this.options.votingValidityPeriod));
-        args.push(Orbs.argUint64(this.options.electionsPeriod));
+        args.push(Orbs.argUint64(this.options.votingMirrorPeriod || 10));
+        args.push(Orbs.argUint64(this.options.votingValidityPeriod || 500));
+        args.push(Orbs.argUint64(this.options.electionsPeriod || 200));
         args.push(Orbs.argUint32(this.options.maxElected));
         args.push(Orbs.argUint32(this.options.minElected));
 
         //TODO parallelize
         expect(await contract.transact(signer, "unsafetests_setVariables", ...args)).to.be.successful;
+
         expect(await contract.transact(signer, "unsafetests_setVotingEthereumContractAddress", Orbs.argString(this.voting.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setGuardiansEthereumContractAddress", Orbs.argString(this.guardians.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setTokenEthereumContractAddress", Orbs.argString(this.erc20.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setValidatorsEthereumContractAddress", Orbs.argString(this.validators.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setValidatorsRegistryEthereumContractAddress", Orbs.argString(this.validatorsRegistry.address))).to.be.successful;
 
+        expect(await contract.transact(signer, "unsafetests_setElectionMirrorPeriodInSeconds", Orbs.argUint64(this.options.votingMirrorPeriodInSeconds || 3))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setElectionVotePeriodInSeconds", Orbs.argUint64(this.options.votingValidityPeriodInSeconds || 140))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setElectionPeriodInSeconds", Orbs.argUint64(this.options.electionsPeriodInSeconds || 20))).to.be.successful;
     }
 
     async getOrbsValidatorAddresses() {
@@ -185,28 +198,72 @@ class ElectionContracts {
         return Promise.all(validators.map(vAddr => this.validatorsRegistry.getOrbsAddress(vAddr)));
     }
 
+    async getOrbsValidatorReward(addr) {
+        let result = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCumulativeValidatorReward", Orbs.argBytes(addr));
+        return Number(result.outputArguments[0].value)
+    }
 
     async setElectionBlockNumber() {
         const currentBlock = await this.ethereum.getLatestBlock();
         const electionBlock = currentBlock.number + 1;
 
-        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setElectedBlockNumber", Orbs.argUint64(electionBlock));
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setCurrentElectedBlockNumber", Orbs.argUint64(electionBlock));
 
         console.log(`Next election block number set to ${electionBlock}`);
 
         return electionBlock;
     }
 
+    async setElectionTimeToCurrentEthereumTime() {
+        const currentBlock = await this.ethereum.getLatestBlock();
+        await this.ethereum.waitForBlock(currentBlock.number + 1);
+
+        const nextBlockForCalculatingElectionTime = await this.ethereum.getLatestBlock();
+        const blockTimeInSeconds = nextBlockForCalculatingElectionTime.timestamp;
+
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "switchToTimeBasedElections");
+        expect(await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setCurrentElectionTimeNanos", Orbs.argUint64(blockTimeInSeconds * nanos))).to.be.successful;
+
+        console.log(`Next block number set to ${nextBlockForCalculatingElectionTime.number}`);
+
+        return nextBlockForCalculatingElectionTime.number;
+    }
+
+    async waitForMinimumBlocksAndPeriod() {
+        const currentBlock = await this.ethereum.getLatestBlock();
+        if (currentBlock.number < minBlocks) {
+            console.log(`\nEthereum interface doesn't have enough fake history, generating some...`);
+            await this.waitForOrbsFinality(minBlocks-currentBlock.number);
+        }
+    }
+
     async waitForOrbsFinality(blockToWaitFor) {
-        blockToWaitFor = blockToWaitFor || await this.ethereum.getLatestBlock().number;
+        if (blockToWaitFor === undefined) {
+            const currentBlock = await this.ethereum.getLatestBlock();
+            blockToWaitFor = currentBlock.number; // default to current top
+        }
         console.log(`waiting for block ${blockToWaitFor} to reach finality...`);
 
-        // finality - block component
-        await this.ethereum.waitForBlock(blockToWaitFor + this.orbs.finalityCompBlocks);
+        const orbsFinalityInBlocksPerSecond = this.orbs.finalityCompBlocks + this.orbs.finalityCompSeconds;
 
-        // finality - time component
-        await sleep(this.orbs.finalityCompSeconds * 1000);
-        const result = await advanceByOneBlock(this.orbs); // applies finality time component by advancing Orbs clock.
+        const minedBlocks = await this.ethereum.waitForBlock(blockToWaitFor + orbsFinalityInBlocksPerSecond);
+        if (minedBlocks > 0) {
+            console.log(`fast-forward Ethereum ${minedBlocks} blocks/seconds`);
+
+            const result = await advanceByOneBlock(this.orbs); // refresh orbs
+            const orbsTime =  Math.floor((new Date(result.blockTimestamp)).getTime() / 1000);
+            const targetBlock = await this.ethereum.getBlock(blockToWaitFor);
+
+            const diffTime = targetBlock.timestamp - orbsTime + orbsFinalityInBlocksPerSecond;
+            if (diffTime > 0) {
+                await this.orbs.increaseTime(diffTime);
+                console.log(`fast-forward Orbs ${diffTime} seconds`);
+            } else {
+                // todo fail ?
+                console.log(`Warning Ethereum time ${targetBlock.timestamp} seems to be in the past compared to orbs ${orbsTime}`)
+            }
+            await advanceByOneBlock(this.orbs); // refresh orbs
+        }
 
         // verify finality achieved
         const currentFinalQueryResult = await this.orbs.contract(this.orbsVotingContractName).query(this.orbs.accounts[0], "getCurrentEthereumBlockNumber");
@@ -215,8 +272,6 @@ class ElectionContracts {
 
         expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
         console.log(`finality reached for block ${currentFinalityBlockNumber}`);
-
-        return result;
     }
 
     async getElectionWinners() {
@@ -236,9 +291,11 @@ class ElectionContracts {
         return rawWinners.map(addr => Orbs.encodeHex(addr));
     }
 
-
     //TODO make mirror.js an exported function of the 'processor' module and run in same process
-    goodSamaritanMirrorsAll(electionBlockNumber) {
+    async goodSamaritanMirrorsAll(electionBlockNumber) {
+        if (!electionBlockNumber) {
+            electionBlockNumber = (await this.ethereum.getLatestBlock()).number;
+        }
         return new Promise((resolve, reject) => {
             const child = spawn("node", ["mirror.js"], {
                 env: {
@@ -277,6 +334,7 @@ class ElectionContracts {
                     "ORBS_URL": process.env.GAMMA_URL || "http://localhost:8080", //TODO change for other networks,
                     "ORBS_VCHAINID": process.env.GAMMA_VCHAIN || 42, //TODO change for other networks,
                     "ORBS_VOTING_CONTRACT_NAME": this.orbsVotingContractName,
+                    "BATCH_SIZE": 12,
                     PATH: process.env.PATH
                 },
                 stdio: "inherit",
@@ -295,6 +353,9 @@ class ElectionContracts {
         });
     }
 
+    addressWithoutChecksum(hexAddr) {
+        return Uint8Array.from(Buffer.from(hexAddr.substr(2), 'hex'))
+    }
 }
 
 

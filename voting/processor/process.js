@@ -35,13 +35,6 @@ function validateInput() {
     }
 }
 
-async function isProcessingPeriod() {
-    let currentBlockNumber = await orbs.getCurrentBlockNumber();
-    let processStartBlockNumber = await orbs.getProcessingStartBlockNumber();
-
-    return currentBlockNumber >= processStartBlockNumber;
-}
-
 let numErrors = 0;
 const maxErrors = 10;
 let numPendings = 0;
@@ -102,12 +95,12 @@ async function processCall() {
             isDone = true;
             break;
         }
-        
+
         if (maxNumberOfProcess !== -1 && maxNumberOfProcess <= numberOfCalls) {
             console.log('\x1b[31m%s\x1b[0m', `note processing votes: did not finish after ${numberOfCalls} tries.`);
             break;
         }
-    } while (await isProcessingPeriod(orbs));
+    } while (await orbs.isProcessingPeriod(orbs));
 
     if (isDone) {
         await sendSuccessSlack();
@@ -171,12 +164,11 @@ async function main() {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
 
-    if (await isProcessingPeriod()) {
+    if (await orbs.isProcessingPeriod()) {
         await processCall();
     } else {
         let currentBlockNumber = await orbs.getCurrentBlockNumber();
-        let processStartBlockNumber = await orbs.getProcessingStartBlockNumber();
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block number: ${processStartBlockNumber}.
+        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block.
  Processing is not needed please try again later!!\n`);
     }
 }
