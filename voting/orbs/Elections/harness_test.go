@@ -303,7 +303,7 @@ func mockStakeInEthereum(m Mockery, blockNumber uint64, address [20]byte, stake 
 }
 
 func startTimeBasedGetElectionTime() uint64 {
-	startTimeBasedElections()
+	switchToTimeBasedElections()
 	electionDate := 2 * ELECTION_PERIOD_LENGTH_IN_NANOS
 	_setElectedValidatorsTimeInNanosAtIndex(0, electionDate)
 	return electionDate + ELECTION_PERIOD_LENGTH_IN_NANOS

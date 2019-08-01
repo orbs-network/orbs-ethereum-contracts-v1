@@ -6,7 +6,10 @@
 
 package elections_systemcontract
 
-import "math/big"
+import (
+	"math/big"
+	"time"
+)
 
 // helpers for avoiding reliance on strings throughout the system
 const CONTRACT_NAME = "_Elections"
@@ -30,10 +33,9 @@ var FIRST_ELECTION_BLOCK = uint64(7528900)
 
 // time based
 var FIRST_ELECTION_TIME_IN_NANOS = uint64(1569920400000000000) // 09:00:00 Oct 1 2019 GMT
-var NANOS = uint64(1000 * 1000 * 1000)
-var ELECTION_PERIOD_LENGTH_IN_NANOS = uint64(3 * 24 * 60 * 60 * NANOS)
-var MIRROR_PERIOD_LENGTH_IN_NANOS = uint64(2 * 60 * NANOS)
-var VOTE_PERIOD_LENGTH_IN_NANOS = uint64(7 * 24 * 60 * 60 * NANOS)
+var ELECTION_PERIOD_LENGTH_IN_NANOS = uint64((3 * 24 * time.Hour).Nanoseconds())
+var MIRROR_PERIOD_LENGTH_IN_NANOS = uint64((2 * time.Hour).Nanoseconds())
+var VOTE_PERIOD_LENGTH_IN_NANOS = uint64((7 * 24 * time.Hour).Nanoseconds())
 
 func _init() {
 }

@@ -187,7 +187,7 @@ func TestOrbsVotingContract_isMirrorDelegationDataAfterElection_Before(t *testin
 		returnValue := _isMirrorDelegationDataAfterElection(uint64(eventBlockNumber))
 
 		//assert
-		require.False(t, returnValue, "should be false")
+		require.False(t, returnValue, "_isMirrorDelegationDataAfterElection returned true for a block that is before the election time")
 	})
 }
 
@@ -205,7 +205,7 @@ func TestOrbsVotingContract_isMirrorDelegationDataAfterElection_After(t *testing
 		returnValue := _isMirrorDelegationDataAfterElection(uint64(eventBlockNumber))
 
 		//assert
-		require.True(t, returnValue, "should be true")
+		require.True(t, returnValue, "_isMirrorDelegationDataAfterElection returned false for a block that is before the election time")
 	})
 }
 

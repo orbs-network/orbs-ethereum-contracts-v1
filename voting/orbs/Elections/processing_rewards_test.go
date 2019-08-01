@@ -17,7 +17,7 @@ func TestOrbsVotingContract_annualFactorize(t *testing.T) {
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()
 		require.EqualValues(t, 75, _annualFactorize(888000))
-		startTimeBasedElections()
+		switchToTimeBasedElections()
 		require.EqualValues(t, 72, _annualFactorize(888000))
 	})
 }

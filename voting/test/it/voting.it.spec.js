@@ -2,6 +2,12 @@ const {EthereumAdapter, OrbsAdapter} = require("psilo");
 const {expect} = require("chai");
 const {ElectionContracts} = require("./driver");
 
+const VALIDATOR1_BLOCK_BASED_CALCULATED_EXPECTED_REWARD = 8533;
+const VALIDATOR2_BLOCK_BASED_CALCULATED_EXPECTED_REWARD = 8536;
+const VALIDATOR1_TIME_BASED_CALCULATED_EXPECTED_REWARD = 8217;
+const VALIDATOR2_TIME_BASED_CALCULATED_EXPECTED_REWARD = 8220;
+
+
 describe("voting contracts on orbs and ethereum", async () => {
     const ethereumUrl = process.env.GANACHE_URL || "http://localhost:7545";
     let ethereum;
@@ -119,9 +125,11 @@ describe("voting contracts on orbs and ethereum", async () => {
         const winners = await electionContracts.getElectionWinners();
         expect(winners).to.have.members([v1, v2, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
-        // check reward  added to v1 and v2 with time based values.
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8533); // +8533
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(8536); // +8536
+        // check some of the rewards
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address)))
+            .to.be.equal(VALIDATOR1_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // elected add reward
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address)))
+            .to.be.equal(VALIDATOR2_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // elected add reward
 
         console.log("Done First Election\n");
 
@@ -155,9 +163,11 @@ describe("voting contracts on orbs and ethereum", async () => {
         const winners2 = await electionContracts.getElectionWinners();
         expect(winners2).to.have.members([v2, v3, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
-        // check reward  added to v1 and v2 with time based values.
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8533); // +0
-        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(2*8536); // +8536
+        // check some of the rewards
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address)))
+            .to.be.equal(VALIDATOR1_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // not elected don't add reward
+        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address)))
+            .to.be.equal(2*VALIDATOR2_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // re-elected add reward
     });
 
     it("perform two time based elections", async () => {
@@ -262,9 +272,11 @@ describe("voting contracts on orbs and ethereum", async () => {
         const winners = await electionContracts.getElectionWinners();
         expect(winners).to.have.members([v1, v2, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
-        // check reward  added to v1 and v2 with time based values.
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8217); // +8217
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(8220); // +8220
+        // check some of the rewards
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address)))
+            .to.be.equal(VALIDATOR1_TIME_BASED_CALCULATED_EXPECTED_REWARD); // elected add reward
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address)))
+            .to.be.equal(VALIDATOR2_TIME_BASED_CALCULATED_EXPECTED_REWARD); // elected add reward
 
         console.log("Done First Election\n");
 
@@ -297,9 +309,11 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Done Second Election");
 
-        // check reward not added to v1 (vote out), added to v2
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8217); // +0
-        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(2*8220); // +8220
+        // check some of the rewards
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address)))
+            .to.be.equal(VALIDATOR1_TIME_BASED_CALCULATED_EXPECTED_REWARD); // was not elected don't add reward
+        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address)))
+            .to.be.equal(2*VALIDATOR2_TIME_BASED_CALCULATED_EXPECTED_REWARD); // re-elected add reward
     });
 
     it("perform block based elections then time based elections", async () => {
@@ -409,9 +423,11 @@ describe("voting contracts on orbs and ethereum", async () => {
         const winners = await electionContracts.getElectionWinners();
         expect(winners).to.have.members([v1, v2, v4, v5].map(v => v.orbsAccount.address)); // TODO - which should be voted in???
 
-        // check reward  added to v1 and v2 with time based values.
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8533); // +8533
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(8536); // +8536
+        // check some of the rewards
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address)))
+            .to.be.equal(VALIDATOR1_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // elected add reward
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address)))
+            .to.be.equal(VALIDATOR2_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // elected add reward
 
         console.log("Done First Election\n");
 
@@ -445,9 +461,11 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Done Second Election");
 
-        // check reward not added to v1 (vote out), added to v2
-        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address))).to.be.equal(8533); // +0
-        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address))).to.be.equal(8536+8220); // +8220
+        // check some of the rewards
+        expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v1.address)))
+            .to.be.equal(VALIDATOR1_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // was not elected don't add reward
+        return expect(await electionContracts.getOrbsValidatorReward(electionContracts.addressWithoutChecksum(v2.address)))
+            .to.be.equal(VALIDATOR2_BLOCK_BASED_CALCULATED_EXPECTED_REWARD+VALIDATOR2_TIME_BASED_CALCULATED_EXPECTED_REWARD); // re-elected add reward (time based)
     });
 
 });

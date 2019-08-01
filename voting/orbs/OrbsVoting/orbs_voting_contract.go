@@ -11,6 +11,7 @@ import (
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/state"
 	"math/big"
 	"sort"
+	"time"
 )
 
 func getElectionPeriod() uint64 {
@@ -112,7 +113,8 @@ func getElectedValidatorsEthereumAddress() []byte {
 
 func isElectionOverdue() uint32 {
 	if _isTimeBasedElections() {
-		if ethereum.GetBlockTime() > safeuint64.Add(getCurrentElectionTimeInNanos(), 3*MIRROR_PERIOD_LENGTH_IN_NANOS) {
+		timeMuchLongerThanMirrorTimeThatMeansElectionIsOverdue := 3 * MIRROR_PERIOD_LENGTH_IN_NANOS
+		if ethereum.GetBlockTime() > safeuint64.Add(getCurrentElectionTimeInNanos(), timeMuchLongerThanMirrorTimeThatMeansElectionIsOverdue) {
 			return 1
 		}
 		return 0
@@ -344,10 +346,7 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
 	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 	getGuardianStake, getGuardianVotingWeight, getTotalStake, getValidatorStake, getValidatorVote, getExcellenceProgramGuardians,
-	startTimeBasedElections,
-
-	unsafetests_convertTimeToBlock, unsafetests_convertBlockToTime,
-	unsafetests_getBlock, unsafetests_getTime,
+	switchToTimeBasedElections,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -391,28 +390,6 @@ func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 	ETHEREUM_GUARDIANS_ADDR = addr
 }
 
-func unsafetests_getBlock() uint64 {
-	fmt.Printf("elections : curr block %d\n", ethereum.GetBlockNumber())
-	return ethereum.GetBlockNumber()
-}
-
-func unsafetests_getTime() uint64 {
-	fmt.Printf("elections : curr time block %d\n", ethereum.GetBlockTime())
-	return ethereum.GetBlockTime()
-}
-
-func unsafetests_convertTimeToBlock(time uint64) uint64 {
-	calculatedBlock := ethereum.GetBlockNumberByTime(time)
-	fmt.Printf("elections : convertTimeToBlock time block %d was converted to block number %d\n", time, calculatedBlock)
-	return calculatedBlock
-}
-
-func unsafetests_convertBlockToTime(block uint64) uint64 {
-	calculateTime := ethereum.GetBlockTimeByNumber(block)
-	fmt.Printf("elections : convertBlockToTime block number %d converted to time block %d\n", block, calculateTime)
-	return calculateTime
-}
-
 func unsafetests_setCurrentElectionTimeNanos(time uint64) {
 	fmt.Printf("elections : set electiontime to %d period %d\n", time, getElectionPeriodInNanos())
 	_setElectedValidatorsTimeInNanosAtIndex(getNumberOfElections(), safeuint64.Sub(time, getElectionPeriodInNanos()))
@@ -420,15 +397,15 @@ func unsafetests_setCurrentElectionTimeNanos(time uint64) {
 }
 
 func unsafetests_setElectionMirrorPeriodInSeconds(period uint64) {
-	MIRROR_PERIOD_LENGTH_IN_NANOS = period * NANOS
+	MIRROR_PERIOD_LENGTH_IN_NANOS = period * uint64(time.Second.Nanoseconds())
 }
 
 func unsafetests_setElectionVotePeriodInSeconds(period uint64) {
-	VOTE_PERIOD_LENGTH_IN_NANOS = period * NANOS
+	VOTE_PERIOD_LENGTH_IN_NANOS = period * uint64(time.Second.Nanoseconds())
 }
 
 func unsafetests_setElectionPeriodInSeconds(period uint64) {
-	ELECTION_PERIOD_LENGTH_IN_NANOS = period * NANOS
+	ELECTION_PERIOD_LENGTH_IN_NANOS = period * uint64(time.Second.Nanoseconds())
 }
 
 // Copyright 2019 the orbs-ethereum-contracts authors
@@ -802,10 +779,10 @@ func _formatIsTimeBasedElections() []byte {
 	return []byte("Is_Time_Based_Elections")
 }
 
-func startTimeBasedElections() {
+func switchToTimeBasedElections() {
 	if state.ReadUint32(_formatIsTimeBasedElections()) == 0 {
-		fmt.Println("elections : startTimeBasedElections has been called switching to time based elections")
-
+		fmt.Println("elections : switchToTimeBasedElections has been called switching to time based elections")
+		// TODO write code to switch from block-based to time-based and get the closest time election after the block that is a factor of the FIRST_TIME_ELECTION
 		state.WriteUint32(_formatIsTimeBasedElections(), 1)
 	}
 }
@@ -859,10 +836,9 @@ var FIRST_ELECTION_BLOCK = uint64(7528900)
 
 // time based
 var FIRST_ELECTION_TIME_IN_NANOS = uint64(1569920400000000000) // 09:00:00 Oct 1 2019 GMT
-var NANOS = uint64(1000 * 1000 * 1000)
-var ELECTION_PERIOD_LENGTH_IN_NANOS = uint64(3 * 24 * 60 * 60 * NANOS)
-var MIRROR_PERIOD_LENGTH_IN_NANOS = uint64(2 * 60 * NANOS)
-var VOTE_PERIOD_LENGTH_IN_NANOS = uint64(7 * 24 * 60 * 60 * NANOS)
+var ELECTION_PERIOD_LENGTH_IN_NANOS = uint64((3 * 24 * time.Hour).Nanoseconds())
+var MIRROR_PERIOD_LENGTH_IN_NANOS = uint64((2 * time.Hour).Nanoseconds())
+var VOTE_PERIOD_LENGTH_IN_NANOS = uint64((7 * 24 * time.Hour).Nanoseconds())
 
 func _init() {
 }

@@ -23,7 +23,7 @@ func TestOrbsVotingContract_initCurrentElection(t *testing.T) {
 			InServiceScope(nil, nil, func(m Mockery) {
 				_init()
 				m.MockEthereumGetBlockTime(int(cTest.ethereumBlockTime))
-				startTimeBasedElections()
+				switchToTimeBasedElections()
 				_initCurrentElection()
 				after := getCurrentElectionTimeInNanos()
 				require.EqualValues(t, cTest.expectCurrentTime, after, "'%s' failed ", cTest.name)

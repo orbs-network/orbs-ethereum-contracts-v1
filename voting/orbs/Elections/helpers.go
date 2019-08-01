@@ -26,10 +26,10 @@ func _formatIsTimeBasedElections() []byte {
 	return []byte("Is_Time_Based_Elections")
 }
 
-func startTimeBasedElections() {
+func switchToTimeBasedElections() {
 	if state.ReadUint32(_formatIsTimeBasedElections()) == 0 {
-		fmt.Println("elections : startTimeBasedElections has been called switching to time based elections")
-
+		fmt.Println("elections : switchToTimeBasedElections has been called switching to time based elections")
+		// TODO write code to switch from block-based to time-based and get the closest time election after the block that is a factor of the FIRST_TIME_ELECTION
 		state.WriteUint32(_formatIsTimeBasedElections(), 1)
 	}
 }

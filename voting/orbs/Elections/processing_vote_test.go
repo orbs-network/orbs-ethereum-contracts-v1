@@ -223,9 +223,7 @@ func TestOrbsVotingContract_processVote_ValidatorsFromEthereumToState(t *testing
 	h := newHarnessBlockBased()
 	h.electionBlock = uint64(60000)
 	v1, v2 := h.addValidator(), h.addValidator()
-	validators := make([][20]byte, 0, 2)
-	validators = append(validators, v1.address)
-	validators = append(validators, v2.address)
+	validators := [][20]byte{v1.address, v2.address}
 
 	InServiceScope(nil, nil, func(m Mockery) {
 		_init()

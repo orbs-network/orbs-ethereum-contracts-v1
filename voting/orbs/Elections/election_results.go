@@ -33,7 +33,8 @@ func getElectedValidatorsEthereumAddress() []byte {
 
 func isElectionOverdue() uint32 {
 	if _isTimeBasedElections() {
-		if ethereum.GetBlockTime() > safeuint64.Add(getCurrentElectionTimeInNanos(), 3*MIRROR_PERIOD_LENGTH_IN_NANOS) {
+		timeMuchLongerThanMirrorTimeThatMeansElectionIsOverdue := 3 * MIRROR_PERIOD_LENGTH_IN_NANOS
+		if ethereum.GetBlockTime() > safeuint64.Add(getCurrentElectionTimeInNanos(), timeMuchLongerThanMirrorTimeThatMeansElectionIsOverdue) {
 			return 1
 		}
 		return 0

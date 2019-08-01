@@ -26,10 +26,7 @@ var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumCon
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
 	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 	getGuardianStake, getGuardianVotingWeight, getTotalStake, getValidatorStake, getValidatorVote, getExcellenceProgramGuardians,
-	startTimeBasedElections,
-
-	unsafetests_convertTimeToBlock, unsafetests_convertBlockToTime,
-	unsafetests_getBlock, unsafetests_getTime,
+	switchToTimeBasedElections,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -73,28 +70,6 @@ func unsafetests_setGuardiansEthereumContractAddress(addr string) {
 	ETHEREUM_GUARDIANS_ADDR = addr
 }
 
-func unsafetests_getBlock() uint64 {
-	fmt.Printf("elections : curr block %d\n", ethereum.GetBlockNumber())
-	return ethereum.GetBlockNumber()
-}
-
-func unsafetests_getTime() uint64 {
-	fmt.Printf("elections : curr time block %d\n", ethereum.GetBlockTime())
-	return ethereum.GetBlockTime()
-}
-
-func unsafetests_convertTimeToBlock(time uint64) uint64 {
-	calculatedBlock := ethereum.GetBlockNumberByTime(time)
-	fmt.Printf("elections : convertTimeToBlock time block %d was converted to block number %d\n", time, calculatedBlock)
-	return calculatedBlock
-}
-
-func unsafetests_convertBlockToTime(block uint64) uint64 {
-	calculateTime := ethereum.GetBlockTimeByNumber(block)
-	fmt.Printf("elections : convertBlockToTime block number %d converted to time block %d\n", block, calculateTime)
-	return calculateTime
-}
-
 func unsafetests_setCurrentElectionTimeNanos(time uint64) {
 	fmt.Printf("elections : set electiontime to %d period %d\n", time, getElectionPeriodInNanos())
 	_setElectedValidatorsTimeInNanosAtIndex(getNumberOfElections(), safeuint64.Sub(time, getElectionPeriodInNanos()))
@@ -102,13 +77,13 @@ func unsafetests_setCurrentElectionTimeNanos(time uint64) {
 }
 
 func unsafetests_setElectionMirrorPeriodInSeconds(period uint64) {
-	MIRROR_PERIOD_LENGTH_IN_NANOS = period * NANOS
+	MIRROR_PERIOD_LENGTH_IN_NANOS = period * uint64(time.Second.Nanoseconds())
 }
 
 func unsafetests_setElectionVotePeriodInSeconds(period uint64) {
-	VOTE_PERIOD_LENGTH_IN_NANOS = period * NANOS
+	VOTE_PERIOD_LENGTH_IN_NANOS = period * uint64(time.Second.Nanoseconds())
 }
 
 func unsafetests_setElectionPeriodInSeconds(period uint64) {
-	ELECTION_PERIOD_LENGTH_IN_NANOS = period * NANOS
+	ELECTION_PERIOD_LENGTH_IN_NANOS = period * uint64(time.Second.Nanoseconds())
 }

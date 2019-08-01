@@ -221,7 +221,7 @@ class ElectionContracts {
         const nextBlockForCalculatingElectionTime = await this.ethereum.getLatestBlock();
         const blockTimeInSeconds = nextBlockForCalculatingElectionTime.timestamp;
 
-        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "startTimeBasedElections");
+        await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "switchToTimeBasedElections");
         expect(await this.orbs.contract(this.orbsVotingContractName).transact(this.orbs.accounts[0], "unsafetests_setCurrentElectionTimeNanos", Orbs.argUint64(blockTimeInSeconds * nanos))).to.be.successful;
 
         console.log(`Next block number set to ${nextBlockForCalculatingElectionTime.number}`);
@@ -270,7 +270,7 @@ class ElectionContracts {
         expect(currentFinalQueryResult).to.be.successful;
         const currentFinalityBlockNumber = Number(currentFinalQueryResult.outputArguments[0].value);
 
-        //expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
+        expect(currentFinalityBlockNumber).to.be.gte(blockToWaitFor);
         console.log(`finality reached for block ${currentFinalityBlockNumber}`);
     }
 
