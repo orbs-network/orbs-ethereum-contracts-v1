@@ -8,6 +8,7 @@
 "use strict";
 const fs = require('fs');
 const _ = require('lodash/core');
+const readline = require('readline');
 
 let verbose = false;
 if (process.env.VERBOSE) {
@@ -122,7 +123,6 @@ function _updateAccReward(address, reward, rewardMap) {
         rewardMap[address] = reward;
     }
     return rewardMap[address];
-
 }
 
 function _participationRewardCalculation(obj, maxTotal, maxParticipationReward, participatsRewards) {
@@ -153,6 +153,7 @@ function _voteRewardsCalculations(result, maxGuardianReward, guardiansRewards, m
         }
     }
 }
+
 function _nonVoteFillOldRewards(result, guardiansRewards, participantsRewards) {
     for (let i = 0; i < result.guardiansNonVote.length;i++) {
         let guardian = result.guardiansNonVote[i];
@@ -223,6 +224,7 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
         totalGuardianReward += guardian.excellenceReward;
         totalGuardianAccReward += guardian.accExcellenceReward;
 
+        guardian.delegators.sort((a, b) => b.selfStake - a.selfStake);
         for (let j = 0; j < guardian.delegators.length;j++) {
             let delegator = guardian.delegators[j];
             csvStr += `,,${delegator.address},${delegator.selfStake},${delegator.percentStake}%,${delegator.reward},${delegator.accReward}\n`;
@@ -236,6 +238,7 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
     for (let i = 0; i < result.guardiansNonVote.length; i++) {
         let guardian = result.guardiansNonVote[i];
         csvStr += `${guardian.address},"${guardian.name}",,${guardian.selfStake},0%,0,${guardian.accReward},${guardian.voteWeight},0%,0,${guardian.accExcellenceReward}\n`;
+        guardian.delegators.sort((a, b) => b.selfStake - a.selfStake);
         for (let j = 0; j < guardian.delegators.length; j++) {
             let delegator = guardian.delegators[j];
             csvStr += `,,${delegator.address},${delegator.selfStake},0%,0,${delegator.accReward}\n`;
@@ -243,23 +246,72 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
     }
 
     csvStr += `\nDelegation to Guardian that left\nGuardian,,Delegator,Stake\n`;
+    result.delegatorsGuardianLeft.sort((a, b) => b.selfStake - a.selfStake);
     for (let i = 0; i < result.delegatorsGuardianLeft.length; i++) {
         let delegator = result.delegatorsGuardianLeft[i];
         csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},\n`;
     }
 
     csvStr += `\nBad Delegation\nGuardian,,Delegator,Stake\n`;
+    result.nonDelegators.sort((a, b) => b.selfStake - a.selfStake);
     for (let i = 0; i < result.nonDelegators.length; i++) {
         let delegator = result.nonDelegators[i];
         csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},\n`;
     }
 
-    let path = `${filenamePrefix}_${currentElectionBlock}_votes.csv`;
+    let path = getFileName(currentElectionBlock, filenamePrefix);
     fs.writeFileSync(path, csvStr);
     console.log('\x1b[33m%s\x1b[0m', `CSV version file was saved to ${path}!\n`);
+}
+
+function getFileName(currentElectionBlock, filenamePrefix) {
+    return `${filenamePrefix}_${currentElectionBlock}_votes.csv`;
+}
+
+async function readHistoryRewardsFromFile(participationMap, guardianMap, blockNumber, filenamePrefix) {
+    let mapper = {};
+    let path = getFileName(blockNumber, filenamePrefix);
+    if (verbose) {
+        console.log('\x1b[33m%s\x1b[0m', `about to read historical reward information from ${path}`);
+    }
+
+    const fileStream = fs.createReadStream(`./${path}`);
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+    // Note: we use the crlfDelay option to recognize all instances of CR LF
+    // ('\r\n') in input.txt as a single line break.
+
+    let counter = 0;
+    for await (const line of rl) {
+        let fixname = line.split('"'); // code to remove name of guardian because it can contains a comma
+        let fixedLine = fixname[0] + fixname[2];
+
+        let parts = fixedLine.split(',');
+        if (parts.length < 5) {
+            continue;
+        }
+        if (parts[0].length !== 0 && parts[0].indexOf('0x') === 0) { // guardian
+            let guardianAddr = parts[0].toLowerCase();
+            let participationReward = parseInt(parts[6]);
+            let excellenceReward = parseInt(parts[10]);
+            _updateAccReward(guardianAddr, participationReward, participationMap);
+            _updateAccReward(guardianAddr, excellenceReward, guardianMap);
+        } else if (parts[2].length !== 0 && parts[2].indexOf('0x') === 0) {
+            let participantAddr = parts[2];
+            let participationReward = parseInt(parts[6]);
+            _updateAccReward(participantAddr.toLowerCase(), participationReward, participationMap);
+        }
+        counter++;
+        if (counter % 200 === 0) {
+            console.log(`read ${counter} rewards lines ...`);
+        }
+    }
 }
 
 module.exports = {
     calculate,
     writeToFile,
+    readHistoryRewardsFromFile,
 };

@@ -65,20 +65,21 @@ async function getAllPastTransferEvents(web3, tokenContract, startBlock, endBloc
                 console.log('\x1b[33m%s\x1b[0m', `reading from block ${i} to block ${actualEndBlock} found ${currTotals.totalTransfers} token transfers`);
             }
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             if (verbose) {
                 console.log('\x1b[31m%s\x1b[0m', `too many transfers, slowing down`);
             }
-            for (let j = i; j < actualEndBlock; j += 100) {
+            let newPage = paging / 5;
+            for (let j = i; j < actualEndBlock; j += newPage) {
                 let options = {
                     fromBlock: j,
-                    toBlock: j + 100
+                    toBlock: j + newPage
                 };
                 let currTotals = await getTransferEvents(web3, tokenContract, options, mapOfTransfers, listOfTransfers, eventTxs);
                 totalTransfers += currTotals.totalTransfers;
                 totalDelegateTransfers += currTotals.totalDelegateTransfers;
                 if (verbose) {
-                    console.log('\x1b[33m%s\x1b[0m', `reading from block ${j} to block ${j+100} found ${currTotals.totalTransfers} token transfers`);
+                    console.log('\x1b[33m%s\x1b[0m', `reading from block ${j} to block ${j+newPage} found ${currTotals.totalTransfers} token transfers`);
                 }
             }
         }
