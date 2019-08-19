@@ -160,7 +160,7 @@ class ElectionContracts {
     }
 
     async _deployVotingContractToOrbs() {
-        this.orbsVotingContractName = `OrbsVoting_${new Date().getTime()}`;
+        this.orbsVotingContractName = `OrbsVoting${new Date().getTime()}`;
 
         const b = fs.readFileSync("./../../orbs/OrbsVoting/orbs_voting_contract.go");
         const contractCode = new Uint8Array(b.buffer, b.byteOffset, b.byteLength / Uint8Array.BYTES_PER_ELEMENT);
