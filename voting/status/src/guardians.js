@@ -8,13 +8,35 @@
 "use strict";
 const fs = require('fs');
 const _ = require('lodash/core');
+const stakes = require('./stakes');
 
 let verbose = false;
 if (process.env.VERBOSE) {
     verbose = true;
 }
 
-async function read(web3, guardiansContract, votingContract, stateBlock, votingValidityPeriod) {
+async function readFullGuardianDataFromAddresses(guardianMap, guardianAddresses, web3, guardiansContract, votingContract, tokenContract, stateBlock, votingValidityPeriod) {
+    let txs = [];
+    for (let i = 0; i < guardianAddresses.length;i++){
+        txs.push(guardiansContract.methods.getGuardianData(guardianAddresses[i]).call({}, stateBlock)) ;
+        txs.push(votingContract.methods.getCurrentVote(guardianAddresses[i]).call({}, stateBlock));
+        txs.push(stakes.readOne(guardianAddresses[i], web3, tokenContract, stateBlock));
+    }
+    let res = await Promise.all(txs);
+    for (let i = 0; i < guardianAddresses.length;i++){
+        let g = res[3*i];
+        let gVote = res[3*i+1];
+        let stake = res[3*i+2];
+        let guardianObj = {address: guardianAddresses[i], name: g.name, website: g.website, delegators: [], stake: stake};
+        if (gVote && gVote.blockNumber >= stateBlock-votingValidityPeriod) {
+            guardianObj.voteBlock = gVote.blockNumber;
+            guardianObj.vote = gVote.validators;
+        }
+        guardianMap[guardianAddresses[i].toLowerCase()] = guardianObj;
+    }
+}
+
+async function read(web3, guardiansContract, votingContract, tokenContract, stateBlock, votingValidityPeriod) {
     let start = 0, page = 50;
     let guardianMap = {};
     let gAddrs = [];
@@ -23,44 +45,11 @@ async function read(web3, guardiansContract, votingContract, stateBlock, votingV
         if (verbose) {
             console.log('\x1b[33m%s\x1b[0m', `reading next batch of ${gAddrs.length} guardians`);
         }
-        for (let i = 0; i < gAddrs.length;i++){
-            let g = await guardiansContract.methods.getGuardianData(gAddrs[i]).call({}, stateBlock);
-            let gVote = await votingContract.methods.getCurrentVote(gAddrs[i]).call({}, stateBlock);
-            let guardianObj = {address: gAddrs[i], name: g.name, website: g.website, delegators: [] };
-            if (gVote && gVote.blockNumber >= stateBlock-votingValidityPeriod) {
-                guardianObj.voteBlock = gVote.blockNumber;
-                guardianObj.vote = gVote.validators;
-            }
-            guardianMap[gAddrs[i].toLowerCase()] = guardianObj;
-        }
+        await readFullGuardianDataFromAddresses(guardianMap, gAddrs, web3, guardiansContract, votingContract, tokenContract, stateBlock, votingValidityPeriod);
         start = start + page;
     } while (gAddrs.length >= page);
 
     console.log('\x1b[36m%s\x1b[0m', `Read ${_.size(guardianMap)} guardians.`);
-    return guardianMap;
-}
-
-async function generateFromDelegations(web3, guardiansContract, delegatorsMap) {
-    let guardianMap = {};
-    let delegators = _.values(delegatorsMap);
-    for (let i = 0; i < delegators.length; i++) {
-        let delegator = delegators[i];
-        guardianMap[delegator.delegateeAddress.toLowerCase()] = {address : delegator.delegateeAddress, stake: 'n/a', delegators: [] }
-    }
-    let guardians = _.values(guardianMap);
-    for (let i = 0; i < guardians.length; i++) {
-        let guardian = guardians[i];
-        let isGuardian = await guardiansContract.methods.isGuardian(guardian.address).call();
-        if (isGuardian) {
-            let g = await guardiansContract.methods.getGuardianData(guardian.address).call();
-            guardian.name = g.name;
-            guardian.website = g.website;
-        } else {
-            guardian.name = 'n/a';
-            guardian.website = 'n/a';
-        }
-    }
-    console.log('\x1b[36m%s\x1b[0m', `Generated ${_.size(guardianMap)} guardians from delegation.`);
     return guardianMap;
 }
 
@@ -89,6 +78,5 @@ function writeToFile(guardiansMap, filenamePrefix, currentElectionBlock) {
 
 module.exports = {
     read,
-    generateFromDelegations,
     writeToFile,
 };

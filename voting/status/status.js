@@ -28,10 +28,10 @@ let guardiansContractAddress = process.env.GUARDIANS_CONTRACT_ADDRESS;
 let validatorsContractAddress = process.env.VALIDATORS_CONTRACT_ADDRESS;
 let processStartBlock = 7440000;
 let processEndBlock = 'latest';
-let processStatePruning = 5000;
 let firstElectionBlock = 7528900;
 let electionPeriod = 20000;
 let votingValidityPeriod = 45500;
+let fileStartFrom = 0;
 let filenamePrefix = process.env.OUTPUT_FILENAME_PREFIX;
 let verbose = false;
 if (process.env.VERBOSE) {
@@ -67,11 +67,7 @@ function validateInput() {
     if (process.env.END_BLOCK_ON_ETHEREUM) {
         processEndBlock = parseInt(process.env.END_BLOCK_ON_ETHEREUM);
     }
-
-    if (process.env.STATE_PRUNING_BLOCKS_ON_ETHEREUM) {
-        processStatePruning = parseInt(process.env.STATE_PRUNING_BLOCKS_ON_ETHEREUM);
-    }
-
+    
     if (process.env.FIRST_ELECTION_ON_ETHEREUM) {
         firstElectionBlock = parseInt(process.env.FIRST_ELECTION_ON_ETHEREUM);
     }
@@ -84,9 +80,24 @@ function validateInput() {
         votingValidityPeriod = parseInt(process.env.VOTING_VALIDITY_PERIOD_ON_ETHEREUM);
     }
 
+    if (process.env.FILE_START_FROM) {
+        fileStartFrom = parseInt(process.env.FILE_START_FROM);
+    }
+
     if (!filenamePrefix) {
         filenamePrefix = 'output';
     }
+}
+
+function calculateNumberOfElections(blockNumber) {
+    if (blockNumber <= firstElectionBlock) {
+        return -1;
+    }
+    let blocksSince = blockNumber - firstElectionBlock;
+    if (blocksSince % electionPeriod !== 0) {
+        return -2;
+    }
+    return (blocksSince / electionPeriod) + 1;
 }
 
 /**
@@ -97,6 +108,9 @@ async function main() {
     if (verbose) {
         console.log('\x1b[33m%s\x1b[0m', `VERBOSE MODE`);
     }
+    let startTime = Date.now();
+
+    //let web3 = await new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/9679dc4f2d724f7997547f05f769d74e"));
     let web3 = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));
     let tokenContract = await new web3.eth.Contract(TOKEN_ABI, erc20ContractAddress);
     let guardiansContract = await new web3.eth.Contract(GUARDIANS_ABI, guardiansContractAddress);
@@ -111,21 +125,37 @@ async function main() {
             console.log('\x1b[33m%s\x1b[0m', `latest block: ${processEndBlock}`);
         }
     }
-    let processLastStateBlock = processStatePruning === 0 ? 0 : processEndBlock - processStatePruning;
-
+    
     let eventTxs = { totalTransfers : [], onlyLatestTransfers: {}, totalDelegates : [], onlyLatestDelegates: {}};
     let delegatorsMap = {};
     let accumulatedDelegatorsRewards = {};
     let accumulatedGuardiansRewards = {};
 
-    if (firstElectionBlock-electionPeriod > processStartBlock) {
-        console.log('\x1b[34m%s\x1b[0m', `\nPre-election : collecting data in period block ${processStartBlock}-${firstElectionBlock - electionPeriod} (from start to up to one period before first)`);
-        let preElectionDelegation = await delegators.read(web3, tokenContract, votingContract, processStartBlock, firstElectionBlock - electionPeriod, eventTxs);
-        delegators.update(delegatorsMap, preElectionDelegation);
-    }
-
+    let electionActuallyDone = 0;
     let electionNumber = 1;
-    for (let startElectionPeriod = firstElectionBlock-electionPeriod; startElectionPeriod < processEndBlock - electionPeriod; startElectionPeriod = startElectionPeriod + electionPeriod) {
+    let actualStartBlockForProcess = firstElectionBlock-electionPeriod;
+    let startActualRunningTime = Date.now();
+    if (fileStartFrom !== 0) {
+        electionNumber = calculateNumberOfElections(fileStartFrom);
+        if (electionNumber < 1) {
+            throw new Error('FILE_START_FROM must be an actual historical election block');
+        }
+        console.log('\x1b[34m%s\x1b[0m', `\nPre-election : reading data in from past election block ${fileStartFrom}`);
+        actualStartBlockForProcess = fileStartFrom;
+        delegatorsMap = await delegators.readFromFile(fileStartFrom, filenamePrefix);
+        await voting.readHistoryRewardsFromFile(accumulatedDelegatorsRewards, accumulatedGuardiansRewards, fileStartFrom, filenamePrefix);
+    } else {
+        if (firstElectionBlock - electionPeriod > processStartBlock) {
+            console.log('\x1b[34m%s\x1b[0m', `\nPre-election : collecting data in period block ${processStartBlock}-${firstElectionBlock - electionPeriod} (from start to up to one period before first)`);
+            let preElectionDelegation = await delegators.read(web3, tokenContract, votingContract, processStartBlock, firstElectionBlock - electionPeriod, eventTxs);
+            delegators.update(delegatorsMap, preElectionDelegation);
+        }
+    }
+    let endPrepareDataTime = Date.now();
+
+    let averageElectionTime = 0;
+    for (let startElectionPeriod = actualStartBlockForProcess;startElectionPeriod < processEndBlock - electionPeriod; startElectionPeriod = startElectionPeriod + electionPeriod) {
+        let startOneElectionProcess = Date.now();
         let currentElectionBlock = startElectionPeriod + electionPeriod;
         console.log('\x1b[34m%s\x1b[0m', `\nElection ${electionNumber}: collecting data in period block ${startElectionPeriod}-${currentElectionBlock}`);
 
@@ -139,39 +169,32 @@ async function main() {
             electionNumber++;
             continue;
         }
-        if (currentElectionBlock > processLastStateBlock) {
-            await stakes.read(delegatorsMap, web3, tokenContract, currentElectionBlock);
-        }
+        await stakes.read(delegatorsMap, web3, tokenContract, currentElectionBlock);
         await delegators.writeToFile(delegatorsMap, filenamePrefix, currentElectionBlock);
         await delegators.writeTxToFile(eventTxs, filenamePrefix, currentElectionBlock);
 
-        if (currentElectionBlock > processLastStateBlock) {
-            if (verbose) {
-                console.log('\x1b[35m%s\x1b[0m', `reading guardians events in this period`);
-            }
-            let guardiansMap = await guardians.read(web3, guardiansContract, votingContract, currentElectionBlock, votingValidityPeriod);
-            await stakes.read(guardiansMap, web3, tokenContract, currentElectionBlock);
-            guardians.writeToFile(guardiansMap, filenamePrefix, currentElectionBlock);
-
-            // let validators = readValidators(validatorsContract);
-            // await readStakes(validators, electionBlock);
-            // await writeValidatorsResults(validators);
-
-            if (verbose) {
-                console.log('\x1b[35m%s\x1b[0m', `doing calculation for election results`);
-            }
-            let voteResults = voting.calculate(guardiansMap, accumulatedGuardiansRewards, delegatorsMap, accumulatedDelegatorsRewards);
-            voting.writeToFile(voteResults, filenamePrefix, currentElectionBlock);
-        } else {
-            if (verbose) {
-                console.log('\x1b[35m%s\x1b[0m', `generating guardians from input`);
-            }
-            let guardiansMap = await guardians.generateFromDelegations(web3, guardiansContract, delegatorsMap);
-            let voteResults = voting.calculate(guardiansMap, accumulatedGuardiansRewards, delegatorsMap, accumulatedDelegatorsRewards);
-            voting.writeToFile(voteResults, filenamePrefix, currentElectionBlock);
+        if (verbose) {
+            console.log('\x1b[35m%s\x1b[0m', `reading guardians events in this period`);
         }
+        let guardiansMap = await guardians.read(web3, guardiansContract, votingContract, tokenContract, currentElectionBlock, votingValidityPeriod);
+        guardians.writeToFile(guardiansMap, filenamePrefix, currentElectionBlock);
+        
+        if (verbose) {
+            console.log('\x1b[35m%s\x1b[0m', `doing calculation for election results`);
+        }
+        let voteResults = voting.calculate(guardiansMap, accumulatedGuardiansRewards, delegatorsMap, accumulatedDelegatorsRewards);
+        voting.writeToFile(voteResults, filenamePrefix, currentElectionBlock);
+
+        averageElectionTime += (Date.now() - startOneElectionProcess);
+        console.log('\x1b[34m%s\x1b[0m', `Election ${electionNumber} processing took ${(Date.now() - startOneElectionProcess) / 1000.0} seconds`);
         electionNumber++;
+        electionActuallyDone++;
     }
+
+    console.log('\x1b[34m%s\x1b[0m', `\nElections web3 initiation took ${(startActualRunningTime - startTime) / 1000.0} seconds`);
+    console.log('\x1b[34m%s\x1b[0m', `Elections pre-information loading processing took ${(endPrepareDataTime - startActualRunningTime) / 1000.0} seconds`);
+    console.log('\x1b[34m%s\x1b[0m', `Elections average election processing took ${(averageElectionTime / (electionActuallyDone)) / 1000.0} seconds`);
+    console.log('\x1b[34m%s\x1b[0m', `Elections total processing took ${(Date.now() - startActualRunningTime) / 1000.0} seconds`);
 }
 
 main()

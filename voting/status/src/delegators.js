@@ -8,10 +8,17 @@
 "use strict";
 const fs = require('fs');
 const _ = require('lodash/core');
+const readline = require('readline');
 
 let verbose = false;
 if (process.env.VERBOSE) {
     verbose = true;
+}
+
+function generateDelegateObject(block, address, delegateeAddress, method) {
+    return {
+        address, block, transactionIndex: 0, txHash: '', delegateeAddress, method, stake: 'n/a', participationReward : 0
+    }
 }
 
 function mergeEvents(transferEvents, delegateEvents) {
@@ -28,7 +35,7 @@ function mergeEvents(transferEvents, delegateEvents) {
 }
 
 async function read(web3, tokenContract, votingContract, startBlock, endBlock, eventTxs) {
-    let transferEvents = await require('./findDelegateByTransferEvents')(web3, tokenContract, startBlock, endBlock, 1000, eventTxs);
+    let transferEvents = await require('./findDelegateByTransferEvents')(web3, tokenContract, startBlock, endBlock, 20000, eventTxs);
     if (verbose) {
         console.log(`Found ${transferEvents.length} Transfer events on Token Contract Address ${tokenContract.address}`);
     }
@@ -71,6 +78,43 @@ function update(accumulatedDelegatorsMap, delegatorsMap) {
     console.log('\x1b[36m%s\x1b[0m', `Update events now we have ${_.size(accumulatedDelegatorsMap)} delegators.`);
 }
 
+function getFileName(currentElectionBlock, filenamePrefix) {
+    return `${filenamePrefix}_${currentElectionBlock}_delegations.csv`;
+}
+
+async function readFromFile(blockNumber, filenamePrefix) {
+    let mapper = {};
+    let path = getFileName(blockNumber, filenamePrefix);
+    if (verbose) {
+        console.log('\x1b[33m%s\x1b[0m', `about to read delegators information from ${path}`);
+    }
+
+    const fileStream = fs.createReadStream(`./${path}`);
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+    // Note: we use the crlfDelay option to recognize all instances of CR LF
+    // ('\r\n') in input.txt as a single line break.
+
+    let counter = 0;
+    for await (const line of rl) {
+        let parts = line.split(',');
+        if (parts.length < 5 || parts[0].indexOf('0x') !== 0) {
+            continue;
+        }
+
+        let delegateObj = generateDelegateObject(parts[4], parts[0], parts[2], parts[3]);
+        mapper[delegateObj.address.toLowerCase()] = delegateObj;
+        counter++;
+        if (counter % 200 === 0) {
+            console.log(`read ${counter} delegations ...`);
+        }
+    }
+
+    return mapper;
+}
+
 async function writeToFile(delegatorsMap, filenamePrefix, currentElectionBlock) {
     if (verbose) {
         console.log('\x1b[33m%s\x1b[0m', `about to save ${_.size(delegatorsMap)} delegators information`);
@@ -90,7 +134,7 @@ async function writeToFile(delegatorsMap, filenamePrefix, currentElectionBlock) 
         }
     }
 
-    let path = `${filenamePrefix}_${currentElectionBlock}_delegations.csv`;
+    let path = getFileName(currentElectionBlock, filenamePrefix);
     fs.writeFileSync(path, csvStr);
     console.log('\x1b[33m%s\x1b[0m', `Delegators information in CSV version file was saved to ${path}!\n`);
 }
@@ -134,6 +178,7 @@ async function writeTxToFile(eventTxs, filenamePrefix, currentElectionBlock) {
 module.exports = {
     read,
     update,
+    readFromFile,
     writeToFile,
     writeTxToFile,
 };
