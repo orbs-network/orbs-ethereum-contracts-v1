@@ -14,7 +14,6 @@ let verbose = false;
 let maxNumberOfProcess = 10000;
 let batchSize = 10;
 
-const orbs = require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 const slack = require('./src/slack');
 const _ = require('lodash');
 
@@ -35,7 +34,7 @@ function validateInput() {
     }
 }
 
-async function isProcessingPeriod() {
+async function isProcessingPeriod(orbs) {
     let currentBlockNumber = await orbs.getCurrentBlockNumber();
     let processStartBlockNumber = await orbs.getProcessingStartBlockNumber();
 
@@ -47,7 +46,7 @@ const maxErrors = 10;
 let numPendings = 0;
 const maxPendings = 25;
 
-async function processResults(results) {
+async function processResults(orbs, results) {
     for (let i = 0; i < results.length; i++) {
         switch (results[i]) {
             case orbs.ProcessDone:
@@ -75,7 +74,7 @@ async function processResults(results) {
     return orbs.ProcessContinue;
 }
 
-async function processCall() {
+async function processCall(orbs) {
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `\nStarted Processing...`);
     }
@@ -98,11 +97,11 @@ async function processCall() {
             console.log('\x1b[36m%s\x1b[0m', `checking state of process... (took ${(Date.now() - start) / 1000.0} seconds)`);
         }
 
-        if (await processResults(results) !== orbs.ProcessContinue) {
+        if (await processResults(orbs, results) !== orbs.ProcessContinue) {
             isDone = true;
             break;
         }
-        
+
         if (maxNumberOfProcess !== -1 && maxNumberOfProcess <= numberOfCalls) {
             console.log('\x1b[31m%s\x1b[0m', `note processing votes: did not finish after ${numberOfCalls} tries.`);
             break;
@@ -110,7 +109,7 @@ async function processCall() {
     } while (await isProcessingPeriod(orbs));
 
     if (isDone) {
-        await sendSuccessSlack();
+        await sendSuccessSlack(orbs);
     }
 
     if (verbose) {
@@ -122,7 +121,7 @@ function compareAddress(a, b) {
     return a.address.toLowerCase() === b.address.toLowerCase();
 }
 
-async function sendSuccessSlack() {
+async function sendSuccessSlack(orbs) {
     let electionNumber = await orbs.getNumberOfElections();
     let text = `Hurrah: :trophy: Election ${electionNumber} has finished!\n`;
     let totalVote = await orbs.getTotalStake();
@@ -170,9 +169,10 @@ async function main() {
     if (verbose) {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
+    const orbs = await require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 
-    if (await isProcessingPeriod()) {
-        await processCall();
+    if (await isProcessingPeriod(orbs)) {
+        await processCall(orbs);
     } else {
         let currentBlockNumber = await orbs.getCurrentBlockNumber();
         let processStartBlockNumber = await orbs.getProcessingStartBlockNumber();

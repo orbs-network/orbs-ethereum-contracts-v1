@@ -97,8 +97,18 @@ class Orbs {
     }
 }
 
-function create(url, vChainId, name) {
-    return new Orbs(url, vChainId, name)
+async function create(urlsString, vChainId, name) {
+    let urls = urlsString.split(',');
+    for (let i = 0;i < urls.length;i++) {
+        try {
+            let orbs = new Orbs(urls[i], vChainId, name);
+            await orbs.getNumberOfElections();
+            return orbs;
+        } catch(e) {
+            console.log(`could not connect to ${urls[i]}`);
+        }
+    }
+    throw new Error(`Cannot connect to any of the Orbs urls ${urlsString}`);
 }
 
 module.exports = create;
