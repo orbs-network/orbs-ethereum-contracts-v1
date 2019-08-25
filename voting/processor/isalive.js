@@ -11,7 +11,6 @@ const orbsVchain = process.env.ORBS_VCHAINID;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 const ethereumConnectionURL = process.env.NETWORK_URL_ON_ETHEREUM;
 
-const orbs = require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 const Web3 = require('web3');
 const slack = require('./src/slack');
 
@@ -24,6 +23,7 @@ function validateInput() {
 async function main() {
     validateInput();
     let web3 = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));
+    const orbs = await require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 
     let currentBlockNumberByOrbs = await orbs.getCurrentBlockNumber();
     let currentBlockNumberByEthereum = 0;

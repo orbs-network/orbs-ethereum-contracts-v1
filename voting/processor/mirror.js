@@ -24,7 +24,6 @@ let endBlock = 0;
 let totalTransfers = 0;
 let totalDelegate = 0;
 
-const orbs = require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 const slack = require('./src/slack');
 
 function validateInput() {
@@ -64,7 +63,7 @@ function validateInput() {
     }
 }
 
-async function findNewEvents(events, mirrorFunction) {
+async function findNewEvents(orbs, events, mirrorFunction) {
     let newEvents = [];
     for (let i = 0;i < events.length;i=i+paceGammaQuery) {
         let txs = [];
@@ -89,7 +88,7 @@ async function findNewEvents(events, mirrorFunction) {
     return newEvents;
 }
 
-async function sendEventsBatch(events, mirrorFunction) {
+async function sendEventsBatch(orbs, events, mirrorFunction) {
     for (let i = 0;i < events.length;i=i+paceGammaTx) {
         try {
             let txs = [];
@@ -106,17 +105,17 @@ async function sendEventsBatch(events, mirrorFunction) {
     }
 }
 
-async function filterAndSendOnlyNewEvents(events, mirrorFunction) {
-    let newEvents = await findNewEvents(events, mirrorFunction);
+async function filterAndSendOnlyNewEvents(orbs, events, mirrorFunction) {
+    let newEvents = await findNewEvents(orbs, events, mirrorFunction);
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `Found ${newEvents.length} NEW events`);
     }
     if (newEvents.length > 0) {
-        await sendEventsBatch(newEvents, mirrorFunction);
+        await sendEventsBatch(orbs, newEvents, mirrorFunction);
     }
 }
 
-async function transferEvents(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock) {
+async function transferEvents(orbs, ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock) {
     let events = await require('./src/findDelegateByTransferEvents')(ethereumConnectionURL, erc20ContractAddress, startBlock, endBlock);
     totalTransfers += events.length;
     if (verbose) {
@@ -124,11 +123,11 @@ async function transferEvents(ethereumConnectionURL, erc20ContractAddress, start
     }
 
     if (events.length > 0) {
-        await filterAndSendOnlyNewEvents(events, "mirrorDelegationByTransfer");
+        await filterAndSendOnlyNewEvents(orbs, events, "mirrorDelegationByTransfer");
     }
 }
 
-async function delegateEvents(ethereumConnectionURL, votingContractAddress, startBlock, endBlock) {
+async function delegateEvents(orbs, ethereumConnectionURL, votingContractAddress, startBlock, endBlock) {
     let events = await require('./src/findDelegateEvents')(ethereumConnectionURL, votingContractAddress, startBlock, endBlock);
     totalDelegate += events.length;
     if (verbose) {
@@ -136,19 +135,19 @@ async function delegateEvents(ethereumConnectionURL, votingContractAddress, star
     }
 
     if (events.length > 0) {
-        await filterAndSendOnlyNewEvents(events, "mirrorDelegation");
+        await filterAndSendOnlyNewEvents(orbs, events, "mirrorDelegation");
     }
 }
 
-async function iterateOverEvents(start, end, pace) {
+async function iterateOverEvents(orbs, start, end, pace) {
     for (let i = start; i < end; i = i + pace) {
         let minEnd = i + pace < end ? i + pace : end;
         try {
             if (verbose) {
                 console.log('\x1b[36m%s\x1b[0m', `\ncurrent iteration between blocks ${i}-${minEnd}`);
             }
-            await transferEvents(ethereumConnectionURL, erc20ContractAddress, i, minEnd);
-            await delegateEvents(ethereumConnectionURL, votingContractAddress, i, minEnd);
+            await transferEvents(orbs, ethereumConnectionURL, erc20ContractAddress, i, minEnd);
+            await delegateEvents(orbs, ethereumConnectionURL, votingContractAddress, i, minEnd);
         } catch (e) {
             if (verbose) {
                 console.log('\x1b[35m%s\x1b[0m', `too many events, slowing down by factor of 10`, e);
@@ -161,7 +160,7 @@ async function iterateOverEvents(start, end, pace) {
             let newPace = pace / 10;
             for (let j = i; j < minEnd; j = j + newPace) {
                 let minminEnd = j + newPace < minEnd ? j + newPace : minEnd;
-                await iterateOverEvents(j, minminEnd, newPace);
+                await iterateOverEvents(orbs, j, minminEnd, newPace);
             }
             if (verbose) {
                 console.log('\x1b[35m%s\x1b[0m', `speeding up`);
@@ -172,6 +171,7 @@ async function iterateOverEvents(start, end, pace) {
 
 async function main() {
     validateInput();
+    const orbs = await require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
     if (verbose) {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE\n`);
     }
@@ -188,7 +188,7 @@ async function main() {
     }
 
     console.log('\x1b[34m%s\x1b[0m', `Going to look for events between blocks ${startBlock}-${endBlock}`);
-    await iterateOverEvents(startBlock, endBlock, paceEthereum);
+    await iterateOverEvents(orbs, startBlock, endBlock, paceEthereum);
     if (verbose) {
         let endTime = Date.now();
         console.log('\x1b[35m%s\x1b[0m', `took ${Math.floor((endTime-startTime) / 60000)} minutes, ${((endTime-startTime) % 60000) / 1000.0} seconds.`);
