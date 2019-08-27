@@ -11,7 +11,6 @@ const orbsVchain = process.env.ORBS_VCHAINID;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 const ethereumConnectionURL = process.env.NETWORK_URL_ON_ETHEREUM;
 
-const orbs = require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 const Web3 = require('web3');
 const slack = require('./src/slack');
 
@@ -24,6 +23,7 @@ function validateInput() {
 async function main() {
     validateInput();
     let web3 = await new Web3(new Web3.providers.HttpProvider(ethereumConnectionURL));
+    const orbs = await require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
 
     let currentBlockNumberByOrbs = await orbs.getCurrentBlockNumber();
     let currentBlockNumberByEthereum = 0;
@@ -41,18 +41,15 @@ async function main() {
         process.exit(-3)
     }
 
-    let processStartBlockNumber = await orbs.getProcessingStartBlockNumber();
-    if (processStartBlockNumber === 0 || currentBlockNumberByOrbs >= (processStartBlockNumber + 600) ) {
-        let message = `Warning: Current block number: ${currentBlockNumberByOrbs} is well after process vote starting block number: ${processStartBlockNumber}.
- Something is wrong with elections, it seems stuck.\n`;
+    if (await orbs.isElectionsOverDue()) {
+        let message = `Warning: Elections is overdue. Something is wrong with elections, it seems stuck.\n`;
         console.log('\x1b[31m%s\x1b[0m', message);
         await slack.sendSlack(message);
         process.exit(-2)
     }
 
     console.log('\x1b[35m%s\x1b[0m', `Current block from Orbs: ${currentBlockNumberByOrbs}
-current block from Ethereum  ${currentBlockNumberByEthereum}
-Election processing start block: ${processStartBlockNumber}.`);
+current block from Ethereum  ${currentBlockNumberByEthereum}`);
 
 }
 

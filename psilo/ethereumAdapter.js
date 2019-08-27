@@ -19,12 +19,12 @@ class EthereumAdapter {
         this.networkId = networkId;
     }
 
-    async deploySolidityContract(options, import_path, search_path, ...constructorArguments) {
+    deploySolidityContract(options, import_path, search_path, ...constructorArguments) {
 
         const contract = this.resolver.require(import_path, search_path);
 
         const ctorParams = [...constructorArguments, options];
-        return await contract.new(...ctorParams);
+        return contract.new(...ctorParams);
     }
 
     //TODO this currently only handles Ganache - for ropsten or mainnet we need to add busywaits with sleeps
@@ -34,10 +34,15 @@ class EthereumAdapter {
         if (blocksToMine) {
             await this.mine(blocksToMine);
         }
+        return blocksToMine;
     }
 
     async getLatestBlock() {
         return await this.web3.eth.getBlock("latest");
+    }
+
+    async getBlock(blockNumber) {
+        return await this.web3.eth.getBlock(blockNumber);
     }
 
     async mine(blocks) {
@@ -102,7 +107,13 @@ class EthereumAdapter {
 }
 
 async function mineOne(sendRpc) {
-    await sleep(1010); // must not close two blocks with the same ts
+    // await sleep(1010); // must not close two blocks with the same ts
+    await sendRpc({
+        jsonrpc: '2.0',
+        method: 'evm_increaseTime',
+        params: [1],
+        id: new Date().getSeconds()
+    });
     return sendRpc({
         jsonrpc: '2.0',
         method: 'evm_mine',

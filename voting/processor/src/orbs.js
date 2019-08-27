@@ -27,8 +27,8 @@ class Orbs {
         return Number(await this.queryResult("getCurrentEthereumBlockNumber"));
     }
 
-    async getProcessingStartBlockNumber() {
-        return Number(await this.queryResult("getProcessingStartBlockNumber"));
+    async isElectionsOverDue() {
+        return Number(await this.queryResult("isElectionOverdue")) > 0;
     }
 
     async getElectedValidators(electionNumber) {
@@ -56,6 +56,10 @@ class Orbs {
 
     async getValidatorStake(addr) {
         return Number(await this.queryResult("getValidatorStake", OrbsClientSdk.argBytes(addr)));
+    }
+
+    async isProcessingPeriod() {
+        return Number(await this.queryResult("isProcessingPeriod")) > 0;
     }
 
     async processVote() {
@@ -97,8 +101,18 @@ class Orbs {
     }
 }
 
-function create(url, vChainId, name) {
-    return new Orbs(url, vChainId, name)
+async function create(urlsString, vChainId, name) {
+    let urls = urlsString.split(',');
+    for (let i = 0;i < urls.length;i++) {
+        try {
+            let orbs = new Orbs(urls[i], vChainId, name);
+            await orbs.getNumberOfElections();
+            return orbs;
+        } catch(e) {
+            console.log(`could not connect to ${urls[i]}`);
+        }
+    }
+    throw new Error(`Cannot connect to any of the Orbs urls ${urlsString}`);
 }
 
 module.exports = create;

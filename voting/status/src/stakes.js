@@ -20,7 +20,11 @@ function parseStake(web3, str) {
     return parseFloat(stakeStr) / 100.0;
 }
 
-let stakePace = 25;
+async function readOne(address, web3, tokenContract, stateBlock) {
+    return tokenContract.methods.balanceOf(address).call({}, stateBlock).then(balanceStr => parseStake(web3, balanceStr));
+}
+
+let stakePace = 250;
 async function read(objectsMap, web3, tokenContract, stateBlock) {
     let objectList = _.values(objectsMap);
     for (let i = 0; i < objectList.length; i=i+stakePace) {
@@ -29,8 +33,8 @@ async function read(objectsMap, web3, tokenContract, stateBlock) {
             console.log('\x1b[33m%s\x1b[0m', `reading stakes, currently ${i} out of ${objectList.length}`);
         }
         for (let j = 0; j < stakePace && j+i< objectList.length; j++) {
-            txs.push(tokenContract.methods.balanceOf(objectList[i + j].address).call({}, stateBlock).then(balanceStr => {
-                objectsMap[objectList[i + j].address.toLowerCase()].stake = parseStake(web3, balanceStr);
+            txs.push(readOne(objectList[i + j].address, web3, tokenContract, stateBlock).then(balance => {
+                objectsMap[objectList[i + j].address.toLowerCase()].stake = balance;
             }));
         }
         await Promise.all(txs);
@@ -42,4 +46,5 @@ async function read(objectsMap, web3, tokenContract, stateBlock) {
 
 module.exports = {
     read,
+    readOne,
 };
