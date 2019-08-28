@@ -38,7 +38,7 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
         </TableRow>
         <TableRow>
           <TableCell>{t(`Delegator's ORBS Balance`)}</TableCell>
-          <TableCell align='right'>{delegatorInfo['delegatorBalance']} ORBS</TableCell>
+          <TableCell align='right'>{(delegatorInfo['delegatorBalance'] || 0).toLocaleString()} ORBS</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
