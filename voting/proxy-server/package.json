@@ -8,7 +8,6 @@
     "fake": "nodemon fake.js",
     "start": "node index.js",
     "lint": "prettier --single-quote --write '**/*.js'",
-    "contracts:prod": "./scripts/copy-contracts.sh",
     "deploy": "./scripts/heroku-deploy.sh"
   },
   "repository": {
@@ -24,8 +23,7 @@
   "dependencies": {
     "cors": "2.8.5",
     "express": "4.16.4",
-    "orbs-client-sdk": "0.0.5",
-    "web3": "1.0.0-beta.48"
+    "orbs-pos-insights": "^1.0.2"
   },
   "devDependencies": {
     "chance": "^1.0.18",

@@ -8,7 +8,6 @@
 
 const cors = require('cors');
 const express = require('express');
-const apiFactory = require('./services/api-factory');
 const stakeRouter = require('./routers/stake-router');
 const rewardsRouter = require('./routers/rewards-router');
 const guardiansRouter = require('./routers/guardians-router');
@@ -16,6 +15,7 @@ const validatorsRouter = require('./routers/validators-router');
 const delegationRouter = require('./routers/delegation-router');
 const electionsRouter = require('./routers/elections-router');
 const electedValidatorsRouter = require('./routers/elected-validators-router');
+const { orbsPOSInsightsServiceFactory } = require('orbs-pos-insights');
 
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -29,15 +29,27 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const apiService = apiFactory.genApiService();
+const virtualChainId = 1100000;
+const orbsNodeAddress = '18.197.127.2';
+const ethereumProviderUrl =
+  process.env.ETHEREUM_PROVIDER_URL ||
+  'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141';
+
+  console.log(ethereumProviderUrl);
+  
+const orbsPOSInsightsService = orbsPOSInsightsServiceFactory(
+  ethereumProviderUrl,
+  orbsNodeAddress,
+  virtualChainId
+);
 app.get('/is_alive', (_, res) => res.sendStatus(200));
-app.use('/api', guardiansRouter(apiService));
-app.use('/api', electedValidatorsRouter(apiService));
-app.use('/api', validatorsRouter(apiService));
-app.use('/api', rewardsRouter(apiService));
-app.use('/api', stakeRouter(apiService));
-app.use('/api', electionsRouter(apiService));
-app.use('/api', delegationRouter(apiService));
+app.use('/api', guardiansRouter(orbsPOSInsightsService));
+app.use('/api', electedValidatorsRouter(orbsPOSInsightsService));
+app.use('/api', validatorsRouter(orbsPOSInsightsService));
+app.use('/api', rewardsRouter(orbsPOSInsightsService));
+app.use('/api', stakeRouter(orbsPOSInsightsService));
+app.use('/api', electionsRouter(orbsPOSInsightsService));
+app.use('/api', delegationRouter(orbsPOSInsightsService));
 
 const options = {
   swaggerDefinition: {
