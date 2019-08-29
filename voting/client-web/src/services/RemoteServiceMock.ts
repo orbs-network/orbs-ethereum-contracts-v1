@@ -39,7 +39,7 @@ export class RemoteServiceMock implements IRemoteService {
   getUpcomingElectionBlockNumber() {
     return Promise.resolve('0');
   }
-  getPastElectionBlockNumber() {
+  getEffectiveElectionBlockNumber() {
     return Promise.resolve('0');
   }
 }

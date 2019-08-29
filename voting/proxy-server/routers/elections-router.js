@@ -35,18 +35,18 @@ const electionsRouter = electionsApi => {
   /**
    * @swagger
    *
-   * /elections/past:
+   * /elections/effective:
    *  get:
-   *    description: Returns Ethereum block number of past elections
+   *    description: Returns Ethereum block number of the effective elections
    *    tags:
    *      - Elections
    *    responses:
    *      '200':
-   *        description: Ethereum block number of past elections
+   *        description: Ethereum block number of effective elections
    */
-  router.get('/elections/past', async (_, res) => {
+  router.get('/elections/effective', async (_, res) => {
     try {
-      const blockNumber = await electionsApi.getPastElectionBlockNumber();
+      const blockNumber = await electionsApi.getEffectiveElectionBlockNumber();
       res.send(blockNumber.toString());
     } catch (err) {
       res.status(500).send(err.toString());

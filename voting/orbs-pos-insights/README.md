@@ -103,9 +103,9 @@ Get the upcoming election block number (On Ethereum)
 
 ---
 
-### `getPastElectionBlockNumber(): Promise<number>`
+### `getEffectiveElectionBlockNumber(): Promise<number>`
 
-Get the previous election block number (On Ethereum)
+Get the effective election block number (On Ethereum)
 
 ---
 

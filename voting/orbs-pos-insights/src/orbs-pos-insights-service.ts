@@ -118,7 +118,7 @@ export class OrbsPOSInsightsService {
     return await this.ethereumClient.getUpcomingElectionBlockNumber();
   }
 
-  async getPastElectionBlockNumber(): Promise<number> {
+  async getEffectiveElectionBlockNumber(): Promise<number> {
     return await this.orbsClientService.getEffectiveElectionBlockNumber();
   }
 

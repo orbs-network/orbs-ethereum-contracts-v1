@@ -51,8 +51,8 @@ export class RemoteService implements IRemoteService {
     return this.callRemote(`/elections/upcoming`);
   }
 
-  getPastElectionBlockNumber() {
-    return this.callRemote(`/elections/past`);
+  getEffectiveElectionBlockNumber() {
+    return this.callRemote(`/elections/effective`);
   }
 
   getCurrentDelegation(address: string) {

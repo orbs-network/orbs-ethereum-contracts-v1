@@ -12,7 +12,7 @@ export interface IRemoteService {
   getRewardsHistory(address: string): Promise<any>;
   getTotalParticipatingTokens(): Promise<string>;
   getUpcomingElectionBlockNumber(): Promise<string>;
-  getPastElectionBlockNumber(): Promise<string>;
+  getEffectiveElectionBlockNumber(): Promise<string>;
   getCurrentDelegation(address: string): Promise<string>;
   getCurrentDelegationInfo(address: string): Promise<{}>;
 }
