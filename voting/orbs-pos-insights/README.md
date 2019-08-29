@@ -19,13 +19,13 @@ const orbsPosInsights = orbsPOSInsightsServiceFactory(ethereumProviderUrl, orbsN
 
 ## Usage
 
-`getValidators(): Promise<string[]>`
+### `getValidators(): Promise<string[]>`
 
 Get a list of all Orb's validators addresses.
 
 ---
 
-`getValidatorInfo(address: string): Promise<IValidatorInfo>`
+### `getValidatorInfo(address: string): Promise<IValidatorInfo>`
 
 Get detailed information about the given validator (`adderss` parameter)
 
@@ -41,13 +41,13 @@ interface IValidatorInfo {
 
 ---
 
-`getTotalStake(): Promise<number>`
+### `getTotalStake(): Promise<number>`
 
 Get the current total stake on the Orbs platform.
 
 ---
 
-`getRewards(address: string): Promise<IRewards>`
+### `getRewards(address: string): Promise<IRewards>`
 
 Get information about all the rewards of a given `address`.
 
@@ -62,7 +62,7 @@ export interface IRewards {
 
 ---
 
-`getRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>`
+### `getRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>`
 
 Get a list of all the rewards distrebution events to a given `address`.
 
@@ -76,13 +76,13 @@ interface IRewardsDistributionEvent {
 
 ---
 
-`getGuardiansList(offset: number, limit: number): Promise<string[]>`
+### `getGuardiansList(offset: number, limit: number): Promise<string[]>`
 
 Get a list of guardians addresses, using `offset` and `limit` for pagination.
 
 ---
 
-`getGuardianInfo(address: string): Promise<IGuardianInfo>`
+### `getGuardianInfo(address: string): Promise<IGuardianInfo>`
 
 Get information about the given guardian (`address` parameter).
 
@@ -98,26 +98,25 @@ interface IGuardianInfo {
 
 ---
 
-`getNextElectionsBlockHeight(): Promise<number>`
+### `getNextElectionsBlockHeight(): Promise<number>`
 
 Get the next election block height (On Ethereum)
 
 ---
 
-`getPastElectionBlockHeight(): Promise<number>`
+### `getPastElectionBlockHeight(): Promise<number>`
 
 Get the previous election block height (On Ethereum)
 
 ---
 
-
-`getDelegationStatus(address: string): Promise<string>`
+### `getDelegationStatus(address: string): Promise<string>`
 
 Get to whom of the given `address` is currently delegating to. Returns the address of the delegator or address `0x0000000000000000000000000000000000000000` if not delegation was found.
 
 ---
 
-`getDelegationInfo(address: string): Promise<IDelegationInfo>`
+### `getDelegationInfo(address: string): Promise<IDelegationInfo>`
 
 Get detailed information about the given `address` delegation.
 
@@ -135,13 +134,13 @@ interface IDelegationInfo {
 
 ---
 
-`getElectedValidators(): Promise<string[]>`
+### `getElectedValidators(): Promise<string[]>`
 
 Get a list of the currently elected validator's addresses.
 
 ---
 
-`getElectedValidatorInfo(address: string): Promise<IElectedValidatorInfo>`
+### `getElectedValidatorInfo(address: string): Promise<IElectedValidatorInfo>`
 
 Get a detailed information about the given validator (`address` parameter) 
 
