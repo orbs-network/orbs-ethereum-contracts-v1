@@ -42,9 +42,11 @@ export interface IGuardianInfo {
   stake: number;
 }
 
+export type TDelegationType = "None-Delegated" | "Transfer" | "Delegate";
+
 export interface IDelegationInfo {
   delegatedTo: string;
-  delegationType: "Transfer" | "Delegate";
+  delegationType: TDelegationType;
   delegatorBalance: number;
   delegationBlockNumber?: number;
   delegationTimestamp?: number;
@@ -133,10 +135,14 @@ export class OrbsPOSInsightsService {
 
   async getDelegationInfo(address: string): Promise<IDelegationInfo> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
-    let delegationType: "Transfer" | "Delegate";
+    let delegationType: TDelegationType;
     if (info.delegatedTo === NON_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
-      delegationType = "Transfer";
+        if (info.delegatedTo === NON_DELEGATED) {
+          delegationType = "None-Delegated";
+        } else {
+          delegationType = "Transfer";
+        }
     } else {
       delegationType = "Delegate";
     }
