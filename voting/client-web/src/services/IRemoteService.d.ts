@@ -11,7 +11,7 @@ export interface IRemoteService {
   getRewards(address: string): Promise<any>;
   getRewardsHistory(address: string): Promise<any>;
   getTotalParticipatingTokens(): Promise<string>;
-  getNextElectionBlockNumber(): Promise<string>;
+  getUpcomingElectionBlockNumber(): Promise<string>;
   getPastElectionBlockNumber(): Promise<string>;
   getCurrentDelegation(address: string): Promise<string>;
   getCurrentDelegationInfo(address: string): Promise<{}>;

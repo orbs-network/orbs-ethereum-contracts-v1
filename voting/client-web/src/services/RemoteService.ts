@@ -47,8 +47,8 @@ export class RemoteService implements IRemoteService {
     return this.callRemote(`/total-participating-tokens`);
   }
 
-  getNextElectionBlockNumber() {
-    return this.callRemote(`/elections/next`);
+  getUpcomingElectionBlockNumber() {
+    return this.callRemote(`/elections/upcoming`);
   }
 
   getPastElectionBlockNumber() {

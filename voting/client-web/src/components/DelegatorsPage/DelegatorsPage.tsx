@@ -34,11 +34,11 @@ export const DelegatorsPage = () => {
   const [totalParticipatingTokens, setTotalParticipatingTokens] = useState('0');
   const [delegatedTo, setDelegatedTo] = useState('');
   const [delegationCandidate, setDelegationCandidate] = useState('');
-  const [nextElectionsBlockNumber, setNextElectionsBlockNumber] = useState('');
+  const [upcomingElectionsBlockNumber, setUpcomingElectionsBlockNumber] = useState('');
 
-  const fetchNextElectionsBlockNumber = async () => {
-    const res = await remoteService.getNextElectionBlockNumber();
-    setNextElectionsBlockNumber(res);
+  const fetchUpcomingElectionsBlockNumber = async () => {
+    const res = await remoteService.getUpcomingElectionBlockNumber();
+    setUpcomingElectionsBlockNumber(res);
   };
 
   const fetchTotalParticipatingTokens = async () => {
@@ -75,7 +75,7 @@ export const DelegatorsPage = () => {
     fetchTotalParticipatingTokens();
     fetchGuardians();
     fetchDelegatedTo();
-    fetchNextElectionsBlockNumber();
+    fetchUpcomingElectionsBlockNumber();
   }, []);
 
   const delegate = async candidate => {
@@ -129,9 +129,9 @@ export const DelegatorsPage = () => {
             color='secondary'
             target='_blank'
             rel='noopener'
-            href={`//etherscan.io/block/countdown/${nextElectionsBlockNumber}`}
+            href={`//etherscan.io/block/countdown/${upcomingElectionsBlockNumber}`}
           >
-            {nextElectionsBlockNumber}
+            {upcomingElectionsBlockNumber}
           </Link>
         </Typography>
 

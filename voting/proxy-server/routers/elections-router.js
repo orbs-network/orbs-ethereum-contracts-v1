@@ -14,19 +14,19 @@ const electionsRouter = electionsApi => {
   /**
    * @swagger
    *
-   * /elections/next:
+   * /elections/upcoming:
    *  get:
-   *    description: Returns Ethereum block number of next elections
+   *    description: Returns Ethereum block number of the upcoming elections
    *    tags:
    *      - Elections
    *    responses:
    *      '200':
-   *        description: Ethereum block number of next elections
+   *        description: Ethereum block number of the upcoming elections
    */
-  router.get('/elections/next', async (_, res) => {
+  router.get('/elections/upcoming', async (_, res) => {
     try {
-      const nextElections = await electionsApi.getNextElectionsBlockNumber();
-      res.send(nextElections.toString());
+      const upcomingElections = await electionsApi.getUpcomingElectionBlockNumber();
+      res.send(upcomingElections.toString());
     } catch (err) {
       res.status(500).send(err.toString());
     }

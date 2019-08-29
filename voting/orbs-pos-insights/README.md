@@ -97,9 +97,9 @@ interface IGuardianInfo {
 
 ---
 
-### `getNextElectionsBlockNumber(): Promise<number>`
+### `getUpcomingElectionBlockNumber(): Promise<number>`
 
-Get the next election block number (On Ethereum)
+Get the upcoming election block number (On Ethereum)
 
 ---
 

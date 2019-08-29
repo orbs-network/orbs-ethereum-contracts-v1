@@ -104,16 +104,16 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Start First Block Election");
 
-        const nextElectionBlockNumber = await electionContracts.setElectionBlockNumber();
+        const upcomingElectionBlockNumber = await electionContracts.setElectionBlockNumber();
 
-        await electionContracts.waitForOrbsFinality(nextElectionBlockNumber);
+        await electionContracts.waitForOrbsFinality(upcomingElectionBlockNumber);
 
-        await electionContracts.goodSamaritanMirrorsAll(nextElectionBlockNumber);
+        await electionContracts.goodSamaritanMirrorsAll(upcomingElectionBlockNumber);
         //TODO return something from mirror and assert
 
         console.log("Done Mirroring");
 
-        const mirrorPeriodEndBlock = nextElectionBlockNumber + options.votingMirrorPeriod + 1;
+        const mirrorPeriodEndBlock = upcomingElectionBlockNumber + options.votingMirrorPeriod + 1;
 
         await electionContracts.waitForOrbsFinality(mirrorPeriodEndBlock);
 
@@ -142,16 +142,16 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         await electionContracts.waitForOrbsFinality();
 
-        const nextElectionBlockNumber2 = await electionContracts.setElectionBlockNumber();
+        const upcomingElectionBlockNumber2 = await electionContracts.setElectionBlockNumber();
 
-        await electionContracts.waitForOrbsFinality(nextElectionBlockNumber2);
+        await electionContracts.waitForOrbsFinality(upcomingElectionBlockNumber2);
 
-        await electionContracts.goodSamaritanMirrorsAll(nextElectionBlockNumber2);
+        await electionContracts.goodSamaritanMirrorsAll(upcomingElectionBlockNumber2);
         //TODO return something from mirror and assert
 
         console.log("Done Mirroring");
 
-        const mirrorPeriodEndBlock2 = nextElectionBlockNumber2 + options.votingMirrorPeriod + 1;
+        const mirrorPeriodEndBlock2 = upcomingElectionBlockNumber2 + options.votingMirrorPeriod + 1;
 
         await electionContracts.waitForOrbsFinality(mirrorPeriodEndBlock2);
 
@@ -402,16 +402,16 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Start A Block Election as first");
 
-        const nextElectionBlockNumber = await electionContracts.setElectionBlockNumber();
+        const upcomingElectionBlockNumber = await electionContracts.setElectionBlockNumber();
 
-        await electionContracts.waitForOrbsFinality(nextElectionBlockNumber);
+        await electionContracts.waitForOrbsFinality(upcomingElectionBlockNumber);
 
-        await electionContracts.goodSamaritanMirrorsAll(nextElectionBlockNumber);
+        await electionContracts.goodSamaritanMirrorsAll(upcomingElectionBlockNumber);
         //TODO return something from mirror and assert
 
         console.log("Done Mirroring");
 
-        const mirrorPeriodEndBlock = nextElectionBlockNumber + options.votingMirrorPeriod + 1;
+        const mirrorPeriodEndBlock = upcomingElectionBlockNumber + options.votingMirrorPeriod + 1;
 
         await electionContracts.waitForOrbsFinality(mirrorPeriodEndBlock);
 
