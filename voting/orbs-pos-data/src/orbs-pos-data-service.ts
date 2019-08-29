@@ -51,7 +51,7 @@ export interface IDelegationInfo {
   delegationTimestamp?: number;
 }
 
-export class OrbsPOSInsightsService {
+export class OrbsPOSDataService {
   constructor(private ethereumClient: EthereumClientService, private orbsClientService: OrbsClientService) {}
 
   async getValidators(): Promise<string[]> {

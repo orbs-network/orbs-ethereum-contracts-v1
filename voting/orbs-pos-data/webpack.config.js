@@ -7,10 +7,10 @@
  */
 
 const path = require("path");
-var nodeExternals = require('webpack-node-externals');
+var nodeExternals = require('./node_modules/webpack-node-externals');
 
 const production = process.env.NODE_ENV === "production";
-const libraryName = 'OrbsPOSInsights';
+const libraryName = 'OrbsPOSData';
 
 const webConfig = {
   target: 'web',
@@ -19,7 +19,7 @@ const webConfig = {
   entry: "./src/index.ts",
   output: {
     path: path.join(__dirname, "dist"),
-    filename: `orbs-pos-insights-web.js`,
+    filename: `orbs-pos-data-web.js`,
     library: libraryName,
     libraryTarget: "umd",
     umdNamedDefine: true
@@ -46,7 +46,7 @@ const nodeConfig = {
   entry: "./src/index.ts",
   output: {
     path: path.join(__dirname, "dist"),
-    filename: `orbs-pos-insights.js`,
+    filename: `orbs-pos-data.js`,
     library: libraryName,
     libraryTarget: "umd",
     umdNamedDefine: true

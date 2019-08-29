@@ -1,9 +1,9 @@
 {
-  "name": "orbs-pos-insights",
-  "version": "1.0.2",
+  "name": "orbs-pos-data",
+  "version": "1.0.0",
   "description": "",
-  "main": "dist/orbs-pos-insights.js",
-  "browser": "dist/orbs-pos-insights-web.js",
+  "main": "dist/orbs-pos-data.js",
+  "browser": "dist/orbs-pos-data-web.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"

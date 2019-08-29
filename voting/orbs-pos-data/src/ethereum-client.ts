@@ -9,11 +9,11 @@
 import Web3 from "web3";
 import contractsInfo from "./contracts-info";
 import erc20ContactAbi from "./erc20-abi";
-import votingContractJSON from "./contracts/OrbsVoting.json";
-import orbsRewardsDistributionContractJSON from "./contracts/OrbsRewardsDistribution.json";
-import guardiansContractJSON from "./contracts/OrbsGuardians.json";
-import validatorsContractJSON from "./contracts/OrbsValidators.json";
-import validatorsRegistryContractJSON from "./contracts/OrbsValidatorsRegistry.json";
+import votingContractJSON from "./contracts/OrbsVoting.json.js";
+import orbsRewardsDistributionContractJSON from "./contracts/OrbsRewardsDistribution.json.js";
+import guardiansContractJSON from "./contracts/OrbsGuardians.json.js";
+import validatorsContractJSON from "./contracts/OrbsValidators.json.js";
+import validatorsRegistryContractJSON from "./contracts/OrbsValidatorsRegistry.json.js";
 import Contract from "web3/eth/contract";
 import { BlockType } from "web3/eth/types";
 

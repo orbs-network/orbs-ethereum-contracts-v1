@@ -1,19 +1,19 @@
-# Orbs POS Insights
-A library that provides a simple way to read insights about the orbs POS, like guardians, rewards, etc.
+# Orbs POS Data
+A library that provides a simple way to read data about the orbs POS, like guardians, rewards, etc.
 
 ## Installation
-`npm install orbs-pos-insights --save`
+`npm install orbs-pos-data --save`
 
 ## Setup
 
 ```js
-import { orbsPOSInsightsServiceFactory } from 'orbs-pos-insights';
+import { orbsPOSDataServiceFactory } from 'orbs-pos-data';
 
 const ethereumProviderUrl = 'https://mainnet.infura.io/v3/YOUR_KEY';	// The Ethereum that we will query
 const orbsNodeAddress = '18.197.127.2';	// The Orbs node that we will query
 const virtualChainId = 1100000;	// The virtual chain Id on the Orbs network
 
-const orbsPosInsights = orbsPOSInsightsServiceFactory(ethereumProviderUrl, orbsNodeAddress, virtualChainId);
+const orbsPosData = orbsPOSDataServiceFactory(ethereumProviderUrl, orbsNodeAddress, virtualChainId);
 ```
 
 
