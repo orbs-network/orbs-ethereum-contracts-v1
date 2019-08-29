@@ -21,13 +21,13 @@ const orbsPosInsights = orbsPOSInsightsServiceFactory(ethereumProviderUrl, orbsN
 
 ### `getValidators(): Promise<string[]>`
 
-Get a list of all Orb's validators addresses.
+Get a list of Orb's validators addresses.
 
 ---
 
 ### `getValidatorInfo(address: string): Promise<IValidatorInfo>`
 
-Get detailed information about the given validator (`adderss` parameter)
+Get a detailed information about the given validator (`adderss` parameter)
 
 ```ts
 interface IValidatorInfo {
@@ -56,7 +56,6 @@ export interface IRewards {
   delegatorReward: number;
   guardianReward: number;
   validatorReward: number;
-  totalReward: number; // A summary of all the rewards (delegatorReward + guardianReward + validatorReward)
 }
 ```
 

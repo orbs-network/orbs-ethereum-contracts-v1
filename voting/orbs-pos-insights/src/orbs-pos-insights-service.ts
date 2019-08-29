@@ -15,7 +15,6 @@ export interface IRewards {
   delegatorReward: number;
   guardianReward: number;
   validatorReward: number;
-  totalReward: number;
 }
 
 export interface IValidatorInfo {
@@ -86,7 +85,6 @@ export class OrbsPOSInsightsService {
       delegatorReward: Number(delegatorReward),
       guardianReward: Number(guardianReward),
       validatorReward: Number(validatorReward),
-      totalReward: Number(delegatorReward + guardianReward + validatorReward),
     };
   }
 

@@ -16,26 +16,28 @@ import { useTranslation } from 'react-i18next';
 
 export const RewardsTable = ({ rewards }) => {
   const { t } = useTranslation();
+  const { delegatorReward = 0, guardianReward = 0, validatorReward = 0 } = rewards;
+  const totalReward = delegatorReward + guardianReward + validatorReward;
   return (
     <Table padding='none'>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegator Reward')}</TableCell>
-          <TableCell align='right'>{(rewards.delegatorReward || 0).toLocaleString()} ORBS</TableCell>
+          <TableCell align='right'>{delegatorReward.toLocaleString()} ORBS</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian Excellency Reward')}</TableCell>
-          <TableCell align='right'>{(rewards.guardianReward || 0).toLocaleString()} ORBS</TableCell>
+          <TableCell align='right'>{guardianReward.toLocaleString()} ORBS</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Validator Reward')}</TableCell>
-          <TableCell align='right'>{(rewards.validatorReward || 0).toLocaleString()} ORBS</TableCell>
+          <TableCell align='right'>{validatorReward.toLocaleString()} ORBS</TableCell>
         </TableRow>
       </TableBody>
       <TableFooter>
         <TableRow>
           <TableCell>{t('Total Reward')}</TableCell>
-          <TableCell align='right'>{(rewards.totalReward || 0).toLocaleString()} ORBS</TableCell>
+          <TableCell align='right'>{totalReward.toLocaleString()} ORBS</TableCell>
         </TableRow>
       </TableFooter>
     </Table>
