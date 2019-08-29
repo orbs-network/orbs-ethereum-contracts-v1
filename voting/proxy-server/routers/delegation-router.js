@@ -31,7 +31,7 @@ const delegationRouter = delegationApi => {
   router.get('/delegation/status', async (req, res) => {
     try {
       const address = req.query['address'];
-      const result = await delegationApi.getDelegationStatus(address);
+      const result = await delegationApi.getDelegatee(address);
       res.send(result);
     } catch (err) {
       res.status(500).send(err.toString());

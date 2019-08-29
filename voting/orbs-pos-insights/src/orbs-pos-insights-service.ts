@@ -122,7 +122,7 @@ export class OrbsPOSInsightsService {
     return await this.orbsClientService.getEffectiveElectionBlockNumber();
   }
 
-  async getDelegationStatus(address: string): Promise<string> {
+  async getDelegatee(address: string): Promise<string> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
     if (info.delegatedTo === NON_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);

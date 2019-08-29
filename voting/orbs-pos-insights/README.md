@@ -109,9 +109,9 @@ Get the previous election block height (On Ethereum)
 
 ---
 
-### `getDelegationStatus(address: string): Promise<string>`
+### `getDelegatee(address: string): Promise<string>`
 
-Get to whom of the given `address` is currently delegating to. Returns the address of the delegator or address `0x0000000000000000000000000000000000000000` if not delegation was found.
+Get to whom the given `address` is currently delegating to. Returns the address of the delegator or address `0x0000000000000000000000000000000000000000` if not delegation was found.
 
 ---
 
