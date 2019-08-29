@@ -16,16 +16,16 @@ const electionsRouter = electionsApi => {
    *
    * /elections/next:
    *  get:
-   *    description: Returns Ethereum block height of next elections
+   *    description: Returns Ethereum block number of next elections
    *    tags:
    *      - Elections
    *    responses:
    *      '200':
-   *        description: Ethereum block height of next elections
+   *        description: Ethereum block number of next elections
    */
   router.get('/elections/next', async (_, res) => {
     try {
-      const nextElections = await electionsApi.getNextElectionsBlockHeight();
+      const nextElections = await electionsApi.getNextElectionsBlockNumber();
       res.send(nextElections.toString());
     } catch (err) {
       res.status(500).send(err.toString());
@@ -37,16 +37,16 @@ const electionsRouter = electionsApi => {
    *
    * /elections/past:
    *  get:
-   *    description: Returns Ethereum block height of past elections
+   *    description: Returns Ethereum block number of past elections
    *    tags:
    *      - Elections
    *    responses:
    *      '200':
-   *        description: Ethereum block height of past elections
+   *        description: Ethereum block number of past elections
    */
   router.get('/elections/past', async (_, res) => {
     try {
-      const blockNumber = await electionsApi.getPastElectionBlockHeight();
+      const blockNumber = await electionsApi.getPastElectionBlockNumber();
       res.send(blockNumber.toString());
     } catch (err) {
       res.status(500).send(err.toString());

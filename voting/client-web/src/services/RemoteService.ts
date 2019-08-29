@@ -47,11 +47,11 @@ export class RemoteService implements IRemoteService {
     return this.callRemote(`/total-participating-tokens`);
   }
 
-  getNextElectionBlockHeight() {
+  getNextElectionBlockNumber() {
     return this.callRemote(`/elections/next`);
   }
 
-  getPastElectionBlockHeight() {
+  getPastElectionBlockNumber() {
     return this.callRemote(`/elections/past`);
   }
 

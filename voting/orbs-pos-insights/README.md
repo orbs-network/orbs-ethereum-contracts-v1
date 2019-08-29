@@ -97,15 +97,15 @@ interface IGuardianInfo {
 
 ---
 
-### `getNextElectionsBlockHeight(): Promise<number>`
+### `getNextElectionsBlockNumber(): Promise<number>`
 
-Get the next election block height (On Ethereum)
+Get the next election block number (On Ethereum)
 
 ---
 
-### `getPastElectionBlockHeight(): Promise<number>`
+### `getPastElectionBlockNumber(): Promise<number>`
 
-Get the previous election block height (On Ethereum)
+Get the previous election block number (On Ethereum)
 
 ---
 

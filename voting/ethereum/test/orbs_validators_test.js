@@ -67,17 +67,17 @@ contract('OrbsValidators', accounts => {
     });
 
     describe('when calling getAdditionBlockNumber() function', () => {
-        it('returns the block height when the validator was last added, or 0 if never added', async () => {
+        it('returns the block number when the validator was last added, or 0 if never added', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
             const zeroBlockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
-            assert.equal(zeroBlockNumber, 0, "expected addition block height to be 0 before addition");
+            assert.equal(zeroBlockNumber, 0, "expected addition block number to be 0 before addition");
 
             const additionResult = await driver.OrbsValidators.approve(accounts[0]);
             const additionBlockNumber = additionResult.receipt.blockNumber;
 
             const blockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
-            assert.equal(blockNumber, additionBlockNumber, "expected addition block height to reflect the block height of addition tx");
+            assert.equal(blockNumber, additionBlockNumber, "expected addition block number to reflect the block number of addition tx");
         });
     });
 
@@ -153,14 +153,14 @@ contract('OrbsValidators', accounts => {
             assert.equal(r.logs[0].event, "ValidatorRemoved");
         });
 
-        it('clears addition block height', async () => {
+        it('clears addition block number', async () => {
             await driver.deployValidatorsWithRegistry(100);
 
             await driver.OrbsValidators.approve(accounts[0]);
 
             await driver.OrbsValidators.remove(accounts[0]);
             const blockNumber = await driver.OrbsValidators.getApprovalBlockNumber(accounts[0]);
-            assert.equal(blockNumber, 0, "expected addition block height to be cleared after removal");
+            assert.equal(blockNumber, 0, "expected addition block number to be cleared after removal");
         });
 
         it('removes only the correct validator', async () => {

@@ -71,7 +71,7 @@ const delegationRouter = delegationApi => {
    *                  description: The method of delegation
    *                delegationBlockNumber:
    *                  type: string
-   *                  description: The block height when delegation has occurred
+   *                  description: The block number when delegation has occurred
    *                delegationTimestamp:
    *                  type: string
    *                  description: Time and date of delegation

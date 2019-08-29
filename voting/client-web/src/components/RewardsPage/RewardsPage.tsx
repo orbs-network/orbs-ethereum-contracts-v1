@@ -57,7 +57,7 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
     setGuardianInfo(guardianData);
   };
 
-  const fetchPastElectionBlock = () => remoteService.getPastElectionBlockHeight().then(setElectionBlock);
+  const fetchPastElectionBlock = () => remoteService.getPastElectionBlockNumber().then(setElectionBlock);
 
   const submitHandler = () => {
     fetchRewards(address);
