@@ -43,8 +43,8 @@ export class RemoteService implements IRemoteService {
     return this.callRemote(`/rewards/history/${address}`);
   }
 
-  getTotalStake() {
-    return this.callRemote(`/stake/total`);
+  getTotalParticipatingTokens() {
+    return this.callRemote(`/total-participating-tokens`);
   }
 
   getNextElectionBlockHeight() {

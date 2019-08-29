@@ -62,16 +62,16 @@ export class OrbsPOSInsightsService {
     const validatorData: IValidatorData = await this.ethereumClient.getValidatorData(validatorAddress);
     const result: IValidatorInfo = { votesAgainst: 0, ...validatorData };
 
-    const [validatorVotesResults, totalStakeResults] = await Promise.all([this.orbsClientService.getValidatorVotes(validatorAddress), this.orbsClientService.getTotalStake()]);
+    const [validatorVotesResults, totalParticipatingTokens] = await Promise.all([this.orbsClientService.getValidatorVotes(validatorAddress), this.orbsClientService.getTotalParticipatingTokens()]);
 
-    if (totalStakeResults !== BigInt(0)) {
-      result.votesAgainst = Number((BigInt(100) * validatorVotesResults) / totalStakeResults);
+    if (totalParticipatingTokens !== BigInt(0)) {
+      result.votesAgainst = Number((BigInt(100) * validatorVotesResults) / totalParticipatingTokens);
     }
     return result;
   }
 
-  async getTotalStake(): Promise<number> {
-    return Number(await this.orbsClientService.getTotalStake());
+  async getTotalParticipatingTokens(): Promise<number> {
+    return Number(await this.orbsClientService.getTotalParticipatingTokens());
   }
 
   async getRewards(address: string): Promise<IRewards> {
@@ -99,7 +99,7 @@ export class OrbsPOSInsightsService {
   async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
     const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(guardianAddress);
 
-    const [votingWeightResults, totalStakeResults] = await Promise.all([this.orbsClientService.getGuardianVoteWeight(guardianAddress), this.orbsClientService.getTotalStake()]);
+    const [votingWeightResults, totalParticipatingTokens] = await Promise.all([this.orbsClientService.getGuardianVoteWeight(guardianAddress), this.orbsClientService.getTotalParticipatingTokens()]);
 
     const result: IGuardianInfo = {
       voted: votingWeightResults !== BigInt(0),
@@ -107,8 +107,8 @@ export class OrbsPOSInsightsService {
       ...guardianData,
     };
 
-    if (totalStakeResults !== BigInt(0)) {
-      result.stake = Number(votingWeightResults) / Number(totalStakeResults);
+    if (totalParticipatingTokens !== BigInt(0)) {
+      result.stake = Number(votingWeightResults) / Number(totalParticipatingTokens);
     }
 
     return result;

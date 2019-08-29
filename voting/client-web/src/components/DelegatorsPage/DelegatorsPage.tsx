@@ -31,7 +31,7 @@ export const DelegatorsPage = () => {
 
   const [manualDelegationDialogState, setManualDelegationDialogState] = useState(false);
 
-  const [totalStake, setTotalStake] = useState('0');
+  const [totalParticipatingTokens, setTotalParticipatingTokens] = useState('0');
   const [delegatedTo, setDelegatedTo] = useState('');
   const [delegationCandidate, setDelegationCandidate] = useState('');
   const [nextElectionsBlockHeight, setNextElectionsBlockHeight] = useState('');
@@ -41,9 +41,9 @@ export const DelegatorsPage = () => {
     setNextElectionsBlockHeight(res);
   };
 
-  const fetchTotalStake = async () => {
-    const totalStake = await remoteService.getTotalStake();
-    setTotalStake(totalStake);
+  const fetchTotalParticipatingTokens = async () => {
+    const totalParticipatingTokens = await remoteService.getTotalParticipatingTokens();
+    setTotalParticipatingTokens(totalParticipatingTokens);
   };
 
   const fetchGuardian = async address => {
@@ -72,7 +72,7 @@ export const DelegatorsPage = () => {
   };
 
   useEffect(() => {
-    fetchTotalStake();
+    fetchTotalParticipatingTokens();
     fetchGuardians();
     fetchDelegatedTo();
     fetchNextElectionsBlockHeight();
@@ -138,7 +138,7 @@ export const DelegatorsPage = () => {
         <Typography variant='body1' gutterBottom color='textPrimary'>
           {t('Participating stake')}
           {': '}
-          {totalStake} Orbs
+          {totalParticipatingTokens} Orbs
         </Typography>
       </div>
 

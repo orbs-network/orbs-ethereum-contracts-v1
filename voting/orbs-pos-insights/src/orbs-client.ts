@@ -37,7 +37,7 @@ export class OrbsClientService {
     return results.outputArguments[0].value as T;
   }
 
-  getTotalStake(): Promise<bigint> {
+  getTotalParticipatingTokens(): Promise<bigint> {
     const query = this.buildQuery('getTotalStake', []);
     return this.sendQuery(query);
   }

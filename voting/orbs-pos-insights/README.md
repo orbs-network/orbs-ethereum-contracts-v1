@@ -41,9 +41,9 @@ interface IValidatorInfo {
 
 ---
 
-### `getTotalStake(): Promise<number>`
+### `getTotalParticipatingTokens(): Promise<number>`
 
-Get the current total stake on the Orbs platform.
+Get the current total participating Orbs in the POS.
 
 ---
 

@@ -10,7 +10,7 @@ export interface IRemoteService {
   getElectedValidatorData(address: string): Promise<{}>;
   getRewards(address: string): Promise<any>;
   getRewardsHistory(address: string): Promise<any>;
-  getTotalStake(): Promise<string>;
+  getTotalParticipatingTokens(): Promise<string>;
   getNextElectionBlockHeight(): Promise<string>;
   getPastElectionBlockHeight(): Promise<string>;
   getCurrentDelegation(address: string): Promise<string>;
