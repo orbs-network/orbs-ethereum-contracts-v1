@@ -57,7 +57,7 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
     setGuardianInfo(guardianData);
   };
 
-  const fetchPastElectionBlock = () => remoteService.getPastElectionBlockHeight().then(setElectionBlock);
+  const fetchEffectiveElectionBlock = () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock);
 
   const submitHandler = () => {
     fetchRewards(address);
@@ -66,7 +66,7 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
   };
 
   useEffect(() => {
-    fetchPastElectionBlock();
+    fetchEffectiveElectionBlock();
 
     if (!location!.search) {
       return;

@@ -220,7 +220,7 @@ contract('OrbsValidatorsRegistry', accounts => {
         const orbsAddr = numToAddress(8765);
         const ip = "0x01020304"; // 4 bytes representing an address
 
-        it('should return the correct the registration block height', async () => {
+        it('should return the correct the registration block number', async () => {
             await driver.deployRegistry();
 
             // register:
@@ -237,11 +237,11 @@ contract('OrbsValidatorsRegistry', accounts => {
             const regRes2 = await driver.OrbsRegistry.update("XX", "0xFFEEDDCC", "XX", numToAddress(999), {from: accounts[1]});
 
             const regBlck = await driver.OrbsRegistry.getRegistrationBlockNumber(accounts[1]);
-            const registrationHeight = regRes1.receipt.blockNumber;
-            const updateHeight = regRes2.receipt.blockNumber;
-            assert(registrationHeight < updateHeight, "expected registration block height to be less than updating block height");
-            assert.equal(regBlck.registeredOn.toNumber(), registrationHeight);
-            assert.equal(regBlck.lastUpdatedOn.toNumber(), updateHeight);
+            const registrationBlockNumber = regRes1.receipt.blockNumber;
+            const updateBlockNumber = regRes2.receipt.blockNumber;
+            assert(registrationBlockNumber < updateBlockNumber, "expected registration block number to be less than updating block number");
+            assert.equal(regBlck.registeredOn.toNumber(), registrationBlockNumber);
+            assert.equal(regBlck.lastUpdatedOn.toNumber(), updateBlockNumber);
             assert.equal(regBlck.registeredOn.toNumber(), regBlck[0].toNumber());
             assert.equal(regBlck.lastUpdatedOn.toNumber(), regBlck[1].toNumber());
         });

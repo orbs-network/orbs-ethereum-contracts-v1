@@ -27,7 +27,7 @@ export class RemoteServiceMock implements IRemoteService {
   getRewardsHistory(address: string) {
     return Promise.resolve([]);
   }
-  getTotalStake() {
+  getTotalParticipatingTokens() {
     return Promise.resolve('totally-fake-stake');
   }
   getCurrentDelegation() {
@@ -36,10 +36,10 @@ export class RemoteServiceMock implements IRemoteService {
   getCurrentDelegationInfo() {
     return Promise.resolve({});
   }
-  getNextElectionBlockHeight() {
+  getUpcomingElectionBlockNumber() {
     return Promise.resolve('0');
   }
-  getPastElectionBlockHeight() {
+  getEffectiveElectionBlockNumber() {
     return Promise.resolve('0');
   }
 }

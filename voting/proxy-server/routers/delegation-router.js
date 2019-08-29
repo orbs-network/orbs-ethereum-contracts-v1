@@ -31,7 +31,7 @@ const delegationRouter = delegationApi => {
   router.get('/delegation/status', async (req, res) => {
     try {
       const address = req.query['address'];
-      const result = await delegationApi.getDelegationStatus(address);
+      const result = await delegationApi.getDelegatee(address);
       res.send(result);
     } catch (err) {
       res.status(500).send(err.toString());
@@ -71,7 +71,7 @@ const delegationRouter = delegationApi => {
    *                  description: The method of delegation
    *                delegationBlockNumber:
    *                  type: string
-   *                  description: The block height when delegation has occurred
+   *                  description: The block number when delegation has occurred
    *                delegationTimestamp:
    *                  type: string
    *                  description: Time and date of delegation

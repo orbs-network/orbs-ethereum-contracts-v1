@@ -191,7 +191,7 @@ contract('Voting', accounts => {
                     assert.equal(reportedFirstVote[1].toNumber(), firstVoteBlockNumber);
 
                     assert.deepEqual(reportedFirstVote[0].map(a => web3.utils.toChecksumAddress(a)), reportedFirstVote[validatorsReturnFieldName], "expected first item in tuple to be nodes");
-                    assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockNumber.toNumber(), "expected second item in tuple to be block height");
+                    assert.equal(reportedFirstVote[1].toNumber(), reportedFirstVote.blockNumber.toNumber(), "expected second item in tuple to be block number");
 
                     const secondVoteBlockNumber = await driver.OrbsVoting.voteOut(secondVote).then(r => r.receipt.blockNumber);
                     const reportedSecondVote = await functionUnderTest(accounts[0]);

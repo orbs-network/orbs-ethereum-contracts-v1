@@ -15,19 +15,17 @@ const stakeRouter = apiService => {
   /**
    * @swagger
    *
-   * /stake/total:
+   * /total-participating-tokens:
    *  get:
    *    description: Returns total participating stake
-   *    tags:
-   *      - Stake
    *    responses:
    *      '200':
    *        description: Formatted string of total stake
    */
-  router.get('/stake/total', async (req, res) => {
+  router.get('/total-participating-tokens', async (req, res) => {
     try {
-      const totalStake = await apiService.getTotalStake();
-      res.send(numberFormatter.format(totalStake.toString()));
+      const totalParticipatingTokens = await apiService.getTotalParticipatingTokens();
+      res.send(numberFormatter.format(totalParticipatingTokens.toString()));
     } catch (err) {
       res.status(500).send(err.toString());
     }

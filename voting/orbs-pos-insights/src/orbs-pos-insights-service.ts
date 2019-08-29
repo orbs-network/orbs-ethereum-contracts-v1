@@ -15,7 +15,6 @@ export interface IRewards {
   delegatorReward: number;
   guardianReward: number;
   validatorReward: number;
-  totalReward: number;
 }
 
 export interface IValidatorInfo {
@@ -42,9 +41,11 @@ export interface IGuardianInfo {
   stake: number;
 }
 
+export type TDelegationType = "None-Delegated" | "Transfer" | "Delegate";
+
 export interface IDelegationInfo {
   delegatedTo: string;
-  delegationType: "Transfer" | "Delegate";
+  delegationType: TDelegationType;
   delegatorBalance: number;
   delegationBlockNumber?: number;
   delegationTimestamp?: number;
@@ -57,20 +58,20 @@ export class OrbsPOSInsightsService {
     return await this.ethereumClient.getValidators();
   }
 
-  async getValidatorInfo(address: string): Promise<IValidatorInfo> {
-    const validatorData: IValidatorData = await this.ethereumClient.getValidatorData(address);
+  async getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo> {
+    const validatorData: IValidatorData = await this.ethereumClient.getValidatorData(validatorAddress);
     const result: IValidatorInfo = { votesAgainst: 0, ...validatorData };
 
-    const [validatorVotesResults, totalStakeResults] = await Promise.all([this.orbsClientService.getValidatorVotes(address), this.orbsClientService.getTotalStake()]);
+    const [validatorVotesResults, totalParticipatingTokens] = await Promise.all([this.orbsClientService.getValidatorVotes(validatorAddress), this.orbsClientService.getTotalParticipatingTokens()]);
 
-    if (totalStakeResults !== BigInt(0)) {
-      result.votesAgainst = Number((BigInt(100) * validatorVotesResults) / totalStakeResults);
+    if (totalParticipatingTokens !== BigInt(0)) {
+      result.votesAgainst = Number((BigInt(100) * validatorVotesResults) / totalParticipatingTokens);
     }
     return result;
   }
 
-  async getTotalStake(): Promise<number> {
-    return Number(await this.orbsClientService.getTotalStake());
+  async getTotalParticipatingTokens(): Promise<number> {
+    return Number(await this.orbsClientService.getTotalParticipatingTokens());
   }
 
   async getRewards(address: string): Promise<IRewards> {
@@ -84,7 +85,6 @@ export class OrbsPOSInsightsService {
       delegatorReward: Number(delegatorReward),
       guardianReward: Number(guardianReward),
       validatorReward: Number(validatorReward),
-      totalReward: Number(delegatorReward + guardianReward + validatorReward),
     };
   }
 
@@ -96,10 +96,10 @@ export class OrbsPOSInsightsService {
     return await this.ethereumClient.getGuardians(offset, limit);
   }
 
-  async getGuardianInfo(address: string): Promise<IGuardianInfo> {
-    const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(address);
+  async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
+    const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(guardianAddress);
 
-    const [votingWeightResults, totalStakeResults] = await Promise.all([this.orbsClientService.getGuardianVoteWeight(address), this.orbsClientService.getTotalStake()]);
+    const [votingWeightResults, totalParticipatingTokens] = await Promise.all([this.orbsClientService.getGuardianVoteWeight(guardianAddress), this.orbsClientService.getTotalParticipatingTokens()]);
 
     const result: IGuardianInfo = {
       voted: votingWeightResults !== BigInt(0),
@@ -107,22 +107,22 @@ export class OrbsPOSInsightsService {
       ...guardianData,
     };
 
-    if (totalStakeResults !== BigInt(0)) {
-      result.stake = Number(votingWeightResults) / Number(totalStakeResults);
+    if (totalParticipatingTokens !== BigInt(0)) {
+      result.stake = Number(votingWeightResults) / Number(totalParticipatingTokens);
     }
 
     return result;
   }
 
-  async getNextElectionsBlockHeight(): Promise<number> {
-    return await this.ethereumClient.getNextElectionsBlockHeight();
+  async getUpcomingElectionBlockNumber(): Promise<number> {
+    return await this.ethereumClient.getUpcomingElectionBlockNumber();
   }
 
-  async getPastElectionBlockHeight(): Promise<number> {
+  async getEffectiveElectionBlockNumber(): Promise<number> {
     return await this.orbsClientService.getEffectiveElectionBlockNumber();
   }
 
-  async getDelegationStatus(address: string): Promise<string> {
+  async getDelegatee(address: string): Promise<string> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
     if (info.delegatedTo === NON_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
@@ -133,10 +133,14 @@ export class OrbsPOSInsightsService {
 
   async getDelegationInfo(address: string): Promise<IDelegationInfo> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
-    let delegationType: "Transfer" | "Delegate";
+    let delegationType: TDelegationType;
     if (info.delegatedTo === NON_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
-      delegationType = "Transfer";
+        if (info.delegatedTo === NON_DELEGATED) {
+          delegationType = "None-Delegated";
+        } else {
+          delegationType = "Transfer";
+        }
     } else {
       delegationType = "Delegate";
     }
@@ -160,9 +164,9 @@ export class OrbsPOSInsightsService {
     return addresses;
   }
 
-  async getElectedValidatorInfo(address: string): Promise<IElectedValidatorInfo> {
-    const validatorData = await this.ethereumClient.getValidatorData(address);
-    const stake = await this.orbsClientService.getValidatorStake(address);
+  async getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo> {
+    const validatorData = await this.ethereumClient.getValidatorData(validatorAddress);
+    const stake = await this.orbsClientService.getValidatorStake(validatorAddress);
 
     const result = {
       name: validatorData.name,

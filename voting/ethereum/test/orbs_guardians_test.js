@@ -212,7 +212,7 @@ contract('OrbsGuardians', accounts => {
     });
 
     describe('when getRegistrationBlockNumber() is called', () => {
-        it('should return the correct the registration block height', async () => {
+        it('should return the correct the registration block number', async () => {
             await driver.deployGuardians();
 
             const regRes1 = await driver.OrbsGuardians.register("some name", "some website", {from: accounts[1], value: driver.registrationDeposit});
@@ -228,7 +228,7 @@ contract('OrbsGuardians', accounts => {
 
             const regBlockNums2 = await driver.OrbsGuardians.getRegistrationBlockNumber(accounts[1]);
             const updateBlockNum = regRes2.receipt.blockNumber;
-            assert(registrationBlockNum < updateBlockNum, "expected registration block height to be less than updating block height");
+            assert(registrationBlockNum < updateBlockNum, "expected registration block number to be less than updating block number");
             assert.equal(regBlockNums2.registeredOn.toNumber(), registrationBlockNum);
             assert.equal(regBlockNums2.lastUpdatedOn.toNumber(), updateBlockNum);
             assert.equal(regBlockNums2.registeredOn.toNumber(), regBlockNums2[0].toNumber());

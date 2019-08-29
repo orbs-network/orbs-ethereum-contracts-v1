@@ -43,16 +43,16 @@ export class RemoteService implements IRemoteService {
     return this.callRemote(`/rewards/history/${address}`);
   }
 
-  getTotalStake() {
-    return this.callRemote(`/stake/total`);
+  getTotalParticipatingTokens() {
+    return this.callRemote(`/total-participating-tokens`);
   }
 
-  getNextElectionBlockHeight() {
-    return this.callRemote(`/elections/next`);
+  getUpcomingElectionBlockNumber() {
+    return this.callRemote(`/elections/upcoming`);
   }
 
-  getPastElectionBlockHeight() {
-    return this.callRemote(`/elections/past`);
+  getEffectiveElectionBlockNumber() {
+    return this.callRemote(`/elections/effective`);
   }
 
   getCurrentDelegation(address: string) {

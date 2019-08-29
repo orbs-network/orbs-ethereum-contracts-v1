@@ -37,7 +37,7 @@
   * If no delegation stored, there's no harm in collecting past delegation data.
     * The Election contract will return error on the duplicate mirrored trasnactions.
   * Use `Election.mirrorDelegation(hexEncodedEthTxHash)` or `Election.mirrorDelegationByTransfer(hexEncodedEthTxHash)`.
-* Mirror all VoteOut transactions with block_height > current election block number - `VOTING_VALIDITY_TIME`. Note: no harm in mirror older votes.
+* Mirror all VoteOut transactions with block_number > current election block number - `VOTING_VALIDITY_TIME`. Note: no harm in mirror older votes.
   * Use `Election.mirrorVote(hexEncodedEthTxHash)`
 
 ## Processing

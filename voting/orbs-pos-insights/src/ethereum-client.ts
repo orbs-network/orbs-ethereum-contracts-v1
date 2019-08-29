@@ -80,17 +80,17 @@ export class EthereumClientService {
   }
 
   async getGuardianData(address: string): Promise<IGuardianData> {
-    const [guardianData, currentVote, nextElectionsBlockHeight] = await Promise.all([
+    const [guardianData, currentVote, upcomingElectionsBlockNumber] = await Promise.all([
       this.guardiansContract.methods.getGuardianData(address).call(),
       this.votingContract.methods.getCurrentVote(address).call(),
-      this.getNextElectionsBlockHeight(),
+      this.getUpcomingElectionBlockNumber(),
     ]);
 
-    const votedAtBlockHeight = parseInt(currentVote.blockNumber);
+    const votedAtBlockNumber = parseInt(currentVote.blockNumber);
     return {
       name: guardianData.name,
       website: guardianData.website,
-      hasEligibleVote: votedAtBlockHeight + VALID_VOTE_LENGTH > nextElectionsBlockHeight,
+      hasEligibleVote: votedAtBlockNumber + VALID_VOTE_LENGTH > upcomingElectionsBlockNumber,
     };
   }
 
@@ -176,15 +176,15 @@ export class EthereumClientService {
     };
   }
 
-  async getNextElectionsBlockHeight(): Promise<number> {
+  async getUpcomingElectionBlockNumber(): Promise<number> {
     let amountOfElections = 0;
-    let nextElectionsBlockHeight = 0;
-    const currentBlockHeight = await this.web3.eth.getBlockNumber();
-    while (nextElectionsBlockHeight < currentBlockHeight) {
+    let upcomingElectionsBlockNumber = 0;
+    const currentBlockNumber = await this.web3.eth.getBlockNumber();
+    while (upcomingElectionsBlockNumber < currentBlockNumber) {
       amountOfElections += 1;
-      nextElectionsBlockHeight = FIRST_ELECTION_BLOCK_HEIGHT + INTERVAL_BETWEEN_ELECTIONS * amountOfElections;
+      upcomingElectionsBlockNumber = FIRST_ELECTION_BLOCK_HEIGHT + INTERVAL_BETWEEN_ELECTIONS * amountOfElections;
     }
-    return nextElectionsBlockHeight;
+    return upcomingElectionsBlockNumber;
   }
 
   async getOrbsBalance(address: string): Promise<string> {
