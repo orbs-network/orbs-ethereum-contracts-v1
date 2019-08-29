@@ -25,9 +25,9 @@ Get a list of Orb's validators addresses.
 
 ---
 
-### `getValidatorInfo(address: string): Promise<IValidatorInfo>`
+### `getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo>`
 
-Get a detailed information about the given validator (`adderss` parameter)
+Get a detailed information about the given validator.
 
 ```ts
 interface IValidatorInfo {
@@ -81,9 +81,9 @@ Get a list of guardians addresses, using `offset` and `limit` for pagination.
 
 ---
 
-### `getGuardianInfo(address: string): Promise<IGuardianInfo>`
+### `getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>`
 
-Get information about the given guardian (`address` parameter).
+Get information about the given guardian.
 
 ```ts
 interface IGuardianInfo {
@@ -139,9 +139,9 @@ Get a list of the currently elected validator's addresses.
 
 ---
 
-### `getElectedValidatorInfo(address: string): Promise<IElectedValidatorInfo>`
+### `getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>`
 
-Get a detailed information about the given validator (`address` parameter) 
+Get a detailed information about the given validator.
 
 ---
 

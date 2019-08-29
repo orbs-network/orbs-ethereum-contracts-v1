@@ -58,11 +58,11 @@ export class OrbsPOSInsightsService {
     return await this.ethereumClient.getValidators();
   }
 
-  async getValidatorInfo(address: string): Promise<IValidatorInfo> {
-    const validatorData: IValidatorData = await this.ethereumClient.getValidatorData(address);
+  async getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo> {
+    const validatorData: IValidatorData = await this.ethereumClient.getValidatorData(validatorAddress);
     const result: IValidatorInfo = { votesAgainst: 0, ...validatorData };
 
-    const [validatorVotesResults, totalStakeResults] = await Promise.all([this.orbsClientService.getValidatorVotes(address), this.orbsClientService.getTotalStake()]);
+    const [validatorVotesResults, totalStakeResults] = await Promise.all([this.orbsClientService.getValidatorVotes(validatorAddress), this.orbsClientService.getTotalStake()]);
 
     if (totalStakeResults !== BigInt(0)) {
       result.votesAgainst = Number((BigInt(100) * validatorVotesResults) / totalStakeResults);
@@ -96,10 +96,10 @@ export class OrbsPOSInsightsService {
     return await this.ethereumClient.getGuardians(offset, limit);
   }
 
-  async getGuardianInfo(address: string): Promise<IGuardianInfo> {
-    const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(address);
+  async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
+    const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(guardianAddress);
 
-    const [votingWeightResults, totalStakeResults] = await Promise.all([this.orbsClientService.getGuardianVoteWeight(address), this.orbsClientService.getTotalStake()]);
+    const [votingWeightResults, totalStakeResults] = await Promise.all([this.orbsClientService.getGuardianVoteWeight(guardianAddress), this.orbsClientService.getTotalStake()]);
 
     const result: IGuardianInfo = {
       voted: votingWeightResults !== BigInt(0),
@@ -164,9 +164,9 @@ export class OrbsPOSInsightsService {
     return addresses;
   }
 
-  async getElectedValidatorInfo(address: string): Promise<IElectedValidatorInfo> {
-    const validatorData = await this.ethereumClient.getValidatorData(address);
-    const stake = await this.orbsClientService.getValidatorStake(address);
+  async getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo> {
+    const validatorData = await this.ethereumClient.getValidatorData(validatorAddress);
+    const stake = await this.orbsClientService.getValidatorStake(validatorAddress);
 
     const result = {
       name: validatorData.name,
