@@ -7,13 +7,13 @@
  */
 
 const path = require("path");
-var nodeExternals = require('./node_modules/webpack-node-externals');
+var nodeExternals = require("webpack-node-externals");
 
 const production = process.env.NODE_ENV === "production";
-const libraryName = 'OrbsPOSData';
+const libraryName = "OrbsPOSData";
 
 const webConfig = {
-  target: 'web',
+  target: "web",
   mode: production ? "production" : "development",
   devtool: production ? "" : "inline-source-map",
   entry: "./src/index.ts",
@@ -22,7 +22,7 @@ const webConfig = {
     filename: `orbs-pos-data-web.js`,
     library: libraryName,
     libraryTarget: "umd",
-    umdNamedDefine: true
+    umdNamedDefine: true,
   },
   resolve: {
     extensions: [".js", ".ts"],
@@ -32,14 +32,20 @@ const webConfig = {
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        loaders: ["babel-loader"],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [["@babel/env", { modules: false }], "@babel/typescript"],
+            plugins: ["@babel/plugin-transform-runtime", "@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-object-rest-spread"],
+          },
+        },
       },
     ],
   },
 };
 
 const nodeConfig = {
-  target: 'node',
+  target: "node",
   externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
   mode: production ? "production" : "development",
   devtool: production ? "" : "inline-source-map",
@@ -49,7 +55,7 @@ const nodeConfig = {
     filename: `orbs-pos-data.js`,
     library: libraryName,
     libraryTarget: "umd",
-    umdNamedDefine: true
+    umdNamedDefine: true,
   },
   resolve: {
     extensions: [".js", ".ts"],
@@ -59,7 +65,12 @@ const nodeConfig = {
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        loaders: ["babel-loader"],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [["@babel/env", { modules: false }], "@babel/typescript"],
+          },
+        },
       },
     ],
   },
