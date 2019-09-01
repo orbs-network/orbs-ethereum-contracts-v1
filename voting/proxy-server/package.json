@@ -1,6 +1,6 @@
 {
   "name": "orbs-voting-api-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "cors": "2.8.5",
     "express": "4.16.4",
-    "orbs-pos-insights": "^1.0.2"
+    "orbs-pos-data": "^1.0.4"
   },
   "devDependencies": {
     "chance": "^1.0.18",

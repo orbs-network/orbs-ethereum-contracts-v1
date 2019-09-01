@@ -15,7 +15,7 @@ const validatorsRouter = require('./routers/validators-router');
 const delegationRouter = require('./routers/delegation-router');
 const electionsRouter = require('./routers/elections-router');
 const electedValidatorsRouter = require('./routers/elected-validators-router');
-const { orbsPOSInsightsServiceFactory } = require('orbs-pos-insights');
+const { orbsPOSDataServiceFactory } = require('orbs-pos-data');
 
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -37,19 +37,19 @@ const ethereumProviderUrl =
 
   console.log(ethereumProviderUrl);
   
-const orbsPOSInsightsService = orbsPOSInsightsServiceFactory(
+const orbsPOSDataService = orbsPOSDataServiceFactory(
   ethereumProviderUrl,
   orbsNodeAddress,
   virtualChainId
 );
 app.get('/is_alive', (_, res) => res.sendStatus(200));
-app.use('/api', guardiansRouter(orbsPOSInsightsService));
-app.use('/api', electedValidatorsRouter(orbsPOSInsightsService));
-app.use('/api', validatorsRouter(orbsPOSInsightsService));
-app.use('/api', rewardsRouter(orbsPOSInsightsService));
-app.use('/api', stakeRouter(orbsPOSInsightsService));
-app.use('/api', electionsRouter(orbsPOSInsightsService));
-app.use('/api', delegationRouter(orbsPOSInsightsService));
+app.use('/api', guardiansRouter(orbsPOSDataService));
+app.use('/api', electedValidatorsRouter(orbsPOSDataService));
+app.use('/api', validatorsRouter(orbsPOSDataService));
+app.use('/api', rewardsRouter(orbsPOSDataService));
+app.use('/api', stakeRouter(orbsPOSDataService));
+app.use('/api', electionsRouter(orbsPOSDataService));
+app.use('/api', delegationRouter(orbsPOSDataService));
 
 const options = {
   swaggerDefinition: {
