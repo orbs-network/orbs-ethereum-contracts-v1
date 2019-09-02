@@ -1,5 +1,5 @@
 # Orbs POS Data
-A library that provides a simple way to read data about the orbs POS, like guardians, rewards, etc.
+A library that provides a simple way to read data about the Orbs POS, like Guardians, rewards, etc.
 
 ## Installation
 `npm install orbs-pos-data --save`
@@ -11,7 +11,7 @@ import { orbsPOSDataServiceFactory } from 'orbs-pos-data';
 
 const ethereumProviderUrl = 'https://mainnet.infura.io/v3/YOUR_KEY';	// The Ethereum that we will query
 const orbsNodeAddress = '18.197.127.2';	// The Orbs node that we will query
-const virtualChainId = 1100000;	// The virtual chain Id on the Orbs network
+const virtualChainId = 1100000;	// The virtual chain ID on the Orbs network
 
 const orbsPosData = orbsPOSDataServiceFactory(ethereumProviderUrl, orbsNodeAddress, virtualChainId);
 ```
@@ -21,13 +21,13 @@ const orbsPosData = orbsPOSDataServiceFactory(ethereumProviderUrl, orbsNodeAddre
 
 ### `getValidators(): Promise<string[]>`
 
-Get a list of Orb's validators addresses.
+Get a list of Orb's Validators addresses.
 
 ---
 
 ### `getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo>`
 
-Get a detailed information about the given validator.
+Get detailed information about the given Validator.
 
 ```ts
 interface IValidatorInfo {
@@ -43,7 +43,7 @@ interface IValidatorInfo {
 
 ### `getTotalParticipatingTokens(): Promise<number>`
 
-Get the current total participating Orbs in the POS.
+Get the current total number of participating ORBS in the POS.
 
 ---
 
@@ -77,13 +77,13 @@ interface IRewardsDistributionEvent {
 
 ### `getGuardiansList(offset: number, limit: number): Promise<string[]>`
 
-Get a list of guardians addresses, using `offset` and `limit` for pagination.
+Get a list of Guardians addresses, using `offset` and `limit` for pagination.
 
 ---
 
 ### `getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>`
 
-Get information about the given guardian.
+Get information about the given Guardian.
 
 ```ts
 interface IGuardianInfo {
@@ -99,19 +99,19 @@ interface IGuardianInfo {
 
 ### `getUpcomingElectionBlockNumber(): Promise<number>`
 
-Get the upcoming election block number (On Ethereum)
+Get the upcoming election block number (on Ethereum)
 
 ---
 
 ### `getEffectiveElectionBlockNumber(): Promise<number>`
 
-Get the effective election block number (On Ethereum)
+Get the effective election block number (on Ethereum)
 
 ---
 
 ### `getDelegatee(address: string): Promise<string>`
 
-Get to whom the given `address` is currently delegating to. Returns the address of the delegator or address `0x0000000000000000000000000000000000000000` if not delegation was found.
+Get to whom the given `address` is currently delegating. Returns the address of the Delegator or address `0x0000000000000000000000000000000000000000` if no delegation was found.
 
 ---
 
@@ -119,7 +119,7 @@ Get to whom the given `address` is currently delegating to. Returns the address 
 
 Get detailed information about the given `address` delegation.
 
-**Note:** If no delegation was done, the `delegatedTo` will be `0x0000000000000000000000000000000000000000` and the `delegationBlockNumber` and `delegationTimestamp` fields will not exist in the result.
+**Note:** If no delegation was found, the `delegatedTo` will be `0x0000000000000000000000000000000000000000` and the `delegationBlockNumber` and `delegationTimestamp` fields will not exist in the result.
 
 ```ts
 interface IDelegationInfo {
@@ -135,13 +135,13 @@ interface IDelegationInfo {
 
 ### `getElectedValidators(): Promise<string[]>`
 
-Get a list of the currently elected validator's addresses.
+Get a list of the currently elected Validator's addresses.
 
 ---
 
 ### `getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>`
 
-Get a detailed information about the given validator.
+Get a detailed information about the given Validator.
 
 ---
 
