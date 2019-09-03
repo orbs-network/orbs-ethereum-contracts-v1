@@ -7,7 +7,7 @@
  */
 import { EthereumClientService, IValidatorData, IRewardsDistributionEvent, IGuardianData, IDelegationData } from "./ethereum-client";
 import { OrbsClientService } from "./orbs-client";
-import { encodeHex } from 'orbs-client-sdk';
+import { encodeHex } from "orbs-client-sdk";
 
 const { NON_DELEGATED } = require("./ethereum-client");
 
@@ -136,11 +136,11 @@ export class OrbsPOSDataService {
     let delegationType: TDelegationType;
     if (info.delegatedTo === NON_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
-        if (info.delegatedTo === NON_DELEGATED) {
-          delegationType = "None-Delegated";
-        } else {
-          delegationType = "Transfer";
-        }
+      if (info.delegatedTo === NON_DELEGATED) {
+        delegationType = "None-Delegated";
+      } else {
+        delegationType = "Transfer";
+      }
     } else {
       delegationType = "Delegate";
     }
@@ -149,7 +149,7 @@ export class OrbsPOSDataService {
     return {
       delegatorBalance: Number(balance),
       delegationType,
-      ...info
+      ...info,
     };
   }
 

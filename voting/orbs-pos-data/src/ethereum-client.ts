@@ -105,15 +105,13 @@ export class EthereumClientService {
       };
     }
 
-    const DelegateEventSignature = this.web3.utils.sha3("Delegate(address,address,uint256)");
-
     const options = {
       fromBlock: OrbsTDEEthereumBlock,
       toBlock: "latest" as BlockType,
-      topics: [this.web3.utils.padLeft(address, 64, "0"), this.web3.utils.padLeft(currentDelegation, 64, "0")],
+      filter: { delegator: this.web3.utils.padLeft(address, 40, "0"), to: this.web3.utils.padLeft(currentDelegation, 40, "0") },
     };
 
-    const events = await this.votingContract.getPastEvents(DelegateEventSignature, options);
+    const events = await this.votingContract.getPastEvents("Delegate", options);
     const lastEvent = events.pop();
 
     const { timestamp } = await this.web3.eth.getBlock(lastEvent.blockNumber);
@@ -146,17 +144,16 @@ export class EthereumClientService {
   }
 
   async getCurrentDelegationByTransfer(address: string): Promise<IDelegationData> {
-    const TransferEventSignature = this.web3.utils.sha3("Transfer(address,address,uint256)");
     const delegationConstant = "0x00000000000000000000000000000000000000000000000000f8b0a10e470000";
 
-    const paddedAddress = this.web3.utils.padLeft(address, 64, "0");
+    const paddedAddress = this.web3.utils.padLeft(address, 40, "0");
     const options = {
       fromBlock: OrbsTDEEthereumBlock,
       toBlock: "latest" as BlockType,
-      topics: [paddedAddress],
+      filter: { from: paddedAddress },
     };
 
-    const events = await this.erc20Contract.getPastEvents(TransferEventSignature, options);
+    const events = await this.erc20Contract.getPastEvents("Transfer", options);
 
     const entryWithTransaction = events.reverse().find(({ raw }) => raw["data"] === delegationConstant);
 
@@ -165,7 +162,7 @@ export class EthereumClientService {
         delegatedTo: NON_DELEGATED,
       };
     }
-    
+
     const { timestamp } = await this.web3.eth.getBlock(entryWithTransaction.blockNumber);
     const help = entryWithTransaction["raw"]["topics"][2];
 
