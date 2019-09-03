@@ -4,7 +4,10 @@ A library that provides a simple way to read data about the Orbs POS, like Guard
 ## Installation
 `npm install orbs-pos-data --save`
 
-## Setup
+## Requirements
+* If you are using this library on a browser, make sure that you can provide a web3 instance in version 1.2.1 and up (Probably via metamask), also make sure that you have `orbs-client-sdk` instance.
+
+## Setup - NodeJs
 
 ```js
 import { orbsPOSDataServiceFactory } from 'orbs-pos-data';
@@ -16,6 +19,29 @@ const virtualChainId = 1100000;	// The virtual chain ID on the Orbs network
 const orbsPosData = orbsPOSDataServiceFactory(ethereumProviderUrl, orbsNodeAddress, virtualChainId);
 ```
 
+## Setup - Browser
+
+```js
+import { orbsPOSDataServiceFactoryIOC } from 'orbs-pos-data';
+import { Client, NetworkType } from "orbs-client-sdk";
+
+// creating the web3 instance
+let web3;
+if (typeof window.web3 !== 'undefined') {
+  // Use Mist/MetaMask's provider
+  web3 = new Web3(window.web3.currentProvider);
+} else {
+  console.log('No web3? You should consider trying MetaMask!');
+}
+
+// create the orbs-client-sdk instance
+const orbsNodeAddress = '18.197.127.2';	// The Orbs node that we will query
+const virtualChainId = 1100000;	// The virtual chain Id on the Orbs network
+const orbsNodeUrl = `http://${orbsNodeAddress}/vchains/${virtualChainId.toString()}`;
+const orbsClient = new Client(orbsNodeUrl, virtualChainId, NetworkType.NETWORK_TYPE_TEST_NET);
+
+const orbsPosData = orbsPOSDataServiceFactoryIOC(web3, orbsClient);
+```
 
 ## Usage
 
@@ -142,8 +168,3 @@ Get a list of the currently elected Validator's addresses.
 ### `getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>`
 
 Get a detailed information about the given Validator.
-
----
-
-### Open issues
-The library is available both on NodeJs and on the browser, **but** on the browser the library weights more than 7Mb. We will address this soon.

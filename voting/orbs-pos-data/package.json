@@ -20,7 +20,7 @@
     "tabWidth": 2,
     "semi": true,
     "singleQuote": false,
-    "printWidth": 240
+    "printWidth": 180
   },
   "repository": {
     "type": "git",
@@ -45,13 +45,16 @@
     "@babel/preset-typescript": "^7.3.3",
     "@babel/runtime": "^7.5.5",
     "@types/node": "^12.7.2",
+    "@types/rimraf": "^2.0.2",
     "@types/web3": "^1.0.19",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
+    "chalk": "^2.4.2",
     "rimraf": "^3.0.0",
     "tslib": "^1.10.0",
     "typescript": "^3.5.3",
     "webpack": "^4.39.3",
+    "webpack-bundle-analyzer": "^3.4.1",
     "webpack-cli": "^3.3.7",
     "webpack-node-externals": "^1.7.2"
   }

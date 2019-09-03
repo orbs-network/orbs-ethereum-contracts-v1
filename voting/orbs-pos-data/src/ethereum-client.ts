@@ -49,7 +49,6 @@ export interface IDelegationData {
 }
 
 export class EthereumClientService {
-  private web3: Web3;
   private guardiansContract: Contract;
   private votingContract: Contract;
   private orbsRewardsDistributionContract: Contract;
@@ -57,8 +56,7 @@ export class EthereumClientService {
   private validatorsRegistryContract: Contract;
   private erc20Contract: Contract;
 
-  constructor(url: string) {
-    this.web3 = new Web3(new Web3.providers.HttpProvider(url));
+  constructor(private web3: Web3) {
     this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, contractsInfo.EthereumGuardiansContract.address);
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi, contractsInfo.EthereumVotingContract.address);
     this.orbsRewardsDistributionContract = new this.web3.eth.Contract(orbsRewardsDistributionContractJSON.abi, contractsInfo.EthereumOrbsRewardsDistributionContract.address);

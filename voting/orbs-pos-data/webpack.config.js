@@ -11,6 +11,10 @@ var nodeExternals = require("webpack-node-externals");
 
 const production = process.env.NODE_ENV === "production";
 const libraryName = "OrbsPOSData";
+const plugins = [];
+
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// plugins.push(new BundleAnalyzerPlugin());
 
 const webConfig = {
   target: "web",
@@ -27,6 +31,7 @@ const webConfig = {
   resolve: {
     extensions: [".js", ".ts"],
   },
+  plugins,
   module: {
     rules: [
       {
@@ -42,6 +47,10 @@ const webConfig = {
       },
     ],
   },
+  externals: {
+    web3: 'web3',
+    "orbs-client-sdk": 'Orbs'
+  }
 };
 
 const nodeConfig = {

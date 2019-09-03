@@ -10,16 +10,9 @@ import {Client, Account, Argument, createAccount, NetworkType, argAddress} from 
 import contractsInfo from './contracts-info';
 
 export class OrbsClientService {
-  private orbsClient: Client;
   private orbsAccount: Account;
 
-  constructor(nodeAddress: string, virtualChainId: number) {
-    const orbsNodeUrl = `http://${nodeAddress}/vchains/${virtualChainId.toString()}`;
-    this.orbsClient = new Client(
-      orbsNodeUrl,
-      virtualChainId,
-      NetworkType.NETWORK_TYPE_TEST_NET
-    );
+  constructor(private orbsClient: Client) {
     this.orbsAccount = createAccount();
   }
 
