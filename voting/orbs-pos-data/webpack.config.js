@@ -18,6 +18,7 @@ const plugins = [];
 
 const webConfig = {
   target: "web",
+  externals: [nodeExternals()], // All modules that we import from node_modules should be provided to us (bundled by the host)
   mode: production ? "production" : "development",
   devtool: production ? "" : "inline-source-map",
   entry: "./src/index.ts",
@@ -47,15 +48,11 @@ const webConfig = {
       },
     ],
   },
-  externals: {
-    web3: 'web3',
-    "orbs-client-sdk": 'Orbs'
-  }
 };
 
 const nodeConfig = {
   target: "node",
-  externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
+  externals: [nodeExternals()], // All modules that we import from node_modules should be provided to us (dependencies)
   mode: production ? "production" : "development",
   devtool: production ? "" : "inline-source-map",
   entry: "./src/index.ts",
@@ -78,6 +75,7 @@ const nodeConfig = {
           loader: "babel-loader",
           options: {
             presets: [["@babel/env", { modules: false }], "@babel/typescript"],
+            plugins: [["@babel/plugin-transform-runtime", { regenerator: true }]],
           },
         },
       },
