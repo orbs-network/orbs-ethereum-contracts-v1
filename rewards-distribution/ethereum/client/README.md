@@ -115,7 +115,7 @@ row: 1514 batchIdx: 30 idx in batch: 12 amount: 0 recipient 0xfb390441ff968f7569
 
 After the transactions are committed, run batch execution script. Make sure your truffle networks are configured and that any required environment variable is set:
 ```$bash
-./node_modules/.bin/truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network ropsten/mainnet/development
+./node_modules/.bin/truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network [ropsten|mainnet|development]
 ```
 
 * Contract address is the one for `OrbsRewardsDistribution` where the batches were set
