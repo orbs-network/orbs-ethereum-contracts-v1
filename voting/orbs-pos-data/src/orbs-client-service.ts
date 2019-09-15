@@ -8,8 +8,9 @@
 
 import { Account, argAddress, Argument, Client, createAccount } from 'orbs-client-sdk';
 import contractsInfo from './contracts-info';
+import { IOrbsClientService } from './IOrbsClientService';
 
-export class OrbsClientService {
+export class OrbsClientService implements IOrbsClientService {
   private orbsAccount: Account;
 
   constructor(private orbsClient: Client) {

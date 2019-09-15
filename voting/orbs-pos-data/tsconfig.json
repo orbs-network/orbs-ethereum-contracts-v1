@@ -11,7 +11,7 @@
     "moduleResolution": "node",
     "downlevelIteration": true,
     "lib": ["esnext", "esnext.bigint"],
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
-  "include": ["src/index.ts"]
+  "include": ["src/index.ts", "src/__tests__/*.test.ts"]
 }
