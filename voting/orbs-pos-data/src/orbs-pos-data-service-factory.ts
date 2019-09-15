@@ -7,7 +7,7 @@
  */
 import { Client } from "orbs-client-sdk";
 import Web3 from "web3";
-import { EthereumClientService } from "./ethereum-client";
+import { EthereumClientService } from "./ethereum-client-service";
 import { OrbsClientService } from "./orbs-client-service";
 import { OrbsPOSDataService } from "./orbs-pos-data-service";
 import { IEthereumClientService } from "./IEthereumClientService";

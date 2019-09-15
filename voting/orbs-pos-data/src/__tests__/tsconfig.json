@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["esnext", "dom"],
+    "jsx": "react",
+    "types": ["node", "jest"],
+    "noEmit": true
+  },
+  "include": ["**/*.test.ts"]
+}
