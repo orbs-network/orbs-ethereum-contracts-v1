@@ -16,6 +16,8 @@ const delegationRouter = require('./routers/delegation-router');
 const electionsRouter = require('./routers/elections-router');
 const electedValidatorsRouter = require('./routers/elected-validators-router');
 const { orbsPOSDataServiceFactory } = require('orbs-pos-data');
+const { Client, NetworkType } = require("orbs-client-sdk");
+const Web3 = require("web3");
 
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -29,19 +31,25 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const virtualChainId = 1100000;
-const orbsNodeAddress = '18.197.127.2';
 const ethereumProviderUrl =
   process.env.ETHEREUM_PROVIDER_URL ||
   'https://ropsten.infura.io/v3/4433cef5751c495291c38a2c8a082141';
 
-  console.log(ethereumProviderUrl);
-  
-const orbsPOSDataService = orbsPOSDataServiceFactory(
-  ethereumProviderUrl,
-  orbsNodeAddress,
-  virtualChainId
+console.log(ethereumProviderUrl);
+
+const web3 = new Web3(new Web3.providers.HttpProvider(ethereumProviderUrl));
+
+// create the orbs-client-sdk
+const virtualChainId = 1100000;
+const orbsNodeUrl = `http://18.197.127.2/vchains/${virtualChainId.toString()}`;
+const orbsClient = new Client(
+  orbsNodeUrl,
+  virtualChainId,
+  NetworkType.NETWORK_TYPE_TEST_NET
 );
+
+const orbsPOSDataService = orbsPOSDataServiceFactory(web3, orbsClient);
+
 app.get('/is_alive', (_, res) => res.sendStatus(200));
 app.use('/api', guardiansRouter(orbsPOSDataService));
 app.use('/api', electedValidatorsRouter(orbsPOSDataService));
