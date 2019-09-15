@@ -10,9 +10,10 @@ import Web3 from "web3";
 import { EthereumClientService } from "./ethereum-client";
 import { OrbsClientService } from "./orbs-client";
 import { OrbsPOSDataService } from "./orbs-pos-data-service";
+import { IEthereumClientService } from "./IEthereumClientService";
 
 export function orbsPOSDataServiceFactory(web3: Web3, orbsClient: Client) {
-  const ethereumClient = new EthereumClientService(web3);
+  const ethereumClient: IEthereumClientService = new EthereumClientService(web3);
   const orbsClientService = new OrbsClientService(orbsClient);
 
   return new OrbsPOSDataService(ethereumClient, orbsClientService);

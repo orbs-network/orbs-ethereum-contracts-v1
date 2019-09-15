@@ -16,39 +16,15 @@ import validatorsContractJSON from "./contracts/OrbsValidators.json";
 import validatorsRegistryContractJSON from "./contracts/OrbsValidatorsRegistry.json";
 import Contract from "web3/eth/contract";
 import { BlockType } from "web3/eth/types";
+import { IEthereumClientService, IValidatorData, IGuardianData, IDelegationData, IRewardsDistributionEvent } from "./IEthereumClientService";
+import { NOT_DELEGATED } from './IEthereumClientService';
 
 const FIRST_ELECTION_BLOCK_HEIGHT = 7528900;
 const INTERVAL_BETWEEN_ELECTIONS = 20000;
 const VALID_VOTE_LENGTH = 45500;
 const OrbsTDEEthereumBlock = 7439168;
-export const NON_DELEGATED = "0x0000000000000000000000000000000000000000";
 
-export interface IValidatorData {
-  name: string;
-  ipAddress: string;
-  website: string;
-  orbsAddress: string;
-}
-
-export interface IGuardianData {
-  name: string;
-  website: string;
-  hasEligibleVote: boolean;
-}
-
-export interface IRewardsDistributionEvent {
-  distributionEvent: string;
-  amount: number;
-  transactionHash: string;
-}
-
-export interface IDelegationData {
-  delegatedTo: string;
-  delegationBlockNumber?: number;
-  delegationTimestamp?: number;
-}
-
-export class EthereumClientService {
+export class EthereumClientService implements IEthereumClientService {
   private guardiansContract: Contract;
   private votingContract: Contract;
   private orbsRewardsDistributionContract: Contract;
@@ -97,7 +73,7 @@ export class EthereumClientService {
 
     let currentDelegation = await this.votingContract.methods.getCurrentDelegation(from).call({ from });
 
-    if (currentDelegation === NON_DELEGATED) {
+    if (currentDelegation === NOT_DELEGATED) {
       return {
         delegatedTo: currentDelegation,
       };
@@ -157,7 +133,7 @@ export class EthereumClientService {
 
     if (!entryWithTransaction) {
       return {
-        delegatedTo: NON_DELEGATED,
+        delegatedTo: NOT_DELEGATED,
       };
     }
 

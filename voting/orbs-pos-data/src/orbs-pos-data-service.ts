@@ -5,11 +5,10 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { EthereumClientService, IValidatorData, IRewardsDistributionEvent, IGuardianData, IDelegationData } from "./ethereum-client";
-import { OrbsClientService } from "./orbs-client";
 import { encodeHex } from "orbs-client-sdk";
-
-const { NON_DELEGATED } = require("./ethereum-client");
+import { IEthereumClientService, IValidatorData, IRewardsDistributionEvent, IGuardianData, IDelegationData } from './IEthereumClientService';
+import { OrbsClientService } from "./orbs-client";
+import { NOT_DELEGATED } from './IEthereumClientService';
 
 export interface IRewards {
   delegatorReward: number;
@@ -41,7 +40,7 @@ export interface IGuardianInfo {
   stake: number;
 }
 
-export type TDelegationType = "None-Delegated" | "Transfer" | "Delegate";
+export type TDelegationType = "Not-Delegated" | "Transfer" | "Delegate";
 
 export interface IDelegationInfo {
   delegatedTo: string;
@@ -52,7 +51,7 @@ export interface IDelegationInfo {
 }
 
 export class OrbsPOSDataService {
-  constructor(private ethereumClient: EthereumClientService, private orbsClientService: OrbsClientService) {}
+  constructor(private ethereumClient: IEthereumClientService, private orbsClientService: OrbsClientService) {}
 
   async getValidators(): Promise<string[]> {
     return await this.ethereumClient.getValidators();
@@ -124,7 +123,7 @@ export class OrbsPOSDataService {
 
   async getDelegatee(address: string): Promise<string> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
-    if (info.delegatedTo === NON_DELEGATED) {
+    if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
     }
 
@@ -134,10 +133,10 @@ export class OrbsPOSDataService {
   async getDelegationInfo(address: string): Promise<IDelegationInfo> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
     let delegationType: TDelegationType;
-    if (info.delegatedTo === NON_DELEGATED) {
+    if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
-      if (info.delegatedTo === NON_DELEGATED) {
-        delegationType = "None-Delegated";
+      if (info.delegatedTo === NOT_DELEGATED) {
+        delegationType = "Not-Delegated";
       } else {
         delegationType = "Transfer";
       }
