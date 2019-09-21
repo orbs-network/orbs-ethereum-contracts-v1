@@ -1,11 +1,27 @@
 # Rewards Distribution using OrbsRewardsDistribution contract
 
-* Prerequisute - address of a deployed `OrbsRewardsDistribution` contract
-* In a terminal, navigate to the root of truffle project under `rewards-distribution/ethereum`
-* execute the batch generation script:
+Used as an infrastructure to distribute rewards, it will
+* Take as an input a csv file holding address and amount (in full orbs) to distribute to
+* Create batches of distribution to update the contract with
+* Distribute after batches has been set up
+
+In order to use it, you will first need to
+* Have the address of a deployed `OrbsRewardsDistribution` contract
+* Have a csv file with the distribution details
+* Have the distribution event name
+* Run npm install, have truffle config up to date and relevant to your system
+* Ensure that the `truffle-config` is configured and that all environment variables are valid (ethereum url, mnemonic and so on)
+* **Check the gas prices and adjust it in the truffle config**
+
+## Creating the batches
+To begin working, in a terminal, navigate to the root of truffle project under `rewards-distribution/ethereum`
+You will need to then execute the batch generation script:
 ```$bash
-truffle exec client/getBatchHahses.js  [csv filename] [number of payments per batch]
+./node_modules/.bin/truffle exec client/getBatchHahses.js  [csv filename] [number of payments per batch] --network ropsten/mainnet/development
 ```
+
+* We usually use 50 as number of payments per batch
+
 The CSV filename should have two columns: 
 The result will be output of this kind:
 ```
@@ -86,17 +102,27 @@ row: 1451 batchIdx: 28 idx in batch: 49 amount: 0 recipient 0xc9145c3a273c5f73f5
 row: 1501 batchIdx: 29 idx in batch: 49 amount: 0 recipient 0xd630913974692ec483ea6a477c98c21822281199
 row: 1514 batchIdx: 30 idx in batch: 12 amount: 0 recipient 0xfb390441ff968f7569cd6f3cf01cb7214dfeed31
 ```
-* Review total amounts, number of batches and rewards, and sample rows, the filename parsed, etc. 
+* Review total amounts, number of batches and rewards, and sample rows, the filename parsed, etc. Do that by checking that the addresses in the batches are exactly the same as in the CSV - this is a basic sanity test.
 * Transfer `total rewards amount` orbitons to the address of `OrbsRewardsDistribution` contract
 * Send a transaction to `OrbsRewardsDistribution.announceDistributionEvent` 
+    * Only the contract owner can do that
     * Switch off automatic gas calculation if using MyCrypto. use a high gas limit...
-    * providing the following parameters:
-        * distributionName - name to appear in event logs relating to payments in current distribution
-        * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section.
-* Run batch execution script. Make sure your truffle networks are configured and that any required environment variable is set:
+    * Provide the following parameters:
+        * distributionName - name to appear in event logs relating to payments in current distribution, this is used later to execute the batches
+        * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section, copy paste that from the script output.
+
+## Executing the batches
+
+After the transactions are committed, run batch execution script. Make sure your truffle networks are configured and that any required environment variable is set:
 ```$bash
-truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network ropsten/mainnet/development
+./node_modules/.bin/truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network [ropsten|mainnet|development]
 ```
+
+* Contract address is the one for `OrbsRewardsDistribution` where the batches were set
+* The CSV file is the same as the one used for generating the batches
+* The batch size is the same as used when generating
+* The distribution event name must be the same as used when setting the batches into the contract
+
 Typical output will be:
 ```
 ➜  ethereum git:(rewards-distribution) ✗ truffle exec client/executeBatches.js "0x00898102030145dd40cBE8F28AdB961EF43CF4e4" test/dummy_election.csv 7 Test --network ropsten
