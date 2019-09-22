@@ -56,7 +56,7 @@ const HeaderImpl = ({ classes, metamaskInstalled }) => {
       data-testid='header'
     >
       {!metamaskInstalled ? <ReadOnlyBanner /> : null}
-      <div className={classes.topRight}>
+      <div className={classes.headerButtonsContainer}>
         {metamaskInstalled && (
           <Button
             size='small'

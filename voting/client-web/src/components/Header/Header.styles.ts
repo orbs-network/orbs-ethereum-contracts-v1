@@ -10,7 +10,7 @@ export const HeaderStyles = theme => ({
   toolbar: {
     justifyContent: 'space-between',
   },
-  topRight: {
+  headerButtonsContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
