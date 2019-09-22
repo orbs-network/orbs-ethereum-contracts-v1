@@ -57,7 +57,7 @@ const AppImpl = ({ classes }) => {
               })}
               data-testid='container'
             >
-              <Header isReadOnly={!metamask} />
+              <Header metamaskInstalled={metamask !== undefined} />
               <Main />
             </div>
           </ApiContext.Provider>

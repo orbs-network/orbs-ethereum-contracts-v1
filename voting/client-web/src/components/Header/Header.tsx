@@ -20,7 +20,7 @@ import { Languages } from './languages';
 import logo from './logo-white.svg';
 import { Button } from '@material-ui/core';
 
-const HeaderImpl = ({ classes, isReadOnly }) => {
+const HeaderImpl = ({ classes, metamaskInstalled }) => {
   const { t } = useTranslation();
   const links = [
     { label: t('Home'), url: '/' },
@@ -49,13 +49,13 @@ const HeaderImpl = ({ classes, isReadOnly }) => {
       position='fixed'
       className={classNames({
         [classes.appBar]: true,
-        [classes.movedDown]: isReadOnly,
+        [classes.movedDown]: !metamaskInstalled,
       })}
       data-testid='header'
     >
-      {isReadOnly ? <ReadOnlyBanner /> : null}
+      {!metamaskInstalled ? <ReadOnlyBanner /> : null}
       <div className={classes.topRight}>
-        {!isReadOnly && (
+        {metamaskInstalled && (
           <Button
             size='small'
             variant='outlined'
