@@ -1,6 +1,6 @@
 {
   "name": "orbs-voting-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "homepage": "https://orbs-network.github.io/voting",
   "dependencies": {
