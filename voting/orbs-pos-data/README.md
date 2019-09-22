@@ -165,7 +165,7 @@ Get detailed information about the given `address` delegation.
 ```ts
 interface IDelegationInfo {
   delegatedTo: string;
-  delegationType: "None-Delegated" | "Transfer" | "Delegate";
+  delegationType: "Not-Delegated" | "Transfer" | "Delegate";
   delegatorBalance: number;
   delegationBlockNumber?: number;
   delegationTimestamp?: number;

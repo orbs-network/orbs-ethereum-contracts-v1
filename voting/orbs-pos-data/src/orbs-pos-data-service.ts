@@ -5,11 +5,9 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { EthereumClientService, IValidatorData, IRewardsDistributionEvent, IGuardianData, IDelegationData } from "./ethereum-client";
-import { OrbsClientService } from "./orbs-client";
 import { encodeHex } from "orbs-client-sdk";
-
-const { NON_DELEGATED } = require("./ethereum-client");
+import { IDelegationData, IEthereumClientService, IGuardianData, IRewardsDistributionEvent, IValidatorData, NOT_DELEGATED } from "./IEthereumClientService";
+import { IOrbsClientService } from "./IOrbsClientService";
 
 export interface IRewards {
   delegatorReward: number;
@@ -41,7 +39,7 @@ export interface IGuardianInfo {
   stake: number;
 }
 
-export type TDelegationType = "None-Delegated" | "Transfer" | "Delegate";
+export type TDelegationType = "Not-Delegated" | "Transfer" | "Delegate";
 
 export interface IDelegationInfo {
   delegatedTo: string;
@@ -52,7 +50,7 @@ export interface IDelegationInfo {
 }
 
 export class OrbsPOSDataService {
-  constructor(private ethereumClient: EthereumClientService, private orbsClientService: OrbsClientService) {}
+  constructor(private ethereumClient: IEthereumClientService, private orbsClientService: IOrbsClientService) {}
 
   async getValidators(): Promise<string[]> {
     return await this.ethereumClient.getValidators();
@@ -62,7 +60,10 @@ export class OrbsPOSDataService {
     const validatorData: IValidatorData = await this.ethereumClient.getValidatorData(validatorAddress);
     const result: IValidatorInfo = { votesAgainst: 0, ...validatorData };
 
-    const [validatorVotesResults, totalParticipatingTokens] = await Promise.all([this.orbsClientService.getValidatorVotes(validatorAddress), this.orbsClientService.getTotalParticipatingTokens()]);
+    const [validatorVotesResults, totalParticipatingTokens] = await Promise.all([
+      this.orbsClientService.getValidatorVotes(validatorAddress),
+      this.orbsClientService.getTotalParticipatingTokens(),
+    ]);
 
     if (totalParticipatingTokens !== BigInt(0)) {
       result.votesAgainst = Number((BigInt(100) * validatorVotesResults) / totalParticipatingTokens);
@@ -99,7 +100,10 @@ export class OrbsPOSDataService {
   async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
     const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(guardianAddress);
 
-    const [votingWeightResults, totalParticipatingTokens] = await Promise.all([this.orbsClientService.getGuardianVoteWeight(guardianAddress), this.orbsClientService.getTotalParticipatingTokens()]);
+    const [votingWeightResults, totalParticipatingTokens] = await Promise.all([
+      this.orbsClientService.getGuardianVoteWeight(guardianAddress),
+      this.orbsClientService.getTotalParticipatingTokens(),
+    ]);
 
     const result: IGuardianInfo = {
       voted: votingWeightResults !== BigInt(0),
@@ -124,7 +128,7 @@ export class OrbsPOSDataService {
 
   async getDelegatee(address: string): Promise<string> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
-    if (info.delegatedTo === NON_DELEGATED) {
+    if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
     }
 
@@ -134,10 +138,10 @@ export class OrbsPOSDataService {
   async getDelegationInfo(address: string): Promise<IDelegationInfo> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
     let delegationType: TDelegationType;
-    if (info.delegatedTo === NON_DELEGATED) {
+    if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
-      if (info.delegatedTo === NON_DELEGATED) {
-        delegationType = "None-Delegated";
+      if (info.delegatedTo === NOT_DELEGATED) {
+        delegationType = "Not-Delegated";
       } else {
         delegationType = "Transfer";
       }

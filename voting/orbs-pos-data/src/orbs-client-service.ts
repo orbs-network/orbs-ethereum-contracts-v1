@@ -6,17 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import {Client, Account, Argument, createAccount, NetworkType, argAddress} from 'orbs-client-sdk';
+import { Account, argAddress, Argument, Client, createAccount } from 'orbs-client-sdk';
 import contractsInfo from './contracts-info';
+import { IOrbsClientService } from './IOrbsClientService';
 
-export class OrbsClientService {
+export class OrbsClientService implements IOrbsClientService {
   private orbsAccount: Account;
 
   constructor(private orbsClient: Client) {
     this.orbsAccount = createAccount();
   }
 
-  buildQuery(methodName: string, args: Argument[]): Uint8Array {
+  private buildQuery(methodName: string, args: Argument[]): Uint8Array {
     return this.orbsClient.createQuery(
       this.orbsAccount.publicKey,
       contractsInfo.OrbsVotingContract.name,
@@ -25,7 +26,7 @@ export class OrbsClientService {
     );
   }
 
-  async sendQuery<T extends string | number | bigint | Uint8Array>(query: Uint8Array) {
+  private async sendQuery<T extends string | number | bigint | Uint8Array>(query: Uint8Array) {
     const results = await this.orbsClient.sendQuery(query);
     return results.outputArguments[0].value as T;
   }
