@@ -7,13 +7,11 @@
  */
 
 import Web3 from 'web3';
-import {
-  votingContractFactory,
-  guardiansContractFactory,
-  validatorsRegistryContractFactory,
-} from './contracts';
+import { votingContractFactory, guardiansContractFactory, validatorsRegistryContractFactory } from './contracts';
 import { Address4 } from 'ip-address';
 import { IMetamask } from './IMetamask';
+
+const ORB_ERC20_CONTRACT_ADDRESS = '0xff56cc6b1e6ded347aa0b7676c85ab0b3d08b0fa';
 
 export class MetamaskService implements IMetamask {
   private web3: Web3;
@@ -26,6 +24,21 @@ export class MetamaskService implements IMetamask {
     this.validatorsRegistryContract = validatorsRegistryContractFactory(this.web3);
     this.guardiansContract = guardiansContractFactory(this.web3);
     this.votingContract = votingContractFactory(this.web3);
+  }
+
+  async displayOrbsInMetamask(): Promise<void> {
+    (ethereum as any).sendAsync({
+      method: 'metamask_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          symbol: 'ORBS',
+          address: ORB_ERC20_CONTRACT_ADDRESS,
+          decimals: 18,
+          image: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3835.png',
+        },
+      },
+    });
   }
 
   private ipAddressToBytes(address: string) {

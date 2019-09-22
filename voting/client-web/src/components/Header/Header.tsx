@@ -19,10 +19,9 @@ import { HeaderStyles, HOVER_COLOR } from './Header.styles';
 import { Languages } from './languages';
 import logo from './logo-white.svg';
 import { Button } from '@material-ui/core';
+import { useApi } from '../../services/ApiContext';
 
-const ORB_ERC20_CONTRACT_ADDRESS = '0xff56cc6b1e6ded347aa0b7676c85ab0b3d08b0fa';
-
-const HeaderImpl = ({ classes, metamaskInstalled }) => {
+const HeaderImpl = ({ classes }) => {
   const { t } = useTranslation();
   const links = [
     { label: t('Home'), url: '/' },
@@ -31,38 +30,25 @@ const HeaderImpl = ({ classes, metamaskInstalled }) => {
     { label: t('Elected Validators'), url: '/validator' },
     { label: t('Rewards'), url: '/reward' },
   ];
+  const { metamask } = useApi();
 
-  function displayInMetamask() {
-    (window as any).web3.currentProvider.sendAsync({
-      method: 'metamask_watchAsset',
-      params: {
-        type: 'ERC20',
-        options: {
-          symbol: 'ORBS',
-          address: ORB_ERC20_CONTRACT_ADDRESS,
-          decimals: 18,
-          image: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3835.png',
-        },
-      },
-    });
-  }
   return (
     <AppBar
       position='fixed'
       className={classNames({
         [classes.appBar]: true,
-        [classes.movedDown]: !metamaskInstalled,
+        [classes.movedDown]: !metamask,
       })}
       data-testid='header'
     >
-      {!metamaskInstalled ? <ReadOnlyBanner /> : null}
+      {!metamask ? <ReadOnlyBanner /> : null}
       <div className={classes.headerButtonsContainer}>
-        {metamaskInstalled && (
+        {metamask && (
           <Button
             size='small'
             variant='outlined'
             color='secondary'
-            onClick={displayInMetamask}
+            onClick={() => metamask.displayOrbsInMetamask()}
             className={classes.displayInMetamaskButton}
           >
             {t('Display ORBS in metamask')}

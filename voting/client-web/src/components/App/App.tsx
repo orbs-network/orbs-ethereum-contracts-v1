@@ -57,7 +57,7 @@ const AppImpl = ({ classes }) => {
               })}
               data-testid='container'
             >
-              <Header metamaskInstalled={metamask !== undefined} />
+              <Header />
               <Main />
             </div>
           </ApiContext.Provider>

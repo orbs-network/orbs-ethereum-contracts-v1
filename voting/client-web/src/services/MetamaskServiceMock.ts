@@ -21,6 +21,8 @@ export class MetamaskServiceMock implements IMetamask {
     return 'some-fake-addreess';
   }
 
+  async displayOrbsInMetamask(): Promise<void> {}
+
   async delegate(candidate: string): Promise<void> {}
 
   async voteOut(validators: string[]): Promise<void> {}
