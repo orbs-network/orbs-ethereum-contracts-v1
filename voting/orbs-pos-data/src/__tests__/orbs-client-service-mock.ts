@@ -1,3 +1,5 @@
+import { threadId } from "worker_threads";
+
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors
  * This file is part of the orbs-ethereum-contracts library in the Orbs project.
@@ -7,8 +9,11 @@
  */
 
 export class OrbsClientServiceMock {
+  private validatorsVotesMap: { [address: string]: bigint } = {};
+  private totalTokens: bigint;
+
   async getTotalParticipatingTokens(): Promise<bigint> {
-    return null;
+    return this.totalTokens;
   }
 
   async getGuardianVoteWeight(address: string): Promise<bigint> {
@@ -16,7 +21,7 @@ export class OrbsClientServiceMock {
   }
 
   async getValidatorVotes(address: string): Promise<bigint> {
-    return null;
+    return this.validatorsVotesMap[address];
   }
 
   async getValidatorStake(address: string): Promise<bigint> {
@@ -41,5 +46,15 @@ export class OrbsClientServiceMock {
 
   async getEffectiveElectionBlockNumber(): Promise<number> {
     return null;
+  }
+
+  withValidatorVotes(validatorAddress: string, votes: bigint): this {
+    this.validatorsVotesMap[validatorAddress] = votes;
+    return this;
+  }
+
+  withTotalParticipatingTokens(totalTokens: bigint): this {
+    this.totalTokens = totalTokens;
+    return this;
   }
 }

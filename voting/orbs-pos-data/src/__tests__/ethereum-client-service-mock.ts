@@ -1,5 +1,4 @@
-import { IEthereumClientService, IValidatorData, IGuardianData, IDelegationData, NOT_DELEGATED, IRewardsDistributionEvent } from "../IEthereumClientService";
-import { IValidatorInfo } from '../orbs-pos-data-service';
+import { IDelegationData, IEthereumClientService, IGuardianData, IRewardsDistributionEvent, IValidatorData } from "../IEthereumClientService";
 
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors
@@ -9,7 +8,7 @@ import { IValidatorInfo } from '../orbs-pos-data-service';
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-export type ValidatorsMap = {[key: string]: IValidatorInfo};
+export type ValidatorsMap = {[key: string]: IValidatorData};
 export class EthereumClientServiceMock implements IEthereumClientService {
   private validatorsMap: ValidatorsMap = {};
 
@@ -18,7 +17,7 @@ export class EthereumClientServiceMock implements IEthereumClientService {
   }
 
   async getValidatorData(address: string): Promise<IValidatorData> {
-    return null;
+    return this.validatorsMap[address];
   }
 
   async getGuardians(offset: number, limit: number): Promise<string[]> {

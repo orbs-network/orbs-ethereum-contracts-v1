@@ -13,7 +13,8 @@
     "build": "npm run clean && webpack -p && npm run types",
     "types": "tsc --emitDeclarationOnly",
     "dev": "webpack-dev-server -w",
-    "contracts": "./scripts/generate-contracts-abi.ts"
+    "contracts": "./scripts/generate-contracts-abi.ts",
+    "test": "jest"
   },
   "prettier": {
     "trailingComma": "all",
