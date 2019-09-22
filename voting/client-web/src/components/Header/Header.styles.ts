@@ -10,9 +10,17 @@ export const HeaderStyles = theme => ({
   toolbar: {
     justifyContent: 'space-between',
   },
+  headerButtonsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 8}px`,
+  },
+  displayInMetamaskButton: {
+    marginRight: `${theme.spacing.unit * 3}px`,
   },
   movedDown: {
     paddingTop: 48,

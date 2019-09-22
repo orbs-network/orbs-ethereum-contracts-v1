@@ -94,6 +94,7 @@ const resources = {
       'Last election votes against (%)': '前回投票時の反対票（%）',
       'Manually Delegate Your Stake': '手動でステークを委任する',
       Cancel: 'キャンセル',
+      'Display ORBS in metamask': 'ORBSをメタマスクに表示',
     },
   },
   en: {
@@ -206,6 +207,7 @@ const resources = {
       'Last election votes against (%)': '지난 선거에서 받은 반대표(%)',
       'Manually Delegate Your Stake': '직접 수동으로 위임하기',
       Cancel: '취소하기',
+      'Display ORBS in metamask': '메타마스크에 있는 ORBS 표시',
     },
   },
 };
