@@ -1,4 +1,5 @@
 import { threadId } from "worker_threads";
+import { IOrbsClientService } from '../IOrbsClientService';
 
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors
@@ -8,7 +9,7 @@ import { threadId } from "worker_threads";
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-export class OrbsClientServiceMock {
+export class OrbsClientServiceMock implements IOrbsClientService {
   private validatorsVotesMap: { [address: string]: bigint } = {};
   private totalTokens: bigint;
 
