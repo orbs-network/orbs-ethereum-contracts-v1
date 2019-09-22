@@ -37,6 +37,7 @@ describe("Orbs POS data service", () => {
       votesAgainst: 0,
     },
   };
+  const validatorsAddresses = Object.keys(validatorsMap);
 
   beforeEach(() => {
     ethereumClinet = new EthereumClientServiceMock();
@@ -44,11 +45,18 @@ describe("Orbs POS data service", () => {
     orbsPOSDataService = new OrbsPOSDataService(ethereumClinet, orbsClientService);
   });
 
-  describe("getValidators", () => {
+  describe("validators", () => {
     it("should return all the validators addresses", async () => {
       ethereumClinet.withValidators(validatorsMap);
       const actual = await orbsPOSDataService.getValidators();
-      const expected = Object.keys(validatorsMap);
+      expect(validatorsAddresses).toEqual(actual);
+    });
+
+    it("should return all the validators info", async () => {
+      ethereumClinet.withValidators(validatorsMap);
+      const validatorAddress = validatorsAddresses[0];
+      const actual = await orbsPOSDataService.getValidatorInfo(validatorAddress);
+      const expected = validatorsMap[validatorAddress];
       expect(expected).toEqual(actual);
     });
   });
