@@ -82,7 +82,6 @@ export const DelegatorsPage = () => {
     if (metamask) {
       const receipt = await metamask.delegate(candidate);
       fetchDelegatedTo();
-      console.log(receipt);
     }
   };
 

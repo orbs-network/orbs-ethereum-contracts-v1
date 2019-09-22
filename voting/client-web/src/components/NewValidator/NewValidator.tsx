@@ -30,7 +30,6 @@ const NewValidatorImpl = ({ classes }: { classes: any }) => {
         website,
         orbsAddress,
       });
-      console.log(receipt);
     }
   };
 
