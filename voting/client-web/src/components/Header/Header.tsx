@@ -6,18 +6,19 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
-import logo from './logo-white.svg';
-import Link from '@material-ui/core/Link';
-import { NavLink } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+import Link from '@material-ui/core/Link';
 import { withStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
 import classNames from 'classnames';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { NavLink } from 'react-router-dom';
 import { ReadOnlyBanner } from '../ReadOnlyBanner/ReadOnlyBanner';
 import { HeaderStyles, HOVER_COLOR } from './Header.styles';
 import { Languages } from './languages';
-import { useTranslation } from 'react-i18next';
+import logo from './logo-white.svg';
+import { Button } from '@material-ui/core';
 
 const HeaderImpl = ({ classes, isReadOnly }) => {
   const { t } = useTranslation();
@@ -29,6 +30,20 @@ const HeaderImpl = ({ classes, isReadOnly }) => {
     { label: t('Rewards'), url: '/reward' },
   ];
 
+  function displayInMetamask() {
+    (window as any).web3.currentProvider.sendAsync({
+      method: 'metamask_watchAsset',
+      params: {
+        type: 'ERC20',
+        options: {
+          symbol: 'ORBS',
+          address: '0xff56cc6b1e6ded347aa0b7676c85ab0b3d08b0fa',
+          decimals: 18,
+          image: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3835.png',
+        },
+      },
+    });
+  }
   return (
     <AppBar
       position='fixed'
@@ -39,7 +54,20 @@ const HeaderImpl = ({ classes, isReadOnly }) => {
       data-testid='header'
     >
       {isReadOnly ? <ReadOnlyBanner /> : null}
-      <Languages />
+      <div className={classes.topRight}>
+        {!isReadOnly && (
+          <Button
+            size='small'
+            variant='outlined'
+            color='secondary'
+            onClick={displayInMetamask}
+            className={classes.displayInMetamaskButton}
+          >
+            {t('Display ORBS in metamask')}
+          </Button>
+        )}
+        <Languages />
+      </div>
       <Toolbar className={classes.toolbar}>
         <NavLink to='/'>
           <img className={classes.logo} src={logo} alt='Orbs' />
