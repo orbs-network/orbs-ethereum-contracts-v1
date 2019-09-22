@@ -20,6 +20,8 @@ import { Languages } from './languages';
 import logo from './logo-white.svg';
 import { Button } from '@material-ui/core';
 
+const ORB_ERC20_CONTRACT_ADDRESS = '0xff56cc6b1e6ded347aa0b7676c85ab0b3d08b0fa';
+
 const HeaderImpl = ({ classes, metamaskInstalled }) => {
   const { t } = useTranslation();
   const links = [
@@ -37,7 +39,7 @@ const HeaderImpl = ({ classes, metamaskInstalled }) => {
         type: 'ERC20',
         options: {
           symbol: 'ORBS',
-          address: '0xff56cc6b1e6ded347aa0b7676c85ab0b3d08b0fa',
+          address: ORB_ERC20_CONTRACT_ADDRESS,
           decimals: 18,
           image: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3835.png',
         },
