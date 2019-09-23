@@ -1,6 +1,6 @@
 {
   "name": "orbs-pos-data",
-  "version": "1.1.12",
+  "version": "1.1.14",
   "description": "",
   "main": "dist/orbs-pos-data.js",
   "browser": "dist/orbs-pos-data-web.js",
@@ -59,7 +59,6 @@
     "typescript": "^3.5.3",
     "webpack": "^4.39.3",
     "webpack-bundle-analyzer": "^3.4.1",
-    "webpack-cli": "^3.3.7",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-cli": "^3.3.7"
   }
 }

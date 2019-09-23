@@ -7,7 +7,6 @@
  */
 
 const path = require("path");
-var nodeExternals = require("webpack-node-externals");
 
 const production = process.env.NODE_ENV === "production";
 const libraryName = "OrbsPOSData";
@@ -18,7 +17,6 @@ const plugins = [];
 
 const webConfig = {
   target: "web",
-  externals: [nodeExternals()], // All modules that we import from node_modules should be provided to us (bundled by the host)
   mode: production ? "production" : "development",
   devtool: production ? "" : "inline-source-map",
   entry: "./src/index.ts",
@@ -52,7 +50,6 @@ const webConfig = {
 
 const nodeConfig = {
   target: "node",
-  externals: [nodeExternals()], // All modules that we import from node_modules should be provided to us (dependencies)
   mode: production ? "production" : "development",
   devtool: production ? "" : "inline-source-map",
   entry: "./src/index.ts",
