@@ -1,4 +1,4 @@
-FROM golang:1.11.4
+FROM golang:1.12.9
 
 RUN apt-get update
 
@@ -14,7 +14,7 @@ ENV GAMMA_HOST="gamma"
 
 COPY asb/docker/bring-gamma.sh /tmp/bring-gamma.sh
 
-WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb/test
+#WORKDIR /go/src/github.com/orbs-network/orbs-ethereum-contracts/asb/test
 
 COPY asb/docker/entrypoint.sh .
 COPY asb/test .
@@ -26,7 +26,6 @@ RUN rm -f orbs-gamma-config.json && \
     mv truffle-config.docker.js truffle-config.js
 
 RUN bash /tmp/bring-gamma.sh
-RUN go get ./... && \
-    yarn
+RUN yarn
 
 CMD ["/bin/bash", "entrypoint.sh"]

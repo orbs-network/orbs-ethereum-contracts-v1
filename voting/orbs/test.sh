@@ -2,7 +2,7 @@
 mkdir -p _out
 mkdir -p _reports
 go get -u github.com/orbs-network/go-junit-report
-go get -d -t -v ./...
+#go get -d -t -v ./...
 go test ./... -v &> _out/test.out # so that we always go to the junit report step
 go-junit-report -set-exit-code < _out/test.out > _out/results.xml
 EXITCODE=$?
