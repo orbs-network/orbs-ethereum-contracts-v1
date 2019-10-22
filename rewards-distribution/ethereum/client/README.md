@@ -12,6 +12,9 @@ In order to use it, you will first need to
 * Run npm install, have truffle config up to date and relevant to your system
 * Ensure that the `truffle-config` is configured and that all environment variables are valid (ethereum url, mnemonic and so on)
 * **Check the gas prices and adjust it in the truffle config**
+* Working in batches of 50, a full batch will cost ~1.1M gas
+* Registering the batches will also cost ~1.5M gas
+* Create a new wallet (mnemonic) for executing the batches, ensure that the addressing scheme matches the address where the ether was sent to.
 
 ## Creating the batches
 To begin working, in a terminal, navigate to the root of truffle project under `rewards-distribution/ethereum`
@@ -103,10 +106,10 @@ row: 1501 batchIdx: 29 idx in batch: 49 amount: 0 recipient 0xd630913974692ec483
 row: 1514 batchIdx: 30 idx in batch: 12 amount: 0 recipient 0xfb390441ff968f7569cd6f3cf01cb7214dfeed31
 ```
 * Review total amounts, number of batches and rewards, and sample rows, the filename parsed, etc. Do that by checking that the addresses in the batches are exactly the same as in the CSV - this is a basic sanity test.
-* Transfer `total rewards amount` orbitons to the address of `OrbsRewardsDistribution` contract
+* Transfer `total rewards amount` orbitons to the address of `OrbsRewardsDistribution` contract - remember to check network congestion and ensure the gas price is high enough for the transfer to go through in a timely manner
 * Send a transaction to `OrbsRewardsDistribution.announceDistributionEvent` 
     * Only the contract owner can do that
-    * Switch off automatic gas calculation if using MyCrypto. use a high gas limit...
+    * Switch off automatic gas calculation if using MyCrypto. This transaction can cost 1.5M gas, use a high gas limit, with a gas price that will be executed now according to congestion.
     * Provide the following parameters:
         * distributionName - name to appear in event logs relating to payments in current distribution, this is used later to execute the batches
         * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section, copy paste that from the script output.
@@ -122,6 +125,11 @@ After the transactions are committed, run batch execution script. Make sure your
 * The CSV file is the same as the one used for generating the batches
 * The batch size is the same as used when generating
 * The distribution event name must be the same as used when setting the batches into the contract
+
+Beofre executing the batches, pay attention to:
+* Use a new wallet (nmemonic)
+* Each batch of 50 will cost about 1.1M gas
+* Ensure that there is enough ether in the account executing the batches (it will be a lot of gas 'burned')
 
 Typical output will be:
 ```
@@ -149,3 +157,5 @@ executionResult [
 ```
 
 Note that the results array may contain errors as well as success objects
+
+* In case there is a problem and the execution fails mid-way, the contract knows how to recover, simply re-run the execution and it will no re-send what was successfully sent.
