@@ -6,14 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
+import React, { useMemo } from 'react';
+import Snackbar, { SnackbarOrigin } from '@material-ui/core/Snackbar';
 import Link from '@material-ui/core/Link';
-import { SnackbarContent } from '@material-ui/core';
+import { Button, SnackbarContent, StyleRulesCallback } from '@material-ui/core';
 import amber from '@material-ui/core/colors/amber';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, WithStyles } from '@material-ui/core';
 
-const styles = () => ({
+const styles: StyleRulesCallback = () => ({
   container: {
     width: '100%',
   },
@@ -23,11 +23,22 @@ const styles = () => ({
     maxWidth: '100%',
     justifyContent: 'center',
   },
+  actionContainer: {
+    // Prevents the action container from 'pushing' the message to the right
+    // And anchors it at the end of the snackbar
+    position: 'absolute',
+    right: '2%',
+  },
 });
+
+interface IProps extends WithStyles<typeof styles> {
+  isOpen: boolean;
+  closeBanner(): void;
+}
 
 const buildMessage = () => {
   return (
-    <span>
+    <span style={{ alignSelf: 'center' }}>
       Attention! You are in <b>Read Only</b> mode. Please, install{' '}
       <Link href='https://metamask.io' target='_blank' rel='noreferrer'>
         <b>Metamask</b>
@@ -37,17 +48,36 @@ const buildMessage = () => {
   );
 };
 
-const ReadOnlyBannerImpl = ({ classes }) => {
+const ReadOnlyBannerImpl: React.FC<IProps> = ({ classes, isOpen, closeBanner }) => {
+  const anchorOrigin: SnackbarOrigin = useMemo(
+    () => ({
+      vertical: 'top',
+      horizontal: 'center',
+    }),
+    [],
+  );
+
+  const message = useMemo(() => buildMessage(), []);
+
+  const closeButton = useMemo(() => {
+    return (
+      <Button onClick={closeBanner} color='inherit' size='small'>
+        ( Close )
+      </Button>
+    );
+  }, [closeBanner]);
+
+  console.log('Is open: ', isOpen);
+
   return (
-    <Snackbar
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}
-      open={true}
-      className={classes.container}
-    >
-      <SnackbarContent data-testid='read-only-banner' className={classes.banner} message={buildMessage()} />
+    <Snackbar anchorOrigin={anchorOrigin} open={isOpen} className={classes.container}>
+      <SnackbarContent
+        data-testid='read-only-banner'
+        classes={{ action: classes.actionContainer, root: classes.banner }}
+        role='alertDialog'
+        message={message}
+        action={closeButton}
+      />
     </Snackbar>
   );
 };
