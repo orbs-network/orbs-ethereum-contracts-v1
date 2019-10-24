@@ -67,8 +67,6 @@ const ReadOnlyBannerImpl: React.FC<IProps> = ({ classes, isOpen, closeBanner }) 
     );
   }, [closeBanner]);
 
-  console.log('Is open: ', isOpen);
-
   return (
     <Snackbar anchorOrigin={anchorOrigin} open={isOpen} className={classes.container}>
       <SnackbarContent

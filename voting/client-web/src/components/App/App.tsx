@@ -21,13 +21,19 @@ import { AppStyles } from './App.style';
 import { AppTheme } from './App.theme';
 import i18n from './i18n';
 import { MetamaskService } from '../../services/MetamaskService';
+import { WithStyles } from '@material-ui/core';
+import { IConfig } from '../../config';
 function getForcedLanguage() {
   const langMatch = location.pathname.match(/\/(en|ko|jp)\//);
   return langMatch ? langMatch[1] : '';
 }
 
-const AppImpl = ({ classes }) => {
-  const remoteService: IRemoteService = new RemoteService();
+interface IProps extends WithStyles<typeof AppStyles> {
+  configs: IConfig;
+}
+
+const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
+  const remoteService: IRemoteService = new RemoteService(configs.orbsAuditNodeEndpoint);
   const metamask = window['ethereum'] ? new MetamaskService() : undefined;
   const forcedLang = getForcedLanguage();
   let langBaseName = '';
