@@ -11,10 +11,12 @@ In order to use it, you will first need to
 * Have the distribution event name
 * Run npm install, have truffle config up to date and relevant to your system
 * Ensure that the `truffle-config` is configured and that all environment variables are valid (ethereum url, mnemonic and so on)
+* We recommend using infura for the ethereum url
 * **Check the gas prices and adjust it in the truffle config**
 * Working in batches of 50, a full batch will cost ~1.1M gas
-* Registering the batches will also cost ~1.5M gas
-* Create a new wallet (mnemonic) for executing the batches, ensure that the addressing scheme matches the address where the ether was sent to.
+* When registering the batches use a very high gas limit of 1.5M gas
+* Create a new wallet (mnemonic) for executing the batches, ensure that the addressing scheme matches the address where the ether was sent to. Update the new mnemonic information in the truffle config.
+
 
 ## Creating the batches
 To begin working, in a terminal, navigate to the root of truffle project under `rewards-distribution/ethereum`
@@ -109,7 +111,7 @@ row: 1514 batchIdx: 30 idx in batch: 12 amount: 0 recipient 0xfb390441ff968f7569
 * Transfer `total rewards amount` orbitons to the address of `OrbsRewardsDistribution` contract - remember to check network congestion and ensure the gas price is high enough for the transfer to go through in a timely manner
 * Send a transaction to `OrbsRewardsDistribution.announceDistributionEvent` 
     * Only the contract owner can do that
-    * Switch off automatic gas calculation if using MyCrypto. This transaction can cost 1.5M gas, use a high gas limit, with a gas price that will be executed now according to congestion.
+    * Switch off automatic gas calculation if using MyCrypto. This transaction can cost up to 1.5M gas, use a high gas limit, with a gas price that will be executed 'now' according to congestion.
     * Provide the following parameters:
         * distributionName - name to appear in event logs relating to payments in current distribution, this is used later to execute the batches
         * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section, copy paste that from the script output.
