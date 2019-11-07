@@ -8,7 +8,7 @@ jobs:
 #
   voting-orbs-tests:
     docker:
-      - image: circleci/golang:1.11.4
+      - image: circleci/golang:1.12.9
     steps:
       - checkout
       - run: cd voting/orbs && ./test.sh

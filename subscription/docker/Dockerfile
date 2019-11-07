@@ -1,4 +1,4 @@
-FROM golang:1.11.4
+FROM golang:1.12.9
 
 RUN apt-get update
 
@@ -36,7 +36,6 @@ RUN rm -f orbs-gamma-config.json && \
     mv truffle-config.docker.js truffle-config.js
 
 RUN bash /tmp/bring-gamma.sh
-RUN go get -t ./... && \
-    yarn install
+RUN yarn install
 
 CMD ["/bin/bash", "entrypoint.sh"]
