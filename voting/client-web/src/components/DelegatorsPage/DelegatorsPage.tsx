@@ -26,6 +26,7 @@ export const DelegatorsPage = () => {
       url: string;
       stake: number;
       hasEligibleVote: boolean;
+      currentVote: string[];
     };
   });
 
@@ -54,13 +55,15 @@ export const DelegatorsPage = () => {
       url: normalizeUrl(data['website']),
       stake: data['stake'],
       hasEligibleVote: data['hasEligibleVote'],
+      currentVote: data['currentVote'],
     };
     setGuardians(Object.assign({}, guardians));
   };
 
   const fetchGuardians = async () => {
     const addresses = await remoteService.getGuardians();
-    addresses.forEach(address => fetchGuardian(address));
+    await Promise.all(addresses.map(address => fetchGuardian(address)));
+    console.table(Object.values(guardians).map(g => ({ name: g.name, currentVote: g.currentVote.toString() })));
   };
 
   const fetchDelegatedTo = async () => {
