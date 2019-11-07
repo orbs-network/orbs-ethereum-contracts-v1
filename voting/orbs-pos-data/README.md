@@ -131,6 +131,7 @@ interface IGuardianInfo {
   name: string;
   website: string;
   hasEligibleVote: boolean;
+  currentVote: string[];
   voted: boolean;
   stake: number;
 }

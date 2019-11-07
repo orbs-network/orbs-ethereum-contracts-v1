@@ -29,6 +29,7 @@ export class EthereumClientServiceMock implements IEthereumClientService {
       name: null,
       website: null,
       hasEligibleVote: false,
+      currentVote: []
     };
   }
 

@@ -65,6 +65,7 @@ export class EthereumClientService implements IEthereumClientService {
       name: guardianData.name,
       website: guardianData.website,
       hasEligibleVote: votedAtBlockNumber + VALID_VOTE_LENGTH > upcomingElectionsBlockNumber,
+      currentVote: currentVote.validators,
     };
   }
 
