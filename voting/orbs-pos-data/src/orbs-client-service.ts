@@ -6,24 +6,15 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { Account, argAddress, Argument, Client, createAccount } from 'orbs-client-sdk';
-import contractsInfo from './contracts-info';
-import { IOrbsClientService } from './IOrbsClientService';
+import { Account, argAddress, Argument, Client, createAccount } from "orbs-client-sdk";
+import contractsInfo from "./contracts-info";
+import { IOrbsClientService } from "./IOrbsClientService";
 
 export class OrbsClientService implements IOrbsClientService {
-  private orbsAccount: Account;
+  constructor(private orbsClient: Client) {}
 
-  constructor(private orbsClient: Client) {
-    this.orbsAccount = createAccount();
-  }
-
-  private buildQuery(methodName: string, args: Argument[]): Uint8Array {
-    return this.orbsClient.createQuery(
-      this.orbsAccount.publicKey,
-      contractsInfo.OrbsVotingContract.name,
-      methodName,
-      args
-    );
+  private async buildQuery(methodName: string, args: Argument[]): Promise<Uint8Array> {
+    return this.orbsClient.createQuery(contractsInfo.OrbsVotingContract.name, methodName, args);
   }
 
   private async sendQuery<T extends string | number | bigint | Uint8Array>(query: Uint8Array) {
@@ -31,60 +22,48 @@ export class OrbsClientService implements IOrbsClientService {
     return results.outputArguments[0].value as T;
   }
 
-  getTotalParticipatingTokens(): Promise<bigint> {
-    const query = this.buildQuery('getTotalStake', []);
+  async getTotalParticipatingTokens(): Promise<bigint> {
+    const query = await this.buildQuery("getTotalStake", []);
     return this.sendQuery(query);
   }
 
-  getGuardianVoteWeight(address: string): Promise<bigint> {
-    const query = this.buildQuery('getGuardianVotingWeight', [
-      argAddress(address.toLowerCase())
-    ]);
+  async getGuardianVoteWeight(address: string): Promise<bigint> {
+    const query = await this.buildQuery("getGuardianVotingWeight", [argAddress(address.toLowerCase())]);
     return this.sendQuery(query);
   }
 
-  getValidatorVotes(address: string): Promise<bigint> {
-    const query = this.buildQuery('getValidatorVote', [
-      argAddress(address.toLowerCase())
-    ]);
+  async getValidatorVotes(address: string): Promise<bigint> {
+    const query = await this.buildQuery("getValidatorVote", [argAddress(address.toLowerCase())]);
     return this.sendQuery(query);
   }
 
-  getValidatorStake(address: string): Promise<bigint> {
-    const query = this.buildQuery('getValidatorStake', [
-      argAddress(address.toLowerCase())
-    ]);
+  async getValidatorStake(address: string): Promise<bigint> {
+    const query = await this.buildQuery("getValidatorStake", [argAddress(address.toLowerCase())]);
     return this.sendQuery(query);
   }
 
-  getElectedValidators(): Promise<Uint8Array> {
-    const query = this.buildQuery('getElectedValidatorsEthereumAddress', []);
+  async getElectedValidators(): Promise<Uint8Array> {
+    const query = await this.buildQuery("getElectedValidatorsEthereumAddress", []);
     return this.sendQuery(query);
   }
 
-  getParticipationReward(address: string): Promise<bigint> {
-    const query = this.buildQuery('getCumulativeParticipationReward', [
-      argAddress(address.toLowerCase())
-    ]);
+  async getParticipationReward(address: string): Promise<bigint> {
+    const query = await this.buildQuery("getCumulativeParticipationReward", [argAddress(address.toLowerCase())]);
     return this.sendQuery(query);
   }
 
-  getGuardianReward(address: string): Promise<bigint> {
-    const query = this.buildQuery('getCumulativeGuardianExcellenceReward', [
-      argAddress(address.toLowerCase())
-    ]);
+  async getGuardianReward(address: string): Promise<bigint> {
+    const query = await this.buildQuery("getCumulativeGuardianExcellenceReward", [argAddress(address.toLowerCase())]);
     return this.sendQuery(query);
   }
 
-  getValidatorReward(address: string): Promise<bigint> {
-    const query = this.buildQuery('getCumulativeValidatorReward', [
-      argAddress(address.toLowerCase())
-    ]);
+  async getValidatorReward(address: string): Promise<bigint> {
+    const query = await this.buildQuery("getCumulativeValidatorReward", [argAddress(address.toLowerCase())]);
     return this.sendQuery(query);
   }
 
-  getEffectiveElectionBlockNumber(): Promise<number> {
-    const query = this.buildQuery('getEffectiveElectionBlockNumber', []);
+  async getEffectiveElectionBlockNumber(): Promise<number> {
+    const query = await this.buildQuery("getEffectiveElectionBlockNumber", []);
     return this.sendQuery(query);
   }
 }
