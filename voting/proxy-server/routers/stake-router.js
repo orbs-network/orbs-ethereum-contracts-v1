@@ -24,7 +24,7 @@ const stakeRouter = apiService => {
   router.get('/total-participating-tokens', async (req, res) => {
     try {
       const totalParticipatingTokens = await apiService.getTotalParticipatingTokens();
-      res.send(totalParticipatingTokens);
+      res.send(totalParticipatingTokens.toString());
     } catch (err) {
       res.status(500).send(err.toString());
     }
