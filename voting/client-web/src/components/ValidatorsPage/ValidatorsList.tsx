@@ -60,7 +60,7 @@ const ValidatorsListImpl = ({ validators, classes }) => {
                 <span>{validators[id].orbsAddress}</span>
               </Tooltip>
             </TableCell>
-            <TableCell>{validators[id].stake} ORBS</TableCell>
+            <TableCell>{validators[id].stake.toLocaleString()} ORBS</TableCell>
           </TableRow>
         ))}
       </TableBody>

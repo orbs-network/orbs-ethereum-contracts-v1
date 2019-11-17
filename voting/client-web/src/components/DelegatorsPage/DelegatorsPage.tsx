@@ -39,12 +39,12 @@ export const DelegatorsPage = () => {
 
   const fetchUpcomingElectionsBlockNumber = async () => {
     const res = await remoteService.getUpcomingElectionBlockNumber();
-    setUpcomingElectionsBlockNumber(res);
+    setUpcomingElectionsBlockNumber(Number(res).toLocaleString());
   };
 
   const fetchTotalParticipatingTokens = async () => {
     const totalParticipatingTokens = await remoteService.getTotalParticipatingTokens();
-    setTotalParticipatingTokens(totalParticipatingTokens);
+    setTotalParticipatingTokens(Number(totalParticipatingTokens).toLocaleString());
   };
 
   const fetchGuardian = async address => {
@@ -140,7 +140,7 @@ export const DelegatorsPage = () => {
         <Typography variant='body1' gutterBottom color='textPrimary'>
           {t('Participating stake')}
           {': '}
-          {totalParticipatingTokens} Orbs
+          {totalParticipatingTokens} ORBS
         </Typography>
       </div>
 
