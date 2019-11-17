@@ -42,7 +42,11 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
-          <TableCell align='right'>{guardianInfo['voted'] && <VoteChip value={guardianInfo['voted']} />}</TableCell>
+          <TableCell align='right'>
+            {(guardianInfo['voted'] === true || guardianInfo['voted'] === false) && (
+              <VoteChip value={guardianInfo['voted']} />
+            )}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted for next elections')}</TableCell>
