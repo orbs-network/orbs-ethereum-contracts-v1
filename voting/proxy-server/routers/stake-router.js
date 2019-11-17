@@ -10,7 +10,6 @@ const express = require('express');
 
 const stakeRouter = apiService => {
   const router = express.Router();
-  const numberFormatter = new Intl.NumberFormat('en');
 
   /**
    * @swagger
@@ -25,7 +24,7 @@ const stakeRouter = apiService => {
   router.get('/total-participating-tokens', async (req, res) => {
     try {
       const totalParticipatingTokens = await apiService.getTotalParticipatingTokens();
-      res.send(numberFormatter.format(totalParticipatingTokens.toString()));
+      res.send(totalParticipatingTokens);
     } catch (err) {
       res.status(500).send(err.toString());
     }
