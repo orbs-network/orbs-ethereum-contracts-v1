@@ -4,14 +4,14 @@
   "description": "",
   "main": "dist/orbs-pos-data.js",
   "browser": "dist/orbs-pos-data-web.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/declarations-index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && cross-env NODE_ENV=production webpack -p && npm run types",
-    "types": "tsc -p tsconfig-for-declarations.json --emitDeclarationOnly",
+    "types": "tsc -p tsconfig-for-declarations.json",
     "dev": "webpack-dev-server -w",
     "contracts": "./scripts/generate-contracts-abi.ts",
     "test": "jest"

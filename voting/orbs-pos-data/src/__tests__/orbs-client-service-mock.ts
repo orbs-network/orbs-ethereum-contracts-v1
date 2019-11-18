@@ -1,5 +1,5 @@
 import { threadId } from "worker_threads";
-import { IOrbsClientService } from '../IOrbsClientService';
+import { IOrbsClientService } from '../interfaces/IOrbsClientService';
 
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors

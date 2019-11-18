@@ -7,11 +7,12 @@
     "outDir": "./dist",
     "target": "esnext",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "moduleResolution": "node",
     "downlevelIteration": true,
+    "emitDeclarationOnly": true,
+    "resolveJsonModule": true,
     "lib": ["esnext", "esnext.bigint"],
     "types": ["node", "jest"]
   },
-  "include": ["src/index.ts"]
+  "files": ["src/declarations-index.ts"]
 }
