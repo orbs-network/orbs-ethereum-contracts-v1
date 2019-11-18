@@ -6,9 +6,9 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { Account, argAddress, Argument, Client, createAccount } from "orbs-client-sdk";
+import { argAddress, Argument, Client } from "orbs-client-sdk";
 import contractsInfo from "./contracts-info";
-import { IOrbsClientService } from "./IOrbsClientService";
+import { IOrbsClientService } from "./interfaces/IOrbsClientService";
 
 export class OrbsClientService implements IOrbsClientService {
   constructor(private orbsClient: Client) {}

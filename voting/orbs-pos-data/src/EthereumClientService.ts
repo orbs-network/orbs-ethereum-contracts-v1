@@ -7,22 +7,27 @@
  */
 
 import Web3 from "web3";
-import contractsInfo from "./contracts-info";
-import erc20ContactAbi from "./erc20-abi";
-import votingContractJSON from "./contracts/OrbsVoting.json";
-import orbsRewardsDistributionContractJSON from "./contracts/OrbsRewardsDistribution.json";
-import guardiansContractJSON from "./contracts/OrbsGuardians.json";
-import validatorsContractJSON from "./contracts/OrbsValidators.json";
-import validatorsRegistryContractJSON from "./contracts/OrbsValidatorsRegistry.json";
 import Contract from "web3/eth/contract";
 import { BlockType } from "web3/eth/types";
-import { IEthereumClientService, IValidatorData, IGuardianData, IDelegationData, IRewardsDistributionEvent } from "./IEthereumClientService";
-import { NOT_DELEGATED } from './IEthereumClientService';
+import contractsInfo from "./contracts-info";
+import guardiansContractJSON from "./contracts/OrbsGuardians.json";
+import orbsRewardsDistributionContractJSON from "./contracts/OrbsRewardsDistribution.json";
+import validatorsContractJSON from "./contracts/OrbsValidators.json";
+import validatorsRegistryContractJSON from "./contracts/OrbsValidatorsRegistry.json";
+import votingContractJSON from "./contracts/OrbsVoting.json";
+import erc20ContactAbi from "./erc20-abi";
+import { IEthereumClientService } from "./interfaces/IEthereumClientService";
+import { IValidatorData } from "./interfaces/IValidatorData";
+import { IGuardianData } from "./interfaces/IGuardianData";
+import { IDelegationData } from "./interfaces/IDelegationData";
+import { IRewardsDistributionEvent } from "./interfaces/IRewardsDistributionEvent";
 
 const FIRST_ELECTION_BLOCK_HEIGHT = 7528900;
 const INTERVAL_BETWEEN_ELECTIONS = 20000;
 const VALID_VOTE_LENGTH = 45500;
 const OrbsTDEEthereumBlock = 7439168;
+
+export const NOT_DELEGATED = "0x0000000000000000000000000000000000000000";
 
 export class EthereumClientService implements IEthereumClientService {
   private guardiansContract: Contract;

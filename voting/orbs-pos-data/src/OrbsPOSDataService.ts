@@ -6,50 +6,21 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 import { encodeHex } from "orbs-client-sdk";
-import { IDelegationData, IEthereumClientService, IGuardianData, IRewardsDistributionEvent, IValidatorData, NOT_DELEGATED } from "./IEthereumClientService";
-import { IOrbsClientService } from "./IOrbsClientService";
+import { IDelegationData } from "./interfaces/IDelegationData";
+import { IDelegationInfo, TDelegationType } from "./interfaces/IDelegationInfo";
+import { IElectedValidatorInfo } from "./interfaces/IElectedValidatorInfo";
+import { IEthereumClientService } from "./interfaces/IEthereumClientService";
+import { IGuardianData } from "./interfaces/IGuardianData";
+import { IGuardianInfo } from "./interfaces/IGuardianInfo";
+import { IOrbsClientService } from "./interfaces/IOrbsClientService";
+import { IRewards } from "./interfaces/IRewards";
+import { IRewardsDistributionEvent } from "./interfaces/IRewardsDistributionEvent";
+import { IValidatorData } from "./interfaces/IValidatorData";
+import { IValidatorInfo } from "./interfaces/IValidatorInfo";
+import { IOrbsPOSDataService } from "./interfaces/IOrbsPOSDataService";
+import { NOT_DELEGATED } from './EthereumClientService';
 
-export interface IRewards {
-  delegatorReward: number;
-  guardianReward: number;
-  validatorReward: number;
-}
-
-export interface IValidatorInfo {
-  name: string;
-  ipAddress: string;
-  website: string;
-  orbsAddress: string;
-  votesAgainst: number;
-}
-
-export interface IElectedValidatorInfo {
-  name: string;
-  ipAddress: string;
-  website: string;
-  orbsAddress: string;
-  stake: number;
-}
-
-export interface IGuardianInfo {
-  name: string;
-  website: string;
-  hasEligibleVote: boolean;
-  voted: boolean;
-  stake: number;
-}
-
-export type TDelegationType = "Not-Delegated" | "Transfer" | "Delegate";
-
-export interface IDelegationInfo {
-  delegatedTo: string;
-  delegationType: TDelegationType;
-  delegatorBalance: number;
-  delegationBlockNumber?: number;
-  delegationTimestamp?: number;
-}
-
-export class OrbsPOSDataService {
+export class OrbsPOSDataService implements IOrbsPOSDataService {
   constructor(private ethereumClient: IEthereumClientService, private orbsClientService: IOrbsClientService) {}
 
   async getValidators(): Promise<string[]> {

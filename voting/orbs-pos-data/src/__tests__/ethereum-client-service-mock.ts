@@ -1,4 +1,8 @@
-import { IDelegationData, IEthereumClientService, IGuardianData, IRewardsDistributionEvent, IValidatorData } from "../IEthereumClientService";
+import { IDelegationData } from '../interfaces/IDelegationData';
+import { IEthereumClientService } from '../interfaces/IEthereumClientService';
+import { IGuardianData } from '../interfaces/IGuardianData';
+import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
+import { IValidatorData } from '../interfaces/IValidatorData';
 
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors

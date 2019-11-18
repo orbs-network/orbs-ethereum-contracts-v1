@@ -1,30 +1,7 @@
-export interface IValidatorData {
-  name: string;
-  ipAddress: string;
-  website: string;
-  orbsAddress: string;
-}
-
-export interface IGuardianData {
-  name: string;
-  website: string;
-  hasEligibleVote: boolean;
-  currentVote: string[];
-}
-
-export interface IRewardsDistributionEvent {
-  distributionEvent: string;
-  amount: number;
-  transactionHash: string;
-}
-
-export interface IDelegationData {
-  delegatedTo: string;
-  delegationBlockNumber?: number;
-  delegationTimestamp?: number;
-}
-
-export const NOT_DELEGATED = "0x0000000000000000000000000000000000000000";
+import { IDelegationData } from './IDelegationData';
+import { IGuardianData } from './IGuardianData';
+import { IRewardsDistributionEvent } from './IRewardsDistributionEvent';
+import { IValidatorData } from './IValidatorData';
 
 export interface IEthereumClientService {
   getValidators(): Promise<string[]>;
