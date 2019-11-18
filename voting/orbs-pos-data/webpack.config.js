@@ -15,72 +15,44 @@ const plugins = [];
 
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 // plugins.push(new BundleAnalyzerPlugin());
-
-const webConfig = {
-  target: "web",
-  externals: [nodeExternals()], // All modules that we import from node_modules should be provided to us (bundled by the host)
-  mode: production ? "production" : "development",
-  devtool: production ? "" : "inline-source-map",
-  entry: "./src/index.ts",
-  output: {
-    path: path.join(__dirname, "dist"),
-    filename: `orbs-pos-data-web.js`,
-    library: libraryName,
-    libraryTarget: "umd",
-    umdNamedDefine: true,
-  },
-  resolve: {
-    extensions: [".js", ".ts"],
-  },
-  plugins,
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [["@babel/env", { modules: false }], "@babel/typescript"],
-            plugins: ["@babel/plugin-transform-runtime", "@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-object-rest-spread"],
+function genConfig(target, entry, filename) {
+  return {
+    target,
+    externals: [nodeExternals()],
+    mode: production ? "production" : "development",
+    devtool: production ? "" : "inline-source-map",
+    entry,
+    output: {
+      path: path.join(__dirname, "dist"),
+      filename,
+      library: libraryName,
+      libraryTarget: "umd",
+      umdNamedDefine: true,
+    },
+    resolve: {
+      extensions: [".js", ".ts"],
+    },
+    plugins,
+    module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: [["@babel/env", { modules: false }], "@babel/typescript"],
+              plugins: ["@babel/plugin-transform-runtime", "@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-object-rest-spread"],
+            },
           },
         },
-      },
-    ],
-  },
-};
+      ],
+    },
+  }
+}
 
-const nodeConfig = {
-  target: "node",
-  externals: [nodeExternals()], // All modules that we import from node_modules should be provided to us (dependencies)
-  mode: production ? "production" : "development",
-  devtool: production ? "" : "inline-source-map",
-  entry: "./src/index.ts",
-  output: {
-    path: path.join(__dirname, "dist"),
-    filename: `orbs-pos-data.js`,
-    library: libraryName,
-    libraryTarget: "umd",
-    umdNamedDefine: true,
-  },
-  resolve: {
-    extensions: [".js", ".ts"],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [["@babel/env", { modules: false }], "@babel/typescript"],
-            plugins: [["@babel/plugin-transform-runtime", { regenerator: true }]],
-          },
-        },
-      },
-    ],
-  },
-};
+const webConfig = genConfig("web", "./src/index.ts", `orbs-pos-data-web.js`);
+const nodeConfig = genConfig("node", "./src/index.ts", `orbs-pos-data.js`);
+const nodeTestKitConfig = genConfig("node", "./src/testkit/index.ts", `testkit.js`);
 
-module.exports = [webConfig, nodeConfig];
+module.exports = [webConfig, nodeConfig, nodeTestKitConfig];

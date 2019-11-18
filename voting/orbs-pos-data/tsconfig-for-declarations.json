@@ -14,5 +14,5 @@
     "lib": ["esnext", "esnext.bigint"],
     "types": ["node", "jest"]
   },
-  "files": ["src/declarations-index.ts"]
+  "files": ["src/declarations-index.ts", "src/testkit/index.ts"]
 }
