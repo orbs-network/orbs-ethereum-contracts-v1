@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && cross-env NODE_ENV=production webpack -p && npm run types",
-    "types": "tsc --emitDeclarationOnly",
+    "types": "tsc -p tsconfig-for-declarations.json --emitDeclarationOnly",
     "dev": "webpack-dev-server -w",
     "contracts": "./scripts/generate-contracts-abi.ts",
     "test": "jest"
