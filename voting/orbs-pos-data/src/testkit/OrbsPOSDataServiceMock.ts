@@ -7,7 +7,8 @@ import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEve
 import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 
 export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
-  private guardiansMap: { [key:string] : IGuardianInfo} = {};
+  private guardiansList: string[] = [];
+  private guardiansMap: Map<string, IGuardianInfo> = new Map();
 
   async getValidators(): Promise<string[]> {
     return [];
@@ -30,11 +31,11 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   }
 
   async getGuardiansList(offset: number, limit: number): Promise<string[]> {
-    return Object.keys(this.guardiansMap);
+    return this.guardiansList;
 	}
 	
   async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
-    return this.guardiansMap[guardianAddress];
+    return this.guardiansMap.get(guardianAddress);
   }
 
   async getUpcomingElectionBlockNumber(): Promise<number> {
@@ -63,12 +64,8 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
 
   // Test helpers
   withGuardian(address: string, guardian: IGuardianInfo): this {
-    this.guardiansMap[address] = guardian;
-    return this;
-  }
-
-  withGuardians(guardiansMap: { [key:string] : IGuardianInfo}): this {
-    this.guardiansMap = guardiansMap;
+    this.guardiansList.push(address);
+    this.guardiansMap.set(address, guardian);
     return this;
   }
 }
