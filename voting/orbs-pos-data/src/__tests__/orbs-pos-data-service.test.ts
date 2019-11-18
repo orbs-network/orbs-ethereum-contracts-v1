@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { OrbsPOSDataService, IValidatorInfo } from "../orbs-pos-data-service";
+import { OrbsPOSDataService, IValidatorInfo } from "../OrbsPOSDataService";
 import { EthereumClientServiceMock } from "./ethereum-client-service-mock";
 import { OrbsClientServiceMock } from "./orbs-client-service-mock";
 import { IValidatorData } from '../IEthereumClientService';
