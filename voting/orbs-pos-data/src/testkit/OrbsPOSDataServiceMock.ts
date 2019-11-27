@@ -9,6 +9,7 @@ import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   private guardiansList: string[] = [];
   private guardiansMap: Map<string, IGuardianInfo> = new Map();
+  private orbsBalanceMap: Map<string, bigint> = new Map();
 
   async getValidators(): Promise<string[]> {
     return [];
@@ -63,7 +64,8 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   }
 
   async getOrbsBalance(address: string): Promise<string> {
-    return '0';
+    const resultBigInt = this.orbsBalanceMap.get(address);
+    return resultBigInt ? resultBigInt.toString() : '0';
   }
 
   // Test helpers
@@ -72,4 +74,9 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     this.guardiansMap.set(address, guardian);
     return this;
   }
+
+  withORBSBalance(address: string, newBalance: bigint): this {
+    this.orbsBalanceMap.set(address, newBalance);
+    return this;
+  }  
 }
