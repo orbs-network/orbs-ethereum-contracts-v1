@@ -190,3 +190,10 @@ Get a detailed information about the given Validator.
 ### `getOrbsBalance(address: string): Promise<string>`
 
 Get the amount of ORBS the given address is holding.
+---
+
+### `subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): Promise<() => void>`
+
+Listen to ORBS balance changes on the given address.
+The given `callback` will be fired on the balance.
+This function returns the unsubscribe function. call it to unsubscribe.

@@ -1,7 +1,7 @@
-import { IDelegationData } from './IDelegationData';
-import { IGuardianData } from './IGuardianData';
-import { IRewardsDistributionEvent } from './IRewardsDistributionEvent';
-import { IValidatorData } from './IValidatorData';
+import { IDelegationData } from "./IDelegationData";
+import { IGuardianData } from "./IGuardianData";
+import { IRewardsDistributionEvent } from "./IRewardsDistributionEvent";
+import { IValidatorData } from "./IValidatorData";
 
 export interface IEthereumClientService {
   getValidators(): Promise<string[]>;
@@ -13,4 +13,5 @@ export interface IEthereumClientService {
   getCurrentDelegationByTransfer(address: string): Promise<IDelegationData>;
   getUpcomingElectionBlockNumber(): Promise<number>;
   getOrbsBalance(address: string): Promise<string>;
+  subscribeToORBSBalanceChange(address: string, callback: (orbsBalance: string) => void): Promise<() => void>;
 }

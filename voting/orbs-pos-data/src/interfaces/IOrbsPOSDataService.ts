@@ -9,7 +9,7 @@ import { IDelegationInfo } from "./IDelegationInfo";
 import { IElectedValidatorInfo } from "./IElectedValidatorInfo";
 import { IGuardianInfo } from "./IGuardianInfo";
 import { IRewards } from "./IRewards";
-import { IRewardsDistributionEvent } from './IRewardsDistributionEvent';
+import { IRewardsDistributionEvent } from "./IRewardsDistributionEvent";
 import { IValidatorInfo } from "./IValidatorInfo";
 
 export interface IOrbsPOSDataService {
@@ -27,4 +27,5 @@ export interface IOrbsPOSDataService {
   getElectedValidators(): Promise<string[]>;
   getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>;
   getOrbsBalance(address: string): Promise<string>;
+  subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): Promise<() => void>;
 }

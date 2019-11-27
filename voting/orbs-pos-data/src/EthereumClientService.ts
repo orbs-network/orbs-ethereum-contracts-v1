@@ -168,4 +168,17 @@ export class EthereumClientService implements IEthereumClientService {
     const balance = await this.erc20Contract.methods.balanceOf(address).call();
     return this.web3.utils.fromWei(balance, "ether");
   }
+
+  async subscribeToORBSBalanceChange(address: string, callback: (orbsBalance: string) => void): Promise<() => void> {
+    // TODO: Listen to ERC20 transfer events on the given address where the "to" and "from" match
+    const eventEmitter = await this.web3.eth.subscribe("logs", { address }); 
+    eventEmitter.on("data", async () => {
+      const newBalance = await this.getOrbsBalance(address);
+      callback(newBalance);
+    });
+
+    return () => {
+      eventEmitter.subscription.unsubscribe();
+    };
+  }
 }

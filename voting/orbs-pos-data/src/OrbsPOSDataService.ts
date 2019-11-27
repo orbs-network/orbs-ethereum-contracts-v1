@@ -156,4 +156,8 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
   async getOrbsBalance(address: string): Promise<string> {
     return this.ethereumClient.getOrbsBalance(address);
   }
+
+  async subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): Promise<() => void> {
+    return this.ethereumClient.subscribeToORBSBalanceChange(address, callback);
+  }
 }
