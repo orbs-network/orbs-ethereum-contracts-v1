@@ -184,3 +184,9 @@ Get a list of the currently elected Validator's addresses.
 ### `getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>`
 
 Get a detailed information about the given Validator.
+
+---
+
+### `getOrbsBalance(address: string): Promise<string>`
+
+Get the amount of ORBS the given address is holding.
