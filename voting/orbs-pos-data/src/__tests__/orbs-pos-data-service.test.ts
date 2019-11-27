@@ -84,4 +84,16 @@ describe("Orbs POS data service", () => {
       expect(expected).toEqual(actual);
     });
   });
+
+  describe("ORBS balance", () => {
+
+    it("should return the ORBS balance of a specific address", async () => {
+      const DUMMY_ADDRESS = '0xcB6172196BbCf5b4cf9949D7f2e4Ee802EF2ABC';
+      ethereumClinet.withORBSBalance(DUMMY_ADDRESS, 125n);
+
+      const actual = await orbsPOSDataService.getOrbsBalance(DUMMY_ADDRESS);
+      expect(actual).toEqual('125');
+    });
+  });
+
 });

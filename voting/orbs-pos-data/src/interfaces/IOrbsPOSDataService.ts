@@ -26,4 +26,5 @@ export interface IOrbsPOSDataService {
   getDelegationInfo(address: string): Promise<IDelegationInfo>;
   getElectedValidators(): Promise<string[]>;
   getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>;
+  getOrbsBalance(address: string): Promise<string>;
 }

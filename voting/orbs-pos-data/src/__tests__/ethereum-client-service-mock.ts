@@ -13,8 +13,10 @@ import { IValidatorData } from '../interfaces/IValidatorData';
  */
 
 export type ValidatorsMap = {[key: string]: IValidatorData};
+
 export class EthereumClientServiceMock implements IEthereumClientService {
   private validatorsMap: ValidatorsMap = {};
+  private orbsBalanceMap: Map<string, bigint> = new Map();
 
   async getValidators(): Promise<string[]> {
     return Object.keys(this.validatorsMap);
@@ -62,12 +64,18 @@ export class EthereumClientServiceMock implements IEthereumClientService {
   }
 
   async getOrbsBalance(address: string): Promise<string> {
-    return "0";
+    const resultBigInt = this.orbsBalanceMap.get(address);
+    return resultBigInt ? resultBigInt.toString() : '0';
   }
 
   //// TEST Helpers
   withValidators(validatorsMap: ValidatorsMap): this {
     this.validatorsMap = validatorsMap;
+    return this;
+  }
+
+  withORBSBalance(address: string, newBalance: bigint): this {
+    this.orbsBalanceMap.set(address, newBalance);
     return this;
   }
 }

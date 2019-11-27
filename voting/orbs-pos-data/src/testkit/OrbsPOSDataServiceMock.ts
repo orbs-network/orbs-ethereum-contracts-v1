@@ -62,6 +62,10 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     return null;
   }
 
+  async getOrbsBalance(address: string): Promise<string> {
+    return '0';
+  }
+
   // Test helpers
   withGuardian(address: string, guardian: IGuardianInfo): this {
     this.guardiansList.push(address);
