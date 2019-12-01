@@ -1,8 +1,10 @@
 */**/.DS_Store
 *.log
 
+# IDEs
 .vscode/
 .idea/
+.DS_Store
 
 asb/ethereum/build/
 
