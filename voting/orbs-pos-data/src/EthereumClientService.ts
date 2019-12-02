@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors
  * This file is part of the orbs-ethereum-contracts library in the Orbs project.
@@ -8,9 +7,9 @@
  */
 
 import Web3 from "web3";
-import { Contract } from "web3-eth-contract";
-import {Subscription} from 'web3-core-subscriptions';
-import {AbiItem} from 'web3-utils';
+import { Contract, EventData } from "web3-eth-contract";
+import { Subscription } from "web3-core-subscriptions";
+import { AbiItem } from "web3-utils";
 import contractsInfo from "./contracts-info";
 import guardiansContractJSON from "./contracts/OrbsGuardians.json";
 import orbsRewardsDistributionContractJSON from "./contracts/OrbsRewardsDistribution.json";
@@ -42,10 +41,13 @@ export class EthereumClientService implements IEthereumClientService {
   constructor(private web3: Web3) {
     this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, contractsInfo.EthereumGuardiansContract.address);
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi, contractsInfo.EthereumVotingContract.address);
-    this.orbsRewardsDistributionContract = new this.web3.eth.Contract((orbsRewardsDistributionContractJSON.abi as AbiItem[]), contractsInfo.EthereumOrbsRewardsDistributionContract.address);
-    this.validatorsContract = new this.web3.eth.Contract((validatorsContractJSON.abi as AbiItem[]), contractsInfo.EthereumValidatorsContract.address);
+    this.orbsRewardsDistributionContract = new this.web3.eth.Contract(
+      orbsRewardsDistributionContractJSON.abi as AbiItem[],
+      contractsInfo.EthereumOrbsRewardsDistributionContract.address,
+    );
+    this.validatorsContract = new this.web3.eth.Contract(validatorsContractJSON.abi as AbiItem[], contractsInfo.EthereumValidatorsContract.address);
     this.validatorsRegistryContract = new this.web3.eth.Contract(validatorsRegistryContractJSON.abi, contractsInfo.EthereumValidatorsRegistryContract.address);
-    this.erc20Contract = new this.web3.eth.Contract((erc20ContactAbi as AbiItem[]), contractsInfo.EthereumErc20Address.address);
+    this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], contractsInfo.EthereumErc20Address.address);
   }
 
   getValidators(): Promise<string[]> {
@@ -90,18 +92,21 @@ export class EthereumClientService implements IEthereumClientService {
     const options = {
       fromBlock: OrbsTDEEthereumBlock,
       toBlock: "latest",
-      filter: { delegator: this.web3.utils.padLeft(address, 40, "0"), to: this.web3.utils.padLeft(currentDelegation, 40, "0") },
+      filter: {
+        delegator: this.web3.utils.padLeft(address, 40, "0"),
+        to: this.web3.utils.padLeft(currentDelegation, 40, "0"),
+      },
     };
 
     const events = await this.votingContract.getPastEvents("Delegate", options);
     const lastEvent = events.pop();
 
-    const { timestamp } = await this.web3.eth.getBlock(lastEvent.blockNumber);
+    let { timestamp } = await this.web3.eth.getBlock(lastEvent.blockNumber);
+    timestamp = ensureNumericValue(timestamp);
 
     return {
       delegatedTo: currentDelegation,
       delegationBlockNumber: lastEvent.blockNumber,
-      // @ts-ignore
       delegationTimestamp: timestamp * 1000,
     };
   }
@@ -146,13 +151,13 @@ export class EthereumClientService implements IEthereumClientService {
       };
     }
 
-    const { timestamp } = await this.web3.eth.getBlock(entryWithTransaction.blockNumber);
+    let { timestamp } = await this.web3.eth.getBlock(entryWithTransaction.blockNumber);
+    timestamp = ensureNumericValue(timestamp);
     const help = entryWithTransaction["raw"]["topics"][2];
 
     return {
       delegatedTo: "0x" + help.substring(26, 66),
       delegationBlockNumber: entryWithTransaction.blockNumber,
-      // @ts-ignore
       delegationTimestamp: timestamp * 1000,
     };
   }
@@ -176,40 +181,42 @@ export class EthereumClientService implements IEthereumClientService {
   // TODO : FUTURE : We need to change the signature of this function to have a standard callback usage (with err and values).
   //                  or to find a way to handle errors.
   async subscribeToORBSBalanceChange(address: string, callback: (orbsBalance: string) => void): Promise<() => void> {
-    const transferFromAddressEventEmitter = this.erc20Contract.events.Transfer({
-      filter: {
-        from: [address]
-      }
-    },
-        // @ts-ignore
-        async (error, event) => {
-      if (error) {
-        throw error;
-      }
+    const transferFromAddressEventEmitter = this.erc20Contract.events.Transfer(
+      {
+        filter: {
+          from: [address],
+        },
+      },
+      async (error: Error, event: EventData) => {
+        if (error) {
+          throw error;
+        }
 
-      const newBalance = await this.getOrbsBalance(address);
-      callback(newBalance);
-    });
+        const newBalance = await this.getOrbsBalance(address);
+        callback(newBalance);
+      },
+    );
 
-    const transferToAddressEventEmitter = this.erc20Contract.events.Transfer({
-      filter: {
-        to: [address]
-      }
-    },
-        // @ts-ignore
-        async (error, event) => {
-      if (error) {
-        throw error;
-      }
+    const transferToAddressEventEmitter = this.erc20Contract.events.Transfer(
+      {
+        filter: {
+          to: [address],
+        },
+      },
+      async (error: Error, event: EventData) => {
+        if (error) {
+          throw error;
+        }
 
-      // A very edge-casey validation, prevents the callback from getting called twice in case someone sends ORBs to himself
-      if (event.raw.topics[1] === event.raw.topics[2]) {
-        return;
-      }
+        // A very edge-casey validation, prevents the callback from getting called twice in case someone sends ORBs to himself
+        if (event.raw.topics[1] === event.raw.topics[2]) {
+          return;
+        }
 
-      const newBalance = await this.getOrbsBalance(address);
-      callback(newBalance);
-    });
+        const newBalance = await this.getOrbsBalance(address);
+        callback(newBalance);
+      },
+    );
 
     return async () => {
       let unsubscribeOfFromAddressPromise = getUnsubscribePromise(transferFromAddressEventEmitter);
@@ -223,16 +230,14 @@ export class EthereumClientService implements IEthereumClientService {
 /**
  * If the event is not yet subscribed (and so, has 'id' value of null) the 'unsubscribe' call will not work and the CB will get called.
  * Therefore we will wait until it is connected in order to disconnect it.
- *
- * DEV_NOTE : The generic type of 'Subscription' is set to null until a more precise type is found.
  */
-function getUnsubscribePromise(eventEmitter: Subscription<any>) {
+function getUnsubscribePromise(eventEmitter: Subscription<EventData>) {
   let unsubscribePromise;
 
   if (eventEmitter.id === null) {
     unsubscribePromise = new Promise((resolve, reject) => {
-      // @ts-ignore
-      eventEmitter.on('connected', async () => {
+      // @ts-ignore (the 'connected' does not appear in the typing for some reason)
+      eventEmitter.on("connected", async () => {
         try {
           await eventEmitter.unsubscribe();
           resolve(true);
@@ -240,10 +245,14 @@ function getUnsubscribePromise(eventEmitter: Subscription<any>) {
           reject(e);
         }
       });
-    })
+    });
   } else {
     unsubscribePromise = eventEmitter.unsubscribe();
   }
 
   return unsubscribePromise;
+}
+
+function ensureNumericValue(numberOrString: number | string): number {
+  return typeof numberOrString === "string" ? parseInt(numberOrString) : numberOrString;
 }
