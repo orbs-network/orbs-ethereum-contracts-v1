@@ -20,7 +20,7 @@ export type OrbsBalanceChangeCallback = (orbsBalance: string) => void;
 export class EthereumClientServiceMock implements IEthereumClientService {
   private validatorsMap: ValidatorsMap = {};
   private orbsBalanceMap: Map<string, bigint> = new Map();
-  private balanceChangeEventsMap: Map<string, Map<number, OrbsBalanceChangeCallback>>;
+  private balanceChangeEventsMap: Map<string, Map<number, OrbsBalanceChangeCallback>> = new Map<string, Map<number, OrbsBalanceChangeCallback>>();
 
   async getValidators(): Promise<string[]> {
     return Object.keys(this.validatorsMap);
@@ -78,7 +78,7 @@ export class EthereumClientServiceMock implements IEthereumClientService {
     }
 
     // Generate id and add the event handler
-    const eventTransmitterId = Date.now();
+    const eventTransmitterId = Date.now() + Math.random() * 10;
 
     this.balanceChangeEventsMap.get(address).set(eventTransmitterId, callback);
 
