@@ -169,16 +169,47 @@ export class EthereumClientService implements IEthereumClientService {
     return this.web3.utils.fromWei(balance, "ether");
   }
 
+  // TODO : FUTURE : We need to change the signature of this function to have a standard callback usage (with err and values).
+  //                  or to find a way to handle errors.
   async subscribeToORBSBalanceChange(address: string, callback: (orbsBalance: string) => void): Promise<() => void> {
-    // TODO: Listen to ERC20 transfer events on the given address where the "to" and "from" match
-    const eventEmitter = await this.web3.eth.subscribe("logs", { address }); 
-    eventEmitter.on("data", async () => {
+    const transferFromAddressEventEmitter = this.erc20Contract.events.Transfer({
+      filter: {
+        from: [address]
+      }
+    },async (error, event) => {
+      if (error) {
+        throw error;
+      }
+
       const newBalance = await this.getOrbsBalance(address);
       callback(newBalance);
     });
 
-    return () => {
-      eventEmitter.subscription.unsubscribe();
+    const transferToAddressEventEmitter = this.erc20Contract.events.Transfer({
+      filter: {
+        to: [address]
+      }
+    },async (error, event) => {
+      if (error) {
+        throw error;
+      }
+
+
+      // A very edge-casey validation, prevents the callback from getting called twice in case someone sends ORBs to himself
+      if (event.raw.topics[1] === event.raw.topics[2]) {
+        return;
+      }
+
+      const newBalance = await this.getOrbsBalance(address);
+      callback(newBalance);
+    });
+
+    return async () => {
+      // @ts-ignore (This is an EventEmitter, there are missing types until we will update the 'web3' package)
+      return transferFromAddressEventEmitter.unsubscribe();
+
+      // @ts-ignore (This is an EventEmitter, there are missing types until we will update the 'web3' package)
+      return transferToAddressEventEmitter.unsubscribe();
     };
   }
 }
