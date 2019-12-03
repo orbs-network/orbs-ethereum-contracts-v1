@@ -5,12 +5,12 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { IDelegationInfo } from "./IDelegationInfo";
-import { IElectedValidatorInfo } from "./IElectedValidatorInfo";
-import { IGuardianInfo } from "./IGuardianInfo";
-import { IRewards } from "./IRewards";
-import { IRewardsDistributionEvent } from "./IRewardsDistributionEvent";
-import { IValidatorInfo } from "./IValidatorInfo";
+import { IDelegationInfo } from './IDelegationInfo';
+import { IElectedValidatorInfo } from './IElectedValidatorInfo';
+import { IGuardianInfo } from './IGuardianInfo';
+import { IRewards } from './IRewards';
+import { IRewardsDistributionEvent } from './IRewardsDistributionEvent';
+import { IValidatorInfo } from './IValidatorInfo';
 
 export interface IOrbsPOSDataService {
   getValidators(): Promise<string[]>;
@@ -22,10 +22,10 @@ export interface IOrbsPOSDataService {
   getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>;
   getUpcomingElectionBlockNumber(): Promise<number>;
   getEffectiveElectionBlockNumber(): Promise<number>;
-  getDelegatee(address: string): Promise<string>;
+  getDelegate(address: string): Promise<string>;
   getDelegationInfo(address: string): Promise<IDelegationInfo>;
   getElectedValidators(): Promise<string[]>;
   getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>;
   getOrbsBalance(address: string): Promise<string>;
-  subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): Promise<() => void>;
+  subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): () => void;
 }

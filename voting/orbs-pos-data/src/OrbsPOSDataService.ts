@@ -5,19 +5,19 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { encodeHex } from "orbs-client-sdk";
-import { IDelegationData } from "./interfaces/IDelegationData";
-import { IDelegationInfo, TDelegationType } from "./interfaces/IDelegationInfo";
-import { IElectedValidatorInfo } from "./interfaces/IElectedValidatorInfo";
-import { IEthereumClientService } from "./interfaces/IEthereumClientService";
-import { IGuardianData } from "./interfaces/IGuardianData";
-import { IGuardianInfo } from "./interfaces/IGuardianInfo";
-import { IOrbsClientService } from "./interfaces/IOrbsClientService";
-import { IRewards } from "./interfaces/IRewards";
-import { IRewardsDistributionEvent } from "./interfaces/IRewardsDistributionEvent";
-import { IValidatorData } from "./interfaces/IValidatorData";
-import { IValidatorInfo } from "./interfaces/IValidatorInfo";
-import { IOrbsPOSDataService } from "./interfaces/IOrbsPOSDataService";
+import { encodeHex } from 'orbs-client-sdk';
+import { IDelegationData } from './interfaces/IDelegationData';
+import { IDelegationInfo, TDelegationType } from './interfaces/IDelegationInfo';
+import { IElectedValidatorInfo } from './interfaces/IElectedValidatorInfo';
+import { IEthereumClientService } from './interfaces/IEthereumClientService';
+import { IGuardianData } from './interfaces/IGuardianData';
+import { IGuardianInfo } from './interfaces/IGuardianInfo';
+import { IOrbsClientService } from './interfaces/IOrbsClientService';
+import { IRewards } from './interfaces/IRewards';
+import { IRewardsDistributionEvent } from './interfaces/IRewardsDistributionEvent';
+import { IValidatorData } from './interfaces/IValidatorData';
+import { IValidatorInfo } from './interfaces/IValidatorInfo';
+import { IOrbsPOSDataService } from './interfaces/IOrbsPOSDataService';
 import { NOT_DELEGATED } from './EthereumClientService';
 
 export class OrbsPOSDataService implements IOrbsPOSDataService {
@@ -97,7 +97,7 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return await this.orbsClientService.getEffectiveElectionBlockNumber();
   }
 
-  async getDelegatee(address: string): Promise<string> {
+  async getDelegate(address: string): Promise<string> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
     if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
@@ -112,12 +112,12 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
       if (info.delegatedTo === NOT_DELEGATED) {
-        delegationType = "Not-Delegated";
+        delegationType = 'Not-Delegated';
       } else {
-        delegationType = "Transfer";
+        delegationType = 'Transfer';
       }
     } else {
-      delegationType = "Delegate";
+      delegationType = 'Delegate';
     }
 
     const balance = await this.ethereumClient.getOrbsBalance(address);
@@ -157,7 +157,7 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return this.ethereumClient.getOrbsBalance(address);
   }
 
-  async subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): Promise<() => void> {
+  subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): () => void {
     return this.ethereumClient.subscribeToORBSBalanceChange(address, callback);
   }
 }

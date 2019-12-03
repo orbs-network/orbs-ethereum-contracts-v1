@@ -16,13 +16,6 @@
     "contracts": "./scripts/generate-contracts-abi.ts",
     "test": "jest"
   },
-  "prettier": {
-    "trailingComma": "all",
-    "tabWidth": 2,
-    "semi": true,
-    "singleQuote": false,
-    "printWidth": 180
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/orbs-network/orbs-ethereum-contracts.git"
