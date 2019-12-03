@@ -6,27 +6,22 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import { WithStyles } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import React from 'react';
-import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { IConfig } from '../../config';
 import { ApiContext } from '../../services/ApiContext';
 import { IRemoteService } from '../../services/IRemoteService';
+import { MetamaskService } from '../../services/MetamaskService';
 import { RemoteService } from '../../services/RemoteService';
+import { resources } from '../../translations';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
+import { LangRouter } from '../multi-lang/LangRouter';
 import { AppStyles } from './App.style';
-import { AppTheme } from './App.theme';
-import i18n from './i18n';
-import { MetamaskService } from '../../services/MetamaskService';
-import { WithStyles } from '@material-ui/core';
-import { IConfig } from '../../config';
-function getForcedLanguage() {
-  const langMatch = location.pathname.match(/\/(en|ko|jp)\//);
-  return langMatch ? langMatch[1] : '';
-}
+import { ThemeProvider } from './ThemeProvider';
 
 interface IProps extends WithStyles<typeof AppStyles> {
   configs: IConfig;
@@ -35,41 +30,24 @@ interface IProps extends WithStyles<typeof AppStyles> {
 const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
   const remoteService: IRemoteService = new RemoteService(configs.orbsAuditNodeEndpoint);
   const metamask = window['ethereum'] ? new MetamaskService() : undefined;
-  const forcedLang = getForcedLanguage();
-  let langBaseName = '';
-  if (forcedLang) {
-    langBaseName = `/${forcedLang}/`;
-    if (i18n.language !== forcedLang) {
-      i18n.changeLanguage(forcedLang);
-    }
-  } else {
-    const navigatorLang = navigator.language.split('-')[0];
-    if (['en', 'jp', 'ko'].indexOf(navigatorLang) > -1) {
-      if (i18n.language !== navigatorLang) {
-        i18n.changeLanguage(navigatorLang);
-      }
-    }
-  }
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <Router basename={`${process.env.PUBLIC_URL}${langBaseName}`}>
-        <MuiThemeProvider theme={AppTheme(i18n.language)}>
-          <ApiContext.Provider value={{ remoteService, metamask }}>
-            <CssBaseline />
-            <div
-              className={classNames({
-                [classes.root]: true,
-              })}
-              data-testid='container'
-            >
-              <Header />
-              <Main />
-            </div>
-          </ApiContext.Provider>
-        </MuiThemeProvider>
-      </Router>
-    </I18nextProvider>
+    <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
+      <ThemeProvider>
+        <ApiContext.Provider value={{ remoteService, metamask }}>
+          <CssBaseline />
+          <div
+            className={classNames({
+              [classes.root]: true,
+            })}
+            data-testid='container'
+          >
+            <Header />
+            <Main />
+          </div>
+        </ApiContext.Provider>
+      </ThemeProvider>
+    </LangRouter>
   );
 };
 

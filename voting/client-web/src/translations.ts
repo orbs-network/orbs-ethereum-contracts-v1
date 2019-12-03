@@ -1,11 +1,9 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 
-// the translations
-// (tip move them in a JSON file and import them)
-const resources = {
+export const resources: i18n.Resource = {
   jp: {
     translation: {
+      fontFamily: 'Meiryo,Hiragino Kaku Gothic ProN,MS PGothic,sans-serif',
       delegateMessage: '手動で他のガーディアンに委任したいですか？<1>ここ</1>をクリック',
       'Participation Instructions Content1':
         'Orbsのユニークな特徴の一つは、ネットワークの管理を他の分散型ネットワーク上で実行しているという点です。この設計があるがため、ネットワークオペレータが自分自身に投票することを防止することができます。これらの権限の分離は、すべてのPoSの投票と委任に外部から分散された保証を提供することに繋がります。',
@@ -99,6 +97,7 @@ const resources = {
   },
   en: {
     translation: {
+      fontFamily: 'Montserrat',
       delegateMessage: 'Want to delegate manually to another address? Click <1>here</1>.',
       'Participation Instructions Content1':
         'One of the unique features of Orbs, is that the administration of the\nnetwork’s institutes is performed on another decentralized network. With\nthis architecture, we can avoid letting network operators execute the\nprocedures for their own election. This separation of powers provides an\nexternal decentralized guarantee to all PoS votes and delegations.',
@@ -116,6 +115,7 @@ const resources = {
   },
   ko: {
     translation: {
+      fontFamily: 'Montserrat',
       delegateMessage: '직접 다른 주소로 위임하고 싶으신가요? <1>여기를</1> 클릭하세요.',
       'Participation Instructions Content1':
         'Orbs의 고유 기능 중 하나는, 네트워크 기관 관리가 다른 탈중앙 네트워크에서 수행된다는 점입니다. 이 설계를 바탕으로, 네트워크 운영자가 자기 자신에게 투표하는 것을 방지할 수 있습니다. 이러한 권한의 분리는 모든 PoS 투표와 위임에 대한 외부의 분산된 보증을 제공합니다.',
@@ -211,18 +211,3 @@ const resources = {
     },
   },
 };
-
-i18n
-  .use(initReactI18next) // passes i18n down to react-i18next
-  .init({
-    resources,
-    lng: 'en',
-
-    keySeparator: false, // we do not use keys in form messages.welcome
-
-    interpolation: {
-      escapeValue: false, // react already safes from xss
-    },
-  });
-
-export default i18n;
