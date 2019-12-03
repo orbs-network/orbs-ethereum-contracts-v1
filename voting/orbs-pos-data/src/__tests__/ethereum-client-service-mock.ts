@@ -1,8 +1,8 @@
-import { IDelegationData } from "../interfaces/IDelegationData";
-import { IEthereumClientService } from "../interfaces/IEthereumClientService";
-import { IGuardianData } from "../interfaces/IGuardianData";
-import { IRewardsDistributionEvent } from "../interfaces/IRewardsDistributionEvent";
-import { IValidatorData } from "../interfaces/IValidatorData";
+import { IDelegationData } from '../interfaces/IDelegationData';
+import { IEthereumClientService } from '../interfaces/IEthereumClientService';
+import { IGuardianData } from '../interfaces/IGuardianData';
+import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
+import { IValidatorData } from '../interfaces/IValidatorData';
 import EventEmitter = NodeJS.EventEmitter;
 
 /**
@@ -20,7 +20,10 @@ export type OrbsBalanceChangeCallback = (orbsBalance: string) => void;
 export class EthereumClientServiceMock implements IEthereumClientService {
   private validatorsMap: ValidatorsMap = {};
   private orbsBalanceMap: Map<string, bigint> = new Map();
-  private balanceChangeEventsMap: Map<string, Map<number, OrbsBalanceChangeCallback>> = new Map<string, Map<number, OrbsBalanceChangeCallback>>();
+  private balanceChangeEventsMap: Map<string, Map<number, OrbsBalanceChangeCallback>> = new Map<
+    string,
+    Map<number, OrbsBalanceChangeCallback>
+  >();
 
   async getValidators(): Promise<string[]> {
     return Object.keys(this.validatorsMap);
@@ -69,10 +72,10 @@ export class EthereumClientServiceMock implements IEthereumClientService {
 
   async getOrbsBalance(address: string): Promise<string> {
     const resultBigInt = this.orbsBalanceMap.get(address);
-    return resultBigInt ? resultBigInt.toString() : "0";
+    return resultBigInt ? resultBigInt.toString() : '0';
   }
 
-  async subscribeToORBSBalanceChange(address: string, callback: OrbsBalanceChangeCallback): Promise<() => void> {
+  subscribeToORBSBalanceChange(address: string, callback: OrbsBalanceChangeCallback): () => void {
     if (!this.balanceChangeEventsMap.has(address)) {
       this.balanceChangeEventsMap.set(address, new Map<number, OrbsBalanceChangeCallback>());
     }
