@@ -1,0 +1,1 @@
+export { OrbsPOSDataServiceMock } from './OrbsPOSDataServiceMock';

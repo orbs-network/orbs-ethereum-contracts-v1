@@ -26,6 +26,7 @@ export const DelegatorsPage = () => {
       url: string;
       stake: number;
       hasEligibleVote: boolean;
+      currentVote: string[];
     };
   });
 
@@ -38,12 +39,12 @@ export const DelegatorsPage = () => {
 
   const fetchUpcomingElectionsBlockNumber = async () => {
     const res = await remoteService.getUpcomingElectionBlockNumber();
-    setUpcomingElectionsBlockNumber(res);
+    setUpcomingElectionsBlockNumber(Number(res).toLocaleString());
   };
 
   const fetchTotalParticipatingTokens = async () => {
     const totalParticipatingTokens = await remoteService.getTotalParticipatingTokens();
-    setTotalParticipatingTokens(totalParticipatingTokens);
+    setTotalParticipatingTokens(Number(totalParticipatingTokens).toLocaleString());
   };
 
   const fetchGuardian = async address => {
@@ -54,13 +55,15 @@ export const DelegatorsPage = () => {
       url: normalizeUrl(data['website']),
       stake: data['stake'],
       hasEligibleVote: data['hasEligibleVote'],
+      currentVote: data['currentVote'],
     };
     setGuardians(Object.assign({}, guardians));
   };
 
   const fetchGuardians = async () => {
     const addresses = await remoteService.getGuardians();
-    addresses.forEach(address => fetchGuardian(address));
+    await Promise.all(addresses.map(address => fetchGuardian(address)));
+    console.table(Object.values(guardians).map(g => ({ name: g.name, currentVote: g.currentVote.toString() })));
   };
 
   const fetchDelegatedTo = async () => {
@@ -137,7 +140,7 @@ export const DelegatorsPage = () => {
         <Typography variant='body1' gutterBottom color='textPrimary'>
           {t('Participating stake')}
           {': '}
-          {totalParticipatingTokens} Orbs
+          {totalParticipatingTokens} ORBS
         </Typography>
       </div>
 

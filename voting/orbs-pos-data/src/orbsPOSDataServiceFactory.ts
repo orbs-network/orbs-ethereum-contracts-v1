@@ -7,13 +7,14 @@
  */
 import { Client } from "orbs-client-sdk";
 import Web3 from "web3";
-import { EthereumClientService } from "./ethereum-client-service";
-import { OrbsClientService } from "./orbs-client-service";
-import { OrbsPOSDataService } from "./orbs-pos-data-service";
-import { IEthereumClientService } from "./IEthereumClientService";
-import { IOrbsClientService } from "./IOrbsClientService";
+import { EthereumClientService } from "./EthereumClientService";
+import { OrbsClientService } from "./OrbsClientService";
+import { OrbsPOSDataService } from "./OrbsPOSDataService";
+import { IEthereumClientService } from "./interfaces/IEthereumClientService";
+import { IOrbsClientService } from "./interfaces/IOrbsClientService";
+import { IOrbsPOSDataService } from './interfaces/IOrbsPOSDataService';
 
-export function orbsPOSDataServiceFactory(web3: Web3, orbsClient: Client) {
+export function orbsPOSDataServiceFactory(web3: Web3, orbsClient: Client): IOrbsPOSDataService {
   const ethereumClient: IEthereumClientService = new EthereumClientService(web3);
   const orbsClientService: IOrbsClientService = new OrbsClientService(orbsClient);
 

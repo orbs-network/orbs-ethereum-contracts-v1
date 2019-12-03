@@ -1,4 +1,9 @@
-import { IDelegationData, IEthereumClientService, IGuardianData, IRewardsDistributionEvent, IValidatorData } from "../IEthereumClientService";
+import { IDelegationData } from '../interfaces/IDelegationData';
+import { IEthereumClientService } from '../interfaces/IEthereumClientService';
+import { IGuardianData } from '../interfaces/IGuardianData';
+import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
+import { IValidatorData } from '../interfaces/IValidatorData';
+import EventEmitter = NodeJS.EventEmitter;
 
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors
@@ -8,9 +13,17 @@ import { IDelegationData, IEthereumClientService, IGuardianData, IRewardsDistrib
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-export type ValidatorsMap = {[key: string]: IValidatorData};
+export type ValidatorsMap = { [key: string]: IValidatorData };
+
+export type OrbsBalanceChangeCallback = (orbsBalance: string) => void;
+
 export class EthereumClientServiceMock implements IEthereumClientService {
   private validatorsMap: ValidatorsMap = {};
+  private orbsBalanceMap: Map<string, bigint> = new Map();
+  private balanceChangeEventsMap: Map<string, Map<number, OrbsBalanceChangeCallback>> = new Map<
+    string,
+    Map<number, OrbsBalanceChangeCallback>
+  >();
 
   async getValidators(): Promise<string[]> {
     return Object.keys(this.validatorsMap);
@@ -29,6 +42,7 @@ export class EthereumClientServiceMock implements IEthereumClientService {
       name: null,
       website: null,
       hasEligibleVote: false,
+      currentVote: [],
     };
   }
 
@@ -57,12 +71,54 @@ export class EthereumClientServiceMock implements IEthereumClientService {
   }
 
   async getOrbsBalance(address: string): Promise<string> {
-    return "0";
+    const resultBigInt = this.orbsBalanceMap.get(address);
+    return resultBigInt ? resultBigInt.toString() : '0';
+  }
+
+  subscribeToORBSBalanceChange(address: string, callback: OrbsBalanceChangeCallback): () => void {
+    if (!this.balanceChangeEventsMap.has(address)) {
+      this.balanceChangeEventsMap.set(address, new Map<number, OrbsBalanceChangeCallback>());
+    }
+
+    // Generate id and add the event handler
+    const eventTransmitterId = Date.now() + Math.random() * 10;
+
+    this.balanceChangeEventsMap.get(address).set(eventTransmitterId, callback);
+
+    return () => {
+      this.balanceChangeEventsMap.get(address).delete(eventTransmitterId);
+    };
   }
 
   //// TEST Helpers
   withValidators(validatorsMap: ValidatorsMap): this {
     this.validatorsMap = validatorsMap;
     return this;
+  }
+
+  withORBSBalance(address: string, newBalance: bigint): this {
+    this.orbsBalanceMap.set(address, newBalance);
+    return this;
+  }
+
+  /**
+   * Updates the orbs balance for the given address and triggers the 'ORBSBalanceChange' events.
+   */
+  updateORBSBalance(address: string, newBalance: bigint) {
+    this.orbsBalanceMap.set(address, newBalance);
+
+    this.triggerBalanceChangeCallbacks(address);
+  }
+
+  private triggerBalanceChangeCallbacks(address: string) {
+    const newBalance = this.orbsBalanceMap.get(address);
+
+    if (this.balanceChangeEventsMap.has(address)) {
+      const callbacks = this.balanceChangeEventsMap.get(address).values();
+
+      for (let callback of callbacks) {
+        callback(`${newBalance}`);
+      }
+    }
   }
 }
