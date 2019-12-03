@@ -1,10 +1,10 @@
-import { IOrbsPOSDataService } from "../interfaces/IOrbsPOSDataService";
-import { IRewards } from "../interfaces/IRewards";
-import { IGuardianInfo } from "../interfaces/IGuardianInfo";
-import { IDelegationInfo } from "../interfaces/IDelegationInfo";
-import { IElectedValidatorInfo } from "../interfaces/IElectedValidatorInfo";
-import { IRewardsDistributionEvent } from "../interfaces/IRewardsDistributionEvent";
-import { IValidatorInfo } from "../interfaces/IValidatorInfo";
+import { IOrbsPOSDataService } from '../interfaces/IOrbsPOSDataService';
+import { IRewards } from '../interfaces/IRewards';
+import { IGuardianInfo } from '../interfaces/IGuardianInfo';
+import { IDelegationInfo } from '../interfaces/IDelegationInfo';
+import { IElectedValidatorInfo } from '../interfaces/IElectedValidatorInfo';
+import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
+import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 
 export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   private guardiansList: string[] = [];
@@ -48,8 +48,8 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     return 0;
   }
 
-  async getDelegatee(address: string): Promise<string> {
-    return "";
+  async getDelegate(address: string): Promise<string> {
+    return '';
   }
 
   async getDelegationInfo(address: string): Promise<IDelegationInfo> {
@@ -66,10 +66,10 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
 
   async getOrbsBalance(address: string): Promise<string> {
     const resultBigInt = this.orbsBalanceMap.get(address);
-    return resultBigInt ? resultBigInt.toString() : "0";
+    return resultBigInt ? resultBigInt.toString() : '0';
   }
 
-  async subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): Promise<() => void> {
+  subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): () => void {
     this.orbsBalanceChangeCallback = callback;
     return () => (this.orbsBalanceChangeCallback = null);
   }
