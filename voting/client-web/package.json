@@ -40,6 +40,7 @@
     "prestart": "node ./harness.js",
     "postinstall": "npm run contracts:prod",
     "start": "react-scripts start",
+    "start-localProd": "REACT_APP_FORCE_PROD=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:ci": "react-scripts test --no-watch --testResultsProcessor ./node_modules/jest-junit",
