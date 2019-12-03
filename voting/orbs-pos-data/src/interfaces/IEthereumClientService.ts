@@ -13,4 +13,5 @@ export interface IEthereumClientService {
   getCurrentDelegationByTransfer(address: string): Promise<IDelegationData>;
   getUpcomingElectionBlockNumber(): Promise<number>;
   getOrbsBalance(address: string): Promise<string>;
+  subscribeToORBSBalanceChange(address: string, callback: (orbsBalance: string) => void): () => void;
 }
