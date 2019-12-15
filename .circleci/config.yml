@@ -92,3 +92,16 @@ workflows:
   rewards-distribution:
     jobs:
       - rewards-distribution-solidity-tests
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 23 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      # tests that integrate with orbs-network-go
+      - voting-orbs-tests
+      - voting-e2e
+      - subscription-e2e
