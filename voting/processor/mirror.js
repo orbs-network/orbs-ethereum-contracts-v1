@@ -50,7 +50,7 @@ function validateInput() {
     if (process.env.PACE_ETHEREUM) {
         console.log(`reset value of pace in ethereum to ${process.env.PACE_ETHEREUM}\n`);
         paceEthereum = parseInt(process.env.PACE_ETHEREUM);
-        if (paceEthereum < 100  && paceEthereum % 100 !== 0) {
+        if (paceEthereum < 100 && paceEthereum % 100 !== 0) {
             throw("PACE_ETHEREUM must be a multiplier of 100");
         }
     }
@@ -65,22 +65,26 @@ function validateInput() {
 
 async function findNewEvents(orbs, events, mirrorFunction) {
     let newEvents = [];
-    for (let i = 0;i < events.length;i=i+paceGammaQuery) {
+    for (let i = 0; i < events.length; i = i + paceGammaQuery) {
         let txs = [];
         for (let j = 0; j < paceGammaQuery && i + j < events.length; j++) {
-            txs.push(orbs.query(mirrorFunction, orbs.helpers.argString(events[i+j].txHash)).then(result => {
-                return {txHash: events[i+j].txHash, result: result};
+            txs.push(orbs.query(mirrorFunction, orbs.helpers.argString(events[i + j].txHash)).then(result => {
+                return {txHash: events[i + j].txHash, result: result};
             }));
         }
         let queryResults = await Promise.all(txs);
         for (let k = 0; k < queryResults.length; k++) {
             let queryResult = queryResults[k];
-            if (queryResult.result.requestStatus === "COMPLETED" && queryResult.result.executionResult === "ERROR_SMART_CONTRACT") {
-                if (queryResult.result.outputArguments[0].value === "write attempted without write access: ACCESS_SCOPE_READ_ONLY") {
-                    newEvents.push(queryResult.txHash);
-                }
+            if (queryResult.result.requestStatus === "COMPLETED"
+                && queryResult.result.executionResult === "ERROR_SMART_CONTRACT"
+                && queryResult.result.outputArguments[0].value === "write attempted without write access: ACCESS_SCOPE_READ_ONLY") {
+                newEvents.push(queryResult.txHash);
             } else {
-                console.log('\x1b[31m%s\x1b[0m', `unexpected result for ${queryResult.txHash}. Error OUTPUT:${queryResult.result}\n`);
+                const outputArgsJson = JSON.stringify(queryResult.result.outputArguments);
+                if (!outputArgsJson.includes("failed since current delegation is from block-height")) {
+                    console.log('\x1b[31m%s\x1b[0m', `unexpected result for ${queryResult.txHash}. Error OUTPUT:${outputArgsJson}\n`);
+                    throw new Error(`failed to process a NEW event: ${outputArgsJson}`);
+                }
             }
         }
     }
@@ -89,17 +93,17 @@ async function findNewEvents(orbs, events, mirrorFunction) {
 }
 
 async function sendEventsBatch(orbs, events, mirrorFunction) {
-    for (let i = 0;i < events.length;i=i+paceGammaTx) {
+    for (let i = 0; i < events.length; i = i + paceGammaTx) {
         try {
             let txs = [];
-            for (let j = 0;j < paceGammaTx && i+j < events.length;j++) {
+            for (let j = 0; j < paceGammaTx && i + j < events.length; j++) {
                 if (verbose) {
-                    console.log('\x1b[32m%s\x1b[0m', `event ${i + j + 1}:`, events[i+j]);
+                    console.log('\x1b[32m%s\x1b[0m', `event ${i + j + 1}:`, events[i + j]);
                 }
-                txs.push(orbs.transact(mirrorFunction, orbs.helpers.argString(events[i+j])));
+                txs.push(orbs.transact(mirrorFunction, orbs.helpers.argString(events[i + j])));
             }
-            await Promise.all(txs);
-        } catch (e){
+            const results = await Promise.all(txs);
+        } catch (e) {
             console.log(`Could not mirror event. Error OUTPUT:\n` + e);
         }
     }
@@ -191,7 +195,7 @@ async function main() {
     await iterateOverEvents(orbs, startBlock, endBlock, paceEthereum);
     if (verbose) {
         let endTime = Date.now();
-        console.log('\x1b[35m%s\x1b[0m', `took ${Math.floor((endTime-startTime) / 60000)} minutes, ${((endTime-startTime) % 60000) / 1000.0} seconds.`);
+        console.log('\x1b[35m%s\x1b[0m', `took ${Math.floor((endTime - startTime) / 60000)} minutes, ${((endTime - startTime) % 60000) / 1000.0} seconds.`);
     }
     console.log('\x1b[35m%s\x1b[0m', `Processed ${totalTransfers} transfer events and  ${totalDelegate} delegate events.`);
 }
@@ -200,5 +204,5 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-        slack.sendSlack(`Warning: mirror failed with message '${e.message}', check Jenkins!`).then(console.error(e));
-    });
+    slack.sendSlack(`Warning: mirror failed with message '${e.message}', check Jenkins!`).then(console.error(e));
+});

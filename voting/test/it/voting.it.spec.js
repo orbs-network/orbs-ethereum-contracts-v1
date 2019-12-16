@@ -51,9 +51,9 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         const [g1, g2, g3, g4] = await Promise.all([
             shf.aGuardian({stake: 6000}),
-            await shf.aGuardian({stake: 34000}),
-            await shf.aGuardian({stake: 5000}),
-            await shf.aGuardian({stake: 0})
+            shf.aGuardian({stake: 34000}),
+            shf.aGuardian({stake: 5000}),
+            shf.aGuardian({stake: 0})
         ]);
 
         // TODO verify registration?
