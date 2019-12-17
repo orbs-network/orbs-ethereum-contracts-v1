@@ -5,6 +5,7 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
+BigInt.prototype.toJSON = function() { return this.toString(); };
 
 const orbsUrl = process.env.ORBS_URL;
 const orbsVchain = process.env.ORBS_VCHAINID;
@@ -177,7 +178,7 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-    slack.sendSlack(`Warning: process failed with message '${e.message}', check Jenkins!`).finally(() => {
+    slack.sendSlack(`Warning: process failed with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
             console.error(e);
             process.exit(-4);
         }

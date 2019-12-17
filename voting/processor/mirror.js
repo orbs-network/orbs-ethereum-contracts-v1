@@ -5,6 +5,7 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
+BigInt.prototype.toJSON = function() { return this.toString(); };
 
 const ethereumConnectionURL = process.env.NETWORK_URL_ON_ETHEREUM;
 const erc20ContractAddress = process.env.ERC20_CONTRACT_ADDRESS;
@@ -63,6 +64,10 @@ function validateInput() {
     }
 }
 
+function isExpectedError(outputArgsJson) {
+    return outputArgsJson.includes("failed since current delegation is from block-height") || outputArgsJson.includes("failed since already have delegation with method");
+}
+
 async function findNewEvents(orbs, events, mirrorFunction) {
     let newEvents = [];
     for (let i = 0; i < events.length; i = i + paceGammaQuery) {
@@ -81,7 +86,7 @@ async function findNewEvents(orbs, events, mirrorFunction) {
                 newEvents.push(queryResult.txHash);
             } else {
                 const outputArgsJson = JSON.stringify(queryResult.result.outputArguments);
-                if (!outputArgsJson.includes("failed since current delegation is from block-height")) {
+                if (!isExpectedError(outputArgsJson)) {
                     console.log('\x1b[31m%s\x1b[0m', `unexpected result for ${queryResult.txHash}. Error OUTPUT:${outputArgsJson}\n`);
                     throw new Error(`failed to process a NEW event: ${outputArgsJson}`);
                 }
@@ -204,5 +209,5 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-    slack.sendSlack(`Warning: mirror failed with message '${e.message}', check Jenkins!`).then(console.error(e));
+    slack.sendSlack(`Warning: mirror failed with message '${JSON.stringify(e.message)}', check Jenkins!`).then(console.error(e));
 });
