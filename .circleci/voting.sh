@@ -18,6 +18,7 @@ echo "====================== Voting tests finished with exit code: $EXITCODE  ==
 
 mkdir _out
 docker-compose -f voting/docker/docker-compose.yml logs > _out/docker.log
+docker cp docker_voting_1:/usr/src/orbs-ethereum-contracts/voting/test/it/results.xml _out/results.xml
 
 echo "Shutting down test environment.."
 docker-compose -f voting/docker/docker-compose.yml down -v
