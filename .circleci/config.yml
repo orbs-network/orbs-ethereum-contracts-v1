@@ -46,7 +46,7 @@ jobs:
           path: _out
           destination: test-output
       - store_test_results:
-          path: voting/test/it
+          path: _out
 
   subscription-e2e:
     machine: true

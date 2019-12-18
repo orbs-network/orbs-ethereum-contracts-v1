@@ -4,7 +4,7 @@
   "description": "An integrative test for orbs voting contracts",
   "main": "",
   "scripts": {
-    "test": "mocha *.spec.js -R mocha-multi --reporter-options spec=-,xunit=results.xml"
+    "test": "mkdir -p _out && mocha *.spec.js -R mocha-multi --reporter-options spec=-,xunit=_out/results.xml"
   },
   "author": "",
   "license": "ISC",
