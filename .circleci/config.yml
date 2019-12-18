@@ -45,6 +45,8 @@ jobs:
       - store_artifacts:
           path: _out
           destination: test-output
+      - store_test_results:
+          path: voting/test/it
 
   subscription-e2e:
     machine: true
