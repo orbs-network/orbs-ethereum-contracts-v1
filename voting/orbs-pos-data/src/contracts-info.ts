@@ -7,6 +7,9 @@
  */
 
 export default {
+  StakingContract: {
+    address: '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711'
+  },
   EthereumGuardiansContract: {
     address: '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711'
   },

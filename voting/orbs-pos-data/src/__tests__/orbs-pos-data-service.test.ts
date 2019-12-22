@@ -122,7 +122,6 @@ describe('Orbs POS data service', () => {
       orbsPOSDataService.subscribeToORBSBalanceChange(DUMMY_ADDRESS, balanceChangeCb3);
       ethereumClient.updateORBSBalance(DUMMY_ADDRESS, 500n);
 
-      console.log('Going to expect');
       expect(balanceChangeCb1).toBeCalledTimes(1);
       expect(balanceChangeCb1).toBeCalledWith('500');
       expect(balanceChangeCb2).toBeCalledTimes(1);
