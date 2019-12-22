@@ -12,7 +12,7 @@ import { IValidatorData } from '../interfaces/IValidatorData';
 import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 
 describe('Orbs POS data service', () => {
-  let ethereumClinet: EthereumClientServiceMock;
+  let ethereumClient: EthereumClientServiceMock;
   let orbsClientService: OrbsClientServiceMock;
   let orbsPOSDataService: OrbsPOSDataService;
 
@@ -39,20 +39,20 @@ describe('Orbs POS data service', () => {
   const validatorsAddresses = Object.keys(validatorsMap);
 
   beforeEach(() => {
-    ethereumClinet = new EthereumClientServiceMock();
+    ethereumClient = new EthereumClientServiceMock();
     orbsClientService = new OrbsClientServiceMock();
-    orbsPOSDataService = new OrbsPOSDataService(ethereumClinet, orbsClientService);
+    orbsPOSDataService = new OrbsPOSDataService(ethereumClient, orbsClientService);
   });
 
   describe('validators', () => {
     it('should return all the validators addresses', async () => {
-      ethereumClinet.withValidators(validatorsMap);
+      ethereumClient.withValidators(validatorsMap);
       const actual = await orbsPOSDataService.getValidators();
       expect(validatorsAddresses).toEqual(actual);
     });
 
     it("should return a specific validator's info (With votes against)", async () => {
-      ethereumClinet.withValidators(validatorsMap);
+      ethereumClient.withValidators(validatorsMap);
       const firstValidatorAddress = validatorsAddresses[0];
       orbsClientService.withValidatorVotes(firstValidatorAddress, 100n);
       orbsClientService.withTotalParticipatingTokens(1_000n);
@@ -63,7 +63,7 @@ describe('Orbs POS data service', () => {
     });
 
     it("should return a specific validator's info (With votes against, but no participating tokens)", async () => {
-      ethereumClinet.withValidators(validatorsMap);
+      ethereumClient.withValidators(validatorsMap);
       const firstValidatorAddress = validatorsAddresses[0];
       orbsClientService.withValidatorVotes(firstValidatorAddress, 100n);
       orbsClientService.withTotalParticipatingTokens(0n);
@@ -74,7 +74,7 @@ describe('Orbs POS data service', () => {
     });
 
     it("should return a specific validator's info (Without votes against)", async () => {
-      ethereumClinet.withValidators(validatorsMap);
+      ethereumClient.withValidators(validatorsMap);
       const firstValidatorAddress = validatorsAddresses[0];
       orbsClientService.withValidatorVotes(firstValidatorAddress, 0n);
       orbsClientService.withTotalParticipatingTokens(1_000n);
@@ -88,7 +88,7 @@ describe('Orbs POS data service', () => {
   describe('ORBS balance', () => {
     it('should return the ORBS balance of a specific address', async () => {
       const DUMMY_ADDRESS = '0xcB6172196BbCf5b4cf9949D7f2e4Ee802EF2ABC';
-      ethereumClinet.withORBSBalance(DUMMY_ADDRESS, 125n);
+      ethereumClient.withORBSBalance(DUMMY_ADDRESS, 125n);
 
       const actual = await orbsPOSDataService.getOrbsBalance(DUMMY_ADDRESS);
       expect(actual).toEqual('125');
@@ -96,13 +96,13 @@ describe('Orbs POS data service', () => {
 
     it('should trigger the given callback on account balance change', async () => {
       const DUMMY_ADDRESS = '0xcB6172196BbCf5b4cf9949D7f2e4Ee802EF2ABC';
-      ethereumClinet.withORBSBalance(DUMMY_ADDRESS, 125n);
+      ethereumClient.withORBSBalance(DUMMY_ADDRESS, 125n);
 
       const balanceChangeCb = jest.fn();
 
       // Subscribe and trigger
       orbsPOSDataService.subscribeToORBSBalanceChange(DUMMY_ADDRESS, balanceChangeCb);
-      ethereumClinet.updateORBSBalance(DUMMY_ADDRESS, 500n);
+      ethereumClient.updateORBSBalance(DUMMY_ADDRESS, 500n);
 
       expect(balanceChangeCb).toBeCalledTimes(1);
       expect(balanceChangeCb).toBeCalledWith('500');
@@ -110,7 +110,7 @@ describe('Orbs POS data service', () => {
 
     it("should return an 'unsubscribe' function and not call 'unsubscribed' CBs", () => {
       const DUMMY_ADDRESS = '0xcB6172196BbCf5b4cf9949D7f2e4Ee802EF2ABC';
-      ethereumClinet.withORBSBalance(DUMMY_ADDRESS, 125n);
+      ethereumClient.withORBSBalance(DUMMY_ADDRESS, 125n);
 
       const balanceChangeCb1 = jest.fn();
       const balanceChangeCb2 = jest.fn();
@@ -120,7 +120,7 @@ describe('Orbs POS data service', () => {
       orbsPOSDataService.subscribeToORBSBalanceChange(DUMMY_ADDRESS, balanceChangeCb1);
       const unsubscribe2 = orbsPOSDataService.subscribeToORBSBalanceChange(DUMMY_ADDRESS, balanceChangeCb2);
       orbsPOSDataService.subscribeToORBSBalanceChange(DUMMY_ADDRESS, balanceChangeCb3);
-      ethereumClinet.updateORBSBalance(DUMMY_ADDRESS, 500n);
+      ethereumClient.updateORBSBalance(DUMMY_ADDRESS, 500n);
 
       console.log('Going to expect');
       expect(balanceChangeCb1).toBeCalledTimes(1);
@@ -133,7 +133,7 @@ describe('Orbs POS data service', () => {
       // Unsubscribe ane test
       unsubscribe2();
 
-      ethereumClinet.updateORBSBalance(DUMMY_ADDRESS, 1000n);
+      ethereumClient.updateORBSBalance(DUMMY_ADDRESS, 1000n);
       expect(balanceChangeCb1).toBeCalledTimes(2);
       expect(balanceChangeCb1).toBeCalledWith('500');
       expect(balanceChangeCb1).toBeCalledWith('1000');
