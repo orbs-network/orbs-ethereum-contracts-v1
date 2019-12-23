@@ -87,7 +87,9 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   }
 
   fireORBSBalanceChange(newBalance: string): this {
-    this.orbsBalanceChangeCallback(newBalance);
+    if (this.orbsBalanceChangeCallback) {
+      this.orbsBalanceChangeCallback(newBalance);
+    }
     return this;
   }
 }

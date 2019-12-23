@@ -2,8 +2,9 @@ module.exports = {
   "roots": [
     "<rootDir>/src",
   ],
+  "testEnvironment": "node",
   "transform": {
-    "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.ts$": "ts-jest",
   },
   "testRegex": "/__tests__/.*\\.test\\.ts$",
   "moduleFileExtensions": [

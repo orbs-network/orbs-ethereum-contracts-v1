@@ -11,7 +11,7 @@ import Web3 from 'web3';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { IStakingService } from './interfaces/IStakingService';
+import { IStakingService, IStakingStatus } from './interfaces/IStakingService';
 import contractsInfo from './contracts-info';
 
 export class StakingService implements IStakingService {
@@ -24,6 +24,7 @@ export class StakingService implements IStakingService {
     );
   }
 
+  // WRITE //
   stake(amount: number): PromiEvent<TransactionReceipt> {
     return this.stakingContract.methods.stake(amount).send();
   }
@@ -40,15 +41,20 @@ export class StakingService implements IStakingService {
     return this.stakingContract.methods.withdraw().send();
   }
 
-  getStakeBalanceOf(stakeOwner: string): PromiEvent<TransactionReceipt> {
+  // READ //
+  async getStakeBalanceOf(stakeOwner: string): Promise<string> {
     return this.stakingContract.methods.getStakeBalanceOf(stakeOwner).call();
   }
 
-  getTotalStakedTokens(): PromiEvent<TransactionReceipt> {
+  async getTotalStakedTokens(): Promise<string> {
     return this.stakingContract.methods.getTotalStakedTokens().call();
   }
 
-  getUnstakeStatus(stakeOwner: string): PromiEvent<TransactionReceipt> {
-    return this.stakingContract.methods.getUnstakeStatus(stakeOwner).call();
+  async getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
+    const result = this.stakingContract.methods.getUnstakeStatus(stakeOwner).call();
+    return {
+      cooldownAmount: parseInt(result.cooldownAmount, 10),
+      cooldownEndTime: parseInt(result.cooldownEndTime, 10),
+    };
   }
 }

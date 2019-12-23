@@ -11,5 +11,5 @@
     "lib": ["esnext", "esnext.bigint"],
     "types": ["node", "jest"]
   },
-  "include": ["src/index.ts", "src/__tests__/*.test.ts"]
+  "include": ["src/index.ts", "src/__tests__/*.test.ts", "src/types.d.ts"]
 }

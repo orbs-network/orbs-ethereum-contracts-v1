@@ -30,7 +30,8 @@
     "@babel/runtime": "^7.7.2",
     "orbs-client-sdk": "^2.2.1",
     "orbs-staking-contract": "^0.2.0",
-    "web3": "^1.2.4"
+    "web3": "^1.2.4",
+    "web3-core-promievent": "^1.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
