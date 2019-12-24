@@ -8,8 +8,8 @@
 
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 
-export interface IStakingStatus { 
-  cooldownAmount: number; 
+export interface IStakingStatus {
+  cooldownAmount: number;
   cooldownEndTime: number;
 }
 

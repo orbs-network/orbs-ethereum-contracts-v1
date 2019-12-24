@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { wait } from '@testing-library/dom';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { StakingServiceMock } from '../testkit/StakingServiceMock';
 

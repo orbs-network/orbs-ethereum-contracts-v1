@@ -73,7 +73,8 @@ const DelegationStatusDialogImpl = ({ remoteService, classes }: { remoteService:
             placeholder='Enter address 0x00...'
             value={address}
             onChange={ev => {
-              setAddress(ev.target.value), setDelegatedTo('');
+              setAddress(ev.target.value);
+              setDelegatedTo('');
             }}
             margin='normal'
             variant='standard'

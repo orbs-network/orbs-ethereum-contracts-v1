@@ -5,13 +5,13 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { Client } from "orbs-client-sdk";
-import Web3 from "web3";
-import { EthereumClientService } from "../services/EthereumClientService";
-import { OrbsClientService } from "../services/OrbsClientService";
-import { OrbsPOSDataService } from "../services/OrbsPOSDataService";
-import { IEthereumClientService } from "../interfaces/IEthereumClientService";
-import { IOrbsClientService } from "../interfaces/IOrbsClientService";
+import { Client } from 'orbs-client-sdk';
+import Web3 from 'web3';
+import { EthereumClientService } from '../services/EthereumClientService';
+import { OrbsClientService } from '../services/OrbsClientService';
+import { OrbsPOSDataService } from '../services/OrbsPOSDataService';
+import { IEthereumClientService } from '../interfaces/IEthereumClientService';
+import { IOrbsClientService } from '../interfaces/IOrbsClientService';
 import { IOrbsPOSDataService } from '../interfaces/IOrbsPOSDataService';
 
 export function orbsPOSDataServiceFactory(web3: Web3, orbsClient: Client): IOrbsPOSDataService {

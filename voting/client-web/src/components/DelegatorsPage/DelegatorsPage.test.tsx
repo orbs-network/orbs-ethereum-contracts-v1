@@ -8,7 +8,7 @@
 
 import { DelegatorsDriver } from './DelegatorsDriver';
 import { generateGuardiansData } from './fixtures';
-import { waitForElement, cleanup, fireEvent } from 'react-testing-library';
+import { waitForElement, fireEvent } from '@testing-library/react';
 
 describe('Delegators Page', () => {
   let guardiansData, driver: DelegatorsDriver;
@@ -17,8 +17,6 @@ describe('Delegators Page', () => {
     guardiansData = generateGuardiansData();
     driver = new DelegatorsDriver(guardiansData);
   });
-
-  afterEach(cleanup);
 
   it('should render guardians', async () => {
     const { getByTestId } = driver.render();

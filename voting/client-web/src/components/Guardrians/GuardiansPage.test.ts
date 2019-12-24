@@ -1,6 +1,6 @@
 import { GuardiansDriver } from './GuardiansDriver';
 import { generateValidatorsData } from './fixtures';
-import { cleanup, wait } from 'react-testing-library';
+import { wait } from '@testing-library/react';
 
 describe('Guardians Page', () => {
   let driver: GuardiansDriver, validatorsData;
@@ -14,8 +14,6 @@ describe('Guardians Page', () => {
     validatorsData = generateValidatorsData();
     driver = new GuardiansDriver(validatorsData);
   });
-
-  afterEach(cleanup);
 
   it('should render the list', async () => {
     const { getByTestId } = await driver.render();
