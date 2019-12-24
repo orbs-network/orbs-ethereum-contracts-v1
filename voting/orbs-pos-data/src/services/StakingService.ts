@@ -17,10 +17,10 @@ import contractsInfo from '../contracts-info';
 export class StakingService implements IStakingService {
   private stakingContract: Contract;
 
-  constructor(private web3: Web3) {
+  constructor(private web3: Web3, address: string = contractsInfo.StakingContract.address) {
     this.stakingContract = new this.web3.eth.Contract(
       IStakingContractABI as AbiItem[],
-      contractsInfo.StakingContract.address,
+      address,
     );
   }
 
