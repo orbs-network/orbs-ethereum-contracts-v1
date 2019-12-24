@@ -127,10 +127,10 @@ export class StakingServiceMock implements IStakingService {
   private generateRandomTxReceipt(): TransactionReceipt {
     return {
       status: true,
-      transactionHash: `DUMMY_transactionHash_${Math.floor(Math.random() * 1_000_000)}`,
-      transactionIndex: 1_000_000,
+      transactionHash: `DUMMY_transactionHash_${Math.floor(Math.random() * 1000000)}`,
+      transactionIndex: 1000000,
       blockHash: 'DUMMY_blockHash',
-      blockNumber: 2_000_000,
+      blockNumber: 2000000,
       from: 'DUMMY_FROM_ADDRESS',
       to: 'DUMMY_TO_ADDRESS',
       contractAddress: 'DUMMY_CONTRACT_ADDRESS',

@@ -6,18 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 import { encodeHex } from 'orbs-client-sdk';
-import { IDelegationData } from './interfaces/IDelegationData';
-import { IDelegationInfo, TDelegationType } from './interfaces/IDelegationInfo';
-import { IElectedValidatorInfo } from './interfaces/IElectedValidatorInfo';
-import { IEthereumClientService } from './interfaces/IEthereumClientService';
-import { IGuardianData } from './interfaces/IGuardianData';
-import { IGuardianInfo } from './interfaces/IGuardianInfo';
-import { IOrbsClientService } from './interfaces/IOrbsClientService';
-import { IRewards } from './interfaces/IRewards';
-import { IRewardsDistributionEvent } from './interfaces/IRewardsDistributionEvent';
-import { IValidatorData } from './interfaces/IValidatorData';
-import { IValidatorInfo } from './interfaces/IValidatorInfo';
-import { IOrbsPOSDataService } from './interfaces/IOrbsPOSDataService';
+import { IDelegationData } from '../interfaces/IDelegationData';
+import { IDelegationInfo, TDelegationType } from '../interfaces/IDelegationInfo';
+import { IElectedValidatorInfo } from '../interfaces/IElectedValidatorInfo';
+import { IEthereumClientService } from '../interfaces/IEthereumClientService';
+import { IGuardianData } from '../interfaces/IGuardianData';
+import { IGuardianInfo } from '../interfaces/IGuardianInfo';
+import { IOrbsClientService } from '../interfaces/IOrbsClientService';
+import { IRewards } from '../interfaces/IRewards';
+import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
+import { IValidatorData } from '../interfaces/IValidatorData';
+import { IValidatorInfo } from '../interfaces/IValidatorInfo';
+import { IOrbsPOSDataService } from '../interfaces/IOrbsPOSDataService';
 import { NOT_DELEGATED } from './EthereumClientService';
 
 export class OrbsPOSDataService implements IOrbsPOSDataService {

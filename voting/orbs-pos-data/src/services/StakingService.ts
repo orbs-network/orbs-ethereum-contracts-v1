@@ -11,8 +11,8 @@ import Web3 from 'web3';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { IStakingService, IStakingStatus } from './interfaces/IStakingService';
-import contractsInfo from './contracts-info';
+import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
+import contractsInfo from '../contracts-info';
 
 export class StakingService implements IStakingService {
   private stakingContract: Contract;
