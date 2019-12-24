@@ -1,5 +1,4 @@
 import { NewGuardianDriver } from './NewGuardianDriver';
-import { cleanup } from 'react-testing-library';
 
 describe('New Guardian', () => {
   let driver: NewGuardianDriver;
@@ -7,8 +6,6 @@ describe('New Guardian', () => {
   beforeEach(() => {
     driver = new NewGuardianDriver();
   });
-
-  afterEach(cleanup);
 
   it('should have submit button disabled', async () => {
     const { getByTestId } = await driver.render();

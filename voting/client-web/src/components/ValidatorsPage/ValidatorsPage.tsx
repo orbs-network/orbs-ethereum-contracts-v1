@@ -27,7 +27,7 @@ const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
     }
 
     validators[address].name = data['name'];
-    validators[address].address;
+    // validators[address].address; // TODO : O.L : This was an empty statement, we should understand if there was any intention for it.
     validators[address].orbsAddress = data['orbsAddress'];
     validators[address].stake = data['stake'];
 
