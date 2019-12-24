@@ -14,7 +14,7 @@ export class OrbsClientService implements IOrbsClientService {
   constructor(private orbsClient: Client) {}
 
   private async buildQuery(methodName: string, args: Argument[]): Promise<Uint8Array> {
-    return this.orbsClient.createQuery(contractsInfo.OrbsVotingContract.name, methodName, args);
+    return this.orbsClient.createQuery('_Elections', methodName, args);
   }
 
   private async sendQuery<T extends string | number | bigint | Uint8Array>(query: Uint8Array) {
