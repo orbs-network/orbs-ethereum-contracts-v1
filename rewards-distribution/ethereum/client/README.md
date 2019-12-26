@@ -6,28 +6,35 @@ Used as an infrastructure to distribute rewards, it will
 * Distribute after batches has been set up
 
 In order to use it, you will first need to
-* Have the address of a deployed `OrbsRewardsDistribution` contract
+* Have the address of a deployed `OrbsRewardsDistribution` contract. The mainnet address is [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
 * Have a csv file with the distribution details
 * Have the distribution event name
-* Run npm install, have truffle config up to date and relevant to your system
-* Ensure that the `truffle-config` is configured and that all environment variables are valid (ethereum url, mnemonic and so on)
-* We recommend using infura for the ethereum url
-* **Check the gas prices and adjust it in the truffle config**
-* Working in batches of 50, a full batch will cost ~1.1M gas
+* Create a new wallet (mnemonic) for executing the batches
+  * Do that in myCrypto, create new wallet with mnemonic, and **use the first address of that new wallet**.
+* Run `npm install` at the `rewards-distribution/ethereum` root. This will set up truffle for you (but you still need to configure it)
+* Ensure that the `truffle-config.js` is configured:
+  * The gas price at the `networks: mainnet:` part should be relevant for immediate execution of the transactions, check gas prices first. 
+* Ensure that all environment variables are valid:
+  * `MAINNET_SECRET` for a mnemonic for the wallet to be used for batch distribution, the first address of that wallet will be used.
+  * `MAINNET_URL` for a valid ethereum endpoint (infura is okay)
+  * To set up the varilables, run:
+    * `export MAINNET_SECRET="a b c ..."` - replace a b c ... with the mnemonic
+    * `export MAINNET_URL=https://[ethereum_node_address]` - replace [ethereum_node_address] with the url you got from infura
+* Working in batches of 50, a full batch will cost ~1.1M gas - at 5 gwei this will be about 0.3 ETH for 30-35 batches of 50 size (or 1500-1700 address to distribute to)
 * When registering the batches use a very high gas limit of 1.5M gas
-* Create a new wallet (mnemonic) for executing the batches, ensure that the addressing scheme matches the address where the ether was sent to. Update the new mnemonic information in the truffle config.
+
 
 
 ## Creating the batches
 To begin working, in a terminal, navigate to the root of truffle project under `rewards-distribution/ethereum`
 You will need to then execute the batch generation script:
 ```$bash
-./node_modules/.bin/truffle exec client/getBatchHahses.js  [csv filename] [number of payments per batch] --network ropsten/mainnet/development
+./node_modules/.bin/truffle exec client/getBatchHahses.js  [csv filename] [number of payments per batch] --network mainnet
 ```
 
 * We usually use 50 as number of payments per batch
 
-The CSV filename should have two columns: 
+The CSV filename should have two columns: address, total_rewards
 The result will be output of this kind:
 ```
 ➜  ethereum git:(rewards-distribution) ✗ truffle exec client/getBatchHahses.js  ~/Downloads/distribution-1-27.csv 50
@@ -107,41 +114,45 @@ row: 1451 batchIdx: 28 idx in batch: 49 amount: 0 recipient 0xc9145c3a273c5f73f5
 row: 1501 batchIdx: 29 idx in batch: 49 amount: 0 recipient 0xd630913974692ec483ea6a477c98c21822281199
 row: 1514 batchIdx: 30 idx in batch: 12 amount: 0 recipient 0xfb390441ff968f7569cd6f3cf01cb7214dfeed31
 ```
-* Review total amounts, number of batches and rewards, and sample rows, the filename parsed, etc. Do that by checking that the addresses in the batches are exactly the same as in the CSV - this is a basic sanity test.
+
+* The generation script may need to be terminated with ctrl+c if it does not return to prompt after calculation is done.
+* Review total amounts, number of batches and rewards, and sample rows, the filename parsed, etc. Do that by checking that the addresses in the batches are exactly the same as in the CSV - this is a basic sanity test. Note that output starts for 0, so the row in the csv (starting for 1) is the same as the one in the script because the csv has headers
 * Transfer `total rewards amount` orbitons to the address of `OrbsRewardsDistribution` contract - remember to check network congestion and ensure the gas price is high enough for the transfer to go through in a timely manner
 * Send a transaction to `OrbsRewardsDistribution.announceDistributionEvent` 
-    * Only the contract owner can do that
-    * Switch off automatic gas calculation if using MyCrypto. This transaction can cost up to 1.5M gas, use a high gas limit, with a gas price that will be executed 'now' according to congestion.
-    * Provide the following parameters:
-        * distributionName - name to appear in event logs relating to payments in current distribution, this is used later to execute the batches
-        * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section, copy paste that from the script output.
+  * The ABI is: `[{"constant":false,"inputs":[{"name":"_distributionEvent","type":"string"},{"name":"_batchHashes","type":"bytes32[]"}],"name":"announceDistributionEvent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
+  * Only the contract owner can do that
+  * Switch off automatic gas calculation if using MyCrypto. This transaction can cost up to 1.5M gas, use a high gas limit, with a gas price that will be executed 'now' according to congestion.
+  * Provide the following parameters:
+    * distributionName - name to appear in event logs relating to payments in current distribution, this is used later to execute the batches
+    * batchHashes - the array output by `getBatchHashes` under the `batch hashes` section, copy paste that from the script output.
+  * Check the transaction status to ensure the batches were registered with the account.
 
 ## Executing the batches
 
 After the transactions are committed, run batch execution script. Make sure your truffle networks are configured and that any required environment variable is set:
 ```$bash
-./node_modules/.bin/truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network [ropsten|mainnet|development]
+./node_modules/.bin/truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network mainnet
 ```
 
-* Contract address is the one for `OrbsRewardsDistribution` where the batches were set
+* Contract address is the one for `OrbsRewardsDistribution` where the batches were set. The mainnet address is [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
 * The CSV file is the same as the one used for generating the batches
 * The batch size is the same as used when generating
 * The distribution event name must be the same as used when setting the batches into the contract
 
 Beofre executing the batches, pay attention to:
-* Use a new wallet (nmemonic)
+* Use a new wallet (nmemonic) (The environment variable MAINNET_SECRET)
 * Each batch of 50 will cost about 1.1M gas
 * Ensure that there is enough ether in the account executing the batches (it will be a lot of gas 'burned')
 
 Typical output will be:
 ```
-➜  ethereum git:(rewards-distribution) ✗ truffle exec client/executeBatches.js "0x00898102030145dd40cBE8F28AdB961EF43CF4e4" test/dummy_election.csv 7 Test --network ropsten
-Using network 'ropsten'.
+➜  ethereum git:(rewards-distribution) ✗ truffle exec client/executeBatches.js "0xb2969e54668394bca9b8af61bc39b92754b7a7a0" test/dummy_election.csv 50 Test --network mainnet
+Using network 'mainnet'.
 
 usage: truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name]
-OrbsRewardsDistribution address: 0x00898102030145dd40cBE8F28AdB961EF43CF4e4
+OrbsRewardsDistribution address: 0xb2969e54668394bca9b8af61bc39b92754b7a7a0
 filename: test/dummy_election.csv
-batch size: 7
+batch size: 50
 distributionEvent: Test
 executing batch 1/10...
 executing batch 2/10...
