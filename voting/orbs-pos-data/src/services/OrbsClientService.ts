@@ -7,7 +7,6 @@
  */
 
 import { argAddress, Argument, Client } from 'orbs-client-sdk';
-import contractsInfo from '../contracts-info';
 import { IOrbsClientService } from '../interfaces/IOrbsClientService';
 
 export class OrbsClientService implements IOrbsClientService {

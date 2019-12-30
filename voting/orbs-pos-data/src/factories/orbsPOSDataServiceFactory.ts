@@ -7,7 +7,8 @@
  */
 import { Client } from 'orbs-client-sdk';
 import Web3 from 'web3';
-import { EthereumClientService, IOrbsPosContractsAddresses } from '../services/EthereumClientService';
+import { EthereumClientService } from '../services/EthereumClientService';
+import { IOrbsPosContractsAddresses, MainnetContractsAddresses } from '../contracts-adresses';
 import { OrbsClientService } from '../services/OrbsClientService';
 import { OrbsPOSDataService } from '../services/OrbsPOSDataService';
 import { IEthereumClientService } from '../interfaces/IEthereumClientService';
@@ -21,7 +22,8 @@ export function orbsPOSDataServiceFactory(
   orbsClient: Client,
   overrideAddresses: Partial<IOrbsPosContractsAddresses> = {},
 ): IOrbsPOSDataService {
-  const ethereumClient: IEthereumClientService = new EthereumClientService(web3, overrideAddresses);
+  const contractsAddresses: IOrbsPosContractsAddresses = { ...overrideAddresses, ...MainnetContractsAddresses };
+  const ethereumClient: IEthereumClientService = new EthereumClientService(web3, contractsAddresses);
   const orbsClientService: IOrbsClientService = new OrbsClientService(orbsClient);
 
   return new OrbsPOSDataService(ethereumClient, orbsClientService);

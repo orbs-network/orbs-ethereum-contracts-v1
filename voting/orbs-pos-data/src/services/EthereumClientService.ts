@@ -10,7 +10,7 @@ import Web3 from 'web3';
 import { Contract, EventData } from 'web3-eth-contract';
 import { Subscription } from 'web3-core-subscriptions';
 import { AbiItem } from 'web3-utils';
-import contractsInfo from '../contracts-info';
+import { IOrbsPosContractsAddresses, MainnetContractsAddresses } from '../contracts-adresses';
 import guardiansContractJSON from '../contracts/OrbsGuardians.json';
 import orbsRewardsDistributionContractJSON from '../contracts/OrbsRewardsDistribution.json';
 import validatorsContractJSON from '../contracts/OrbsValidators.json';
@@ -30,25 +30,6 @@ const OrbsTDEEthereumBlock = 7439168;
 
 export const NOT_DELEGATED = '0x0000000000000000000000000000000000000000';
 
-export interface IOrbsPosContractsAddresses {
-  guardiansContract: string;
-  votingContract: string;
-  orbsRewardsDistributionContract: string;
-  validatorsContract: string;
-  validatorsRegistryContract: string;
-  erc20Contract: string;
-}
-
-// TODO : O.L : Add tests for the configurable addresses
-const DeployedAddresses: IOrbsPosContractsAddresses = {
-  guardiansContract: contractsInfo.EthereumGuardiansContract.address,
-  votingContract: contractsInfo.EthereumVotingContract.address,
-  orbsRewardsDistributionContract: contractsInfo.EthereumOrbsRewardsDistributionContract.address,
-  validatorsContract: contractsInfo.EthereumValidatorsContract.address,
-  validatorsRegistryContract: contractsInfo.EthereumValidatorsRegistryContract.address,
-  erc20Contract: contractsInfo.EthereumErc20Address.address,
-};
-
 export class EthereumClientService implements IEthereumClientService {
   private guardiansContract: Contract;
   private votingContract: Contract;
@@ -57,9 +38,7 @@ export class EthereumClientService implements IEthereumClientService {
   private validatorsRegistryContract: Contract;
   private erc20Contract: Contract;
 
-  constructor(private web3: Web3, overrideAddresses: Partial<IOrbsPosContractsAddresses> = {}) {
-    const addresses: IOrbsPosContractsAddresses = { ...overrideAddresses, ...DeployedAddresses };
-
+  constructor(private web3: Web3, addresses: IOrbsPosContractsAddresses) {
     this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addresses.guardiansContract);
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi, addresses.votingContract);
     this.orbsRewardsDistributionContract = new this.web3.eth.Contract(

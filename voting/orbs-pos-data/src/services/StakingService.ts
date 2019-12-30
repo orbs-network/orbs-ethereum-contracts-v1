@@ -12,12 +12,12 @@ import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
-import contractsInfo from '../contracts-info';
+import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
 
 export class StakingService implements IStakingService {
   private stakingContract: Contract;
 
-  constructor(private web3: Web3, address: string = contractsInfo.StakingContract.address) {
+  constructor(private web3: Web3, address: string = STAKING_CONTRACT_ADDRESS) {
     this.stakingContract = new this.web3.eth.Contract(IStakingContractABI as AbiItem[], address);
   }
 

@@ -7,8 +7,7 @@
  */
 import { StakingService } from '../services/StakingService';
 import * as IStakingContractABI from 'orbs-staking-contract/build/abi/IStakingContract.json';
-import contractsInfo from '../contracts-info';
-import { IStakingStatus } from '../interfaces/IStakingService';
+import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
 
 class Web3Mock {
   methodParams = (methodName: string) => this.eth.Contract.mock.results[0].value.methods[methodName].mock.calls[0];
@@ -49,7 +48,7 @@ describe('Staking service', () => {
   });
 
   it('should initialize the contract with the right abi and the contract address', async () => {
-    expect(web3Mock.eth.Contract).toBeCalledWith(IStakingContractABI, contractsInfo.StakingContract.address);
+    expect(web3Mock.eth.Contract).toBeCalledWith(IStakingContractABI, STAKING_CONTRACT_ADDRESS);
   });
 
   it('should call "stake" with the amount', async () => {
