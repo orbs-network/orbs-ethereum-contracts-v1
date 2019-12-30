@@ -10,7 +10,6 @@ import Web3 from 'web3';
 import { Contract, EventData } from 'web3-eth-contract';
 import { Subscription } from 'web3-core-subscriptions';
 import { AbiItem } from 'web3-utils';
-import { defaults } from 'lodash';
 import contractsInfo from '../contracts-info';
 import guardiansContractJSON from '../contracts/OrbsGuardians.json';
 import orbsRewardsDistributionContractJSON from '../contracts/OrbsRewardsDistribution.json';
@@ -59,7 +58,7 @@ export class EthereumClientService implements IEthereumClientService {
   private erc20Contract: Contract;
 
   constructor(private web3: Web3, overrideAddresses: Partial<IOrbsPosContractsAddresses> = {}) {
-    const addresses: IOrbsPosContractsAddresses = defaults(overrideAddresses, DeployedAddresses);
+    const addresses: IOrbsPosContractsAddresses = { ...overrideAddresses, ...DeployedAddresses };
 
     this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addresses.guardiansContract);
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi, addresses.votingContract);
