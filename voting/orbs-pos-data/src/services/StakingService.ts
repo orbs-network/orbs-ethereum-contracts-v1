@@ -16,7 +16,6 @@ import contractsInfo from '../contracts-info';
 
 export class StakingService implements IStakingService {
   private stakingContract: Contract;
-  private fromAccount: string;
 
   constructor(private web3: Web3, address: string = contractsInfo.StakingContract.address) {
     this.stakingContract = new this.web3.eth.Contract(IStakingContractABI as AbiItem[], address);
@@ -25,10 +24,7 @@ export class StakingService implements IStakingService {
   // CONFIG //
   // TODO : O.L : Add tests for this function
   setFromAccount(address: string): this {
-    this.fromAccount = address;
-
     this.stakingContract.options.from = address;
-
     return this;
   }
 
