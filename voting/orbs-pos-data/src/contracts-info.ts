@@ -28,7 +28,4 @@ export default {
   EthereumErc20Address: {
     address: '0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA',
   },
-  OrbsVotingContract: {
-    name: '_Elections',
-  },
 };
