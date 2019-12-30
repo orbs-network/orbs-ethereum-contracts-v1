@@ -7,7 +7,7 @@
  */
 import { EthereumClientServiceMock } from './ethereum-client-service-mock';
 import { OrbsClientServiceMock } from './orbs-client-service-mock';
-import { OrbsPOSDataService } from '../OrbsPOSDataService';
+import { OrbsPOSDataService } from '../services/OrbsPOSDataService';
 import { IValidatorData } from '../interfaces/IValidatorData';
 import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 

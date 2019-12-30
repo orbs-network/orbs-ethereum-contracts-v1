@@ -8,12 +8,13 @@
 
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 
-export interface IStakingStatus { 
-  cooldownAmount: number; 
+export interface IStakingStatus {
+  cooldownAmount: number;
   cooldownEndTime: number;
 }
 
 export interface IStakingService {
+  setFromAccount(address: string): IStakingService;
   stake(amount: number): PromiEvent<TransactionReceipt>;
   unstake(amount: number): PromiEvent<TransactionReceipt>;
   restake(): PromiEvent<TransactionReceipt>;

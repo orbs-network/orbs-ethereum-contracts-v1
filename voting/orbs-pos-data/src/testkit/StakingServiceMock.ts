@@ -16,7 +16,15 @@ export class StakingServiceMock implements IStakingService {
   private addressToStakeStatus: Map<string, IStakingStatus> = new Map();
   private totalStakedTokens: string = '0';
 
+  private senderAccountAddress: string = 'DUMMY_FROM_ADDRESS';
+
   constructor(public autoCompleteTxes: boolean = true) {}
+
+  // CONFIG //
+  setFromAccount(address: string): IStakingService {
+    this.senderAccountAddress = address;
+    return this;
+  }
 
   // WRITE //
   stake(amount: number): PromiEvent<TransactionReceipt> {
@@ -131,7 +139,7 @@ export class StakingServiceMock implements IStakingService {
       transactionIndex: 1000000,
       blockHash: 'DUMMY_blockHash',
       blockNumber: 2000000,
-      from: 'DUMMY_FROM_ADDRESS',
+      from: this.senderAccountAddress,
       to: 'DUMMY_TO_ADDRESS',
       contractAddress: 'DUMMY_CONTRACT_ADDRESS',
       cumulativeGasUsed: 222,

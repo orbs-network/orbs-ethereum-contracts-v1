@@ -1,5 +1,4 @@
 import { AppDriver } from './AppDriver';
-import { cleanup } from 'react-testing-library';
 
 describe('App component', () => {
   let driver: AppDriver;
@@ -8,8 +7,6 @@ describe('App component', () => {
     driver = new AppDriver();
     window['ethereum'] = {};
   });
-
-  afterEach(cleanup);
 
   it('should render header and main', () => {
     window['ethereum'] = {};
