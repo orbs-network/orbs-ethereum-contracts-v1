@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { StakingService } from '../StakingService';
+import { StakingService } from '../services/StakingService';
 import * as IStakingContractABI from 'orbs-staking-contract/build/abi/IStakingContract.json';
 import contractsInfo from '../contracts-info';
 import { IStakingStatus } from '../interfaces/IStakingService';
