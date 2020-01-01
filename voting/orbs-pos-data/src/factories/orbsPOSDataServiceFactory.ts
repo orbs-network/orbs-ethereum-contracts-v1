@@ -22,7 +22,7 @@ export function orbsPOSDataServiceFactory(
   orbsClient: Client,
   overrideAddresses: Partial<IOrbsPosContractsAddresses> = {},
 ): IOrbsPOSDataService {
-  const contractsAddresses: IOrbsPosContractsAddresses = { ...overrideAddresses, ...MainnetContractsAddresses };
+  const contractsAddresses: IOrbsPosContractsAddresses = { ...MainnetContractsAddresses, ...overrideAddresses };
   const ethereumClient: IEthereumClientService = new EthereumClientService(web3, contractsAddresses);
   const orbsClientService: IOrbsClientService = new OrbsClientService(orbsClient);
 
