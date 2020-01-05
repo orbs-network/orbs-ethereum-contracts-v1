@@ -9,13 +9,29 @@ import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { StakingServiceMock } from '../testkit/StakingServiceMock';
 
 describe(`Staking service mock`, () => {
+  testWriteMethods();
+  testReadMethods();
+
+  it(`should allow to set default "from" account`, async () => {
+    const stakingServiceMock = new StakingServiceMock(false);
+    stakingServiceMock.setFromAccount('NEW_DUMMY_ADDRESS');
+
+    let actualTxReceipt: TransactionReceipt = null;
+    const promiEvent = stakingServiceMock.stake(1_000_000).on(`receipt`, (txReceipt: TransactionReceipt) => {
+      actualTxReceipt = txReceipt;
+    });
+    stakingServiceMock.sendTxReceipt(promiEvent);
+
+    expect(actualTxReceipt.from).toEqual('NEW_DUMMY_ADDRESS');
+  });
+});
+
+function testWriteMethods() {
   testWriteMethod('stake', stakingServiceMock => stakingServiceMock.stake(1_000_000));
   testWriteMethod('unstake', stakingServiceMock => stakingServiceMock.unstake(2_000_000));
   testWriteMethod('restake', stakingServiceMock => stakingServiceMock.restake());
   testWriteMethod('withdraw', stakingServiceMock => stakingServiceMock.withdraw());
-
-  testReadMethods();
-});
+}
 
 function testWriteMethod(
   methodName: string,

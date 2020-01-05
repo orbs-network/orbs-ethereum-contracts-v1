@@ -13,11 +13,13 @@ class Web3Mock {
   methodParams = (methodName: string) => this.eth.Contract.mock.results[0].value.methods[methodName].mock.calls[0];
   getStakeBalanceOfResult: string = null;
   getTotalStakedTokensResult: string = null;
+  latestInstance: any = null;
   getUnstakeStatusResult: { cooldownAmount: string; cooldownEndTime: string } = null;
 
   eth = {
     Contract: jest.fn().mockImplementation((abi, address) => {
-      return {
+      this.latestInstance = {
+        options: {},
         methods: {
           stake: jest.fn(amount => ({ send: jest.fn() })),
           unstake: jest.fn(amount => ({ send: jest.fn() })),
@@ -34,6 +36,7 @@ class Web3Mock {
           })),
         },
       };
+      return this.latestInstance;
     }),
   };
 }
@@ -93,5 +96,11 @@ describe('Staking service', () => {
 
     expect(web3Mock.methodParams('getUnstakeStatus')).toEqual(['DUMMY_ADDRESS']);
     expect(actual).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
+  });
+
+  it('should set options.from address to the given address', async () => {
+    expect(web3Mock.latestInstance.options.from).toBeUndefined;
+    await stakingService.setFromAccount('DUMMY_ADDRESS');
+    expect(web3Mock.latestInstance.options.from).toEqual('DUMMY_ADDRESS');
   });
 });
