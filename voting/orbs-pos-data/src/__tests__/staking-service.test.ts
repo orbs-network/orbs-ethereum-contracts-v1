@@ -62,6 +62,14 @@ describe('Staking service', () => {
     expect(web3Mock.eth.Contract).toBeCalledWith(IStakingContractABI, STAKING_CONTRACT_ADDRESS);
   });
 
+  it('should allow overriding of contract address', async () => {
+    const contractAddress = '0xaaaaaE5030f3e769FaC89AEF5ac34EbE8Cf95a76';
+    const localWeb3Mock = new Web3Mock();
+    const localStakingService = new StakingService(localWeb3Mock as any, contractAddress);
+
+    expect(localWeb3Mock.eth.Contract).toBeCalledWith(IStakingContractABI, contractAddress);
+  });
+
   it('should call "stake" with the amount', async () => {
     const result = await stakingService.stake(1_000_000);
     expect(web3Mock.methodParams('stake')).toEqual([1_000_000]);
