@@ -9,7 +9,7 @@ import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { OrbsTokenServiceMock } from '../testkit';
 
 describe(`Orbs Token service mock`, () => {
-  testWriteMethod('approve', orbsTokenServiceMock => orbsTokenServiceMock.approve(1_000_000));
+  testWriteMethod('approve', orbsTokenServiceMock => orbsTokenServiceMock.approve('spenderAddress', 1_000_000));
 
   testReadMethods();
 });

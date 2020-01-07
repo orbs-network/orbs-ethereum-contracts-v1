@@ -27,10 +27,12 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
   }
 
   // WRITE //
-  approve(amount: number): PromiEvent<TransactionReceipt> {
+  approve(spenderAddress: string, amount: number): PromiEvent<TransactionReceipt> {
     const promitEvent = this.generateTxData();
     if (this.autoCompleteTxes) {
       this.completeTx(promitEvent);
+      // TODO : O.L : Check if this is the best place to put this effect
+      this.setAllowance(this.senderAccountAddress, spenderAddress, amount.toString());
     }
     return promitEvent;
   }

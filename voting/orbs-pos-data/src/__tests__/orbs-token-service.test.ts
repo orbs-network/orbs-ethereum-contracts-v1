@@ -72,7 +72,8 @@ describe('Orbs Token service', () => {
 
   // WRITE //
   it('should call "stake" with the amount', async () => {
-    const result = await orbsTokenService.approve(1_000_000);
-    expect(web3Mock.methodParams('approve')).toEqual([1_000_000]);
+    const spenderAddress = 'spenderAddress';
+    const result = await orbsTokenService.approve(spenderAddress, 1_000_000);
+    expect(web3Mock.methodParams('approve')).toEqual([spenderAddress, 1_000_000]);
   });
 });
