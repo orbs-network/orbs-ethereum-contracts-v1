@@ -27,6 +27,12 @@ export class OrbsTokenService implements IOrbsTokenService {
     return this;
   }
 
+  // READ //
+  async getAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
+    const balance = await this.erc20TokenContract.methods.allowance(ownerAddress, spenderAddress).call();
+    return this.web3.utils.fromWei(balance, 'ether');
+  }
+
   // WRITE //
   approve(amount: number): PromiEvent<TransactionReceipt> {
     return this.erc20TokenContract.methods.approve(amount);

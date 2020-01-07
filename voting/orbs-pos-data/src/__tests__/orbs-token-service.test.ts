@@ -8,7 +8,7 @@
 import * as ERC20ContractABI from 'orbs-staking-contract/build/abi/ERC20.json';
 import { MainnetContractsAddresses } from '../contracts-adresses';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
-import { OrbsTokenService } from '../services/OrbsTokenService';
+import { OrbsTokenService } from '..';
 
 class Web3Mock {
   methodParams = (methodName: string) => this.eth.Contract.mock.results[0].value.methods[methodName].mock.calls[0];
@@ -19,12 +19,17 @@ class Web3Mock {
       return {
         methods: {
           approve: jest.fn(amount => ({ send: jest.fn() })),
+          allowance: jest.fn(() => ({ call: jest.fn() })),
         },
         options: {
           from: '',
         },
       };
     }),
+  };
+
+  utils = {
+    fromWei: (value: string, unit?: string) => value, // DEV_NOTE : Dumb stub
   };
 }
 
@@ -56,6 +61,16 @@ describe('Orbs Token service', () => {
     expect(localWeb3Mock.eth.Contract).toBeCalledWith(ERC20ContractABI, contractAddress);
   });
 
+  // READ //
+  it('should call "allowance" with the owner and spender addresses', async () => {
+    const ownerAddress = 'ownerAddress';
+    const spenderAddress = 'spenderAddress';
+
+    const result = await orbsTokenService.getAllowance(ownerAddress, spenderAddress);
+    expect(web3Mock.methodParams('allowance')).toEqual([ownerAddress, spenderAddress]);
+  });
+
+  // WRITE //
   it('should call "stake" with the amount', async () => {
     const result = await orbsTokenService.approve(1_000_000);
     expect(web3Mock.methodParams('approve')).toEqual([1_000_000]);
