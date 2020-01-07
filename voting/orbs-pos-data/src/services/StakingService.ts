@@ -22,7 +22,6 @@ export class StakingService implements IStakingService {
   }
 
   // CONFIG //
-  // TODO : O.L : Add tests for this function
   setFromAccount(address: string): this {
     this.stakingContract.options.from = address;
     return this;
