@@ -12,7 +12,7 @@
     "compile": "truffle compile",
     "migrate": "truffle migrate --reset",
     "version": "truffle --version",
-    "start-ganache": "ganache-cli -p 7545 -i 5777 > _out/ganache.log"
+    "start-ganache": "mkdir -p _out && ganache-cli -p 7545 -i 5777 > _out/ganache.log"
   },
   "author": "",
   "license": "ISC",

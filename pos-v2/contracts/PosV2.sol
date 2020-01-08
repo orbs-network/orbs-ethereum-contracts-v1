@@ -2,7 +2,7 @@ pragma solidity 0.4.26;
 
 import "./IStakingListener.sol";
 
-contract PosV2 is IStakingListener{
+contract PosV2 is IStakingListener {
 
 	address[] committee;
 	mapping (address => bool) registeredValidators;
@@ -26,11 +26,11 @@ contract PosV2 is IStakingListener{
 		emit CommitteeEvent(committee, stakes);
 	}
 
-	function staked(address stakeOwner, uint256 amount, uint256 totalStakedAmount) external {
+	function staked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external {
 		validatorsStake[stakeOwner] = totalStakedAmount;
 	}
 
-	function unstaked(address stakeOwner, uint256 amount, uint256 totalStakedAmount) external {
+	function unstaked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external {
 		validatorsStake[stakeOwner] = totalStakedAmount;
 	}
 
