@@ -9,6 +9,7 @@ import * as ERC20ContractABI from 'orbs-staking-contract/build/abi/ERC20.json';
 import { MainnetContractsAddresses } from '../contracts-adresses';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 import { OrbsTokenService } from '..';
+import web3 from 'web3';
 
 class Web3Mock {
   methodParams = (methodName: string) => this.eth.Contract.mock.results[0].value.methods[methodName].mock.calls[0];
@@ -19,7 +20,7 @@ class Web3Mock {
       return {
         methods: {
           approve: jest.fn(amount => ({ send: jest.fn() })),
-          allowance: jest.fn(() => ({ call: jest.fn() })),
+          allowance: jest.fn(() => ({ call: jest.fn(() => '0') })),
         },
         options: {
           from: '',
@@ -28,9 +29,7 @@ class Web3Mock {
     }),
   };
 
-  utils = {
-    fromWei: (value: string, unit?: string) => value, // DEV_NOTE : Dumb stub
-  };
+  utils = web3.utils;
 }
 
 describe('Orbs Token service', () => {
@@ -71,9 +70,12 @@ describe('Orbs Token service', () => {
   });
 
   // WRITE //
-  it('should call "stake" with the amount', async () => {
+  it('should send "stake" tx with the amount in wei-orbs', async () => {
     const spenderAddress = 'spenderAddress';
-    const result = await orbsTokenService.approve(spenderAddress, 1_000_000);
-    expect(web3Mock.methodParams('approve')).toEqual([spenderAddress, 1_000_000]);
+    const amountIntOrbs = 1_000_000;
+    const rawAmount = (BigInt(amountIntOrbs) * 10n ** 18n).toString(); // Convert orbs to 'wei-orbs"
+
+    const result = await orbsTokenService.approve(spenderAddress, amountIntOrbs);
+    expect(web3Mock.methodParams('approve')).toEqual([spenderAddress, rawAmount]);
   });
 });
