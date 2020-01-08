@@ -11,4 +11,15 @@ export interface IOrbsTokenService {
   setFromAccount(address: string): IOrbsTokenService;
   getAllowance(ownerAddress: string, spenderAddress: string): Promise<string>;
   approve(spenderAddress: string, amountInOrbs: number): PromiEvent<TransactionReceipt>;
+
+  /**
+   * Triggers the given callback when an 'Approval' event is emitted.
+   * IMPORTANT NOTE : The ORBS ERC20 contract does not emit any event when 'transferFrom' is called.
+   *                  and so, even though the 'allowance' will decrease, the callback will not get called.
+   */
+  subscribeToAllowanceChange(
+    ownerAddress: string,
+    spenderAddress: string,
+    callback: (allowance: string) => void,
+  ): () => void;
 }

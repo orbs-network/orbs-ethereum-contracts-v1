@@ -9,10 +9,11 @@
 import * as ERC20ContractABI from 'orbs-staking-contract/build/abi/ERC20.json';
 import Web3 from 'web3';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { Contract } from 'web3-eth-contract';
+import { Contract, EventData } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import { MainnetContractsAddresses } from '../contracts-adresses';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
+import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
 
 export class OrbsTokenService implements IOrbsTokenService {
   private erc20TokenContract: Contract;
@@ -32,6 +33,35 @@ export class OrbsTokenService implements IOrbsTokenService {
     const allowance: string = await this.erc20TokenContract.methods.allowance(ownerAddress, spenderAddress).call();
     return this.web3.utils.fromWei(allowance, 'ether');
   }
+
+  // TODO : FUTURE : We need to change the signature of this function to have a standard callback usage (with err and values).
+  //                  or to find a way to handle errors.
+  subscribeToAllowanceChange(ownerAddress: string, spenderAddress: string, callback: (allowance: string) => void) {
+    const specificApprovalEventEmitter = this.erc20TokenContract.events.Approval(
+      {
+        filter: {
+          owner: [ownerAddress],
+          spender: [spenderAddress],
+        },
+      },
+      async (error: Error, event: EventData) => {
+        if (error) {
+          throw error;
+        }
+
+        const newAllowance = await this.getAllowance(ownerAddress, spenderAddress);
+        callback(newAllowance);
+      },
+    );
+
+    return async () => {
+      let unsubscribeOfSpecificApprovalPromise = getUnsubscribePromise(specificApprovalEventEmitter);
+
+      return unsubscribeOfSpecificApprovalPromise;
+    };
+  }
+
+  // SUBSCRIPTIONS //
 
   // WRITE //
   approve(spenderAddress: string, amountInOrbs: number): PromiEvent<TransactionReceipt> {

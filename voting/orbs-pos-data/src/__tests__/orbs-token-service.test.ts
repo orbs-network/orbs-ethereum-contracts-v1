@@ -78,4 +78,6 @@ describe('Orbs Token service', () => {
     const result = await orbsTokenService.approve(spenderAddress, amountIntOrbs);
     expect(web3Mock.methodParams('approve')).toEqual([spenderAddress, rawAmount]);
   });
+
+  // TODO : O.L : FUTURE : Add tests for subscriptions
 });

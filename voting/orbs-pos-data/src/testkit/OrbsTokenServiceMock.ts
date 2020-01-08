@@ -1,7 +1,8 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { IStakingStatus } from '../interfaces/IStakingService';
 import Web3PromiEvent from 'web3-core-promievent';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
+
+export type OrbsAllowanceChangeCallback = (allowance: string) => void;
 
 interface ITxData {
   promiEvent: PromiEvent<TransactionReceipt> & {
@@ -13,8 +14,11 @@ interface ITxData {
 
 export class OrbsTokenServiceMock implements IOrbsTokenService {
   private txDataMap: Map<object, ITxData> = new Map();
-  private addressToBalanceMap: Map<string, string> = new Map();
   private addressToAllowancesMap: Map<string, Map<string, string>> = new Map();
+  private allowanceChangeEventsMap: Map<string, Map<string, Map<number, OrbsAllowanceChangeCallback>>> = new Map<
+    string,
+    Map<string, Map<number, OrbsAllowanceChangeCallback>>
+  >();
 
   private senderAccountAddress: string = 'DUMMY_FROM_ADDRESS';
 
@@ -37,6 +41,33 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
     return promitEvent;
   }
 
+  // SUBSCRIPTION //
+  subscribeToAllowanceChange(ownerAddress: string, spenderAddress: string, callback: (allowance: string) => void) {
+    // Ensure we have a mapping for the given owner
+    if (!this.allowanceChangeEventsMap.has(ownerAddress)) {
+      this.allowanceChangeEventsMap.set(ownerAddress, new Map<string, Map<number, OrbsAllowanceChangeCallback>>());
+    }
+
+    // Ensure we have a mapping for the given spender
+    const ownerToSpenderAllowanceSubscriptionMap = this.allowanceChangeEventsMap.get(ownerAddress);
+    if (!ownerToSpenderAllowanceSubscriptionMap.has(spenderAddress)) {
+      ownerToSpenderAllowanceSubscriptionMap.set(spenderAddress, new Map<number, OrbsAllowanceChangeCallback>());
+    }
+
+    const subscriptionsMap = ownerToSpenderAllowanceSubscriptionMap.get(spenderAddress);
+
+    // Generate id and add the event handler
+    const eventTransmitterId = Date.now() + Math.random() * 10;
+
+    subscriptionsMap.set(eventTransmitterId, callback);
+
+    return () => {
+      this.allowanceChangeEventsMap
+        .get(ownerAddress)
+        .get(spenderAddress)
+        .delete(eventTransmitterId);
+    };
+  }
   // READ //
   async getAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
     // default allowance
@@ -126,5 +157,27 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
     const ownerAllowances = this.addressToAllowancesMap.get(ownerAddress);
 
     ownerAllowances.set(spenderAddress, allowanceSum);
+
+    // Trigger listeners
+    this.triggerAllowanceChangeCallbacks(ownerAddress, spenderAddress);
+  }
+
+  // Subscription triggering
+  private triggerAllowanceChangeCallbacks(ownerAddress: string, spenderAddress: string) {
+    const newAllowance = this.addressToAllowancesMap.get(ownerAddress).get(spenderAddress);
+
+    if (
+      this.allowanceChangeEventsMap.has(ownerAddress) &&
+      this.allowanceChangeEventsMap.get(ownerAddress).has(spenderAddress)
+    ) {
+      const callbacks = this.allowanceChangeEventsMap
+        .get(ownerAddress)
+        .get(spenderAddress)
+        .values();
+
+      for (let callback of callbacks) {
+        callback(`${newAllowance}`);
+      }
+    }
   }
 }

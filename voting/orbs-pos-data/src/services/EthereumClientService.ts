@@ -22,6 +22,7 @@ import { IValidatorData } from '../interfaces/IValidatorData';
 import { IGuardianData } from '../interfaces/IGuardianData';
 import { IDelegationData } from '../interfaces/IDelegationData';
 import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
+import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
 
 const FIRST_ELECTION_BLOCK_HEIGHT = 7528900;
 const INTERVAL_BETWEEN_ELECTIONS = 20000;
@@ -231,32 +232,6 @@ export class EthereumClientService implements IEthereumClientService {
       return Promise.all([unsubscribeOfFromAddressPromise, unsubscribeOfToAddressPromise]);
     };
   }
-}
-
-/**
- * If the event is not yet subscribed (and so, has 'id' value of null) the 'unsubscribe' call will not work and the CB will get called.
- * Therefore we will wait until it is connected in order to disconnect it.
- */
-function getUnsubscribePromise(eventEmitter: Subscription<EventData>) {
-  let unsubscribePromise;
-
-  if (eventEmitter.id === null) {
-    unsubscribePromise = new Promise((resolve, reject) => {
-      // @ts-ignore (the 'connected' does not appear in the typing for some reason)
-      eventEmitter.on('connected', async () => {
-        try {
-          await eventEmitter.unsubscribe();
-          resolve(true);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
-  } else {
-    unsubscribePromise = eventEmitter.unsubscribe();
-  }
-
-  return unsubscribePromise;
 }
 
 function ensureNumericValue(numberOrString: number | string): number {
