@@ -35,6 +35,6 @@ export class OrbsTokenService implements IOrbsTokenService {
 
   // WRITE //
   approve(spenderAddress: string, amount: number): PromiEvent<TransactionReceipt> {
-    return this.erc20TokenContract.methods.approve(spenderAddress, amount);
+    return this.erc20TokenContract.methods.approve(spenderAddress, amount).send();
   }
 }

@@ -15,10 +15,12 @@ import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
 import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
 
 export class StakingService implements IStakingService {
+  public readonly stakingContractAddress: string;
   private stakingContract: Contract;
 
   constructor(private web3: Web3, address: string = STAKING_CONTRACT_ADDRESS) {
-    this.stakingContract = new this.web3.eth.Contract(IStakingContractABI as AbiItem[], address);
+    this.stakingContractAddress = address;
+    this.stakingContract = new this.web3.eth.Contract(IStakingContractABI as AbiItem[], this.stakingContractAddress);
   }
 
   // CONFIG //

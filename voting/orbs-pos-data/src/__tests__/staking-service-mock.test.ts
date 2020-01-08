@@ -124,5 +124,13 @@ function testReadMethods() {
       const afterResult = await stakingServiceMock.getUnstakeStatus('DUMMY_ADDRESS');
       expect(afterResult).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
     });
+
+    it(`should allow to set and get contract address`, async () => {
+      const newContractAddress = 'NEW_CONTRACT_ADDRESS';
+      expect(stakingServiceMock.stakingContractAddress).toEqual('DUMMY_CONTRACT_ADDRESS');
+
+      stakingServiceMock.setStakingContractAddress(newContractAddress);
+      expect(stakingServiceMock.stakingContractAddress).toBe(newContractAddress);
+    });
   });
 }

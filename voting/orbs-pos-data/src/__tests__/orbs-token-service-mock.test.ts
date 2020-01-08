@@ -8,6 +8,7 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { OrbsTokenServiceMock } from '../testkit';
 
+// TODO : O.L : Maybe make the general 'tx mocking' shared with the 'staking-service-mock.
 describe(`Orbs Token service mock`, () => {
   testWriteMethod('approve', orbsTokenServiceMock => orbsTokenServiceMock.approve('spenderAddress', 1_000_000));
 

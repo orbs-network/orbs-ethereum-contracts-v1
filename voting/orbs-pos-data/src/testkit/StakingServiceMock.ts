@@ -11,6 +11,7 @@ interface ITxData {
 }
 
 export class StakingServiceMock implements IStakingService {
+  private _stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
   private txDataMap: Map<object, ITxData> = new Map();
   private addressToBalanceMap: Map<string, string> = new Map();
   private addressToStakeStatus: Map<string, IStakingStatus> = new Map();
@@ -130,6 +131,14 @@ export class StakingServiceMock implements IStakingService {
 
   public setUnstakeStatus(address: string, status: IStakingStatus) {
     this.addressToStakeStatus.set(address, status);
+  }
+
+  public setStakingContractAddress(address: string) {
+    this._stakingContractAddress = address;
+  }
+
+  public get stakingContractAddress(): string {
+    return this._stakingContractAddress;
   }
 
   private generateRandomTxReceipt(): TransactionReceipt {
