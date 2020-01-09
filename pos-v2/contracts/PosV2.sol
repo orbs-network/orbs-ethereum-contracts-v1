@@ -9,7 +9,7 @@ contract PosV2 is IStakingListener {
 	mapping (address => uint256) validatorsStake;
 
 	event ValidatorRegistered(address addr, bytes4 ip);
-	event CommitteeEvent(address[] addrs, uint256[] stakes);
+	event CommitteeChanged(address[] addrs, uint256[] stakes);
 
 	function registerValidator(bytes4 ip) public  {
 		require(registeredValidators[msg.sender] == false, "Validator is already registered");
@@ -55,7 +55,7 @@ contract PosV2 is IStakingListener {
 			pos++;
 		}
 
-		emit CommitteeEvent(committee, stakes);
+		emit CommitteeChanged(committee, stakes);
 	}
 
 	function _replace(uint256[] memory stakes, uint p1, uint p2) private {

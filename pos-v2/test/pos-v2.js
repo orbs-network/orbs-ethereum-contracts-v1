@@ -20,9 +20,9 @@ class Driver {
     return new Driver(pos, erc20, staking);
   }
 
-  committeeEvents(txResult) {
-    const inputs = this.pos.abi.find(e => e.name == "CommitteeEvent").inputs;
-    const eventSignature = "CommitteeEvent(address[],uint256[])";
+  committeeChangedEvents(txResult) {
+    const inputs = this.pos.abi.find(e => e.name == "CommitteeChanged").inputs;
+    const eventSignature = "CommitteeChanged(address[],uint256[])";
 
     return this._parseEvents(txResult, inputs, eventSignature)
   }
@@ -87,7 +87,7 @@ contract('pos-v2', async (accounts) => {
     const v1 = newValidator();
     const r1 = await v1.stake(V1_STAKE);
 
-    expect(d.committeeEvents(r1)).to.be.length(0);
+    expect(d.committeeChangedEvents(r1)).to.be.length(0);
   });
 
   it('a validator should not be able to register twice', async() => {
@@ -105,7 +105,7 @@ contract('pos-v2', async (accounts) => {
     expect(rl.addr).to.equal(v1.address);
     expect(rl.ip).to.equal(v1.ip);
 
-    const cl = d.committeeEvents(r1)[0];
+    const cl = d.committeeChangedEvents(r1)[0];
     expect(cl.addrs).to.eql([v1.address]);
     // expect(cl.stakes).to.eql([new BN(0)]);
     expectBNArrayEqual(cl.stakes, [0]);
@@ -139,7 +139,7 @@ contract('pos-v2', async (accounts) => {
     expect(rl.addr).to.equal(validator.address);
     expect(rl.ip).to.equal(validator.ip);
 
-    const cl = d.committeeEvents(r1)[0];
+    const cl = d.committeeChangedEvents(r1)[0];
     expect(cl.addrs).to.eql([validator.address]);
     expectBNArrayEqual(cl.stakes, [V1_STAKE]);
 
@@ -157,7 +157,7 @@ contract('pos-v2', async (accounts) => {
     expect(rl2.addr).to.equal(doublyStaked.address);
     expect(rl2.ip).to.equal(doublyStaked.ip);
 
-    const cl2 = d.committeeEvents(r2)[0];
+    const cl2 = d.committeeChangedEvents(r2)[0];
     expect(cl2.addrs).to.eql([doublyStaked.address, validator.address]);
     expectBNArrayEqual(cl2.stakes, [V2_STAKE, V1_STAKE]);
   });
