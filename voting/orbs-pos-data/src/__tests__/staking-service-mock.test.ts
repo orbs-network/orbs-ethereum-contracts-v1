@@ -127,10 +127,10 @@ function testReadMethods() {
 
     it(`should allow to set and get contract address`, async () => {
       const newContractAddress = 'NEW_CONTRACT_ADDRESS';
-      expect(stakingServiceMock.stakingContractAddress).toEqual('DUMMY_CONTRACT_ADDRESS');
+      expect(stakingServiceMock.getStakingContractAddress()).toEqual('DUMMY_CONTRACT_ADDRESS');
 
       stakingServiceMock.setStakingContractAddress(newContractAddress);
-      expect(stakingServiceMock.stakingContractAddress).toBe(newContractAddress);
+      expect(stakingServiceMock.getStakingContractAddress()).toBe(newContractAddress);
     });
   });
 }

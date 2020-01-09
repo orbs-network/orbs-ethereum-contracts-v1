@@ -14,6 +14,7 @@ interface ITxData {
 
 export class OrbsTokenServiceMock implements IOrbsTokenService {
   private txDataMap: Map<object, ITxData> = new Map();
+  private txPromiventToEffect: Map<object, () => void> = new Map();
   private addressToAllowancesMap: Map<string, Map<string, string>> = new Map();
   private allowanceChangeEventsMap: Map<string, Map<string, Map<number, OrbsAllowanceChangeCallback>>> = new Map<
     string,
@@ -33,10 +34,12 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
   // WRITE //
   approve(spenderAddress: string, amount: number): PromiEvent<TransactionReceipt> {
     const promitEvent = this.generateTxData();
+
+    this.txPromiventToEffect.set(promitEvent, () =>
+      this.setAllowance(this.senderAccountAddress, spenderAddress, amount.toString()),
+    );
     if (this.autoCompleteTxes) {
       this.completeTx(promitEvent);
-      // TODO : O.L : Check if this is the best place to put this effect
-      this.setAllowance(this.senderAccountAddress, spenderAddress, amount.toString());
     }
     return promitEvent;
   }
@@ -129,10 +132,21 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
   public completeTx(eventEmitter: any): void {
     setTimeout(() => {
       this.sendTxHash(eventEmitter);
+      this.performTxEffect(eventEmitter); // NOTE : To mock the real world, all effects should take effect by the time the receipt is created.
       this.sendTxReceipt(eventEmitter);
       this.sendTxConfirmation(eventEmitter, 1);
       this.resolveTx(eventEmitter);
     }, 1);
+  }
+
+  private performTxEffect(eventEmmiter: any): void {
+    if (this.txPromiventToEffect.has(eventEmmiter)) {
+      const effect = this.txPromiventToEffect.get(eventEmmiter);
+
+      effect();
+
+      this.txPromiventToEffect.delete(eventEmmiter);
+    }
   }
 
   private generateRandomTxReceipt(): TransactionReceipt {

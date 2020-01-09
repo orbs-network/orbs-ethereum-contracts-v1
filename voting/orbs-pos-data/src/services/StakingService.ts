@@ -15,7 +15,7 @@ import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
 import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
 
 export class StakingService implements IStakingService {
-  public readonly stakingContractAddress: string;
+  private readonly stakingContractAddress: string;
   private stakingContract: Contract;
 
   constructor(private web3: Web3, address: string = STAKING_CONTRACT_ADDRESS) {
@@ -27,6 +27,10 @@ export class StakingService implements IStakingService {
   setFromAccount(address: string): this {
     this.stakingContract.options.from = address;
     return this;
+  }
+
+  getStakingContractAddress() {
+    return this.stakingContractAddress;
   }
 
   // WRITE //

@@ -70,7 +70,7 @@ describe('Orbs Token service', () => {
   });
 
   // WRITE //
-  it('should send "stake" tx with the amount in wei-orbs', async () => {
+  it('should send "approve" tx with the amount in wei-orbs', async () => {
     const spenderAddress = 'spenderAddress';
     const amountIntOrbs = 1_000_000;
     const rawAmount = (BigInt(amountIntOrbs) * 10n ** 18n).toString(); // Convert orbs to 'wei-orbs"

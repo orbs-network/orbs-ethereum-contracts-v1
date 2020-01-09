@@ -34,6 +34,7 @@ export class OrbsTokenService implements IOrbsTokenService {
     return this.web3.utils.fromWei(allowance, 'ether');
   }
 
+  // SUBSCRIPTIONS //
   subscribeToAllowanceChange(
     ownerAddress: string,
     spenderAddress: string,
@@ -62,8 +63,6 @@ export class OrbsTokenService implements IOrbsTokenService {
       return unsubscribeOfSpecificApprovalPromise;
     };
   }
-
-  // SUBSCRIPTIONS //
 
   // WRITE //
   approve(spenderAddress: string, amountInOrbs: number): PromiEvent<TransactionReceipt> {

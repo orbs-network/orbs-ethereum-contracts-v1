@@ -63,7 +63,7 @@ describe('Staking service', () => {
   });
 
   it('should expose the deployed contract address as default', async () => {
-    expect(stakingService.stakingContractAddress).toBe(STAKING_CONTRACT_ADDRESS);
+    expect(stakingService.getStakingContractAddress()).toBe(STAKING_CONTRACT_ADDRESS);
   });
 
   it('should allow overriding of contract address + expose it as the contract address', async () => {
@@ -72,7 +72,7 @@ describe('Staking service', () => {
     const localStakingService = new StakingService(localWeb3Mock as any, contractAddress);
 
     expect(localWeb3Mock.eth.Contract).toBeCalledWith(IStakingContractABI, contractAddress);
-    expect(localStakingService.stakingContractAddress).toBe(contractAddress);
+    expect(localStakingService.getStakingContractAddress()).toBe(contractAddress);
   });
 
   it('should call "stake" with the amount', async () => {
