@@ -12,9 +12,8 @@ contract PosV2 is IStakingListener {
 	event CommitteeEvent(address[] addrs, uint256[] stakes);
 
 	function registerValidator(bytes4 ip) public  {
-		if (registeredValidators[msg.sender]) {
-			return;
-		}
+		require(registeredValidators[msg.sender] == false, "Validator is already registered");
+
 		registeredValidators[msg.sender] = true;
 		emit ValidatorRegistered(msg.sender, ip);
 
