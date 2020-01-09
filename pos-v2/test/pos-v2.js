@@ -12,8 +12,11 @@ class Driver {
     this.staking = staking;
   }
 
-  static async new() {
-    const pos = await artifacts.require("PosV2").new();
+  static async new(maxCommitteeSize) {
+
+    maxCommitteeSize = maxCommitteeSize || 2;
+
+    const pos = await artifacts.require("PosV2").new(maxCommitteeSize);
     const erc20 = await artifacts.require('TestingERC20').new();
     const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, pos.address /* IStakingListener */, erc20.address /* _token */);
 
@@ -124,8 +127,8 @@ contract('pos-v2', async (accounts) => {
     await expectRejected(d.pos.registerValidator(v1.ip, {from: v1.address}));
   });
 
-  it('should register a new validator', async () => {
-    const d = await Driver.new();
+  it('sorts committee according to stake', async () => {
+    const d = await Driver.new(2);
 
     let validatorCount = 0;
     const newValidator = () => new Validator(accounts[validatorCount++], d);
@@ -164,6 +167,24 @@ contract('pos-v2', async (accounts) => {
     const cl2 = d.committeeChangedEvents(r2)[0];
     expect(cl2.addrs).to.eql([doublyStaked.address, validator.address]);
     expectBNArrayEqual(cl2.stakes, [V2_STAKE, V1_STAKE]);
+
+    // A third validator registers high ranked
+
+    const triplyStaked = newValidator();
+    const V3_STAKE = V1_STAKE * 3;
+    const s3 = await triplyStaked.stake(V3_STAKE);
+    expect(d.stakedEvents(s3)).to.be.length(1);
+
+    const r3 = await d.pos.registerValidator(triplyStaked.ip, {from: triplyStaked.address});
+
+    const rl3 = d.validatorRegisteredEvents(r3)[0];
+    expect(rl3.addr).to.equal(triplyStaked.address);
+    expect(rl3.ip).to.equal(triplyStaked.ip);
+
+    const cl3 = d.committeeChangedEvents(r3)[0];
+    expect(cl3.addrs).to.eql([triplyStaked.address, doublyStaked.address]);
+    expectBNArrayEqual(cl3.stakes, [V3_STAKE, V2_STAKE]);
+
   });
 
 });

@@ -4,12 +4,18 @@ import "./IStakingListener.sol";
 
 contract PosV2 is IStakingListener {
 
+	event ValidatorRegistered(address addr, bytes4 ip);
+	event CommitteeChanged(address[] addrs, uint256[] stakes);
+
 	address[] committee;
 	mapping (address => bool) registeredValidators;
 	mapping (address => uint256) validatorsStake;
 
-	event ValidatorRegistered(address addr, bytes4 ip);
-	event CommitteeChanged(address[] addrs, uint256[] stakes);
+	uint maxCommitteeSize;
+
+	constructor(uint _maxCommitteeSize) public {
+		maxCommitteeSize = _maxCommitteeSize;
+	}
 
 	function registerValidator(bytes4 ip) public  {
 		require(registeredValidators[msg.sender] == false, "Validator is already registered");
@@ -53,6 +59,17 @@ contract PosV2 is IStakingListener {
 		while (pos < stakes.length - 1 && stakes[pos] < stakes[pos+1]) {
 			_replace(stakes, pos, pos+1);
 			pos++;
+		}
+
+		if (committee.length > maxCommitteeSize) {
+			committee.length = maxCommitteeSize;
+			uint256[] memory oldStakes = stakes;
+
+			// TODO implmement more efficiently
+			stakes = new uint256[](maxCommitteeSize);
+			for (i=0; i < maxCommitteeSize; i++) {
+				stakes[i] = oldStakes[i];
+			}
 		}
 
 		emit CommitteeChanged(committee, stakes);
