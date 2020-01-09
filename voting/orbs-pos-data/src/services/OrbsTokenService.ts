@@ -52,8 +52,9 @@ export class OrbsTokenService implements IOrbsTokenService {
           callback(error, null);
         }
 
-        const newAllowance = await this.readAllowance(ownerAddress, spenderAddress);
-        callback(null, newAllowance);
+        const newAllowanceInOrbsWei = event.returnValues[2];
+        const newAllowanceInOrbs = this.web3.utils.fromWei(newAllowanceInOrbsWei, 'ether');
+        callback(null, newAllowanceInOrbs);
       },
     );
 
