@@ -75,6 +75,16 @@ function expectBNArrayEqual(a1, a2) {
   });
 }
 
+async function expectRejected(promise) {
+  let e = null;
+  try {
+    await promise;
+  } catch (err) {
+    e = err;
+  }
+  expect(e).to.exist; // TODO - verify correct error msg
+}
+
 contract('pos-v2', async (accounts) => {
 
   it('does not elect without registration', async() => {
@@ -111,13 +121,7 @@ contract('pos-v2', async (accounts) => {
     expectBNArrayEqual(cl.stakes, [0]);
 
     // The first validator attempts to register again - should not emit events
-    let e = null;
-    try {
-      await d.pos.registerValidator(v1.ip, {from: v1.address});
-    } catch (err) {
-      e = err;
-    }
-    expect(e).to.exist; // TODO - verify correct error msg
+    await expectRejected(d.pos.registerValidator(v1.ip, {from: v1.address}));
   });
 
   it('should register a new validator', async () => {
