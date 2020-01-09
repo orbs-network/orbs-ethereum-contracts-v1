@@ -14,6 +14,7 @@ export interface IStakingStatus {
 }
 
 export interface IStakingService {
+  getStakingContractAddress(): string;
   setFromAccount(address: string): IStakingService;
   stake(amount: number): PromiEvent<TransactionReceipt>;
   unstake(amount: number): PromiEvent<TransactionReceipt>;
