@@ -65,7 +65,7 @@ describe('Orbs Token service', () => {
     const ownerAddress = 'ownerAddress';
     const spenderAddress = 'spenderAddress';
 
-    const result = await orbsTokenService.getAllowance(ownerAddress, spenderAddress);
+    const result = await orbsTokenService.readAllowance(ownerAddress, spenderAddress);
     expect(web3Mock.methodParams('allowance')).toEqual([ownerAddress, spenderAddress]);
   });
 

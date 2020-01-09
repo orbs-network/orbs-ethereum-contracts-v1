@@ -76,7 +76,7 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
     };
   }
   // READ //
-  async getAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
+  async readAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
     // default allowance
     let allowance = '0';
 

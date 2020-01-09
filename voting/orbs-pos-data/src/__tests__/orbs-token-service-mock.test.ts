@@ -101,11 +101,11 @@ function testReadMethods() {
       const spenderAddress = 'SPENDER_ADDRESS';
       const allowanceAmount = '2000';
 
-      const valueBefore = await orbsTokenServiceMock.getAllowance(ownerAddress, spenderAddress);
+      const valueBefore = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
       expect(valueBefore).toEqual('0');
 
       orbsTokenServiceMock.setAllowance(ownerAddress, spenderAddress, allowanceAmount);
-      const valueAfter = await orbsTokenServiceMock.getAllowance(ownerAddress, spenderAddress);
+      const valueAfter = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
       expect(valueAfter).toEqual(allowanceAmount);
     });
   });

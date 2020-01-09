@@ -29,7 +29,7 @@ export class OrbsTokenService implements IOrbsTokenService {
   }
 
   // READ //
-  async getAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
+  async readAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
     const allowance: string = await this.erc20TokenContract.methods.allowance(ownerAddress, spenderAddress).call();
     return this.web3.utils.fromWei(allowance, 'ether');
   }
@@ -52,7 +52,7 @@ export class OrbsTokenService implements IOrbsTokenService {
           callback(error, null);
         }
 
-        const newAllowance = await this.getAllowance(ownerAddress, spenderAddress);
+        const newAllowance = await this.readAllowance(ownerAddress, spenderAddress);
         callback(null, newAllowance);
       },
     );
