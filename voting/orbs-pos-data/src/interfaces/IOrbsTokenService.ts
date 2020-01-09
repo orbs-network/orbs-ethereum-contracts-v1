@@ -20,6 +20,6 @@ export interface IOrbsTokenService {
   subscribeToAllowanceChange(
     ownerAddress: string,
     spenderAddress: string,
-    callback: (allowance: string) => void,
+    callback: (error: Error, allowance: string) => void,
   ): () => void;
 }

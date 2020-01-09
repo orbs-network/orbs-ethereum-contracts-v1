@@ -2,7 +2,7 @@ import { PromiEvent, TransactionReceipt } from 'web3-core';
 import Web3PromiEvent from 'web3-core-promievent';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 
-export type OrbsAllowanceChangeCallback = (allowance: string) => void;
+export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => void;
 
 interface ITxData {
   promiEvent: PromiEvent<TransactionReceipt> & {
@@ -42,7 +42,11 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
   }
 
   // SUBSCRIPTION //
-  subscribeToAllowanceChange(ownerAddress: string, spenderAddress: string, callback: (allowance: string) => void) {
+  subscribeToAllowanceChange(
+    ownerAddress: string,
+    spenderAddress: string,
+    callback: (error: Error, allowance: string) => void,
+  ) {
     // Ensure we have a mapping for the given owner
     if (!this.allowanceChangeEventsMap.has(ownerAddress)) {
       this.allowanceChangeEventsMap.set(ownerAddress, new Map<string, Map<number, OrbsAllowanceChangeCallback>>());
@@ -176,7 +180,7 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
         .values();
 
       for (let callback of callbacks) {
-        callback(`${newAllowance}`);
+        callback(null, `${newAllowance}`);
       }
     }
   }

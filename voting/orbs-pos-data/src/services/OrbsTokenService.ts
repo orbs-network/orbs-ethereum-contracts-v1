@@ -34,9 +34,11 @@ export class OrbsTokenService implements IOrbsTokenService {
     return this.web3.utils.fromWei(allowance, 'ether');
   }
 
-  // TODO : FUTURE : We need to change the signature of this function to have a standard callback usage (with err and values).
-  //                  or to find a way to handle errors.
-  subscribeToAllowanceChange(ownerAddress: string, spenderAddress: string, callback: (allowance: string) => void) {
+  subscribeToAllowanceChange(
+    ownerAddress: string,
+    spenderAddress: string,
+    callback: (error: Error, allowance: string) => void,
+  ) {
     const specificApprovalEventEmitter = this.erc20TokenContract.events.Approval(
       {
         filter: {
@@ -46,11 +48,11 @@ export class OrbsTokenService implements IOrbsTokenService {
       },
       async (error: Error, event: EventData) => {
         if (error) {
-          throw error;
+          callback(error, null);
         }
 
         const newAllowance = await this.getAllowance(ownerAddress, spenderAddress);
-        callback(newAllowance);
+        callback(null, newAllowance);
       },
     );
 
