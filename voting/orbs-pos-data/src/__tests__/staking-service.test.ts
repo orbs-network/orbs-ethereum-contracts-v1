@@ -11,6 +11,7 @@ import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
 
 class Web3Mock {
   methodParams = (methodName: string) => this.eth.Contract.mock.results[0].value.methods[methodName].mock.calls[0];
+  optionValue = (optionName: string) => this.eth.Contract.mock.results[0].value.options[optionName];
   getStakeBalanceOfResult: string = null;
   getTotalStakedTokensResult: string = null;
   getUnstakeStatusResult: { cooldownAmount: string; cooldownEndTime: string } = null;
@@ -33,6 +34,9 @@ class Web3Mock {
             call: jest.fn(() => this.getUnstakeStatusResult),
           })),
         },
+        options: {
+          from: '',
+        },
       };
     }),
   };
@@ -47,8 +51,28 @@ describe('Staking service', () => {
     stakingService = new StakingService(web3Mock as any);
   });
 
+  it('should set the default "from" address', async () => {
+    const accountAddress = '0xbDBE6E5030f3e769FaC89AEF5ac34EbE8Cf95a76';
+    await stakingService.setFromAccount(accountAddress);
+
+    expect(web3Mock.optionValue('from')).toEqual(accountAddress);
+  });
+
   it('should initialize the contract with the right abi and the contract address', async () => {
     expect(web3Mock.eth.Contract).toBeCalledWith(IStakingContractABI, STAKING_CONTRACT_ADDRESS);
+  });
+
+  it('should expose the deployed contract address as default', async () => {
+    expect(stakingService.getStakingContractAddress()).toBe(STAKING_CONTRACT_ADDRESS);
+  });
+
+  it('should allow overriding of contract address + expose it as the contract address', async () => {
+    const contractAddress = '0xaaaaaE5030f3e769FaC89AEF5ac34EbE8Cf95a76';
+    const localWeb3Mock = new Web3Mock();
+    const localStakingService = new StakingService(localWeb3Mock as any, contractAddress);
+
+    expect(localWeb3Mock.eth.Contract).toBeCalledWith(IStakingContractABI, contractAddress);
+    expect(localStakingService.getStakingContractAddress()).toBe(contractAddress);
   });
 
   it('should call "stake" with the amount', async () => {

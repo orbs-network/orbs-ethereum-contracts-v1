@@ -6,26 +6,24 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { StakingServiceMock } from '../testkit/StakingServiceMock';
+import { OrbsTokenServiceMock } from '../testkit';
 
-describe(`Staking service mock`, () => {
-  testWriteMethod('stake', stakingServiceMock => stakingServiceMock.stake(1_000_000));
-  testWriteMethod('unstake', stakingServiceMock => stakingServiceMock.unstake(2_000_000));
-  testWriteMethod('restake', stakingServiceMock => stakingServiceMock.restake());
-  testWriteMethod('withdraw', stakingServiceMock => stakingServiceMock.withdraw());
+// TODO : O.L : Maybe make the general 'tx mocking' shared with the 'staking-service-mock.
+describe(`Orbs Token service mock`, () => {
+  testWriteMethod('approve', orbsTokenServiceMock => orbsTokenServiceMock.approve('spenderAddress', 1_000_000));
 
   testReadMethods();
 });
 
 function testWriteMethod(
   methodName: string,
-  callMethod: (stakingServiceMock: StakingServiceMock) => PromiEvent<TransactionReceipt>,
+  callMethod: (orbsTokenServiceMock: OrbsTokenServiceMock) => PromiEvent<TransactionReceipt>,
 ) {
   describe(`"${methodName}" internal tests`, () => {
-    let stakingServiceMock: StakingServiceMock;
+    let stakingServiceMock: OrbsTokenServiceMock;
 
     beforeEach(() => {
-      stakingServiceMock = new StakingServiceMock(false);
+      stakingServiceMock = new OrbsTokenServiceMock(false);
     });
 
     it(`should allow to use async await`, async () => {
@@ -92,45 +90,23 @@ function testWriteMethod(
 
 function testReadMethods() {
   describe(`Read methods`, () => {
-    let stakingServiceMock: StakingServiceMock;
+    let orbsTokenServiceMock: OrbsTokenServiceMock;
 
     beforeEach(() => {
-      stakingServiceMock = new StakingServiceMock(false);
+      orbsTokenServiceMock = new OrbsTokenServiceMock(false);
     });
 
-    it(`should allow to set and get stake balance`, async () => {
-      const beforeResult = await stakingServiceMock.getStakeBalanceOf('DUMMY_ADDRESS');
-      expect(beforeResult).toEqual('0');
+    it(`should allow to set and get allowance`, async () => {
+      const ownerAddress = 'OWNER_ADDRESS';
+      const spenderAddress = 'SPENDER_ADDRESS';
+      const allowanceAmount = '2000';
 
-      stakingServiceMock.setStakeBalanceTo('DUMMY_ADDRESS', '123456');
-      const afterResult = await stakingServiceMock.getStakeBalanceOf('DUMMY_ADDRESS');
-      expect(afterResult).toEqual('123456');
-    });
+      const valueBefore = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
+      expect(valueBefore).toEqual('0');
 
-    it(`should allow to set and get total staked tokens`, async () => {
-      const beforeResult = await stakingServiceMock.getTotalStakedTokens();
-      expect(beforeResult).toEqual('0');
-
-      stakingServiceMock.setTotalStakedTokens('123456');
-      const afterResult = await stakingServiceMock.getTotalStakedTokens();
-      expect(afterResult).toEqual('123456');
-    });
-
-    it(`should allow to set and get unstake status`, async () => {
-      const beforeResult = await stakingServiceMock.getUnstakeStatus('DUMMY_ADDRESS');
-      expect(beforeResult).toEqual({ cooldownAmount: 0, cooldownEndTime: 0 });
-
-      stakingServiceMock.setUnstakeStatus('DUMMY_ADDRESS', { cooldownAmount: 123, cooldownEndTime: 456 });
-      const afterResult = await stakingServiceMock.getUnstakeStatus('DUMMY_ADDRESS');
-      expect(afterResult).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
-    });
-
-    it(`should allow to set and get contract address`, async () => {
-      const newContractAddress = 'NEW_CONTRACT_ADDRESS';
-      expect(stakingServiceMock.getStakingContractAddress()).toEqual('DUMMY_CONTRACT_ADDRESS');
-
-      stakingServiceMock.setStakingContractAddress(newContractAddress);
-      expect(stakingServiceMock.getStakingContractAddress()).toBe(newContractAddress);
+      orbsTokenServiceMock.setAllowance(ownerAddress, spenderAddress, allowanceAmount);
+      const valueAfter = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
+      expect(valueAfter).toEqual(allowanceAmount);
     });
   });
 }
