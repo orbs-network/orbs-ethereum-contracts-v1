@@ -4,11 +4,6 @@ chai.use(require('chai-bn')(BN));
 
 const expect = chai.expect;
 
-// const PosV2 = artifacts.require("PosV2");
-// const StakingContract = artifacts.require("StakingContract");
-// const ERC20 = artifacts.require("TestingERC20");
-
-
 class Driver {
 
   constructor(pos, erc20, staking) {
@@ -25,6 +20,34 @@ class Driver {
     return new Driver(pos, erc20, staking);
   }
 
+  committeeEvents(txResult) {
+    const inputs = this.pos.abi.find(e => e.name == "CommitteeEvent").inputs;
+    const eventSignature = "CommitteeEvent(address[],uint256[])";
+
+    return this._parseEvents(txResult, inputs, eventSignature)
+  }
+
+  validatorRegisteredEvents(txResult) {
+    const inputs = this.pos.abi.find(e => e.name == "ValidatorRegistered").inputs;
+    const eventSignature = "ValidatorRegistered(address,bytes4)";
+
+    return this._parseEvents(txResult, inputs, eventSignature)
+  }
+
+  stakedEvents(txResult) {
+    const inputs = this.staking.abi.find(e => e.name == "Staked").inputs;
+    const eventSignature = "Staked(address,uint256,uint256)";
+
+    return this._parseEvents(txResult, inputs, eventSignature)
+  }
+
+  _parseEvents(txResult, inputs, eventSignature) {
+    const eventSignatureHash = web3.eth.abi.encodeEventSignature(eventSignature);
+    return txResult.receipt.rawLogs
+        .filter(rl => rl.topics[0] === eventSignatureHash)
+        .map(rawLog => web3.eth.abi.decodeLog(inputs, rawLog.data, rawLog.topics.slice(1) /*assume all events are non-anonymous*/));
+  }
+
 }
 
 class Validator {
@@ -39,7 +62,7 @@ class Validator {
 
   async stake(amount) {
     await this.erc20.assign(this.address, amount);
-    await this.erc20.approve(this.staking.address, amount);
+    await this.erc20.approve(this.staking.address, amount, {from: this.address});
     return await this.staking.stake(amount, {from: this.address});
   }
 
@@ -54,6 +77,19 @@ function expectBNArrayEqual(a1, a2) {
 
 contract('pos-v2', async (accounts) => {
 
+  it('does not elect without registration', async() => {
+    const d = await Driver.new();
+
+    const newValidator = () => new Validator(accounts[0], d);
+
+    const V1_STAKE = 100;
+
+    const v1 = newValidator();
+    const r1 = await v1.stake(V1_STAKE);
+
+    expect(d.committeeEvents(r1)).to.be.length(0);
+  });
+
   it('a validator should not be able to register twice', async() => {
     const d = await Driver.new();
 
@@ -65,16 +101,14 @@ contract('pos-v2', async (accounts) => {
     const v1 = newValidator();
     const r1 = await d.pos.registerValidator(v1.ip, {from: v1.address});
 
-    const rl = r1.logs[0];
-    expect(rl.event).to.equal('ValidatorRegistered');
-    expect(rl.args.addr).to.equal(v1.address);
-    expect(rl.args.ip).to.equal(v1.ip);
+    const rl = d.validatorRegisteredEvents(r1)[0];
+    expect(rl.addr).to.equal(v1.address);
+    expect(rl.ip).to.equal(v1.ip);
 
-    const cl = r1.logs[1];
-    expect(cl.event).to.equal('CommitteeEvent');
-    expect(cl.args.addrs).to.eql([v1.address]);
-    // expect(cl.args.stakes).to.eql([new BN(0)]);
-    expectBNArrayEqual(cl.args.stakes, [0]);
+    const cl = d.committeeEvents(r1)[0];
+    expect(cl.addrs).to.eql([v1.address]);
+    // expect(cl.stakes).to.eql([new BN(0)]);
+    expectBNArrayEqual(cl.stakes, [0]);
 
     // The first validator attempts to register again - should not emit events
     let e = null;
@@ -94,44 +128,38 @@ contract('pos-v2', async (accounts) => {
 
     // First validator registers
 
-    const v1 = newValidator();
+    const validator = newValidator();
     const V1_STAKE = 100;
-    const s1 = await v1.stake(V1_STAKE);
-    expect(s1.logs[0].event).to.equal('Staked');
+    const s1 = await validator.stake(V1_STAKE);
+    expect(d.stakedEvents(s1)).to.be.length(1);
 
-    const r1 = await d.pos.registerValidator(v1.ip, {from: v1.address});
+    const r1 = await d.pos.registerValidator(validator.ip, {from: validator.address});
 
-    const rl = r1.logs[0];
-    expect(rl.event).to.equal('ValidatorRegistered');
-    expect(rl.args.addr).to.equal(v1.address);
-    expect(rl.args.ip).to.equal(v1.ip);
+    const rl = d.validatorRegisteredEvents(r1)[0];
+    expect(rl.addr).to.equal(validator.address);
+    expect(rl.ip).to.equal(validator.ip);
 
-    const cl = r1.logs[1];
-    expect(cl.event).to.equal('CommitteeEvent');
-    expect(cl.args.addrs).to.eql([v1.address]);
-    // expect(cl.args.stakes).to.eql([new BN(0)]);
-    expectBNArrayEqual(cl.args.stakes, [V1_STAKE]);
+    const cl = d.committeeEvents(r1)[0];
+    expect(cl.addrs).to.eql([validator.address]);
+    expectBNArrayEqual(cl.stakes, [V1_STAKE]);
 
     // A second validator registers again
 
-    const v2 = newValidator();
-    const r2 = await d.pos.registerValidator(v2.ip, {from: v2.address});
+    const doublyStaked = newValidator();
+    const V2_STAKE = V1_STAKE * 2;
+    const s2 = await doublyStaked.stake(V2_STAKE);
+    expect(d.stakedEvents(s2)).to.be.length(1);
 
-    const rl2 = r2.logs[0];
-    expect(rl2.event).to.equal('ValidatorRegistered');
-    expect(rl2.args.addr).to.equal(v2.address);
-    expect(rl2.args.ip).to.equal(v2.ip);
-
-    const cl2 = r2.logs[1];
-    expect(cl2.event).to.equal('CommitteeEvent');
-    expect(cl2.args.addrs).to.eql([v1.address, v2.address]);
-    // expect(cl.args.stakes).to.eql([new BN(0), new BN(0)]);
-    expectBNArrayEqual(cl2.args.stakes, [V1_STAKE, 0]);
+    const r2 = await d.pos.registerValidator(doublyStaked.ip, {from: doublyStaked.address});
 
 
-    // // The second validator attempts to register again - should not emit events
-    // const r3 = await pos.registerValidator(v2.ip, {from: v2.address});
-    // expect(r3.logs.length).to.equal(0);
+    const rl2 = d.validatorRegisteredEvents(r2)[0];
+    expect(rl2.addr).to.equal(doublyStaked.address);
+    expect(rl2.ip).to.equal(doublyStaked.ip);
+
+    const cl2 = d.committeeEvents(r2)[0];
+    expect(cl2.addrs).to.eql([doublyStaked.address, validator.address]);
+    expectBNArrayEqual(cl2.stakes, [V2_STAKE, V1_STAKE]);
   });
 
 });
