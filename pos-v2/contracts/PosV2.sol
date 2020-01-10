@@ -38,7 +38,7 @@ contract PosV2 is IStakingListener {
 
 	function _placeInCommittee(address stakeOwner) private {
 
-		(uint pos, bool qualifies) = _qualifyAndAppend(stakeOwner);
+		(uint p, bool qualifies) = _qualifyAndAppend(stakeOwner);
 		if (!qualifies) {
 			return;
 		}
@@ -48,14 +48,14 @@ contract PosV2 is IStakingListener {
 			stakes[i] = validatorsStake[committee[i]];
 		}
 
-		while (pos > 0 && stakes[pos] > stakes[pos-1]) {
-			_replace(stakes, pos-1, pos);
-			pos--;
+		while (p > 0 && stakes[p] > stakes[p-1]) {
+			_replace(stakes, p-1, p);
+			p--;
 		}
 
-		while (pos < stakes.length - 1 && stakes[pos] < stakes[pos+1]) {
-			_replace(stakes, pos, pos+1);
-			pos++;
+		while (p < stakes.length - 1 && stakes[p] < stakes[p+1]) {
+			_replace(stakes, p, p+1);
+			p++;
 		}
 
 		emit CommitteeChanged(committee, stakes);
@@ -73,10 +73,10 @@ contract PosV2 is IStakingListener {
 	}
 
 	function _qualifyAndAppend(address stakeOwner) private returns (uint, bool) {
-		(uint pos, bool found) = _findInCommittee(stakeOwner);
+		(uint p, bool found) = _findInCommittee(stakeOwner);
 
 		if (found) {
-			return (pos, true);
+			return (p, true);
 		}
 
 		if (!registeredValidators[stakeOwner]) {
@@ -90,12 +90,12 @@ contract PosV2 is IStakingListener {
 			if (!qualifies) {
 				return (0, false); // no qualification
 			}
-			pos = committee.length - 1;
-			committee[pos] = stakeOwner; // replace last member
+			p = committee.length - 1;
+			committee[p] = stakeOwner; // replace last member
 		} else {
-			pos = committee.push(stakeOwner) - 1; // extend committee
+			p = committee.push(stakeOwner) - 1; // extend committee
 		}
-		return (pos, true);
+		return (p, true);
 	}
 
 	function _findInCommittee(address v) private view returns (uint, bool) {

@@ -127,7 +127,7 @@ contract('pos-v2', async (accounts) => {
     await expectRejected(d.pos.registerValidator(v1.ip, {from: v1.address}));
   });
 
-  it('sorts committee according to stake', async () => {
+  it('sorts committee by stake', async () => {
     const d = await Driver.new(2);
 
     let validatorCount = 0;
