@@ -38,12 +38,9 @@ contract PosV2 is IStakingListener {
 
 	function _placeInCommittee(address stakeOwner) private {
 
-		(uint pos, bool exists) = _getPos(stakeOwner);
-		if (!exists) {
-			if (!registeredValidators[stakeOwner]) { // not adding if not registered
-				return;
-			}
-			pos = committee.push(stakeOwner) - 1;
+		(uint pos, bool qualifies) = _qualifyAndAppend(stakeOwner);
+		if (!qualifies) {
+			return;
 		}
 
 		uint256[] memory stakes = new uint256[](committee.length);
@@ -61,17 +58,6 @@ contract PosV2 is IStakingListener {
 			pos++;
 		}
 
-		if (committee.length > maxCommitteeSize) {
-			committee.length = maxCommitteeSize;
-			uint256[] memory oldStakes = stakes;
-
-			// TODO implmement more efficiently
-			stakes = new uint256[](maxCommitteeSize);
-			for (i=0; i < maxCommitteeSize; i++) {
-				stakes[i] = oldStakes[i];
-			}
-		}
-
 		emit CommitteeChanged(committee, stakes);
 	}
 
@@ -86,7 +72,33 @@ contract PosV2 is IStakingListener {
 		committee[p2] = tempValidator;
 	}
 
-	function _getPos(address v) private view returns (uint, bool) {
+	function _qualifyAndAppend(address stakeOwner) private returns (uint, bool) {
+		(uint pos, bool found) = _findInCommittee(stakeOwner);
+
+		if (found) {
+			return (pos, true);
+		}
+
+		if (!registeredValidators[stakeOwner]) {
+			return (0, false);
+		}
+
+		bool fullCommittee = committee.length == maxCommitteeSize;
+
+		if (fullCommittee) {
+			bool qualifies = validatorsStake[stakeOwner] > validatorsStake[committee[committee.length-1]];
+			if (!qualifies) {
+				return (0, false); // no qualification
+			}
+			pos = committee.length - 1;
+			committee[pos] = stakeOwner; // replace last member
+		} else {
+			pos = committee.push(stakeOwner) - 1; // extend committee
+		}
+		return (pos, true);
+	}
+
+	function _findInCommittee(address v) private view returns (uint, bool) {
 		uint l =  committee.length;
 		for (uint i=0; i < l; i++) {
 			if (committee[i] == v) {
