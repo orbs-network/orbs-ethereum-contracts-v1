@@ -38,27 +38,33 @@ contract PosV2 is IStakingListener {
 
 	function _placeInCommittee(address stakeOwner) private {
 
-		(uint p, bool qualifies) = _qualifyAndAppend(stakeOwner);
-		if (!qualifies) {
+		(uint p, bool inCommittee) = _qualifyAndAppend(stakeOwner);
+		if (!inCommittee) {
 			return;
 		}
 
+		uint256[] memory stakes = _sortCommitteeMember(p);
+
+		require(stakes.length == committee.length, "error sorting committee by stake");
+		emit CommitteeChanged(committee, stakes);
+	}
+
+	function _sortCommitteeMember(uint memberPos) private returns (uint256[]){
 		uint256[] memory stakes = new uint256[](committee.length);
 		for (uint i=0; i<committee.length; i++) {
 			stakes[i] = validatorsStake[committee[i]];
 		}
 
-		while (p > 0 && stakes[p] > stakes[p-1]) {
-			_replace(stakes, p-1, p);
-			p--;
+		while (memberPos > 0 && stakes[memberPos] > stakes[memberPos-1]) {
+			_replace(stakes, memberPos-1, memberPos);
+			memberPos--;
 		}
 
-		while (p < stakes.length - 1 && stakes[p] < stakes[p+1]) {
-			_replace(stakes, p, p+1);
-			p++;
+		while (memberPos < stakes.length - 1 && stakes[memberPos] < stakes[memberPos+1]) {
+			_replace(stakes, memberPos, memberPos+1);
+			memberPos++;
 		}
-
-		emit CommitteeChanged(committee, stakes);
+		return stakes;
 	}
 
 	function _replace(uint256[] memory stakes, uint p1, uint p2) private {
@@ -83,12 +89,10 @@ contract PosV2 is IStakingListener {
 			return (0, false);
 		}
 
-		bool fullCommittee = committee.length == maxCommitteeSize;
-
-		if (fullCommittee) {
-			bool qualifies = validatorsStake[stakeOwner] > validatorsStake[committee[committee.length-1]];
-			if (!qualifies) {
-				return (0, false); // no qualification
+		if (committee.length == maxCommitteeSize) { // a full committee
+			bool qualifyToEnter = validatorsStake[stakeOwner] > validatorsStake[committee[committee.length-1]];
+			if (!qualifyToEnter) {
+				return (0, false);
 			}
 			p = committee.length - 1;
 			committee[p] = stakeOwner; // replace last member
