@@ -1,10 +1,12 @@
 pragma solidity 0.4.26;
 
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 import "./IStakingListener.sol";
 
 contract PosV2 is IStakingListener, Ownable {
+	using SafeMath for uint256;
 
 	event ValidatorRegistered(address addr, bytes4 ip);
 	event CommitteeChanged(address[] addrs, uint256[] stakes);
@@ -48,10 +50,10 @@ contract PosV2 is IStakingListener, Ownable {
 		address prevDelegatee = delegations[msg.sender];
 		uint256 stake = ownStakes[msg.sender];
 		if (prevDelegatee != address(0)) {
-				totalStakes[prevDelegatee] -= stake;
+				totalStakes[prevDelegatee] = totalStakes[prevDelegatee].sub(stake);
 				_placeInCommittee(prevDelegatee); // TODO may emit superfluous event
 		}
-		totalStakes[to] += stake;
+		totalStakes[to] = totalStakes[to].add(stake);
 		_placeInCommittee(to);
 
 		delegations[msg.sender] = to;
@@ -64,8 +66,8 @@ contract PosV2 is IStakingListener, Ownable {
 		if (delegatee == address(0)) {
 			delegatee = staker;
 		}
-		totalStakes[delegatee] += amount;
-		ownStakes[staker] += amount;
+		totalStakes[delegatee] = totalStakes[delegatee].add(amount);
+		ownStakes[staker] = ownStakes[staker].add(amount);
 		_placeInCommittee(delegatee);
 	}
 
@@ -74,8 +76,8 @@ contract PosV2 is IStakingListener, Ownable {
 		if (delegatee == address(0)) {
 			delegatee = staker;
 		}
-		totalStakes[delegatee] -= amount;
-		ownStakes[staker] -= amount;
+		totalStakes[delegatee] = totalStakes[delegatee].sub(amount);
+		ownStakes[staker] = ownStakes[staker].sub(amount);
 		_placeInCommittee(delegatee);
 	}
 
