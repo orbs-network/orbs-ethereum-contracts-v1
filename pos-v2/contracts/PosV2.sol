@@ -1,8 +1,10 @@
 pragma solidity 0.4.26;
 
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+
 import "./IStakingListener.sol";
 
-contract PosV2 is IStakingListener {
+contract PosV2 is IStakingListener, Ownable {
 
 	event ValidatorRegistered(address addr, bytes4 ip);
 	event CommitteeChanged(address[] addrs, uint256[] stakes);
@@ -11,10 +13,23 @@ contract PosV2 is IStakingListener {
 	mapping (address => bool) registeredValidators;
 	mapping (address => uint256) validatorsStake;
 
+	address _stakingContract;
+
 	uint maxCommitteeSize;
+
+	modifier onlyStakingContract() {
+		require(msg.sender == _stakingContract, "caller is not the staking contract");
+
+		_;
+	}
 
 	constructor(uint _maxCommitteeSize) public {
 		maxCommitteeSize = _maxCommitteeSize;
+	}
+
+	function setStakingContract(address addr) public onlyOwner {
+		require(addr != 0, "Got staking contract address 0");
+		_stakingContract = addr;
 	}
 
 	function registerValidator(bytes4 ip) public  {
@@ -26,12 +41,12 @@ contract PosV2 is IStakingListener {
 		_placeInCommittee(msg.sender);
 	}
 
-	function staked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external {
+	function staked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external onlyStakingContract {
 		validatorsStake[stakeOwner] = totalStakedAmount;
 		_placeInCommittee(stakeOwner);
 	}
 
-	function unstaked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external {
+	function unstaked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external onlyStakingContract {
 		validatorsStake[stakeOwner] = totalStakedAmount;
 		_placeInCommittee(stakeOwner);
 	}
