@@ -189,7 +189,7 @@ contract StakingContract is IStakingContract, IMigratableStakingContract {
 
         uint256 totalStakedAmount = stake(stakeOwner, _amount);
 
-        stakingListener.staked(stakeOwner, _amount, totalStakedAmount);
+        stakingListener.staked(stakeOwner, _amount);
         emit Staked(stakeOwner, _amount, totalStakedAmount);
     }
 
@@ -219,7 +219,7 @@ contract StakingContract is IStakingContract, IMigratableStakingContract {
         stakeData.cooldownEndTime = now.add(cooldownPeriodInSec);
 
         totalStakedTokens = totalStakedTokens.sub(_amount);
-        stakingListener.unstaked(stakeOwner, _amount, stakeData.amount);
+        stakingListener.unstaked(stakeOwner, _amount);
         emit Unstaked(stakeOwner, _amount, stakeData.amount);
 
     }

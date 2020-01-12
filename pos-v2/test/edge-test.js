@@ -48,10 +48,10 @@ contract('pos-v2-edge-cases', async () => {
         const nonStakingAddr = d.accounts[2];
         await d.pos.setStakingContract(stakingAddr, {from: d.contractsOwner});
 
-        await expectRejected(d.pos.staked(d.accounts[0], 1, 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
-        await expectRejected(d.pos.unstaked(d.accounts[0], 1, 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
+        await expectRejected(d.pos.staked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
+        await expectRejected(d.pos.unstaked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
 
-        await d.pos.staked(d.accounts[0], 1, 1, {from: stakingAddr});
-        await d.pos.unstaked(d.accounts[0], 1, 1, {from: stakingAddr});
+        await d.pos.staked(d.accounts[0], 1, {from: stakingAddr});
+        await d.pos.unstaked(d.accounts[0], 1, {from: stakingAddr});
     })
 });

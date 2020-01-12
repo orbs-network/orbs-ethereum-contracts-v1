@@ -22,7 +22,7 @@ contract('pos-v2-high-level-flows', async () => {
     expect(l.to).to.equal(d2.address);
   });
 
-  it.only('sorts committee by stake', async () => {
+  it('sorts committee by stake', async () => {
     const d = await Driver.new(2);
 
     // First validator registers
