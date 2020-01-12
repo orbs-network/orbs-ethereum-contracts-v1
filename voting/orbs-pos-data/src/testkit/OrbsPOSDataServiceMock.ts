@@ -11,6 +11,7 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   private guardiansMap: Map<string, IGuardianInfo> = new Map();
   private orbsBalanceMap: Map<string, bigint> = new Map();
   private orbsBalanceChangeCallback: (newBalance: string) => void;
+  private totalTokens: bigint;
 
   async getValidators(): Promise<string[]> {
     return [];
@@ -21,7 +22,7 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   }
 
   async getTotalParticipatingTokens(): Promise<number> {
-    return 0;
+    return Number(this.totalTokens);
   }
 
   async getRewards(address: string): Promise<IRewards> {
@@ -78,6 +79,11 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   withGuardian(address: string, guardian: IGuardianInfo): this {
     this.guardiansList.push(address);
     this.guardiansMap.set(address, guardian);
+    return this;
+  }
+
+  withTotalParticipatingTokens(totalTokens: bigint): this {
+    this.totalTokens = totalTokens;
     return this;
   }
 
