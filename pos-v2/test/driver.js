@@ -13,7 +13,7 @@ class Driver {
         this.erc20 = erc20;
         this.staking = staking;
         this.accounts = accounts;
-        this.validators = [];
+        this.participants = [];
 
         if (guard != GUARD) {
             throw new Error("private constructor called externally")
@@ -41,9 +41,9 @@ class Driver {
         return this.accounts[1];
     }
 
-    newValidator() {
-        const v = new Validator(this.accounts[this.validators.length], this);
-        this.validators.push(v);
+    newParticipant() {
+        const v = new Participant(this.accounts[this.participants.length], this);
+        this.participants.push(v);
         return v
     }
 
@@ -68,6 +68,13 @@ class Driver {
         return this._parseEvents(txResult, inputs, eventSignature)
     }
 
+    delegatedEvents(txResult) {
+        const inputs = this.pos.abi.find(e => e.name == "Delegated").inputs;
+        const eventSignature = "Delegated(address,address)";
+
+        return this._parseEvents(txResult, inputs, eventSignature)
+    }
+
     _parseEvents(txResult, inputs, eventSignature) {
         const eventSignatureHash = web3.eth.abi.encodeEventSignature(eventSignature);
         return txResult.receipt.rawLogs
@@ -77,7 +84,7 @@ class Driver {
 
 }
 
-class Validator {
+class Participant {
 
     constructor(address, driver) {
         this.ip = address.substring(0, 10).toLowerCase();
@@ -85,12 +92,17 @@ class Validator {
         this.address = address;
         this.erc20 = driver.erc20;
         this.staking = driver.staking;
+        this.pos = driver.pos;
     }
 
     async stake(amount) {
         await this.erc20.assign(this.address, amount);
         await this.erc20.approve(this.staking.address, amount, {from: this.address});
-        return await this.staking.stake(amount, {from: this.address});
+        return this.staking.stake(amount, {from: this.address});
+    }
+
+    async delegate(to) {
+        return this.pos.delegate(to.address, {from: this.address});
     }
 
 }

@@ -8,10 +8,13 @@ contract PosV2 is IStakingListener, Ownable {
 
 	event ValidatorRegistered(address addr, bytes4 ip);
 	event CommitteeChanged(address[] addrs, uint256[] stakes);
+	event Delegated(address from, address to);
 
 	address[] committee;
 	mapping (address => bool) registeredValidators;
-	mapping (address => uint256) validatorsStake;
+	mapping (address => uint256) participantOwnStake;
+	mapping (address => uint256) participantTotalDelegatedStake;
+	mapping (address => address) delegations;
 
 	address _stakingContract;
 
@@ -41,18 +44,44 @@ contract PosV2 is IStakingListener, Ownable {
 		_placeInCommittee(msg.sender);
 	}
 
-	function staked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external onlyStakingContract {
-		validatorsStake[stakeOwner] = totalStakedAmount;
-		_placeInCommittee(stakeOwner);
+	function delegate(address to) public {
+		address prevDelegation = delegations[msg.sender];
+		uint256 stake = participantOwnStake[msg.sender];
+		if (prevDelegation != 0) {
+				participantTotalDelegatedStake[prevDelegation] -= stake;
+				_placeInCommittee(prevDelegation); // TODO may emit superfluous event
+		}
+		participantTotalDelegatedStake[to] += stake;
+		_placeInCommittee(to);
+
+		delegations[msg.sender] = to;
+
+		emit Delegated(msg.sender, to);
 	}
 
-	function unstaked(address stakeOwner, uint256 /* amount */, uint256 totalStakedAmount) external onlyStakingContract {
-		validatorsStake[stakeOwner] = totalStakedAmount;
-		_placeInCommittee(stakeOwner);
+	function staked(address stakeOwner, uint256 amount, uint256 /* totalStakedAmount */) external onlyStakingContract {
+		address delegated = stakeOwner;
+		if (delegations[stakeOwner] != 0) {
+			delegated = delegations[stakeOwner];
+		}
+		participantTotalDelegatedStake[delegated] += amount;
+
+		participantOwnStake[stakeOwner] += amount;
+		_placeInCommittee(delegated);
+	}
+
+	function unstaked(address stakeOwner, uint256 amount, uint256 /* totalStakedAmount */) external onlyStakingContract {
+		address delegated = stakeOwner;
+		if (delegations[stakeOwner] != 0) {
+			delegated = delegations[stakeOwner];
+		}
+		participantTotalDelegatedStake[delegated] -= amount;
+
+		participantOwnStake[stakeOwner] -= amount;
+		_placeInCommittee(delegated);
 	}
 
 	function _placeInCommittee(address stakeOwner) private {
-
 		(uint p, bool inCommittee) = _qualifyAndAppend(stakeOwner);
 		if (!inCommittee) {
 			return;
@@ -67,7 +96,7 @@ contract PosV2 is IStakingListener, Ownable {
 	function _sortCommitteeMember(uint memberPos) private returns (uint256[]){
 		uint256[] memory stakes = new uint256[](committee.length);
 		for (uint i=0; i<committee.length; i++) {
-			stakes[i] = validatorsStake[committee[i]];
+			stakes[i] = participantTotalDelegatedStake[committee[i]];
 		}
 
 		while (memberPos > 0 && stakes[memberPos] > stakes[memberPos-1]) {
@@ -105,7 +134,7 @@ contract PosV2 is IStakingListener, Ownable {
 		}
 
 		if (committee.length == maxCommitteeSize) { // a full committee
-			bool qualifyToEnter = validatorsStake[stakeOwner] > validatorsStake[committee[committee.length-1]];
+			bool qualifyToEnter = participantTotalDelegatedStake[stakeOwner] > participantTotalDelegatedStake[committee[committee.length-1]];
 			if (!qualifyToEnter) {
 				return (0, false);
 			}

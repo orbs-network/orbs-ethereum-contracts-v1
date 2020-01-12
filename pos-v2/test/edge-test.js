@@ -12,7 +12,7 @@ contract('pos-v2-edge-cases', async () => {
 
         const V1_STAKE = 100;
 
-        const v1 = d.newValidator();
+        const v1 = d.newParticipant();
         const r1 = await v1.stake(V1_STAKE);
 
         expect(d.committeeChangedEvents(r1)).to.be.length(0);
@@ -23,7 +23,7 @@ contract('pos-v2-edge-cases', async () => {
 
         // Validator registers
 
-        const v1 = d.newValidator();
+        const v1 = d.newParticipant();
         const r1 = await d.pos.registerValidator(v1.ip, {from: v1.address});
 
         const rl = d.validatorRegisteredEvents(r1)[0];
