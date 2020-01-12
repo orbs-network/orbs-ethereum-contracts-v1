@@ -12,10 +12,9 @@ contract('pos-v2-edge-cases', async () => {
 
         const V1_STAKE = 100;
 
-        const v1 = d.newParticipant();
-        const r1 = await v1.stake(V1_STAKE);
-
-        expect(d.committeeChangedEvents(r1)).to.be.length(0);
+        const v = d.newParticipant();
+        const r = await v.stake(V1_STAKE);
+        expect(r).to.not.have.a.committeeChangedEvent();
     });
 
     it('a validator should not be able to register twice', async() => {
@@ -23,19 +22,19 @@ contract('pos-v2-edge-cases', async () => {
 
         // Validator registers
 
-        const v1 = d.newParticipant();
-        const r1 = await d.pos.registerValidator(v1.ip, {from: v1.address});
-
-        const rl = d.validatorRegisteredEvents(r1)[0];
-        expect(rl.addr).to.equal(v1.address);
-        expect(rl.ip).to.equal(v1.ip);
-
-        const cl = d.committeeChangedEvents(r1)[0];
-        expect(cl.addrs).to.eql([v1.address]);
-        expectBNArrayEqual(cl.stakes, [0]);
+        const v = d.newParticipant();
+        const r = await d.pos.registerValidator(v.ip, {from: v.address});
+        expect(r).to.have.a.validatorRegisteredEvent({
+            addr: v.address,
+            ip: v.ip
+        });
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: [v.address],
+            stakes: [new BN(0)]
+        });
 
         // The first validator attempts to register again - should not emit events
-        await expectRejected(d.pos.registerValidator(v1.ip, {from: v1.address}));
+        await expectRejected(d.pos.registerValidator(v.ip, {from: v.address}));
     });
 
     it('should only accept stake notifications from the staking contract', async () => {
