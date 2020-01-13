@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { StakingServiceMock } from '../testkit/StakingServiceMock';
+import { StakingServiceMock } from '../testkit';
 
 describe(`Staking service mock`, () => {
   testWriteMethod('stake', stakingServiceMock => stakingServiceMock.stake(1_000_000));
@@ -29,7 +29,7 @@ function testWriteMethod(
     });
 
     it(`should allow to use async await`, async () => {
-      stakingServiceMock.autoCompleteTxes = true;
+      stakingServiceMock.setAutoCompleteTxes(true);
       const tr = await callMethod(stakingServiceMock);
       expect(tr.transactionHash.length).toBeGreaterThan(0);
     });
@@ -37,14 +37,14 @@ function testWriteMethod(
     it(`should allow to reject txes`, () => {
       const promiEvent = callMethod(stakingServiceMock);
 
-      stakingServiceMock.rejectTx(promiEvent, 'DUMMY_ERROR_DESCRIPTION');
+      stakingServiceMock.txsMocker.rejectTx(promiEvent, 'DUMMY_ERROR_DESCRIPTION');
       return expect(promiEvent).rejects.toMatch('DUMMY_ERROR_DESCRIPTION');
     });
 
     it(`should allow to resolve txes`, () => {
       const promiEvent = callMethod(stakingServiceMock);
 
-      stakingServiceMock.resolveTx(promiEvent);
+      stakingServiceMock.txsMocker.resolveTx(promiEvent);
       return expect(promiEvent.then(txReceipt => txReceipt.blockNumber)).resolves.toBeGreaterThan(0);
     });
 
@@ -55,7 +55,7 @@ function testWriteMethod(
       });
 
       expect(actualTxHash).toBeNull;
-      stakingServiceMock.sendTxHash(promiEvent);
+      stakingServiceMock.txsMocker.sendTxHash(promiEvent);
       expect(actualTxHash.length).toBeGreaterThan(0);
     });
 
@@ -66,7 +66,7 @@ function testWriteMethod(
       });
 
       expect(actualTxReceipt).toBeNull;
-      stakingServiceMock.sendTxReceipt(promiEvent);
+      stakingServiceMock.txsMocker.sendTxReceipt(promiEvent);
       expect(actualTxReceipt.blockNumber).toBeGreaterThan(0);
     });
 
@@ -80,11 +80,11 @@ function testWriteMethod(
       );
 
       expect(actualConfNumber).toEqual(0);
-      stakingServiceMock.sendTxConfirmation(promiEvent, 1);
+      stakingServiceMock.txsMocker.sendTxConfirmation(promiEvent, 1);
       expect(actualConfNumber).toEqual(1);
-      stakingServiceMock.sendTxConfirmation(promiEvent, 2);
+      stakingServiceMock.txsMocker.sendTxConfirmation(promiEvent, 2);
       expect(actualConfNumber).toEqual(2);
-      stakingServiceMock.sendTxConfirmation(promiEvent, 3);
+      stakingServiceMock.txsMocker.sendTxConfirmation(promiEvent, 3);
       expect(actualConfNumber).toEqual(3);
     });
   });

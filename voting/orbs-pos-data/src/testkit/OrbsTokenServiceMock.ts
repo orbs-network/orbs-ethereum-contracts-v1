@@ -1,5 +1,4 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import Web3PromiEvent from 'web3-core-promievent';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 import { TxsMocker } from './TxsMocker';
 
@@ -7,41 +6,36 @@ export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => v
 
 type TTxCreatingActionNames = 'approve';
 
-interface ITxData {
-  promiEvent: PromiEvent<TransactionReceipt> & {
-    resolve: (txReceipt: TransactionReceipt) => void;
-    reject: (reason: string) => void;
-  };
-  txReceipt: TransactionReceipt;
-}
-
 export class OrbsTokenServiceMock implements IOrbsTokenService {
-  public readonly txsMocker = new TxsMocker<TTxCreatingActionNames>();
-  private txDataMap: Map<object, ITxData> = new Map();
-  private txPromieventToEffect: Map<object, () => void> = new Map();
+  public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
+
   private addressToAllowancesMap: Map<string, Map<string, string>> = new Map();
   private allowanceChangeEventsMap: Map<string, Map<string, Map<number, OrbsAllowanceChangeCallback>>> = new Map<
     string,
     Map<string, Map<number, OrbsAllowanceChangeCallback>>
   >();
 
-  private senderAccountAddress: string = 'DUMMY_FROM_ADDRESS';
-
-  constructor(public autoCompleteTxes: boolean = true) {}
+  constructor(autoCompleteTxes: boolean = true) {
+    this.txsMocker = new TxsMocker<TTxCreatingActionNames>(autoCompleteTxes);
+  }
 
   // CONFIG //
   setFromAccount(address: string): IOrbsTokenService {
-    this.senderAccountAddress = address;
+    this.txsMocker.setFromAccount(address);
     return this;
+  }
+
+  setAutoCompleteTxes(autoCompleteTxes: boolean) {
+    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
   }
 
   // WRITE (TX creation) //
   approve(spenderAddress: string, amount: number): PromiEvent<TransactionReceipt> {
-    const promievent = this.generateTxData();
+    const promievent = this.txsMocker.generateTxData();
 
-    const txEffect = () => this.setAllowance(this.senderAccountAddress, spenderAddress, amount.toString());
+    const txEffect = () => this.setAllowance(this.txsMocker.getFromAccount(), spenderAddress, amount.toString());
 
-    this.handleTxCreated('approve', promievent, txEffect);
+    this.txsMocker.handleTxCreated('approve', promievent, txEffect);
 
     return promievent;
   }
@@ -77,6 +71,7 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
         .delete(eventTransmitterId);
     };
   }
+
   // READ //
   async readAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
     // default allowance
@@ -91,97 +86,6 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
     }
 
     return allowance;
-  }
-
-  private generateTxData(): PromiEvent<TransactionReceipt> {
-    const promiEvent: any = Web3PromiEvent();
-    const txReceipt = this.generateRandomTxReceipt();
-    this.txDataMap.set(promiEvent.eventEmitter, { promiEvent, txReceipt });
-    return promiEvent.eventEmitter;
-  }
-
-  private getTxDataByEventEmitter(eventEmitter: any): ITxData {
-    return this.txDataMap.get(eventEmitter);
-  }
-
-  // TODO : O.L : FUTURE : Check if all Tx test function can be merged ('StakingServiceMock' has same functions)
-  // TX Test Utils //
-  private handleTxCreated(
-    actionName: TTxCreatingActionNames,
-    promievent: PromiEvent<TransactionReceipt>,
-    effect?: () => void,
-  ) {
-    if (effect) {
-      this.txPromieventToEffect.set(promievent, effect);
-    }
-
-    if (this.autoCompleteTxes) {
-      this.completeTx(promievent);
-    }
-
-    this.txsMocker.emmitTxCreated(actionName, promievent);
-  }
-
-  public sendTxHash(eventEmitter: any): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    eventEmitter.emit('transactionHash', txReceipt.transactionHash);
-  }
-
-  public sendTxReceipt(eventEmitter: any): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    eventEmitter.emit('receipt', txReceipt);
-  }
-
-  public sendTxConfirmation(eventEmitter: any, confNumber: number): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    eventEmitter.emit('confirmation', confNumber, txReceipt);
-  }
-
-  public resolveTx(eventEmitter: any): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    promiEvent.resolve(txReceipt);
-  }
-
-  public rejectTx(eventEmitter: any, error: string): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    promiEvent.reject(error);
-  }
-
-  public completeTx(eventEmitter: any): void {
-    setTimeout(() => {
-      this.sendTxHash(eventEmitter);
-      this.performTxEffect(eventEmitter); // NOTE : To mock the real world, all effects should take effect by the time the receipt is created.
-      this.sendTxReceipt(eventEmitter);
-      this.sendTxConfirmation(eventEmitter, 1);
-      this.resolveTx(eventEmitter);
-    }, 1);
-  }
-
-  private performTxEffect(eventEmmiter: any): void {
-    if (this.txPromieventToEffect.has(eventEmmiter)) {
-      const effect = this.txPromieventToEffect.get(eventEmmiter);
-
-      effect();
-
-      this.txPromieventToEffect.delete(eventEmmiter);
-    }
-  }
-
-  private generateRandomTxReceipt(): TransactionReceipt {
-    return {
-      status: true,
-      transactionHash: `DUMMY_transactionHash_${Math.floor(Math.random() * 1000000)}`,
-      transactionIndex: 1000000,
-      blockHash: 'DUMMY_blockHash',
-      blockNumber: 2000000,
-      from: this.senderAccountAddress,
-      to: 'DUMMY_TO_ADDRESS',
-      contractAddress: 'DUMMY_CONTRACT_ADDRESS',
-      cumulativeGasUsed: 222,
-      gasUsed: 111,
-      logs: [],
-      logsBloom: 'DUMMY_logsBloom',
-    };
   }
 
   // State test utils //
