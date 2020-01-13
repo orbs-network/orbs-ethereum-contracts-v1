@@ -31,13 +31,9 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
 
   // WRITE (TX creation) //
   approve(spenderAddress: string, amount: number): PromiEvent<TransactionReceipt> {
-    const promievent = this.txsMocker.generateTxData();
-
     const txEffect = () => this.setAllowance(this.txsMocker.getFromAccount(), spenderAddress, amount.toString());
 
-    this.txsMocker.handleTxCreated('approve', promievent, txEffect);
-
-    return promievent;
+    return this.txsMocker.createTxOf('approve', txEffect);
   }
 
   // SUBSCRIPTION //

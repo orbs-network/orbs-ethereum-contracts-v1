@@ -28,35 +28,19 @@ export class StakingServiceMock implements IStakingService {
 
   // WRITE (TX creation) //
   stake(amount: number): PromiEvent<TransactionReceipt> {
-    const promievent = this.txsMocker.generateTxData();
-
-    this.txsMocker.handleTxCreated('stake', promievent);
-
-    return promievent;
+    return this.txsMocker.createTxOf('stake');
   }
 
   unstake(amount: number): PromiEvent<TransactionReceipt> {
-    const promievent = this.txsMocker.generateTxData();
-
-    this.txsMocker.handleTxCreated('unstake', promievent);
-
-    return promievent;
+    return this.txsMocker.createTxOf('unstake');
   }
 
   restake(): PromiEvent<TransactionReceipt> {
-    const promievent = this.txsMocker.generateTxData();
-
-    this.txsMocker.handleTxCreated('restake', promievent);
-
-    return promievent;
+    return this.txsMocker.createTxOf('restake');
   }
 
   withdraw(): PromiEvent<TransactionReceipt> {
-    const promievent = this.txsMocker.generateTxData();
-
-    this.txsMocker.handleTxCreated('withdraw', promievent);
-
-    return promievent;
+    return this.txsMocker.createTxOf('withdraw');
   }
 
   // READ //

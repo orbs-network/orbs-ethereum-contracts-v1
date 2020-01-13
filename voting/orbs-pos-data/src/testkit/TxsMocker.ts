@@ -71,7 +71,15 @@ export class TxsMocker<T extends string> {
   // ****************************
   // Txs test utils
   // ****************************
-  public handleTxCreated(actionName: T, promievent: PromiEvent<TransactionReceipt>, effect?: () => void) {
+  public createTxOf(actionName: T, effect?: () => void): PromiEvent<TransactionReceipt> {
+    const promievent = this.generateTxData();
+
+    this.handleTxCreated(actionName, promievent, effect);
+
+    return promievent;
+  }
+
+  private handleTxCreated(actionName: T, promievent: PromiEvent<TransactionReceipt>, effect?: () => void) {
     if (effect) {
       this.txPromieventToEffect.set(promievent, effect);
     }
@@ -118,7 +126,7 @@ export class TxsMocker<T extends string> {
     promiEvent.reject(error);
   }
 
-  public generateTxData(): PromiEvent<TransactionReceipt> {
+  private generateTxData(): PromiEvent<TransactionReceipt> {
     const promiEvent: any = Web3PromiEvent();
     const txReceipt = this.generateRandomTxReceipt();
     this.txDataMap.set(promiEvent.eventEmitter, { promiEvent, txReceipt });
