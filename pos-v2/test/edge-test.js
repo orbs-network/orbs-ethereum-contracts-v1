@@ -52,5 +52,26 @@ contract('pos-v2-edge-cases', async () => {
 
         await d.pos.staked(d.accounts[0], 1, {from: stakingAddr});
         await d.pos.unstaked(d.accounts[0], 1, {from: stakingAddr});
+    });
+
+    it('staking before or after delegating has the same effect', async () => {
+        const d = await Driver.new();
+
+        const firstValidator = d.newParticipant();
+        let r = await firstValidator.stake(100);
+
+        // stake before delegate
+        const delegator = d.newParticipant();
+        await delegator.stake(100);
+        r = await delegator.delegate(firstValidator);
+
+        expect(r).to.have.a.totalStakeChangedEvent({addr: firstValidator.address, newTotal: '200'});
+
+        // delegate before stake
+        const delegator1 = d.newParticipant();
+        await delegator1.delegate(firstValidator);
+        r = await delegator1.stake(100);
+
+        expect(r).to.have.a.totalStakeChangedEvent({addr: firstValidator.address, newTotal: '300'});
     })
 });
