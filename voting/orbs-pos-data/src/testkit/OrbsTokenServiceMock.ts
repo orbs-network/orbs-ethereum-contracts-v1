@@ -1,8 +1,11 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import Web3PromiEvent from 'web3-core-promievent';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
+import { TxCreatingServiceMockBase } from './TxCreatingServiceMockBase';
 
 export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => void;
+
+type TTxCreatingActionNames = 'approve';
 
 interface ITxData {
   promiEvent: PromiEvent<TransactionReceipt> & {
@@ -12,9 +15,10 @@ interface ITxData {
   txReceipt: TransactionReceipt;
 }
 
-export class OrbsTokenServiceMock implements IOrbsTokenService {
+export class OrbsTokenServiceMock extends TxCreatingServiceMockBase<TTxCreatingActionNames>
+  implements IOrbsTokenService {
   private txDataMap: Map<object, ITxData> = new Map();
-  private txPromiventToEffect: Map<object, () => void> = new Map();
+  private txPromieventToEffect: Map<object, () => void> = new Map();
   private addressToAllowancesMap: Map<string, Map<string, string>> = new Map();
   private allowanceChangeEventsMap: Map<string, Map<string, Map<number, OrbsAllowanceChangeCallback>>> = new Map<
     string,
@@ -23,7 +27,9 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
 
   private senderAccountAddress: string = 'DUMMY_FROM_ADDRESS';
 
-  constructor(public autoCompleteTxes: boolean = true) {}
+  constructor(public autoCompleteTxes: boolean = true) {
+    super();
+  }
 
   // CONFIG //
   setFromAccount(address: string): IOrbsTokenService {
@@ -31,17 +37,15 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
     return this;
   }
 
-  // WRITE //
+  // WRITE (TX creation) //
   approve(spenderAddress: string, amount: number): PromiEvent<TransactionReceipt> {
-    const promitEvent = this.generateTxData();
+    const promievent = this.generateTxData();
 
-    this.txPromiventToEffect.set(promitEvent, () =>
-      this.setAllowance(this.senderAccountAddress, spenderAddress, amount.toString()),
-    );
-    if (this.autoCompleteTxes) {
-      this.completeTx(promitEvent);
-    }
-    return promitEvent;
+    const txEffect = () => this.setAllowance(this.senderAccountAddress, spenderAddress, amount.toString());
+
+    this.handleTxCreated('approve', promievent, txEffect);
+
+    return promievent;
   }
 
   // SUBSCRIPTION //
@@ -102,8 +106,24 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
     return this.txDataMap.get(eventEmitter);
   }
 
-  // TX Test Utils //
   // TODO : O.L : FUTURE : Check if all Tx test function can be merged ('StakingServiceMock' has same functions)
+  // TX Test Utils //
+  private handleTxCreated(
+    actionName: TTxCreatingActionNames,
+    promievent: PromiEvent<TransactionReceipt>,
+    effect?: () => void,
+  ) {
+    if (effect) {
+      this.txPromieventToEffect.set(promievent, effect);
+    }
+
+    if (this.autoCompleteTxes) {
+      this.completeTx(promievent);
+    }
+
+    this.emmitTxCreated(actionName, promievent);
+  }
+
   public sendTxHash(eventEmitter: any): void {
     const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
     eventEmitter.emit('transactionHash', txReceipt.transactionHash);
@@ -140,12 +160,12 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
   }
 
   private performTxEffect(eventEmmiter: any): void {
-    if (this.txPromiventToEffect.has(eventEmmiter)) {
-      const effect = this.txPromiventToEffect.get(eventEmmiter);
+    if (this.txPromieventToEffect.has(eventEmmiter)) {
+      const effect = this.txPromieventToEffect.get(eventEmmiter);
 
       effect();
 
-      this.txPromiventToEffect.delete(eventEmmiter);
+      this.txPromieventToEffect.delete(eventEmmiter);
     }
   }
 
