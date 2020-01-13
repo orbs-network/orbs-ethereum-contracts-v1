@@ -47,41 +47,11 @@ class Driver {
         return v
     }
 
-    committeeChangedEvents(txResult) {
-        const inputs = this.pos.abi.find(e => e.name == "CommitteeChanged").inputs;
-        const eventSignature = "CommitteeChanged(address[],uint256[])";
-
-        return this._parseEvents(txResult, inputs, eventSignature)
+    async delegateMoreStake(amount, delegatee) {
+        const delegator = this.newParticipant();
+        await delegator.stake(new BN(amount));
+        return await delegator.delegate(delegatee);
     }
-
-    validatorRegisteredEvents(txResult) {
-        const inputs = this.pos.abi.find(e => e.name == "ValidatorRegistered").inputs;
-        const eventSignature = "ValidatorRegistered(address,bytes4)";
-
-        return this._parseEvents(txResult, inputs, eventSignature)
-    }
-
-    stakedEvents(txResult) {
-        const inputs = this.staking.abi.find(e => e.name == "Staked").inputs;
-        const eventSignature = "Staked(address,uint256,uint256)";
-
-        return this._parseEvents(txResult, inputs, eventSignature)
-    }
-
-    delegatedEvents(txResult) {
-        const inputs = this.pos.abi.find(e => e.name == "Delegated").inputs;
-        const eventSignature = "Delegated(address,address)";
-
-        return this._parseEvents(txResult, inputs, eventSignature)
-    }
-
-    _parseEvents(txResult, inputs, eventSignature) {
-        const eventSignatureHash = web3.eth.abi.encodeEventSignature(eventSignature);
-        return txResult.receipt.rawLogs
-            .filter(rl => rl.topics[0] === eventSignatureHash)
-            .map(rawLog => web3.eth.abi.decodeLog(inputs, rawLog.data, rawLog.topics.slice(1) /*assume all events are non-anonymous*/));
-    }
-
 }
 
 class Participant {
@@ -96,15 +66,19 @@ class Participant {
     }
 
     async stake(amount) {
-        await this.erc20.assign(this.address, amount);
-        await this.erc20.approve(this.staking.address, amount, {from: this.address});
-        return this.staking.stake(amount, {from: this.address});
+        const bnAmount = new BN(amount);
+        await this.erc20.assign(this.address, bnAmount);
+        await this.erc20.approve(this.staking.address, bnAmount, {from: this.address});
+        return this.staking.stake(bnAmount, {from: this.address});
     }
 
     async delegate(to) {
         return this.pos.delegate(to.address, {from: this.address});
     }
 
+    async registerAsValidator() {
+        return await this.pos.registerValidator(this.ip, {from: this.address});
+    }
 }
 
 function expectBNArrayEqual(a1, a2) {

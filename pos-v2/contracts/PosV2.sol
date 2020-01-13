@@ -11,6 +11,7 @@ contract PosV2 is IStakingListener, Ownable {
 	event ValidatorRegistered(address addr, bytes4 ip);
 	event CommitteeChanged(address[] addrs, uint256[] stakes);
 	event Delegated(address from, address to);
+	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
 
 	address[] committee;
 	mapping (address => bool) registeredValidators;
@@ -50,10 +51,10 @@ contract PosV2 is IStakingListener, Ownable {
 		address prevDelegatee = delegations[msg.sender];
 		uint256 stake = ownStakes[msg.sender];
 		if (prevDelegatee != address(0)) {
-				totalStakes[prevDelegatee] = totalStakes[prevDelegatee].sub(stake);
-				_placeInCommittee(prevDelegatee); // TODO may emit superfluous event
+			_updateTotalStake(prevDelegatee, totalStakes[prevDelegatee].sub(stake));
+			_placeInCommittee(prevDelegatee); // TODO may emit superfluous event
 		}
-		totalStakes[to] = totalStakes[to].add(stake);
+		_updateTotalStake(to, totalStakes[to].add(stake));
 		_placeInCommittee(to);
 
 		delegations[msg.sender] = to;
@@ -66,8 +67,9 @@ contract PosV2 is IStakingListener, Ownable {
 		if (delegatee == address(0)) {
 			delegatee = staker;
 		}
-		totalStakes[delegatee] = totalStakes[delegatee].add(amount);
+		_updateTotalStake(delegatee, totalStakes[delegatee].add(amount));
 		ownStakes[staker] = ownStakes[staker].add(amount);
+
 		_placeInCommittee(delegatee);
 	}
 
@@ -76,8 +78,9 @@ contract PosV2 is IStakingListener, Ownable {
 		if (delegatee == address(0)) {
 			delegatee = staker;
 		}
-		totalStakes[delegatee] = totalStakes[delegatee].sub(amount);
+		_updateTotalStake(delegatee, totalStakes[delegatee].sub(amount));
 		ownStakes[staker] = ownStakes[staker].sub(amount);
+
 		_placeInCommittee(delegatee);
 	}
 
@@ -89,11 +92,13 @@ contract PosV2 is IStakingListener, Ownable {
 
 		uint256[] memory stakes = _sortCommitteeMember(p);
 
-		require(stakes.length == committee.length, "error sorting committee by stake");
+		assert(stakes.length == committee.length);
 		emit CommitteeChanged(committee, stakes);
 	}
 
 	function _sortCommitteeMember(uint memberPos) private returns (uint256[]){
+		assert(committee.length > memberPos);
+
 		uint256[] memory stakes = new uint256[](committee.length);
 		for (uint i=0; i<committee.length; i++) {
 			stakes[i] = totalStakes[committee[i]];
@@ -144,6 +149,11 @@ contract PosV2 is IStakingListener, Ownable {
 			p = committee.push(stakeOwner) - 1; // extend committee
 		}
 		return (p, true);
+	}
+
+	function _updateTotalStake(address addr, uint256 newTotal) private {
+		totalStakes[addr] = newTotal;
+		emit TotalStakeChanged(addr, newTotal);
 	}
 
 	function _findInCommittee(address v) private view returns (uint, bool) {

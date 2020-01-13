@@ -26,72 +26,72 @@ contract('pos-v2-high-level-flows', async () => {
   it('sorts committee by stake', async () => {
     const d = await Driver.new(2);
 
+    const stake100 = new BN(100);
+    const stake200 = new BN(200);
+    const stake300 = new BN(300);
+    const stake500 = new BN(500);
+
     // First validator registers
 
-    const validator = d.newParticipant();
-    const V1_STAKE = new BN(100);
-    let r = await validator.stake(V1_STAKE);
-    expect(d.stakedEvents(r)).to.be.length(1);
-
-    r = await d.pos.registerValidator(validator.ip, {from: validator.address});
-    expect(r).to.have.a.validatorRegisteredEvent({
-      addr: validator.address,
-      ip: validator.ip
-    });
-    expect(r).to.have.a.committeeChangedEvent({
-      addrs: [validator.address],
-      stakes: [V1_STAKE],
-    });
-
-    const doublyStaked = d.newParticipant();
-    const V2_STAKE = V1_STAKE.mul(new BN(2));
-    r = await doublyStaked.stake(V2_STAKE);
+    const validatorStaked100 = d.newParticipant();
+    let r = await validatorStaked100.stake(stake100);
     expect(r).to.have.a.stakedEvent();
 
-    r = await d.pos.registerValidator(doublyStaked.ip, {from: doublyStaked.address});
+
+    r = await validatorStaked100.registerAsValidator();
     expect(r).to.have.a.validatorRegisteredEvent({
-      addr: doublyStaked.address,
-      ip: doublyStaked.ip,
+      addr: validatorStaked100.address,
+      ip: validatorStaked100.ip
     });
     expect(r).to.have.a.committeeChangedEvent({
-      addrs: [doublyStaked.address, validator.address],
-      stakes: [V2_STAKE, V1_STAKE]
+      addrs: [validatorStaked100.address],
+      stakes: [stake100],
+    });
+
+    const validatorStaked200 = d.newParticipant();
+    r = await validatorStaked200.stake(stake200);
+    expect(r).to.have.a.totalStakeChangedEvent({addr: validatorStaked200.address, newTotal: stake200});
+
+    r = await validatorStaked200.registerAsValidator();
+
+    expect(r).to.have.a.validatorRegisteredEvent({
+      addr: validatorStaked200.address,
+      ip: validatorStaked200.ip,
+    });
+    expect(r).to.have.a.committeeChangedEvent({
+      addrs: [validatorStaked200.address, validatorStaked100.address],
+      stakes: [stake200, stake100]
     });
 
     // A third validator registers high ranked
 
-    const triplyStaked = d.newParticipant();
-    const V3_STAKE = V1_STAKE.mul(new BN(3));
-    r = await triplyStaked.stake(V3_STAKE);
+    const validatorStaked300 = d.newParticipant();
+    r = await validatorStaked300.stake(stake300);
     expect(r).to.have.a.stakedEvent();
 
-    r = await d.pos.registerValidator(triplyStaked.ip, {from: triplyStaked.address});
+    r = await validatorStaked300.registerAsValidator();
     expect(r).to.have.a.validatorRegisteredEvent({
-      addr: triplyStaked.address,
-      ip: triplyStaked.ip
+      addr: validatorStaked300.address,
+      ip: validatorStaked300.ip
     });
     expect(r).to.have.a.committeeChangedEvent({
-      addrs: [triplyStaked.address, doublyStaked.address],
-      stakes: [V3_STAKE, V2_STAKE]
+      addrs: [validatorStaked300.address, validatorStaked200.address],
+      stakes: [stake300, stake200]
     });
 
-    const delegator = d.newParticipant();
-    const stakeAddition = V3_STAKE.add(new BN(1));
-    await delegator.stake(stakeAddition);
-    r = await delegator.delegate(doublyStaked);
+
+    r = await d.delegateMoreStake(stake300, validatorStaked200);
     expect(r).to.have.a.committeeChangedEvent({
-      addrs: [doublyStaked.address, triplyStaked.address],
-      stakes: [new BN(V2_STAKE).add(stakeAddition), V3_STAKE]
+      addrs: [validatorStaked200.address, validatorStaked300.address],
+      stakes: [stake500, stake300]
     });
 
-    const delegator2 = d.newParticipant();
-    await delegator2.stake(stakeAddition);
-    await delegator2.stake(stakeAddition);
-    r = await delegator2.delegate(validator);
+    r = await d.delegateMoreStake(stake500, validatorStaked100);
     expect(r).to.have.a.committeeChangedEvent({
-      addrs: [validator.address, doublyStaked.address],
-      stakes: [new BN(V1_STAKE).add(stakeAddition).add(stakeAddition), new BN(V2_STAKE).add(stakeAddition)]
+      addrs: [validatorStaked100.address, validatorStaked200.address],
+      stakes: [stake100.add(stake500), stake500]
     });
+
   });
 
 });

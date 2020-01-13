@@ -1,15 +1,11 @@
 const {expectBNArrayEqual} = require("./driver");
 
-const pos = artifacts.require("PosV2");
-const erc20 = artifacts.require('TestingERC20');
-const staking = artifacts.require("StakingContract");
-
-function _parseLogs(txResult, inputs, eventSignature) {
-    const eventSignatureHash = web3.eth.abi.encodeEventSignature(eventSignature);
-    return txResult.receipt.rawLogs
-        .filter(rl => rl.topics[0] === eventSignatureHash)
-        .map(rawLog => web3.eth.abi.decodeLog(inputs, rawLog.data, rawLog.topics.slice(1) /*assume all events are non-anonymous*/));
-}
+const {
+    committeeChangedEvents,
+    validatorRegisteredEvents,
+    stakedEvents,
+    delegatedEvents,
+    totalStakeChangedEvents} = require('./eventParsing');
 
 const BN = require('bn.js');
 
@@ -27,15 +23,11 @@ function compare(a, b) {
     }
 }
 
-const containEvent = (eventName, eventSig, contract) => function(_super) {
+const containEvent = (eventParser) => function(_super) {
     return function (data) {
         data = data || {};
 
-        const inputs = contract.abi.find(e => e.name == eventName).inputs;
-        const eventSignature = eventSig;
-
-        const txResult = this._obj;
-        const log = _parseLogs(txResult, inputs, eventSignature).pop();
+        const log = eventParser(this._obj).pop(); // TODO - currently only checks last event of the required type
 
         this.assert(log != null, "expected the event to exist", "expected no event to exist");
 
@@ -52,8 +44,9 @@ const containEvent = (eventName, eventSig, contract) => function(_super) {
 };
 
 module.exports = function (chai, utils) {
-    chai.Assertion.overwriteMethod('delegatedEvent', containEvent('Delegated', 'Delegated(address,address)', pos));
-    chai.Assertion.overwriteMethod('validatorRegisteredEvent', containEvent('ValidatorRegistered', 'ValidatorRegistered(address,bytes4)', pos));
-    chai.Assertion.overwriteMethod('committeeChangedEvent', containEvent('CommitteeChanged', 'CommitteeChanged(address[],uint256[])', pos));
-    chai.Assertion.overwriteMethod('stakedEvent', containEvent('Staked', 'Staked(address,uint256,uint256)', staking));
+    chai.Assertion.overwriteMethod('delegatedEvent', containEvent(delegatedEvents));
+    chai.Assertion.overwriteMethod('validatorRegisteredEvent', containEvent(validatorRegisteredEvents));
+    chai.Assertion.overwriteMethod('committeeChangedEvent', containEvent(committeeChangedEvents));
+    chai.Assertion.overwriteMethod('totalStakeChangedEvent', containEvent(totalStakeChangedEvents));
+    chai.Assertion.overwriteMethod('stakedEvent', containEvent(stakedEvents));
 };
