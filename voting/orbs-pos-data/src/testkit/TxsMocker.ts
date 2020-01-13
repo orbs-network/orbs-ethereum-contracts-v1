@@ -2,7 +2,7 @@ import { PromiEvent, TransactionReceipt } from 'web3-core';
 import EventEmitter3 from 'eventemitter3';
 
 // TODO : Add tests for event registration for implementing classes (smth generic for all extenders of this class)
-export class TxCreatingServiceMockBase<T extends string> {
+export class TxsMocker<T extends string> {
   private txCreationEventEmitter = new EventEmitter3();
 
   public registerToTxCreation(
@@ -30,7 +30,7 @@ export class TxCreatingServiceMockBase<T extends string> {
     this.txCreationEventEmitter.removeAllListeners(txCreationActionName);
   }
 
-  protected emmitTxCreated(txCreationActionName: T, promievent: PromiEvent<TransactionReceipt>) {
+  public emmitTxCreated(txCreationActionName: T, promievent: PromiEvent<TransactionReceipt>) {
     this.txCreationEventEmitter.emit(txCreationActionName, promievent);
   }
 }

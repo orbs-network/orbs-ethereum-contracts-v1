@@ -1,7 +1,7 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
 import Web3PromiEvent from 'web3-core-promievent';
-import { TxCreatingServiceMockBase } from './TxCreatingServiceMockBase';
+import { TxsMocker } from './TxsMocker';
 
 type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
@@ -13,7 +13,9 @@ interface ITxData {
   txReceipt: TransactionReceipt;
 }
 
-export class StakingServiceMock extends TxCreatingServiceMockBase<TTxCreatingActionNames> implements IStakingService {
+export class StakingServiceMock implements IStakingService {
+  public readonly txsMocker = new TxsMocker<TTxCreatingActionNames>();
+
   private stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
   private txDataMap: Map<object, ITxData> = new Map();
   private txPromieventToEffect: Map<object, () => void> = new Map();
@@ -23,9 +25,7 @@ export class StakingServiceMock extends TxCreatingServiceMockBase<TTxCreatingAct
 
   private senderAccountAddress: string = 'DUMMY_FROM_ADDRESS';
 
-  constructor(public autoCompleteTxes: boolean = true) {
-    super();
-  }
+  constructor(public autoCompleteTxes: boolean = true) {}
 
   // CONFIG //
   setFromAccount(address: string): IStakingService {
@@ -106,7 +106,7 @@ export class StakingServiceMock extends TxCreatingServiceMockBase<TTxCreatingAct
       this.completeTx(promievent);
     }
 
-    this.emmitTxCreated(actionName, promievent);
+    this.txsMocker.emmitTxCreated(actionName, promievent);
   }
 
   public sendTxHash(eventEmitter: any): void {

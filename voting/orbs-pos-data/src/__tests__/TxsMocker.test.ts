@@ -1,24 +1,15 @@
 import Web3PromiEvent from 'web3-core-promievent';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { TxCreatingServiceMockBase } from '../testkit/TxCreatingServiceMockBase';
+import { TxsMocker } from '../testkit/TxsMocker';
 import Mock = jest.Mock;
 
 type TActionNames = 'ActionA' | 'ActionB';
 
-class ChildClass extends TxCreatingServiceMockBase<TActionNames> {
-  /**
-   * Makes the function accessible
-   */
-  public emmitTxCreated(txCreationActionName: TActionNames, promievent: PromiEvent<TransactionReceipt>) {
-    super.emmitTxCreated(txCreationActionName, promievent);
-  }
-}
-
 describe('TxCreatingServiceMock', () => {
-  let txCreatingServiceMockBase: TxCreatingServiceMockBase<TActionNames>;
+  let txCreatingServiceMockBase: TxsMocker<TActionNames>;
 
   beforeEach(() => {
-    txCreatingServiceMockBase = new ChildClass();
+    txCreatingServiceMockBase = new TxsMocker();
   });
 
   describe('Event Emitting', () => {
@@ -42,8 +33,8 @@ describe('TxCreatingServiceMock', () => {
       // Trigger both events for the first time
       const promiventA1 = Web3PromiEvent();
       const promiventB1 = Web3PromiEvent();
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionA', promiventA1);
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionB', promiventB1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
 
       expect(handler1).toBeCalledTimes(1);
       expect(handler1).toBeCalledWith(promiventA1);
@@ -57,8 +48,8 @@ describe('TxCreatingServiceMock', () => {
       // Trigger both events for the second time
       const promiventA2 = Web3PromiEvent();
       const promiventB2 = Web3PromiEvent();
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionA', promiventA2);
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionB', promiventB2);
+      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA2);
+      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB2);
 
       expect(handler1).toBeCalledTimes(2);
       expect(handler1).toBeCalledWith(promiventA2);
@@ -83,8 +74,8 @@ describe('TxCreatingServiceMock', () => {
       txCreatingServiceMockBase.unregisterToTxCreation('ActionA', handler2);
 
       // Trigger events
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionA', promiventA1);
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionB', promiventB1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
 
       // Ensure all were called but the removed listener
       expect(handler1).toBeCalledTimes(1);
@@ -111,8 +102,8 @@ describe('TxCreatingServiceMock', () => {
       txCreatingServiceMockBase.removeAllTxCreationListeners('ActionA');
 
       // Trigger events
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionA', promiventA1);
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionB', promiventB1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
 
       // Ensure all were called but the removed listener
       expect(handler1).toBeCalledTimes(0);
@@ -139,8 +130,8 @@ describe('TxCreatingServiceMock', () => {
       txCreatingServiceMockBase.removeAllTxCreationListeners();
 
       // Trigger events
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionA', promiventA1);
-      (txCreatingServiceMockBase as ChildClass).emmitTxCreated('ActionB', promiventB1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
+      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
 
       // Ensure all were called but the removed listener
       expect(handler1).toBeCalledTimes(0);

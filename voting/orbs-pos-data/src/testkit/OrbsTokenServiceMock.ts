@@ -1,7 +1,7 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import Web3PromiEvent from 'web3-core-promievent';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
-import { TxCreatingServiceMockBase } from './TxCreatingServiceMockBase';
+import { TxsMocker } from './TxsMocker';
 
 export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => void;
 
@@ -15,8 +15,8 @@ interface ITxData {
   txReceipt: TransactionReceipt;
 }
 
-export class OrbsTokenServiceMock extends TxCreatingServiceMockBase<TTxCreatingActionNames>
-  implements IOrbsTokenService {
+export class OrbsTokenServiceMock implements IOrbsTokenService {
+  public readonly txsMocker = new TxsMocker<TTxCreatingActionNames>();
   private txDataMap: Map<object, ITxData> = new Map();
   private txPromieventToEffect: Map<object, () => void> = new Map();
   private addressToAllowancesMap: Map<string, Map<string, string>> = new Map();
@@ -27,9 +27,7 @@ export class OrbsTokenServiceMock extends TxCreatingServiceMockBase<TTxCreatingA
 
   private senderAccountAddress: string = 'DUMMY_FROM_ADDRESS';
 
-  constructor(public autoCompleteTxes: boolean = true) {
-    super();
-  }
+  constructor(public autoCompleteTxes: boolean = true) {}
 
   // CONFIG //
   setFromAccount(address: string): IOrbsTokenService {
@@ -121,7 +119,7 @@ export class OrbsTokenServiceMock extends TxCreatingServiceMockBase<TTxCreatingA
       this.completeTx(promievent);
     }
 
-    this.emmitTxCreated(actionName, promievent);
+    this.txsMocker.emmitTxCreated(actionName, promievent);
   }
 
   public sendTxHash(eventEmitter: any): void {
