@@ -24,9 +24,8 @@ export class StakingService implements IStakingService {
   }
 
   // CONFIG //
-  setFromAccount(address: string): this {
+  setFromAccount(address: string): void {
     this.stakingContract.options.from = address;
-    return this;
   }
 
   getStakingContractAddress() {

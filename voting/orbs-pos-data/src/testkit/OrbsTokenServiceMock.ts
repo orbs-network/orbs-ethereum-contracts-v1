@@ -21,9 +21,8 @@ export class OrbsTokenServiceMock implements IOrbsTokenService, ITxCreatingServi
   }
 
   // CONFIG //
-  setFromAccount(address: string): IOrbsTokenService {
+  setFromAccount(address: string): void {
     this.txsMocker.setFromAccount(address);
-    return this;
   }
 
   // WRITE (TX creation) //

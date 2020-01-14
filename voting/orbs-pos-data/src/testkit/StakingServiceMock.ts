@@ -19,9 +19,8 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   // CONFIG //
-  setFromAccount(address: string): IStakingService {
+  setFromAccount(address: string): void {
     this.txsMocker.setFromAccount(address);
-    return this;
   }
 
   // WRITE (TX creation) //

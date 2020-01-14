@@ -23,9 +23,8 @@ export class OrbsTokenService implements IOrbsTokenService {
   }
 
   // CONFIG //
-  setFromAccount(address: string): this {
+  setFromAccount(address: string): void {
     this.erc20TokenContract.options.from = address;
-    return this;
   }
 
   // READ //
