@@ -1,11 +1,11 @@
 const BN = require('bn.js');
 const chai = require('chai');
+const CommitteeProvider = require('./committee-provider');
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 const {Driver, expectBNArrayEqual, expectRejected} = require("./driver");
 
 const expect = chai.expect;
-
 
 
 contract('pos-v2-high-level-flows', async () => {
@@ -23,8 +23,9 @@ contract('pos-v2-high-level-flows', async () => {
     });
   });
 
-  it('sorts committee by stake', async () => {
+  it.only('sorts committee by stake', async () => {
     const d = await Driver.new(2);
+    const committeeProvider = new CommitteeProvider(d.pos.address);
 
     const stake100 = new BN(100);
     const stake200 = new BN(200);
@@ -45,6 +46,13 @@ contract('pos-v2-high-level-flows', async () => {
     });
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked100.address],
+      stakes: [stake100],
+    });
+
+    const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
+    // console.log(JSON.stringify(committeeFromAdapter, null,2));
+    expect(committeeFromAdapter).to.haveCommittee({
+      addrs: [validatorStaked100.address.toLowerCase()],
       stakes: [stake100],
     });
 
@@ -78,6 +86,7 @@ contract('pos-v2-high-level-flows', async () => {
       addrs: [validatorStaked300.address, validatorStaked200.address],
       stakes: [stake300, stake200]
     });
+
 
 
     r = await d.delegateMoreStake(stake300, validatorStaked200);

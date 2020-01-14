@@ -49,4 +49,5 @@ module.exports = function (chai, utils) {
     chai.Assertion.overwriteMethod('committeeChangedEvent', containEvent(committeeChangedEvents));
     chai.Assertion.overwriteMethod('totalStakeChangedEvent', containEvent(totalStakeChangedEvents));
     chai.Assertion.overwriteMethod('stakedEvent', containEvent(stakedEvents));
+    chai.Assertion.overwriteMethod('haveCommittee', containEvent(function(o) { return [o]}));
 };
