@@ -15,11 +15,11 @@ export function testTxCreatingForServiceMock<T extends ITxCreatingServiceMock>(
 
     beforeEach(() => {
       serviceMock = new serviceMockConstructor(false);
-      serviceMock.setAutoCompleteTxes(false);
+      serviceMock.txsMocker.setAutoCompleteTxes(false);
     });
 
     it(`should allow to use async await`, async () => {
-      serviceMock.setAutoCompleteTxes(true);
+      serviceMock.txsMocker.setAutoCompleteTxes(true);
       const tr = await callMethod(serviceMock);
       expect(tr.transactionHash.length).toBeGreaterThan(0);
     });

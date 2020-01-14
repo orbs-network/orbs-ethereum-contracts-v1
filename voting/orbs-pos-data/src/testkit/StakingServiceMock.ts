@@ -67,10 +67,6 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
   // Test Utils //
 
-  public setAutoCompleteTxes(autoCompleteTxes: boolean) {
-    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
-  }
-
   public setStakeBalanceTo(address: string, amount: string) {
     this.addressToBalanceMap.set(address, amount);
   }

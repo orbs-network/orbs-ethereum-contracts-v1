@@ -169,10 +169,6 @@ describe('TxCreatingServiceMock', () => {
       createDemoMethod() {
         return this.txsMocker.createTxOf('demoMethod');
       }
-
-      setAutoCompleteTxes(value: boolean): void {
-        this.txsMocker.setAutoCompleteTxes(value);
-      }
     }
 
     testTxCreatingForServiceMock(WrapperClassForTxMocker, 'Demo tx creating function', mocker =>

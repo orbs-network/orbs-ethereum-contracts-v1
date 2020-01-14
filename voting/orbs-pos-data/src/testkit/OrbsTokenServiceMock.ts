@@ -81,10 +81,6 @@ export class OrbsTokenServiceMock implements IOrbsTokenService, ITxCreatingServi
   }
 
   // State test utils //
-  setAutoCompleteTxes(autoCompleteTxes: boolean) {
-    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
-  }
-
   setAllowance(ownerAddress: string, spenderAddress: string, allowanceSum: string) {
     if (!this.addressToAllowancesMap.has(ownerAddress)) {
       this.addressToAllowancesMap.set(ownerAddress, new Map<string, string>());
