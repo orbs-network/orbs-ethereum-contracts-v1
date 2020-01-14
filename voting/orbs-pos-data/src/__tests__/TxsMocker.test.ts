@@ -1,15 +1,15 @@
 import Web3PromiEvent from 'web3-core-promievent';
-import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { TxsMocker } from '../testkit/TxsMocker';
 import Mock = jest.Mock;
+import { testTxCreatingForServiceMock } from './testUtils/txCreatingMethodTests';
 
 type TActionNames = 'ActionA' | 'ActionB';
 
 describe('TxCreatingServiceMock', () => {
-  let txCreatingServiceMockBase: TxsMocker<TActionNames>;
+  let txsMocker: TxsMocker<TActionNames>;
 
   beforeEach(() => {
-    txCreatingServiceMockBase = new TxsMocker(true);
+    txsMocker = new TxsMocker(true);
   });
 
   describe('Construction', () => {
@@ -36,15 +36,15 @@ describe('TxCreatingServiceMock', () => {
     });
 
     it('Should allow for multiple isolated "register" and "registerOnce"', () => {
-      txCreatingServiceMockBase.registerToTxCreation('ActionA', handler1);
-      txCreatingServiceMockBase.registerToNextTxCreation('ActionA', handler2);
-      txCreatingServiceMockBase.registerToTxCreation('ActionB', handler3);
+      txsMocker.registerToTxCreation('ActionA', handler1);
+      txsMocker.registerToNextTxCreation('ActionA', handler2);
+      txsMocker.registerToTxCreation('ActionB', handler3);
 
       // Trigger both events for the first time
       const promiventA1 = Web3PromiEvent();
       const promiventB1 = Web3PromiEvent();
-      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
-      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
+      txsMocker.emmitTxCreated('ActionA', promiventA1);
+      txsMocker.emmitTxCreated('ActionB', promiventB1);
 
       expect(handler1).toBeCalledTimes(1);
       expect(handler1).toBeCalledWith(promiventA1);
@@ -58,8 +58,8 @@ describe('TxCreatingServiceMock', () => {
       // Trigger both events for the second time
       const promiventA2 = Web3PromiEvent();
       const promiventB2 = Web3PromiEvent();
-      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA2);
-      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB2);
+      txsMocker.emmitTxCreated('ActionA', promiventA2);
+      txsMocker.emmitTxCreated('ActionB', promiventB2);
 
       expect(handler1).toBeCalledTimes(2);
       expect(handler1).toBeCalledWith(promiventA2);
@@ -72,20 +72,20 @@ describe('TxCreatingServiceMock', () => {
     });
 
     it('Should allow to unregister a single handler', () => {
-      txCreatingServiceMockBase.registerToTxCreation('ActionA', handler1);
-      txCreatingServiceMockBase.registerToNextTxCreation('ActionA', handler2);
-      txCreatingServiceMockBase.registerToTxCreation('ActionB', handler3);
-      txCreatingServiceMockBase.registerToTxCreation('ActionB', handler4);
+      txsMocker.registerToTxCreation('ActionA', handler1);
+      txsMocker.registerToNextTxCreation('ActionA', handler2);
+      txsMocker.registerToTxCreation('ActionB', handler3);
+      txsMocker.registerToTxCreation('ActionB', handler4);
 
       const promiventA1 = Web3PromiEvent();
       const promiventB1 = Web3PromiEvent();
 
       // Remove only one of the listeners
-      txCreatingServiceMockBase.unregisterToTxCreation('ActionA', handler2);
+      txsMocker.unregisterToTxCreation('ActionA', handler2);
 
       // Trigger events
-      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
-      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
+      txsMocker.emmitTxCreated('ActionA', promiventA1);
+      txsMocker.emmitTxCreated('ActionB', promiventB1);
 
       // Ensure all were called but the removed listener
       expect(handler1).toBeCalledTimes(1);
@@ -100,20 +100,20 @@ describe('TxCreatingServiceMock', () => {
     });
 
     it('Should allow to unregister all handlers of a specific action', () => {
-      txCreatingServiceMockBase.registerToTxCreation('ActionA', handler1);
-      txCreatingServiceMockBase.registerToNextTxCreation('ActionA', handler2);
-      txCreatingServiceMockBase.registerToTxCreation('ActionB', handler3);
-      txCreatingServiceMockBase.registerToTxCreation('ActionB', handler4);
+      txsMocker.registerToTxCreation('ActionA', handler1);
+      txsMocker.registerToNextTxCreation('ActionA', handler2);
+      txsMocker.registerToTxCreation('ActionB', handler3);
+      txsMocker.registerToTxCreation('ActionB', handler4);
 
       const promiventA1 = Web3PromiEvent();
       const promiventB1 = Web3PromiEvent();
 
       // Remove only one of the listeners
-      txCreatingServiceMockBase.removeAllTxCreationListeners('ActionA');
+      txsMocker.removeAllTxCreationListeners('ActionA');
 
       // Trigger events
-      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
-      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
+      txsMocker.emmitTxCreated('ActionA', promiventA1);
+      txsMocker.emmitTxCreated('ActionB', promiventB1);
 
       // Ensure all were called but the removed listener
       expect(handler1).toBeCalledTimes(0);
@@ -128,20 +128,20 @@ describe('TxCreatingServiceMock', () => {
     });
 
     it('Should allow to unregister all handlers of all actions at once', () => {
-      txCreatingServiceMockBase.registerToTxCreation('ActionA', handler1);
-      txCreatingServiceMockBase.registerToNextTxCreation('ActionA', handler2);
-      txCreatingServiceMockBase.registerToTxCreation('ActionB', handler3);
-      txCreatingServiceMockBase.registerToTxCreation('ActionB', handler4);
+      txsMocker.registerToTxCreation('ActionA', handler1);
+      txsMocker.registerToNextTxCreation('ActionA', handler2);
+      txsMocker.registerToTxCreation('ActionB', handler3);
+      txsMocker.registerToTxCreation('ActionB', handler4);
 
       const promiventA1 = Web3PromiEvent();
       const promiventB1 = Web3PromiEvent();
 
       // Remove only one of the listeners
-      txCreatingServiceMockBase.removeAllTxCreationListeners();
+      txsMocker.removeAllTxCreationListeners();
 
       // Trigger events
-      txCreatingServiceMockBase.emmitTxCreated('ActionA', promiventA1);
-      txCreatingServiceMockBase.emmitTxCreated('ActionB', promiventB1);
+      txsMocker.emmitTxCreated('ActionA', promiventA1);
+      txsMocker.emmitTxCreated('ActionB', promiventB1);
 
       // Ensure all were called but the removed listener
       expect(handler1).toBeCalledTimes(0);
@@ -153,6 +153,42 @@ describe('TxCreatingServiceMock', () => {
       expect(handler2).not.toBeCalledWith(promiventA1);
       expect(handler3).not.toBeCalledWith(promiventB1);
       expect(handler4).not.toBeCalledWith(promiventB1);
+    });
+  });
+
+  describe('Tx creating', () => {
+    // DEV_NOTE : we are using the generic test for any "tx creating method" to test the txMocker itself.
+    const mockerWrapperBuildingFunction = () => {
+      const txsMocker = new TxsMocker<'demoMethod'>(false);
+
+      return {
+        txsMocker,
+        createDemoMethod: () => txsMocker.createTxOf('demoMethod'),
+        setAutoCompleteTxes: (autoCompleteTx: boolean) => txsMocker.setAutoCompleteTxes(autoCompleteTx),
+      };
+    };
+
+    testTxCreatingForServiceMock(mockerWrapperBuildingFunction, 'Demo tx creating function', mocker =>
+      mocker.createDemoMethod(),
+    );
+  });
+
+  describe('Tx effect', () => {
+    it('Should call the effect lambda when tx is completed', done => {
+      const txEffect = jest.fn();
+
+      const txPromievent = txsMocker.createTxOf('ActionA', txEffect);
+
+      txsMocker.completeTx(txPromievent);
+
+      txPromievent.once('transactionHash', () => {
+        expect(txEffect).toBeCalledTimes(0);
+      });
+
+      txPromievent.once('receipt', () => {
+        expect(txEffect).toBeCalledTimes(1);
+        done();
+      });
     });
   });
 });

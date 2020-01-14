@@ -83,18 +83,6 @@ export class TxsMocker<T extends string> {
     return promievent;
   }
 
-  private handleTxCreated(actionName: T, promievent: PromiEvent<TransactionReceipt>, effect?: () => void) {
-    if (effect) {
-      this.txPromieventToEffect.set(promievent, effect);
-    }
-
-    if (this.autoCompleteTxes) {
-      this.completeTx(promievent);
-    }
-
-    this.emmitTxCreated(actionName, promievent);
-  }
-
   public completeTx(eventEmitter: any): void {
     setTimeout(() => {
       this.sendTxHash(eventEmitter);
@@ -128,6 +116,18 @@ export class TxsMocker<T extends string> {
   public rejectTx(eventEmitter: any, error: string): void {
     const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
     promiEvent.reject(error);
+  }
+
+  private handleTxCreated(actionName: T, promievent: PromiEvent<TransactionReceipt>, effect?: () => void) {
+    if (effect) {
+      this.txPromieventToEffect.set(promievent, effect);
+    }
+
+    if (this.autoCompleteTxes) {
+      this.completeTx(promievent);
+    }
+
+    this.emmitTxCreated(actionName, promievent);
   }
 
   private generateTxData(): PromiEvent<TransactionReceipt> {
