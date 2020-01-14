@@ -32,12 +32,16 @@ export class TxsMocker<T extends string> {
     return this.senderAccountAddress;
   }
 
+  public get isAutoCompletingTxes(): boolean {
+    return this.autoCompleteTxes;
+  }
+
   public setAutoCompleteTxes(autoCompleteTxes: boolean) {
     this.autoCompleteTxes = autoCompleteTxes;
   }
 
   // ****************************
-  // Txs creation registration
+  // Txs creation events emitting
   // ****************************
   public registerToTxCreation(
     txCreationActionName: T,

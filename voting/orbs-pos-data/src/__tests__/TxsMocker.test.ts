@@ -9,7 +9,17 @@ describe('TxCreatingServiceMock', () => {
   let txCreatingServiceMockBase: TxsMocker<TActionNames>;
 
   beforeEach(() => {
-    txCreatingServiceMockBase = new TxsMocker();
+    txCreatingServiceMockBase = new TxsMocker(true);
+  });
+
+  describe('Construction', () => {
+    it('Should assign "autoCompleteTxes" value properly', () => {
+      const txMockerAutoCompletingTxes = new TxsMocker(true);
+      const txMockerNotAutoCompletingTxes = new TxsMocker(false);
+
+      expect(txMockerAutoCompletingTxes.isAutoCompletingTxes).toBe(true);
+      expect(txMockerNotAutoCompletingTxes.isAutoCompletingTxes).toBe(false);
+    });
   });
 
   describe('Event Emitting', () => {
