@@ -21,10 +21,7 @@ export interface IStakingService {
   unstake(amount: number): PromiEvent<TransactionReceipt>;
   restake(): PromiEvent<TransactionReceipt>;
   withdraw(): PromiEvent<TransactionReceipt>;
-  selectGuardian(guardianAddress: string): PromiEvent<TransactionReceipt>;
-
   getStakeBalanceOf(stakeOwner: string): Promise<string>;
   getTotalStakedTokens(): Promise<string>;
   getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
-  getSelectedGuardianAddress(accountAddress: string): Promise<string>;
 }

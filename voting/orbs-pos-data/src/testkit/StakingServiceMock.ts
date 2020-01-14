@@ -3,7 +3,7 @@ import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
 import { TxsMocker } from './TxsMocker';
 import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 
-type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw' | 'selectGuardian';
+type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
 export class StakingServiceMock implements IStakingService, ITxCreatingServiceMock {
   public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
@@ -12,7 +12,6 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   private addressToBalanceMap: Map<string, string> = new Map();
   private addressToStakeStatus: Map<string, IStakingStatus> = new Map();
   private totalStakedTokens: string = '0';
-  private selectedGuardiansMap: Map<string, string> = new Map();
 
   constructor(autoCompleteTxes: boolean = true) {
     this.txsMocker = new TxsMocker<TTxCreatingActionNames>(autoCompleteTxes);
@@ -40,12 +39,6 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     return this.txsMocker.createTxOf('withdraw');
   }
 
-  selectGuardian(guardianAddress: string): PromiEvent<TransactionReceipt> {
-    return this.txsMocker.createTxOf('selectGuardian', () =>
-      this.selectedGuardiansMap.set(this.txsMocker.getFromAccount(), guardianAddress),
-    );
-  }
-
   // READ //
   async getStakeBalanceOf(stakeOwner: string): Promise<string> {
     const amount = this.addressToBalanceMap.get(stakeOwner);
@@ -59,10 +52,6 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   async getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
     const status = this.addressToStakeStatus.get(stakeOwner);
     return status ? status : { cooldownAmount: 0, cooldownEndTime: 0 };
-  }
-
-  async getSelectedGuardianAddress(accountAddress: string): Promise<string> {
-    return this.selectedGuardiansMap.get(accountAddress) || null;
   }
 
   // Test Utils //
