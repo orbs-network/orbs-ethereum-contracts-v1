@@ -6,19 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 import { encodeHex } from 'orbs-client-sdk';
-import { IDelegationData } from '../interfaces/IDelegationData';
-import { IDelegationInfo, TDelegationType } from '../interfaces/IDelegationInfo';
 import { IElectedValidatorInfo } from '../interfaces/IElectedValidatorInfo';
 import { IEthereumClientService } from '../interfaces/IEthereumClientService';
-import { IGuardianData } from '../interfaces/IGuardianData';
-import { IGuardianInfo } from '../interfaces/IGuardianInfo';
 import { IOrbsClientService } from '../interfaces/IOrbsClientService';
+import { IOrbsPOSDataService } from '../interfaces/IOrbsPOSDataService';
 import { IRewards } from '../interfaces/IRewards';
 import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
 import { IValidatorData } from '../interfaces/IValidatorData';
 import { IValidatorInfo } from '../interfaces/IValidatorInfo';
-import { IOrbsPOSDataService } from '../interfaces/IOrbsPOSDataService';
-import { NOT_DELEGATED } from './EthereumClientService';
 
 export class OrbsPOSDataService implements IOrbsPOSDataService {
   constructor(private ethereumClient: IEthereumClientService, private orbsClientService: IOrbsClientService) {}
@@ -64,68 +59,12 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return await this.ethereumClient.getOrbsRewardsDistribution(address);
   }
 
-  async getGuardiansList(offset: number, limit: number): Promise<string[]> {
-    return await this.ethereumClient.getGuardians(offset, limit);
-  }
-
-  async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
-    const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(guardianAddress);
-
-    const [votingWeightResults, totalParticipatingTokens] = await Promise.all([
-      this.orbsClientService.getGuardianVoteWeight(guardianAddress),
-      this.orbsClientService.getTotalParticipatingTokens(),
-    ]);
-
-    const result: IGuardianInfo = {
-      voted: votingWeightResults !== BigInt(0),
-      stake: 0,
-      ...guardianData,
-    };
-
-    if (totalParticipatingTokens !== BigInt(0)) {
-      result.stake = Number(votingWeightResults) / Number(totalParticipatingTokens);
-    }
-
-    return result;
-  }
-
   async getUpcomingElectionBlockNumber(): Promise<number> {
     return await this.ethereumClient.getUpcomingElectionBlockNumber();
   }
 
   async getEffectiveElectionBlockNumber(): Promise<number> {
     return await this.orbsClientService.getEffectiveElectionBlockNumber();
-  }
-
-  async getDelegatee(address: string): Promise<string> {
-    let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
-    if (info.delegatedTo === NOT_DELEGATED) {
-      info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
-    }
-
-    return info.delegatedTo;
-  }
-
-  async getDelegationInfo(address: string): Promise<IDelegationInfo> {
-    let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
-    let delegationType: TDelegationType;
-    if (info.delegatedTo === NOT_DELEGATED) {
-      info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
-      if (info.delegatedTo === NOT_DELEGATED) {
-        delegationType = 'Not-Delegated';
-      } else {
-        delegationType = 'Transfer';
-      }
-    } else {
-      delegationType = 'Delegate';
-    }
-
-    const balance = await this.ethereumClient.getOrbsBalance(address);
-    return {
-      delegatorBalance: Number(balance),
-      delegationType,
-      ...info,
-    };
   }
 
   async getElectedValidators(): Promise<string[]> {

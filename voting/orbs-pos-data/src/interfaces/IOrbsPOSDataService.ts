@@ -18,12 +18,8 @@ export interface IOrbsPOSDataService {
   getTotalParticipatingTokens(): Promise<number>;
   getRewards(address: string): Promise<IRewards>;
   getRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>;
-  getGuardiansList(offset: number, limit: number): Promise<string[]>;
-  getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>;
   getUpcomingElectionBlockNumber(): Promise<number>;
   getEffectiveElectionBlockNumber(): Promise<number>;
-  getDelegatee(address: string): Promise<string>;
-  getDelegationInfo(address: string): Promise<IDelegationInfo>;
   getElectedValidators(): Promise<string[]>;
   getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>;
   getOrbsBalance(address: string): Promise<string>;

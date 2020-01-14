@@ -1,14 +1,10 @@
+import { IElectedValidatorInfo } from '../interfaces/IElectedValidatorInfo';
 import { IOrbsPOSDataService } from '../interfaces/IOrbsPOSDataService';
 import { IRewards } from '../interfaces/IRewards';
-import { IGuardianInfo } from '../interfaces/IGuardianInfo';
-import { IDelegationInfo } from '../interfaces/IDelegationInfo';
-import { IElectedValidatorInfo } from '../interfaces/IElectedValidatorInfo';
 import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
 import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 
 export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
-  private guardiansList: string[] = [];
-  private guardiansMap: Map<string, IGuardianInfo> = new Map();
   private orbsBalanceMap: Map<string, bigint> = new Map();
   private orbsBalanceChangeCallback: (newBalance: string) => void;
   private totalTokens: bigint;
@@ -33,28 +29,12 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     return [];
   }
 
-  async getGuardiansList(offset: number, limit: number): Promise<string[]> {
-    return this.guardiansList;
-  }
-
-  async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
-    return this.guardiansMap.get(guardianAddress);
-  }
-
   async getUpcomingElectionBlockNumber(): Promise<number> {
     return 0;
   }
 
   async getEffectiveElectionBlockNumber(): Promise<number> {
     return 0;
-  }
-
-  async getDelegatee(address: string): Promise<string> {
-    return '';
-  }
-
-  async getDelegationInfo(address: string): Promise<IDelegationInfo> {
-    return null;
   }
 
   async getElectedValidators(): Promise<string[]> {
@@ -76,12 +56,6 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   }
 
   // Test helpers
-  withGuardian(address: string, guardian: IGuardianInfo): this {
-    this.guardiansList.push(address);
-    this.guardiansMap.set(address, guardian);
-    return this;
-  }
-
   withTotalParticipatingTokens(totalTokens: bigint): this {
     this.totalTokens = totalTokens;
     return this;
