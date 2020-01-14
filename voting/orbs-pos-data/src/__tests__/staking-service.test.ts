@@ -20,7 +20,6 @@ class Web3Mock {
   eth = {
     Contract: jest.fn().mockImplementation((abi, address) => {
       this.latestInstance = {
-        options: {},
         methods: {
           stake: jest.fn(amount => ({ send: jest.fn() })),
           unstake: jest.fn(amount => ({ send: jest.fn() })),
