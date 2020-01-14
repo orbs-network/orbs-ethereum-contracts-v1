@@ -7,6 +7,7 @@
  */
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { StakingServiceMock } from '../testkit';
+import { IStakingService } from '../interfaces/IStakingService';
 
 describe(`Staking service mock`, () => {
   testWriteMethod('stake', stakingServiceMock => stakingServiceMock.stake(1_000_000));
@@ -93,43 +94,50 @@ function testWriteMethod(
 function testReadMethods() {
   describe(`Read methods`, () => {
     let stakingServiceMock: StakingServiceMock;
+    let stakingServiceApi: IStakingService;
 
     beforeEach(() => {
       stakingServiceMock = new StakingServiceMock(false);
+      stakingServiceApi = stakingServiceMock;
     });
 
     it(`should allow to set and get stake balance`, async () => {
-      const beforeResult = await stakingServiceMock.getStakeBalanceOf('DUMMY_ADDRESS');
+      const beforeResult = await stakingServiceApi.getStakeBalanceOf('DUMMY_ADDRESS');
       expect(beforeResult).toEqual('0');
 
       stakingServiceMock.setStakeBalanceTo('DUMMY_ADDRESS', '123456');
-      const afterResult = await stakingServiceMock.getStakeBalanceOf('DUMMY_ADDRESS');
+
+      const afterResult = await stakingServiceApi.getStakeBalanceOf('DUMMY_ADDRESS');
       expect(afterResult).toEqual('123456');
     });
 
     it(`should allow to set and get total staked tokens`, async () => {
-      const beforeResult = await stakingServiceMock.getTotalStakedTokens();
+      const beforeResult = await stakingServiceApi.getTotalStakedTokens();
       expect(beforeResult).toEqual('0');
 
       stakingServiceMock.setTotalStakedTokens('123456');
-      const afterResult = await stakingServiceMock.getTotalStakedTokens();
+
+      const afterResult = await stakingServiceApi.getTotalStakedTokens();
       expect(afterResult).toEqual('123456');
     });
 
     it(`should allow to set and get unstake status`, async () => {
-      const beforeResult = await stakingServiceMock.getUnstakeStatus('DUMMY_ADDRESS');
+      const beforeResult = await stakingServiceApi.getUnstakeStatus('DUMMY_ADDRESS');
       expect(beforeResult).toEqual({ cooldownAmount: 0, cooldownEndTime: 0 });
 
       stakingServiceMock.setUnstakeStatus('DUMMY_ADDRESS', { cooldownAmount: 123, cooldownEndTime: 456 });
+
       const afterResult = await stakingServiceMock.getUnstakeStatus('DUMMY_ADDRESS');
       expect(afterResult).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
     });
 
     it(`should allow to set and get contract address`, async () => {
       const newContractAddress = 'NEW_CONTRACT_ADDRESS';
-      expect(stakingServiceMock.getStakingContractAddress()).toEqual('DUMMY_CONTRACT_ADDRESS');
+
+      expect(stakingServiceApi.getStakingContractAddress()).toEqual('DUMMY_CONTRACT_ADDRESS');
 
       stakingServiceMock.setStakingContractAddress(newContractAddress);
+
       expect(stakingServiceMock.getStakingContractAddress()).toBe(newContractAddress);
     });
   });

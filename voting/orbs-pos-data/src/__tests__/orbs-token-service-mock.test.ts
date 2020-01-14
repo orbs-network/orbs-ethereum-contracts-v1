@@ -7,6 +7,7 @@
  */
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { OrbsTokenServiceMock } from '../testkit';
+import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 
 // TODO : O.L : Maybe make the general 'tx mocking' shared with the 'staking-service-mock.
 describe(`Orbs Token service mock`, () => {
@@ -20,57 +21,57 @@ function testWriteMethod(
   callMethod: (orbsTokenServiceMock: OrbsTokenServiceMock) => PromiEvent<TransactionReceipt>,
 ) {
   describe(`"${methodName}" internal tests`, () => {
-    let stakingServiceMock: OrbsTokenServiceMock;
+    let orbsTokenServiceMock: OrbsTokenServiceMock;
 
     beforeEach(() => {
-      stakingServiceMock = new OrbsTokenServiceMock(false);
+      orbsTokenServiceMock = new OrbsTokenServiceMock(false);
     });
 
     it(`should allow to use async await`, async () => {
-      stakingServiceMock.setAutoCompleteTxes(true);
-      const tr = await callMethod(stakingServiceMock);
+      orbsTokenServiceMock.setAutoCompleteTxes(true);
+      const tr = await callMethod(orbsTokenServiceMock);
       expect(tr.transactionHash.length).toBeGreaterThan(0);
     });
 
     it(`should allow to reject txes`, () => {
-      const promiEvent = callMethod(stakingServiceMock);
+      const promiEvent = callMethod(orbsTokenServiceMock);
 
-      stakingServiceMock.txsMocker.rejectTx(promiEvent, 'DUMMY_ERROR_DESCRIPTION');
+      orbsTokenServiceMock.txsMocker.rejectTx(promiEvent, 'DUMMY_ERROR_DESCRIPTION');
       return expect(promiEvent).rejects.toMatch('DUMMY_ERROR_DESCRIPTION');
     });
 
     it(`should allow to resolve txes`, () => {
-      const promiEvent = callMethod(stakingServiceMock);
+      const promiEvent = callMethod(orbsTokenServiceMock);
 
-      stakingServiceMock.txsMocker.resolveTx(promiEvent);
+      orbsTokenServiceMock.txsMocker.resolveTx(promiEvent);
       return expect(promiEvent.then(txReceipt => txReceipt.blockNumber)).resolves.toBeGreaterThan(0);
     });
 
     it(`should allow to wait for txHash`, () => {
       let actualTxHash: string = null;
-      const promiEvent = callMethod(stakingServiceMock).on(`transactionHash`, (txHash: string) => {
+      const promiEvent = callMethod(orbsTokenServiceMock).on(`transactionHash`, (txHash: string) => {
         actualTxHash = txHash;
       });
 
       expect(actualTxHash).toBeNull;
-      stakingServiceMock.txsMocker.sendTxHash(promiEvent);
+      orbsTokenServiceMock.txsMocker.sendTxHash(promiEvent);
       expect(actualTxHash.length).toBeGreaterThan(0);
     });
 
     it(`should allow to wait for receipt`, () => {
       let actualTxReceipt: TransactionReceipt = null;
-      const promiEvent = callMethod(stakingServiceMock).on(`receipt`, (txReceipt: TransactionReceipt) => {
+      const promiEvent = callMethod(orbsTokenServiceMock).on(`receipt`, (txReceipt: TransactionReceipt) => {
         actualTxReceipt = txReceipt;
       });
 
       expect(actualTxReceipt).toBeNull;
-      stakingServiceMock.txsMocker.sendTxReceipt(promiEvent);
+      orbsTokenServiceMock.txsMocker.sendTxReceipt(promiEvent);
       expect(actualTxReceipt.blockNumber).toBeGreaterThan(0);
     });
 
     it(`should allow to get confirmations`, () => {
       let actualConfNumber = 0;
-      const promiEvent = callMethod(stakingServiceMock).on(
+      const promiEvent = callMethod(orbsTokenServiceMock).on(
         `confirmation`,
         (confNumber: number, receipt: TransactionReceipt) => {
           actualConfNumber = confNumber;
@@ -78,11 +79,11 @@ function testWriteMethod(
       );
 
       expect(actualConfNumber).toEqual(0);
-      stakingServiceMock.txsMocker.sendTxConfirmation(promiEvent, 1);
+      orbsTokenServiceMock.txsMocker.sendTxConfirmation(promiEvent, 1);
       expect(actualConfNumber).toEqual(1);
-      stakingServiceMock.txsMocker.sendTxConfirmation(promiEvent, 2);
+      orbsTokenServiceMock.txsMocker.sendTxConfirmation(promiEvent, 2);
       expect(actualConfNumber).toEqual(2);
-      stakingServiceMock.txsMocker.sendTxConfirmation(promiEvent, 3);
+      orbsTokenServiceMock.txsMocker.sendTxConfirmation(promiEvent, 3);
       expect(actualConfNumber).toEqual(3);
     });
   });
@@ -91,9 +92,11 @@ function testWriteMethod(
 function testReadMethods() {
   describe(`Read methods`, () => {
     let orbsTokenServiceMock: OrbsTokenServiceMock;
+    let orbsTokenServiceApi: IOrbsTokenService;
 
     beforeEach(() => {
       orbsTokenServiceMock = new OrbsTokenServiceMock(false);
+      orbsTokenServiceApi = orbsTokenServiceMock;
     });
 
     it(`should allow to set and get allowance`, async () => {
@@ -101,11 +104,12 @@ function testReadMethods() {
       const spenderAddress = 'SPENDER_ADDRESS';
       const allowanceAmount = '2000';
 
-      const valueBefore = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
+      const valueBefore = await orbsTokenServiceApi.readAllowance(ownerAddress, spenderAddress);
       expect(valueBefore).toEqual('0');
 
       orbsTokenServiceMock.setAllowance(ownerAddress, spenderAddress, allowanceAmount);
-      const valueAfter = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
+
+      const valueAfter = await orbsTokenServiceApi.readAllowance(ownerAddress, spenderAddress);
       expect(valueAfter).toEqual(allowanceAmount);
     });
   });
