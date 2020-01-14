@@ -49,7 +49,7 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     return 0;
   }
 
-  async getDelegate(address: string): Promise<string> {
+  async getDelegatee(address: string): Promise<string> {
     return '';
   }
 
