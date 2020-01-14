@@ -23,7 +23,7 @@ contract('pos-v2-high-level-flows', async () => {
     });
   });
 
-  it.only('sorts committee by stake', async () => {
+  it('sorts committee by stake', async () => {
     const d = await Driver.new(2);
     const committeeProvider = new CommitteeProvider(web3.currentProvider.host, d.pos.address);
 
