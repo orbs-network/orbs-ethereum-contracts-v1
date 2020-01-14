@@ -1,28 +1,24 @@
-const BN = require('bn.js');
-const chai = require('chai');
+import BN from "bn.js";
+import chai from "chai";
 chai.use(require('chai-bn')(BN));
 const expect = chai.expect;
 
-const GUARD = 1234;
-const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
+export const GUARD = 1234;
+export const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
-class Driver {
+import Web3 from "web3";
+declare const web3: Web3;
 
-    constructor(accounts, pos, erc20, staking, guard) {
-        this.pos = pos;
-        this.erc20 = erc20;
-        this.staking = staking;
-        this.accounts = accounts;
-        this.participants = [];
+export class Driver {
+    private participants: Participant[] = [];
 
-        if (guard != GUARD) {
-            throw new Error("private constructor called externally")
-        }
-    }
+    constructor(
+        public accounts,
+        public pos,
+        public erc20,
+        public staking) {}
 
-    static async new(maxCommitteeSize) {
-        maxCommitteeSize = maxCommitteeSize || 2;
-
+    static async new(maxCommitteeSize=2) {
         const accounts = await web3.eth.getAccounts();
         const pos = await artifacts.require("PosV2").new(maxCommitteeSize);
         const erc20 = await artifacts.require('TestingERC20').new();
@@ -30,7 +26,7 @@ class Driver {
 
         await pos.setStakingContract(staking.address);
 
-        return new Driver(accounts, pos, erc20, staking, GUARD);
+        return new Driver(accounts, pos, erc20, staking);
     }
 
     get contractsOwner() {
@@ -41,7 +37,7 @@ class Driver {
         return this.accounts[1];
     }
 
-    newParticipant() {
+    newParticipant(): Participant {
         const v = new Participant(this.accounts[this.participants.length], this);
         this.participants.push(v);
         return v
@@ -54,25 +50,27 @@ class Driver {
     }
 }
 
-class Participant {
+export class Participant {
+    public ip: string;
+    private erc20;
+    private staking;
+    private pos;
 
-    constructor(address, driver) {
+    constructor(public address: string, driver) {
         this.ip = address.substring(0, 10).toLowerCase();
-
-        this.address = address;
         this.erc20 = driver.erc20;
         this.staking = driver.staking;
         this.pos = driver.pos;
     }
 
-    async stake(amount) {
+    async stake(amount: number|BN) {
         const bnAmount = new BN(amount);
         await this.erc20.assign(this.address, bnAmount);
         await this.erc20.approve(this.staking.address, bnAmount, {from: this.address});
         return this.staking.stake(bnAmount, {from: this.address});
     }
 
-    async delegate(to) {
+    async delegate(to: Participant) {
         return this.pos.delegate(to.address, {from: this.address});
     }
 
@@ -81,14 +79,14 @@ class Participant {
     }
 }
 
-function expectBNArrayEqual(a1, a2) {
+export function expectBNArrayEqual(a1, a2) {
     expect(a1).to.be.length(a2.length);
     a1.forEach((v, i) => {
         expect(new BN(a1[i])).to.be.bignumber.equal(new BN(a2[i]));
     });
 }
 
-async function expectRejected(promise, msg) {
+export async function expectRejected(promise: Promise<any>, msg?: string) {
     try {
         await promise;
     } catch (err) {
@@ -98,9 +96,3 @@ async function expectRejected(promise, msg) {
     throw new Error(msg || "expected promise to reject")
 }
 
-module.exports = {
-    Driver,
-    expectBNArrayEqual,
-    expectRejected,
-    ZERO_ADDR
-};
