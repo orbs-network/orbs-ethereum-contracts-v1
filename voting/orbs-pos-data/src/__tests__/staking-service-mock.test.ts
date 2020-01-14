@@ -12,21 +12,7 @@ import { testTxCreatingForServiceMock } from './testUtils/txCreatingMethodTests'
 describe(`Staking service mock`, () => {
   testTxCreatingMethods();
   testDataReadingMethods();
-
-  it(`should allow to set and get the selected guardian`, async () => {
-    const stakingServiceMock = new StakingServiceMock();
-
-    stakingServiceMock.setFromAccount('SENDER_1_ADDRESS');
-    await stakingServiceMock.selectGuardian('SENDER_1_GUARDIAN_ADDRESS');
-    const sender1GuardianAddress = await stakingServiceMock.getSelectedGuardianAddress('SENDER_1_ADDRESS');
-
-    stakingServiceMock.setFromAccount('SENDER_2_ADDRESS');
-    await stakingServiceMock.selectGuardian('SENDER_2_GUARDIAN_ADDRESS');
-    const sender2GuardianAddress = await stakingServiceMock.getSelectedGuardianAddress('SENDER_2_ADDRESS');
-
-    expect(sender1GuardianAddress).toEqual('SENDER_1_GUARDIAN_ADDRESS');
-    expect(sender2GuardianAddress).toEqual('SENDER_2_GUARDIAN_ADDRESS');
-  });
+  testEffectsMethods();
 });
 
 function testTxCreatingMethods() {
@@ -35,7 +21,27 @@ function testTxCreatingMethods() {
     testTxCreatingForServiceMock(StakingServiceMock, 'unstake', serviceMock => serviceMock.unstake(2_000_000));
     testTxCreatingForServiceMock(StakingServiceMock, 'restake', serviceMock => serviceMock.restake());
     testTxCreatingForServiceMock(StakingServiceMock, 'withdraw', serviceMock => serviceMock.withdraw());
+    testTxCreatingForServiceMock(StakingServiceMock, 'selectGuardian', serviceMock => serviceMock.selectGuardian('DUMMY_GUARDIAN_ADDRESS'));
   });
+}
+
+function testEffectsMethods() {
+  describe(`Effects`, () => {
+    it(`should allow to set and get the selected guardian`, async () => {
+      const stakingServiceMock = new StakingServiceMock();
+  
+      stakingServiceMock.setFromAccount('SENDER_1_ADDRESS');
+      await stakingServiceMock.selectGuardian('SENDER_1_GUARDIAN_ADDRESS');
+      const sender1GuardianAddress = await stakingServiceMock.getSelectedGuardianAddress('SENDER_1_ADDRESS');
+  
+      stakingServiceMock.setFromAccount('SENDER_2_ADDRESS');
+      await stakingServiceMock.selectGuardian('SENDER_2_GUARDIAN_ADDRESS');
+      const sender2GuardianAddress = await stakingServiceMock.getSelectedGuardianAddress('SENDER_2_ADDRESS');
+  
+      expect(sender1GuardianAddress).toEqual('SENDER_1_GUARDIAN_ADDRESS');
+      expect(sender2GuardianAddress).toEqual('SENDER_2_GUARDIAN_ADDRESS');
+    });
+    });
 }
 
 function testDataReadingMethods() {
