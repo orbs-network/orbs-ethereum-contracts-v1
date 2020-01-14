@@ -14,7 +14,8 @@
     "types": "tsc -p tsconfig-for-declarations.json",
     "dev": "webpack-dev-server -w",
     "contracts": "./scripts/generate-contracts-abi.ts",
-    "test": "jest"
+    "test": "jest",
+    "test-watch": "jest --watchAll"
   },
   "repository": {
     "type": "git",
