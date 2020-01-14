@@ -12,6 +12,7 @@ import (
 func main() {
 	blockFlag := flag.Int64("as-of-block", 0, "block number to read until")
 	addressesFlag := flag.String("addresses", "", "addresses of contracts")
+	ethereumEndpointFlag := flag.String("ethereum-endpoint", "http://localhost:7545", "Ethereum endpoint url")
 	flag.Parse()
 
 	addressesHex := strings.Split(*addressesFlag, ",")
@@ -20,7 +21,7 @@ func main() {
 		contractsAddresses = append(contractsAddresses, common.HexToAddress(addrHex))
 	}
 
-	a := eth.NewEthereumAdapter(contractsAddresses)
+	a := eth.NewEthereumAdapter(*ethereumEndpointFlag, contractsAddresses)
 	json, err := a.GetCommittee(context.Background(), *blockFlag)
 	if err != nil {
 		os.Stderr.WriteString(err.Error())

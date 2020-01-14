@@ -25,7 +25,7 @@ contract('pos-v2-high-level-flows', async () => {
 
   it.only('sorts committee by stake', async () => {
     const d = await Driver.new(2);
-    const committeeProvider = new CommitteeProvider(d.pos.address);
+    const committeeProvider = new CommitteeProvider(web3.currentProvider.host, d.pos.address);
 
     const stake100 = new BN(100);
     const stake200 = new BN(200);
@@ -50,7 +50,6 @@ contract('pos-v2-high-level-flows', async () => {
     });
 
     const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
-    // console.log(JSON.stringify(committeeFromAdapter, null,2));
     expect(committeeFromAdapter).to.haveCommittee({
       addrs: [validatorStaked100.address.toLowerCase()],
       stakes: [stake100],
