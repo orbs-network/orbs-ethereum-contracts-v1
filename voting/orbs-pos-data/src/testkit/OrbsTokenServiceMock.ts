@@ -1,12 +1,13 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 import { TxsMocker } from './TxsMocker';
+import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 
 export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => void;
 
 type TTxCreatingActionNames = 'approve';
 
-export class OrbsTokenServiceMock implements IOrbsTokenService {
+export class OrbsTokenServiceMock implements IOrbsTokenService, ITxCreatingServiceMock {
   public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
 
   private addressToAllowancesMap: Map<string, Map<string, string>> = new Map();

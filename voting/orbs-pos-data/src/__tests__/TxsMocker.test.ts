@@ -2,6 +2,7 @@ import Web3PromiEvent from 'web3-core-promievent';
 import { TxsMocker } from '../testkit/TxsMocker';
 import Mock = jest.Mock;
 import { testTxCreatingForServiceMock } from './testUtils/txCreatingMethodTests';
+import { ITxCreatingServiceMock } from '../testkit/ITxCreatingServiceMock';
 
 type TActionNames = 'ActionA' | 'ActionB';
 
@@ -158,17 +159,23 @@ describe('TxCreatingServiceMock', () => {
 
   describe('Tx creating', () => {
     // DEV_NOTE : we are using the generic test for any "tx creating method" to test the txMocker itself.
-    const mockerWrapperBuildingFunction = () => {
-      const txsMocker = new TxsMocker<'demoMethod'>(false);
+    class WrapperClassForTxMocker implements ITxCreatingServiceMock {
+      public readonly txsMocker: TxsMocker<'demoMethod'>;
 
-      return {
-        txsMocker,
-        createDemoMethod: () => txsMocker.createTxOf('demoMethod'),
-        setAutoCompleteTxes: (autoCompleteTx: boolean) => txsMocker.setAutoCompleteTxes(autoCompleteTx),
-      };
-    };
+      constructor(autoCompleteTx: boolean) {
+        this.txsMocker = new TxsMocker<'demoMethod'>(autoCompleteTx);
+      }
 
-    testTxCreatingForServiceMock(mockerWrapperBuildingFunction, 'Demo tx creating function', mocker =>
+      createDemoMethod() {
+        return this.txsMocker.createTxOf('demoMethod');
+      }
+
+      setAutoCompleteTxes(value: boolean): void {
+        this.txsMocker.setAutoCompleteTxes(value);
+      }
+    }
+
+    testTxCreatingForServiceMock(WrapperClassForTxMocker, 'Demo tx creating function', mocker =>
       mocker.createDemoMethod(),
     );
   });

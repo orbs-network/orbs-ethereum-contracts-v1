@@ -1,10 +1,11 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
 import { TxsMocker } from './TxsMocker';
+import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 
 type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
-export class StakingServiceMock implements IStakingService {
+export class StakingServiceMock implements IStakingService, ITxCreatingServiceMock {
   public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
 
   private stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
@@ -56,7 +57,7 @@ export class StakingServiceMock implements IStakingService {
 
   // Test Utils //
 
-  setAutoCompleteTxes(autoCompleteTxes: boolean) {
+  public setAutoCompleteTxes(autoCompleteTxes: boolean) {
     this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
   }
 

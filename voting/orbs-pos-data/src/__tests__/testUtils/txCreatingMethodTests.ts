@@ -1,13 +1,12 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { TxsMocker } from '../../testkit/TxsMocker';
+import { ITxCreatingServiceMock } from '../../testkit/ITxCreatingServiceMock';
 
-interface IBaseServiceMock {
-  setAutoCompleteTxes(value: boolean): void;
-  txsMocker: TxsMocker<any>;
+interface ITxCreatingServiceMockConstructor<T extends ITxCreatingServiceMock> {
+  new (autoComplete: boolean): T;
 }
 
-export function testTxCreatingForServiceMock<T extends IBaseServiceMock>(
-  mockBuildingFunction: () => T,
+export function testTxCreatingForServiceMock<T extends ITxCreatingServiceMock>(
+  serviceMockConstructor: ITxCreatingServiceMockConstructor<T>,
   methodName: string,
   callMethod: (serviceMock: T) => PromiEvent<TransactionReceipt>,
 ) {
@@ -15,7 +14,7 @@ export function testTxCreatingForServiceMock<T extends IBaseServiceMock>(
     let serviceMock: T;
 
     beforeEach(() => {
-      serviceMock = mockBuildingFunction();
+      serviceMock = new serviceMockConstructor(false);
       serviceMock.setAutoCompleteTxes(false);
     });
 

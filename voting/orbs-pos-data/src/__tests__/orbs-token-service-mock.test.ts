@@ -9,17 +9,14 @@ import { OrbsTokenServiceMock } from '../testkit';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 import { testTxCreatingForServiceMock } from './testUtils/txCreatingMethodTests';
 
-// TODO : O.L : Maybe make the general 'tx mocking' shared with the 'staking-service-mock.
 describe(`Orbs Token service mock`, () => {
   testTxCreatingMethods();
   testDataReadingMethods();
 });
 
 function testTxCreatingMethods() {
-  const serviceMockBuilder = () => new OrbsTokenServiceMock(false);
-
   describe(`Tx creating methods`, () => {
-    testTxCreatingForServiceMock(serviceMockBuilder, 'approve', serviceMock =>
+    testTxCreatingForServiceMock(OrbsTokenServiceMock, 'approve', serviceMock =>
       serviceMock.approve('spenderAddress', 1_000_000),
     );
   });

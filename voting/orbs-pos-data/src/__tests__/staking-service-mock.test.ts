@@ -15,13 +15,11 @@ describe(`Staking service mock`, () => {
 });
 
 function testTxCreatingMethods() {
-  const serviceMockBuilder = () => new StakingServiceMock(false);
-
   describe(`Tx creating methods`, () => {
-    testTxCreatingForServiceMock(serviceMockBuilder, 'stake', serviceMock => serviceMock.stake(1_000_000));
-    testTxCreatingForServiceMock(serviceMockBuilder, 'unstake', serviceMock => serviceMock.unstake(2_000_000));
-    testTxCreatingForServiceMock(serviceMockBuilder, 'restake', serviceMock => serviceMock.restake());
-    testTxCreatingForServiceMock(serviceMockBuilder, 'withdraw', serviceMock => serviceMock.withdraw());
+    testTxCreatingForServiceMock(StakingServiceMock, 'stake', serviceMock => serviceMock.stake(1_000_000));
+    testTxCreatingForServiceMock(StakingServiceMock, 'unstake', serviceMock => serviceMock.unstake(2_000_000));
+    testTxCreatingForServiceMock(StakingServiceMock, 'restake', serviceMock => serviceMock.restake());
+    testTxCreatingForServiceMock(StakingServiceMock, 'withdraw', serviceMock => serviceMock.withdraw());
   });
 }
 
