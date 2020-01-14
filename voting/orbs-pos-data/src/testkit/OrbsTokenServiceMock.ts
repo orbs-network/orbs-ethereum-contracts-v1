@@ -25,10 +25,6 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
     return this;
   }
 
-  setAutoCompleteTxes(autoCompleteTxes: boolean) {
-    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
-  }
-
   // WRITE (TX creation) //
   approve(spenderAddress: string, amount: number): PromiEvent<TransactionReceipt> {
     const txEffect = () => this.setAllowance(this.txsMocker.getFromAccount(), spenderAddress, amount.toString());
@@ -85,6 +81,10 @@ export class OrbsTokenServiceMock implements IOrbsTokenService {
   }
 
   // State test utils //
+  setAutoCompleteTxes(autoCompleteTxes: boolean) {
+    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
+  }
+
   setAllowance(ownerAddress: string, spenderAddress: string, allowanceSum: string) {
     if (!this.addressToAllowancesMap.has(ownerAddress)) {
       this.addressToAllowancesMap.set(ownerAddress, new Map<string, string>());

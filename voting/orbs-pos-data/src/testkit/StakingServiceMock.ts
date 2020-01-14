@@ -22,10 +22,6 @@ export class StakingServiceMock implements IStakingService {
     return this;
   }
 
-  setAutoCompleteTxes(autoCompleteTxes: boolean) {
-    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
-  }
-
   // WRITE (TX creation) //
   stake(amount: number): PromiEvent<TransactionReceipt> {
     return this.txsMocker.createTxOf('stake');
@@ -59,6 +55,10 @@ export class StakingServiceMock implements IStakingService {
   }
 
   // Test Utils //
+
+  setAutoCompleteTxes(autoCompleteTxes: boolean) {
+    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
+  }
 
   public setStakeBalanceTo(address: string, amount: string) {
     this.addressToBalanceMap.set(address, amount);
