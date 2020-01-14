@@ -1,63 +1,43 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
-import Web3PromiEvent from 'web3-core-promievent';
+import { TxsMocker } from './TxsMocker';
+import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 
-interface ITxData {
-  promiEvent: PromiEvent<TransactionReceipt> & {
-    resolve: (txReceipt: TransactionReceipt) => void;
-    reject: (reason: string) => void;
-  };
-  txReceipt: TransactionReceipt;
-}
+type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
-export class StakingServiceMock implements IStakingService {
+export class StakingServiceMock implements IStakingService, ITxCreatingServiceMock {
+  public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
+
   private stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
-  private txDataMap: Map<object, ITxData> = new Map();
   private addressToBalanceMap: Map<string, string> = new Map();
   private addressToStakeStatus: Map<string, IStakingStatus> = new Map();
   private totalStakedTokens: string = '0';
 
-  private senderAccountAddress: string = 'DUMMY_FROM_ADDRESS';
-
-  constructor(public autoCompleteTxes: boolean = true) {}
+  constructor(autoCompleteTxes: boolean = true) {
+    this.txsMocker = new TxsMocker<TTxCreatingActionNames>(autoCompleteTxes);
+  }
 
   // CONFIG //
   setFromAccount(address: string): IStakingService {
-    this.senderAccountAddress = address;
+    this.txsMocker.setFromAccount(address);
     return this;
   }
 
-  // WRITE //
+  // WRITE (TX creation) //
   stake(amount: number): PromiEvent<TransactionReceipt> {
-    const promitEvent = this.generateTxData();
-    if (this.autoCompleteTxes) {
-      this.completeTx(promitEvent);
-    }
-    return promitEvent;
+    return this.txsMocker.createTxOf('stake');
   }
 
   unstake(amount: number): PromiEvent<TransactionReceipt> {
-    const promitEvent = this.generateTxData();
-    if (this.autoCompleteTxes) {
-      this.completeTx(promitEvent);
-    }
-    return promitEvent;
+    return this.txsMocker.createTxOf('unstake');
   }
 
   restake(): PromiEvent<TransactionReceipt> {
-    const promitEvent = this.generateTxData();
-    if (this.autoCompleteTxes) {
-      this.completeTx(promitEvent);
-    }
-    return promitEvent;
+    return this.txsMocker.createTxOf('restake');
   }
 
   withdraw(): PromiEvent<TransactionReceipt> {
-    const promitEvent = this.generateTxData();
-    if (this.autoCompleteTxes) {
-      this.completeTx(promitEvent);
-    }
-    return promitEvent;
+    return this.txsMocker.createTxOf('withdraw');
   }
 
   // READ //
@@ -75,50 +55,10 @@ export class StakingServiceMock implements IStakingService {
     return status ? status : { cooldownAmount: 0, cooldownEndTime: 0 };
   }
 
-  private generateTxData(): PromiEvent<TransactionReceipt> {
-    const promiEvent: any = Web3PromiEvent();
-    const txReceipt = this.generateRandomTxReceipt();
-    this.txDataMap.set(promiEvent.eventEmitter, { promiEvent, txReceipt });
-    return promiEvent.eventEmitter;
-  }
-
-  private getTxDataByEventEmitter(eventEmitter: any): ITxData {
-    return this.txDataMap.get(eventEmitter);
-  }
-
   // Test Utils //
-  public sendTxHash(eventEmitter: any): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    eventEmitter.emit('transactionHash', txReceipt.transactionHash);
-  }
 
-  public sendTxReceipt(eventEmitter: any): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    eventEmitter.emit('receipt', txReceipt);
-  }
-
-  public sendTxConfirmation(eventEmitter: any, confNumber: number): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    eventEmitter.emit('confirmation', confNumber, txReceipt);
-  }
-
-  public resolveTx(eventEmitter: any): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    promiEvent.resolve(txReceipt);
-  }
-
-  public rejectTx(eventEmitter: any, error: string): void {
-    const { promiEvent, txReceipt } = this.getTxDataByEventEmitter(eventEmitter);
-    promiEvent.reject(error);
-  }
-
-  public completeTx(eventEmitter: any): void {
-    setTimeout(() => {
-      this.sendTxHash(eventEmitter);
-      this.sendTxReceipt(eventEmitter);
-      this.sendTxConfirmation(eventEmitter, 1);
-      this.resolveTx(eventEmitter);
-    }, 1);
+  public setAutoCompleteTxes(autoCompleteTxes: boolean) {
+    this.txsMocker.setAutoCompleteTxes(autoCompleteTxes);
   }
 
   public setStakeBalanceTo(address: string, amount: string) {
@@ -139,22 +79,5 @@ export class StakingServiceMock implements IStakingService {
 
   public getStakingContractAddress(): string {
     return this.stakingContractAddress;
-  }
-
-  private generateRandomTxReceipt(): TransactionReceipt {
-    return {
-      status: true,
-      transactionHash: `DUMMY_transactionHash_${Math.floor(Math.random() * 1000000)}`,
-      transactionIndex: 1000000,
-      blockHash: 'DUMMY_blockHash',
-      blockNumber: 2000000,
-      from: this.senderAccountAddress,
-      to: 'DUMMY_TO_ADDRESS',
-      contractAddress: 'DUMMY_CONTRACT_ADDRESS',
-      cumulativeGasUsed: 222,
-      gasUsed: 111,
-      logs: [],
-      logsBloom: 'DUMMY_logsBloom',
-    };
   }
 }
