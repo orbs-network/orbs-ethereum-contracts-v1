@@ -22,7 +22,7 @@ export interface IOrbsPOSDataService {
   getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>;
   getUpcomingElectionBlockNumber(): Promise<number>;
   getEffectiveElectionBlockNumber(): Promise<number>;
-  getDelegate(address: string): Promise<string>;
+  getDelegatee(address: string): Promise<string>;
   getDelegationInfo(address: string): Promise<IDelegationInfo>;
   getElectedValidators(): Promise<string[]>;
   getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>;

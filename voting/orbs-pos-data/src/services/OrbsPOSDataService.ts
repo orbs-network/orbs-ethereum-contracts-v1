@@ -97,7 +97,7 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return await this.orbsClientService.getEffectiveElectionBlockNumber();
   }
 
-  async getDelegate(address: string): Promise<string> {
+  async getDelegatee(address: string): Promise<string> {
     let info: IDelegationData = await this.ethereumClient.getCurrentDelegationByDelegate(address);
     if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.ethereumClient.getCurrentDelegationByTransfer(address);
