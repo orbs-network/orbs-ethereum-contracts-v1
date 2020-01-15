@@ -24,6 +24,22 @@ declare namespace Events {
         amount: (number|BN),
         totalStakedAmount: (number|BN)
     }
+
+    export interface SubscriptionChangedEvent {
+        vcid: (number|BN),
+        genRef: (number|BN),
+        expiresAt: (number|BN),
+        tier: string
+    }
+
+    export interface PaymentEvent {
+        vcid: (number|BN),
+        by: string,
+        amount: (number|BN),
+        tier: string,
+        rate: (number|BN)
+    }
+
 }
 
 
