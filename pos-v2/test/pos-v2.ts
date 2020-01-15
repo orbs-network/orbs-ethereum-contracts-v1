@@ -6,6 +6,7 @@ chai.use(require('./matchers'));
 
 const expect = chai.expect;
 
+import {CommitteeProvider} from './committee-provider';
 
 
 contract('pos-v2-high-level-flows', async () => {
@@ -25,6 +26,7 @@ contract('pos-v2-high-level-flows', async () => {
 
   it('sorts committee by stake', async () => {
     const d = await Driver.new(2);
+    const committeeProvider = new CommitteeProvider(web3.currentProvider.host, d.pos.address);
 
     const stake100 = new BN(100);
     const stake200 = new BN(200);
@@ -37,7 +39,6 @@ contract('pos-v2-high-level-flows', async () => {
     let r = await validatorStaked100.stake(stake100);
     expect(r).to.have.a.stakedEvent();
 
-
     r = await validatorStaked100.registerAsValidator();
     expect(r).to.have.a.validatorRegisteredEvent({
       addr: validatorStaked100.address,
@@ -45,6 +46,12 @@ contract('pos-v2-high-level-flows', async () => {
     });
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked100.address],
+      stakes: [stake100],
+    });
+
+    const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
+    expect(committeeFromAdapter).to.haveCommittee({
+      addrs: [validatorStaked100.address.toLowerCase()],
       stakes: [stake100],
     });
 
@@ -78,7 +85,6 @@ contract('pos-v2-high-level-flows', async () => {
       addrs: [validatorStaked300.address, validatorStaked200.address],
       stakes: [stake300, stake200]
     });
-
 
     r = await d.delegateMoreStake(stake300, validatorStaked200);
     expect(r).to.have.a.committeeChangedEvent({
