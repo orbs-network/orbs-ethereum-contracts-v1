@@ -5,7 +5,7 @@ import { IGuardiansService } from '../interfaces/IGuardiansService';
 import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 import { TxsMocker } from './TxsMocker';
 
-type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw' | 'selectGuardian';
+type TTxCreatingActionNames = 'selectGuardian';
 
 export class GuardiansServiceMock implements IGuardiansService, ITxCreatingServiceMock {
   public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
