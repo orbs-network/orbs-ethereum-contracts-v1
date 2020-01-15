@@ -1,4 +1,3 @@
-import { IDelegationData } from '../interfaces/IDelegationData';
 import { IEthereumClientService } from '../interfaces/IEthereumClientService';
 import { IGuardianData } from '../interfaces/IGuardianData';
 import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
@@ -46,24 +45,8 @@ export class EthereumClientServiceMock implements IEthereumClientService {
     };
   }
 
-  async getCurrentDelegationByDelegate(address: string): Promise<IDelegationData> {
-    return {
-      delegatedTo: null,
-      delegationBlockNumber: 0,
-      delegationTimestamp: 0,
-    };
-  }
-
   async getOrbsRewardsDistribution(address: string): Promise<IRewardsDistributionEvent[]> {
     return [];
-  }
-
-  async getCurrentDelegationByTransfer(address: string): Promise<IDelegationData> {
-    return {
-      delegatedTo: null,
-      delegationBlockNumber: 0,
-      delegationTimestamp: 0,
-    };
   }
 
   async getUpcomingElectionBlockNumber(): Promise<number> {

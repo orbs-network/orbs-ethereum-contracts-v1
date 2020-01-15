@@ -11,12 +11,12 @@ import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import { VOTING_CONTRACT_ADDRESS } from '../contracts-adresses';
-import { IGuardiansService } from '../interfaces/IGuardiansService';
 import votingContractJSON from '../contracts/OrbsVoting.json';
 import { IDelegationData } from '../interfaces/IDelegationData';
 import { IDelegationInfo, TDelegationType } from '../interfaces/IDelegationInfo';
-import { IGuardianInfo } from '../interfaces/IGuardianInfo';
 import { IGuardianData } from '../interfaces/IGuardianData';
+import { IGuardianInfo } from '../interfaces/IGuardianInfo';
+import { IGuardiansService } from '../interfaces/IGuardiansService';
 
 export const NOT_DELEGATED = '0x0000000000000000000000000000000000000000';
 const VALID_VOTE_LENGTH = 45500;

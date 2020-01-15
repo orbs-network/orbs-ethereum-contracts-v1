@@ -1,8 +1,9 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
+import { IDelegationInfo } from '../interfaces/IDelegationInfo';
+import { IGuardianInfo } from '../interfaces/IGuardianInfo';
 import { IGuardiansService } from '../interfaces/IGuardiansService';
 import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 import { TxsMocker } from './TxsMocker';
-import { IGuardianInfo } from '../interfaces/IGuardianInfo';
 
 type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw' | 'selectGuardian';
 
@@ -31,15 +32,18 @@ export class GuardiansServiceMock implements IGuardiansService, ITxCreatingServi
   }
 
   // READ //
-  async getSelectedGuardianAddress(accountAddress: string): PromiEvent<string> {
+  async getSelectedGuardianAddress(accountAddress: string): Promise<string> {
     return this.selectedGuardiansMap.get(accountAddress) || null;
   }
 
-  async getGuardiansList(offset: number, limit: number): PromiEvent<string[]> {
+  async getDelegationInfo(address: string): Promise<IDelegationInfo> {
+    return null;
+  }
+  async getGuardiansList(offset: number, limit: number): Promise<string[]> {
     return this.guardiansList;
   }
 
-  async getGuardianInfo(guardianAddress: string): PromiEvent<IGuardianInfo> {
+  async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
     return this.guardiansMap.get(guardianAddress);
   }
 
