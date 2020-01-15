@@ -1,16 +1,14 @@
-const {expectBNArrayEqual} = require("./driver");
+import BN from "bn.js";
 
-const {
+import {
     committeeChangedEvents,
-    validatorRegisteredEvents,
-    stakedEvents,
-    delegatedEvents,
+    delegatedEvents, stakedEvents,
     totalStakeChangedEvents,
+    validatorRegisteredEvents,
     subscriptionChangedEvent,
-    paymentEvent} = require('./eventParsing');
-
-const BN = require('bn.js');
-
+    paymentEvent
+} from "./eventParsing";
+import {expectBNArrayEqual} from "./driver";
 
 function compare(a, b) {
     if (BN.isBN(a) || BN.isBN(b)) {
@@ -26,7 +24,7 @@ function compare(a, b) {
 }
 
 const containEvent = (eventParser) => function(_super) {
-    return function (data) {
+    return function (this: any, data) {
         data = data || {};
 
         const log = eventParser(this._obj).pop(); // TODO - currently only checks last event of the required type

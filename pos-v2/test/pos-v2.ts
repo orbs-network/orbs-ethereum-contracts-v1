@@ -1,8 +1,8 @@
-const BN = require('bn.js');
-const chai = require('chai');
+import BN from "bn.js";
+import {Driver} from "./driver";
+import chai from "chai";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
-const {Driver, expectBNArrayEqual, expectRejected} = require("./driver");
 
 const expect = chai.expect;
 

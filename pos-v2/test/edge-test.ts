@@ -1,8 +1,8 @@
-const BN = require('bn.js');
-const chai = require('chai');
+import BN from "bn.js";
+import {Driver, expectRejected, ZERO_ADDR} from "./driver";
+import chai from "chai";
 chai.use(require('chai-bn')(BN));
-
-const {Driver, expectBNArrayEqual, expectRejected, ZERO_ADDR} = require("./driver");
+chai.use(require('./matchers'));
 
 const expect = chai.expect;
 
@@ -65,13 +65,13 @@ contract('pos-v2-edge-cases', async () => {
         await delegator.stake(100);
         r = await delegator.delegate(firstValidator);
 
-        expect(r).to.have.a.totalStakeChangedEvent({addr: firstValidator.address, newTotal: '200'});
+        expect(r).to.have.a.totalStakeChangedEvent({addr: firstValidator.address, newTotal: new BN(200)});
 
         // delegate before stake
         const delegator1 = d.newParticipant();
         await delegator1.delegate(firstValidator);
         r = await delegator1.stake(100);
 
-        expect(r).to.have.a.totalStakeChangedEvent({addr: firstValidator.address, newTotal: '300'});
+        expect(r).to.have.a.totalStakeChangedEvent({addr: firstValidator.address, newTotal: new BN(300)});
     })
 });

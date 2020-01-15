@@ -1,3 +1,7 @@
+require('ts-node').register({
+  files: true
+});
+
 /**
  * Copyright 2019 the orbs-ethereum-contracts authors
  * This file is part of the orbs-ethereum-contracts library in the Orbs project.
