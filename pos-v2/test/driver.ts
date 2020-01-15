@@ -3,7 +3,6 @@ import chai from "chai";
 chai.use(require('chai-bn')(BN));
 const expect = chai.expect;
 
-export const GUARD = 1234;
 export const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
 import Web3 from "web3";
