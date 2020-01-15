@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 contract('pos-v2-high-level-flows', async () => {
 
-  it('registers a VC', async () => {
+  it.only('registers a VC', async () => {
     const d = await Driver.new();
 
     const monthlyRate = new BN(1000);
@@ -23,7 +23,7 @@ contract('pos-v2-high-level-flows', async () => {
     // buy subscription for a new VC
     const appOwner = d.newParticipant();
     await d.erc20.assign(appOwner.address, firstPayment);
-    await d.erc20.approve(d.staking.address, firstPayment, {from: appOwner.address});
+    await d.erc20.approve(subscriber.address, firstPayment, {from: appOwner.address});
     let r = await subscriber.createVC(firstPayment, {from: appOwner.address});
 
     // TODO check tokens were withdrawn
@@ -49,7 +49,7 @@ contract('pos-v2-high-level-flows', async () => {
     const anotherPayer = d.newParticipant();
     const secondPayment = new BN(3000);
     await d.erc20.assign(anotherPayer.address, secondPayment);
-    await d.erc20.approve(d.staking.address, secondPayment, {from: anotherPayer.address});
+    await d.erc20.approve(subscriber.address, secondPayment, {from: anotherPayer.address});
     r = await subscriber.extendSubscription(vcid, secondPayment, {from: anotherPayer.address});
     expect(r).to.have.paymentEvent({vcid, by: anotherPayer.address, amount: secondPayment, tier: "defaultTier", rate: monthlyRate});
 

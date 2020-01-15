@@ -39,7 +39,7 @@ export class Driver {
     }
 
     async newSubscriber(tier, monthlyRate) {
-        const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.subscriptions.address, tier, monthlyRate);
+        const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.subscriptions.address, this.erc20.address, tier, monthlyRate);
         await this.subscriptions.addSubscriber(subscriber.address);
         return subscriber;
     }
