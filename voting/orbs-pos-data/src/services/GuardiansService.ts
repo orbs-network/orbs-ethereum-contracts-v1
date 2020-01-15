@@ -10,28 +10,36 @@ import Web3 from 'web3';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { VOTING_CONTRACT_ADDRESS } from '../contracts-adresses';
+import { IOrbsPosContractsAddresses } from '../contracts-adresses';
+import guardiansContractJSON from '../contracts/OrbsGuardians.json';
 import votingContractJSON from '../contracts/OrbsVoting.json';
+import erc20ContactAbi from '../erc20-abi';
 import { IDelegationData } from '../interfaces/IDelegationData';
 import { IDelegationInfo, TDelegationType } from '../interfaces/IDelegationInfo';
 import { IGuardianData } from '../interfaces/IGuardianData';
 import { IGuardianInfo } from '../interfaces/IGuardianInfo';
 import { IGuardiansService } from '../interfaces/IGuardiansService';
-
-export const NOT_DELEGATED = '0x0000000000000000000000000000000000000000';
-const VALID_VOTE_LENGTH = 45500;
+import { IOrbsClientService } from '../interfaces/IOrbsClientService';
+import { NOT_DELEGATED, ORBS_TDE_ETHEREUM_BLOCK, VALID_VOTE_LENGTH } from "./consts";
+import { getUpcomingElectionBlockNumber } from "./utils";
 
 function ensureNumericValue(numberOrString: number | string): number {
   return typeof numberOrString === 'string' ? parseInt(numberOrString) : numberOrString;
 }
 
 export class GuardiansService implements IGuardiansService {
-  private readonly votingContractAddress: string;
   private votingContract: Contract;
+  private erc20Contract: Contract;
+  private guardiansContract: Contract;
 
-  constructor(private web3: Web3, address: string = VOTING_CONTRACT_ADDRESS) {
-    this.votingContractAddress = address;
-    this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], this.votingContractAddress);
+  constructor(
+    private web3: Web3,
+    private orbsClientService: IOrbsClientService,
+    addresses: IOrbsPosContractsAddresses,
+  ) {
+    this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], addresses.votingContract);
+    this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addresses.erc20Contract);
+    this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addresses.guardiansContract);
   }
 
   // CONFIG //
@@ -68,7 +76,7 @@ export class GuardiansService implements IGuardiansService {
       delegationType = 'Delegate';
     }
 
-    const balance = await this.ethereumClient.getOrbsBalance(address);
+    const balance = await this.getOrbsBalance(address);
     return {
       delegatorBalance: Number(balance),
       delegationType,
@@ -77,11 +85,11 @@ export class GuardiansService implements IGuardiansService {
   }
 
   async getGuardiansList(offset: number, limit: number): Promise<string[]> {
-    return await this.ethereumClient.getGuardians(offset, limit);
+    return await this.getGuardians(offset, limit);
   }
 
   async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
-    const guardianData: IGuardianData = await this.ethereumClient.getGuardianData(guardianAddress);
+    const guardianData: IGuardianData = await this.getGuardianData(guardianAddress);
 
     const [votingWeightResults, totalParticipatingTokens] = await Promise.all([
       this.orbsClientService.getGuardianVoteWeight(guardianAddress),
@@ -111,7 +119,7 @@ export class GuardiansService implements IGuardiansService {
     const [guardianData, currentVote, upcomingElectionsBlockNumber] = await Promise.all([
       this.guardiansContract.methods.getGuardianData(address).call(),
       this.votingContract.methods.getCurrentVote(address).call(),
-      this.getUpcomingElectionBlockNumber(),
+      getUpcomingElectionBlockNumber(this.web3),
     ]);
 
     const votedAtBlockNumber = parseInt(currentVote.blockNumber);
@@ -135,7 +143,7 @@ export class GuardiansService implements IGuardiansService {
     }
 
     const options = {
-      fromBlock: OrbsTDEEthereumBlock,
+      fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
       toBlock: 'latest',
       filter: {
         delegator: this.web3.utils.padLeft(address, 40, '0'),
@@ -156,12 +164,17 @@ export class GuardiansService implements IGuardiansService {
     };
   }
 
+  private async getOrbsBalance(address: string): Promise<string> {
+    const balance = await this.erc20Contract.methods.balanceOf(address).call();
+    return this.web3.utils.fromWei(balance, 'ether');
+  }
+
   private async getCurrentDelegationByTransfer(address: string): Promise<IDelegationData> {
     const delegationConstant = '0x00000000000000000000000000000000000000000000000000f8b0a10e470000';
 
     const paddedAddress = this.web3.utils.padLeft(address, 40, '0');
     const options = {
-      fromBlock: OrbsTDEEthereumBlock,
+      fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
       toBlock: 'latest',
       filter: { from: paddedAddress },
     };

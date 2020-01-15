@@ -7,6 +7,7 @@
  */
 export interface IOrbsPosContractsAddresses {
   guardiansContract: string;
+  votingContract: string;
   orbsRewardsDistributionContract: string;
   validatorsContract: string;
   validatorsRegistryContract: string;
@@ -15,6 +16,7 @@ export interface IOrbsPosContractsAddresses {
 
 export const MainnetContractsAddresses: IOrbsPosContractsAddresses = {
   guardiansContract: '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711',
+  votingContract: '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d',
   orbsRewardsDistributionContract: '0xb2969e54668394bcA9B8AF61bC39B92754b7A7a0',
   validatorsContract: '0x240fAa45557c61B6959162660E324Bb90984F00f',
   validatorsRegistryContract: '0x56A6895FD37f358c17cbb3F14A864ea5Fe871F0a',
@@ -22,4 +24,3 @@ export const MainnetContractsAddresses: IOrbsPosContractsAddresses = {
 };
 
 export const STAKING_CONTRACT_ADDRESS = '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711';
-export const VOTING_CONTRACT_ADDRESS = '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d';

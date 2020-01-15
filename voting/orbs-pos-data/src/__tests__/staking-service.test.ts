@@ -55,7 +55,7 @@ describe('Staking service', () => {
 
   it('should set the default "from" address', async () => {
     const accountAddress = '0xbDBE6E5030f3e769FaC89AEF5ac34EbE8Cf95a76';
-    await stakingService.setFromAccount(accountAddress);
+    stakingService.setFromAccount(accountAddress);
 
     expect(web3Mock.optionValue('from')).toEqual(accountAddress);
   });

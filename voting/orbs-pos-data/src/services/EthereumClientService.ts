@@ -10,7 +10,6 @@ import Web3 from 'web3';
 import { Contract, EventData } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import { IOrbsPosContractsAddresses } from '../contracts-adresses';
-import guardiansContractJSON from '../contracts/OrbsGuardians.json';
 import orbsRewardsDistributionContractJSON from '../contracts/OrbsRewardsDistribution.json';
 import validatorsContractJSON from '../contracts/OrbsValidators.json';
 import validatorsRegistryContractJSON from '../contracts/OrbsValidatorsRegistry.json';
@@ -19,20 +18,16 @@ import { IEthereumClientService } from '../interfaces/IEthereumClientService';
 import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
 import { IValidatorData } from '../interfaces/IValidatorData';
 import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
-
-const FIRST_ELECTION_BLOCK_HEIGHT = 7528900;
-const INTERVAL_BETWEEN_ELECTIONS = 20000;
-const OrbsTDEEthereumBlock = 7439168;
+import { ORBS_TDE_ETHEREUM_BLOCK } from "./consts";
+import { getUpcomingElectionBlockNumber } from "./utils";
 
 export class EthereumClientService implements IEthereumClientService {
-  private guardiansContract: Contract;
   private orbsRewardsDistributionContract: Contract;
   private validatorsContract: Contract;
   private validatorsRegistryContract: Contract;
   private erc20Contract: Contract;
 
   constructor(private web3: Web3, addresses: IOrbsPosContractsAddresses) {
-    this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addresses.guardiansContract);
     this.orbsRewardsDistributionContract = new this.web3.eth.Contract(
       orbsRewardsDistributionContractJSON.abi as AbiItem[],
       addresses.orbsRewardsDistributionContract,
@@ -58,7 +53,7 @@ export class EthereumClientService implements IEthereumClientService {
 
   async getOrbsRewardsDistribution(address: string): Promise<IRewardsDistributionEvent[]> {
     const options = {
-      fromBlock: OrbsTDEEthereumBlock,
+      fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
       toBlock: 'latest',
       filter: { recipient: address },
     };
@@ -76,15 +71,8 @@ export class EthereumClientService implements IEthereumClientService {
     return readRewards;
   }
 
-  async getUpcomingElectionBlockNumber(): Promise<number> {
-    let amountOfElections = 0;
-    let upcomingElectionsBlockNumber = 0;
-    const currentBlockNumber = await this.web3.eth.getBlockNumber();
-    while (upcomingElectionsBlockNumber < currentBlockNumber) {
-      amountOfElections += 1;
-      upcomingElectionsBlockNumber = FIRST_ELECTION_BLOCK_HEIGHT + INTERVAL_BETWEEN_ELECTIONS * amountOfElections;
-    }
-    return upcomingElectionsBlockNumber;
+  getUpcomingElectionBlockNumber(): Promise<number> {
+    return getUpcomingElectionBlockNumber(this.web3);
   }
 
   async getOrbsBalance(address: string): Promise<string> {

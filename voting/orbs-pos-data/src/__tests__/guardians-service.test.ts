@@ -5,9 +5,10 @@
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
-import { GuardiansService } from '../services/GuardiansService';
-import { VOTING_CONTRACT_ADDRESS } from '../contracts-adresses';
+import { MainnetContractsAddresses } from '../contracts-adresses';
 import votingContractJSON from '../contracts/OrbsVoting.json';
+import { GuardiansService } from '../services/GuardiansService';
+import { OrbsClientServiceMock } from './orbs-client-service-mock';
 
 class Web3Mock {
   methodParams = (methodName: string) => this.eth.Contract.mock.results[0].value.methods[methodName].mock.calls[0];
@@ -35,22 +36,24 @@ class Web3Mock {
 
 describe('Guardians service', () => {
   let guardiansService: GuardiansService;
+  let orbsClientService: OrbsClientServiceMock;
   let web3Mock: Web3Mock;
 
   beforeEach(() => {
     web3Mock = new Web3Mock();
-    guardiansService = new GuardiansService(web3Mock as any);
+    orbsClientService = new OrbsClientServiceMock();
+    guardiansService = new GuardiansService(web3Mock as any, orbsClientService, MainnetContractsAddresses);
   });
 
   it('should set the default "from" address', async () => {
     const accountAddress = '0xbDBE6E5030f3e769FaC89AEF5ac34EbE8Cf95a76';
-    await guardiansService.setFromAccount(accountAddress);
+    guardiansService.setFromAccount(accountAddress);
 
     expect(web3Mock.optionValue('from')).toEqual(accountAddress);
   });
 
   it('should initialize the contract with the right abi and the contract address', async () => {
-    expect(web3Mock.eth.Contract).toBeCalledWith(votingContractJSON.abi, VOTING_CONTRACT_ADDRESS);
+    expect(web3Mock.eth.Contract).toBeCalledWith(votingContractJSON.abi, MainnetContractsAddresses.votingContract);
   });
 
   it('should call "delegate" with the given guardian address', async () => {
