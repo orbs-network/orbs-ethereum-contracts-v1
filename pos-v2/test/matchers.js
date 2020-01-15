@@ -5,7 +5,9 @@ const {
     validatorRegisteredEvents,
     stakedEvents,
     delegatedEvents,
-    totalStakeChangedEvents} = require('./eventParsing');
+    totalStakeChangedEvents,
+    subscriptionChangedEvent,
+    paymentEvent} = require('./eventParsing');
 
 const BN = require('bn.js');
 
@@ -49,4 +51,6 @@ module.exports = function (chai, utils) {
     chai.Assertion.overwriteMethod('committeeChangedEvent', containEvent(committeeChangedEvents));
     chai.Assertion.overwriteMethod('totalStakeChangedEvent', containEvent(totalStakeChangedEvents));
     chai.Assertion.overwriteMethod('stakedEvent', containEvent(stakedEvents));
+    chai.Assertion.overwriteMethod('subscriptionChangedEvent', containEvent(subscriptionChangedEvent));
+    chai.Assertion.overwriteMethod('paymentEvent', containEvent(paymentEvent));
 };

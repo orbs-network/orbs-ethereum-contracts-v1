@@ -8,10 +8,11 @@ const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
 class Driver {
 
-    constructor(accounts, pos, erc20, staking, guard) {
+    constructor(accounts, pos, erc20, staking, subscriptions, guard) {
         this.pos = pos;
         this.erc20 = erc20;
         this.staking = staking;
+        this.subscriptions = subscriptions;
         this.accounts = accounts;
         this.participants = [];
 
@@ -27,10 +28,17 @@ class Driver {
         const pos = await artifacts.require("PosV2").new(maxCommitteeSize);
         const erc20 = await artifacts.require('TestingERC20').new();
         const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, pos.address /* IStakingListener */, erc20.address /* _token */);
+        const subscriptions = await artifacts.require('Subscriptions').new();
 
         await pos.setStakingContract(staking.address);
 
-        return new Driver(accounts, pos, erc20, staking, GUARD);
+        return new Driver(accounts, pos, erc20, staking, subscriptions, GUARD);
+    }
+
+    async newSubscriber(tier, monthlyRate) {
+        const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.subscriptions.address, tier, monthlyRate);
+        await this.subscriptions.addSubscriber(subscriber.address);
+        return subscriber;
     }
 
     get contractsOwner() {

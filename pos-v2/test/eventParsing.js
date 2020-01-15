@@ -1,6 +1,7 @@
 const pos = artifacts.require("PosV2");
 const erc20 = artifacts.require('TestingERC20');
 const staking = artifacts.require("StakingContract");
+const subscriptions = artifacts.require("Subscriptions");
 
 function parseLogs(txResult, inputs, eventSignature) {
     const eventSignatureHash = web3.eth.abi.encodeEventSignature(eventSignature);
@@ -30,6 +31,20 @@ function stakedEvents(txResult) {
     return parseLogs(txResult, inputs, eventSignature)
 }
 
+function subscriptionChangedEvent(txResult) {
+    const inputs = subscriptions.abi.find(e => e.name == "SubscriptionChanged").inputs;
+    const eventSignature = "SubscriptionChanged(uint256,uint256,uint256,string)";
+
+    return parseLogs(txResult, inputs, eventSignature);
+}
+
+function paymentEvent(txResult) {
+    const inputs = subscriptions.abi.find(e => e.name == "Payment").inputs;
+    const eventSignature = "Payment(uint256,address,uint256,string,uint256)";
+
+    return parseLogs(txResult, inputs, eventSignature);
+}
+
 function delegatedEvents(txResult) {
     const inputs = pos.abi.find(e => e.name == "Delegated").inputs;
     const eventSignature = "Delegated(address,address)";
@@ -50,4 +65,6 @@ module.exports = {
     stakedEvents,
     delegatedEvents,
     totalStakeChangedEvents,
+    subscriptionChangedEvent,
+    paymentEvent,
 };
