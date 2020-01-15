@@ -104,8 +104,6 @@ workflows:
                 - master
     jobs:
       # tests that integrate with orbs-network-go
-      - subscription-e2e
       - voting-orbs-tests
       - voting-e2e
-        requires:
-        - voting-orbs-tests
+      - subscription-e2e
