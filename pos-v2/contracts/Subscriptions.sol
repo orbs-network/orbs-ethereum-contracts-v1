@@ -12,6 +12,8 @@ contract Subscriptions is Ownable {
     event SubscriberAdded(address subscriber);
 
     struct VirtualChain {
+        string tier;
+        uint256 rate;
         uint expiresAt;
         uint genRef;
         address owner;
@@ -36,21 +38,25 @@ contract Subscriptions is Ownable {
         require(authorizedSubscribers[msg.sender], "must be an authorized subscriber");
 
         uint vcid = nextVcid++;
-        VirtualChain storage vc = virtualChains[vcid];
+        VirtualChain memory vc = VirtualChain({
+            expiresAt: block.timestamp,
+            genRef: block.number + 300,
+            owner: owner,
+            tier: tier,
+            rate: rate
+        });
+        virtualChains[vcid] = vc;
 
-        vc.expiresAt =  block.timestamp;
-        vc.genRef = block.number + 300;
-        vc.owner = owner;
-
-        return payForVC(vcid, tier, rate, amount, owner);
-    }
-
-    function payForVC(uint256 vcid, string tier, uint256 rate, uint256 amount, address payer) public returns (uint, uint) {
-        VirtualChain storage vc = virtualChains[vcid];
-        vc.expiresAt = vc.expiresAt.add(amount.mul(30 days).div(rate));
-
-        emit SubscriptionChanged(vcid, vc.genRef, vc.expiresAt, tier);
-        emit Payment(vcid, payer, amount, tier, rate);
+        extendSubscription(vcid, amount, owner);
         return (vcid, vc.genRef);
     }
+
+    function extendSubscription(uint256 vcid, uint256 amount, address payer) public {
+        VirtualChain storage vc = virtualChains[vcid];
+        vc.expiresAt = vc.expiresAt.add(amount.mul(30 days).div(vc.rate));
+
+        emit SubscriptionChanged(vcid, vc.genRef, vc.expiresAt, vc.tier);
+        emit Payment(vcid, payer, amount, vc.tier, vc.rate);
+    }
+
 }

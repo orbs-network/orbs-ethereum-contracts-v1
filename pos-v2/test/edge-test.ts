@@ -73,5 +73,18 @@ contract('pos-v2-edge-cases', async () => {
         r = await delegator1.stake(100);
 
         expect(r).to.have.a.totalStakeChangedEvent({addr: firstValidator.address, newTotal: new BN(300)});
+    });
+
+    it('registers subsciber only by owner', async () => {
+        const d = await Driver.new();
+        const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(d.subscriptions.address, d.erc20.address, 'tier', 1);
+
+        await expectRejected(d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsNonOwner}), "Non-owner should not be able to add a subscriber");
+        await d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsOwner});
+    });
+
+    it('should not add a subscriber with a zero address', async () => {
+        const d = await Driver.new();
+        await expectRejected(d.subscriptions.addSubscriber(ZERO_ADDR, {from: d.contractsOwner}), "Should not deploy a subscriber with a zero address");
     })
 });

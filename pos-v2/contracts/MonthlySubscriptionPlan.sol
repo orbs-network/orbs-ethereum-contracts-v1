@@ -38,6 +38,6 @@ contract MonthlySubscriptionPlan {
         // TODO TBD subs has to trust this contract to transfer the funds. alternatively, transfer to this account and then approve subs to pull same amount.
         require(erc20.transferFrom(msg.sender, subs, amount), "failed to transfer subscription fees");
 
-        subs.payForVC(vcid, tier, monthlyRate, amount, msg.sender);
+        subs.extendSubscription(vcid, amount, msg.sender);
     }
 }
