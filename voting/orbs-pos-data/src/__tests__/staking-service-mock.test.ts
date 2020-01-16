@@ -38,7 +38,7 @@ function testDataReadingMethods() {
       const beforeResult = await stakingServiceApi.getStakeBalanceOf('DUMMY_ADDRESS');
       expect(beforeResult).toEqual('0');
 
-      stakingServiceMock.setStakeBalanceTo('DUMMY_ADDRESS', '123456');
+      stakingServiceMock.withStakeBalance('DUMMY_ADDRESS', '123456');
 
       const afterResult = await stakingServiceApi.getStakeBalanceOf('DUMMY_ADDRESS');
       expect(afterResult).toEqual('123456');
@@ -48,7 +48,7 @@ function testDataReadingMethods() {
       const beforeResult = await stakingServiceApi.getTotalStakedTokens();
       expect(beforeResult).toEqual('0');
 
-      stakingServiceMock.setTotalStakedTokens('123456');
+      stakingServiceMock.withTotalStakedTokens('123456');
 
       const afterResult = await stakingServiceApi.getTotalStakedTokens();
       expect(afterResult).toEqual('123456');
@@ -58,7 +58,7 @@ function testDataReadingMethods() {
       const beforeResult = await stakingServiceApi.getUnstakeStatus('DUMMY_ADDRESS');
       expect(beforeResult).toEqual({ cooldownAmount: 0, cooldownEndTime: 0 });
 
-      stakingServiceMock.setUnstakeStatus('DUMMY_ADDRESS', { cooldownAmount: 123, cooldownEndTime: 456 });
+      stakingServiceMock.withUnstakeStatus('DUMMY_ADDRESS', { cooldownAmount: 123, cooldownEndTime: 456 });
 
       const afterResult = await stakingServiceMock.getUnstakeStatus('DUMMY_ADDRESS');
       expect(afterResult).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
@@ -69,7 +69,7 @@ function testDataReadingMethods() {
 
       expect(stakingServiceApi.getStakingContractAddress()).toEqual('DUMMY_CONTRACT_ADDRESS');
 
-      stakingServiceMock.setStakingContractAddress(newContractAddress);
+      stakingServiceMock.withStakingContractAddress(newContractAddress);
 
       expect(stakingServiceMock.getStakingContractAddress()).toBe(newContractAddress);
     });

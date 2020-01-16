@@ -54,25 +54,25 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     return status ? status : { cooldownAmount: 0, cooldownEndTime: 0 };
   }
 
+  public getStakingContractAddress(): string {
+    return this.stakingContractAddress;
+  }
+
   // Test Utils //
 
-  public setStakeBalanceTo(address: string, amount: string) {
+  public withStakeBalance(address: string, amount: string) {
     this.addressToBalanceMap.set(address, amount);
   }
 
-  public setTotalStakedTokens(amount: string) {
+  public withTotalStakedTokens(amount: string) {
     this.totalStakedTokens = amount;
   }
 
-  public setUnstakeStatus(address: string, status: IStakingStatus) {
+  public withUnstakeStatus(address: string, status: IStakingStatus) {
     this.addressToStakeStatus.set(address, status);
   }
 
-  public setStakingContractAddress(address: string) {
+  public withStakingContractAddress(address: string) {
     this.stakingContractAddress = address;
-  }
-
-  public getStakingContractAddress(): string {
-    return this.stakingContractAddress;
   }
 }

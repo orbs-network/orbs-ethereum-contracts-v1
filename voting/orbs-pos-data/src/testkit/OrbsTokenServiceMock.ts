@@ -81,7 +81,7 @@ export class OrbsTokenServiceMock implements IOrbsTokenService, ITxCreatingServi
   }
 
   // State test utils //
-  setAllowance(ownerAddress: string, spenderAddress: string, allowanceSum: string) {
+  private setAllowance(ownerAddress: string, spenderAddress: string, allowanceSum: string) {
     if (!this.addressToAllowancesMap.has(ownerAddress)) {
       this.addressToAllowancesMap.set(ownerAddress, new Map<string, string>());
     }
