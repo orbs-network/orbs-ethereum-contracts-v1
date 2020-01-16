@@ -6,6 +6,11 @@ const expect = chai.expect;
 export const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
 import Web3 from "web3";
+import PosV2Contract = Contracts.PosV2Contract;
+import ERC20Contract = Contracts.ERC20Contract;
+import StakingContract = Contracts.StakingContract;
+import SubscriptionsContract = Contracts.SubscriptionsContract;
+import MonthlySubscriptionContract = Contracts.MonthlySubscriptionContract;
 declare const web3: Web3;
 
 export class Driver {
@@ -13,10 +18,10 @@ export class Driver {
 
     constructor(
         public accounts,
-        public pos,
-        public erc20,
-        public staking,
-        public subscriptions) {}
+        public pos: PosV2Contract,
+        public erc20: ERC20Contract,
+        public staking: StakingContract,
+        public subscriptions: SubscriptionsContract) {}
 
     static async new(maxCommitteeSize=2) {
         const accounts = await web3.eth.getAccounts();
@@ -38,7 +43,7 @@ export class Driver {
         return this.accounts[1];
     }
 
-    async newSubscriber(tier, monthlyRate) {
+    async newSubscriber(tier, monthlyRate): Promise<MonthlySubscriptionContract> {
         const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.subscriptions.address, this.erc20.address, tier, monthlyRate);
         await this.subscriptions.addSubscriber(subscriber.address);
         return subscriber;

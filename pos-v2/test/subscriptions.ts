@@ -28,8 +28,6 @@ contract('pos-v2-high-level-flows', async () => {
     expect(await d.erc20.balanceOf(appOwner.address)).is.bignumber.equal(firstPayment);
     let r = await subscriber.createVC(firstPayment, {from: appOwner.address});
 
-    // TODO check tokens were withdrawn
-
     expect(r).to.have.subscriptionChangedEvent();
     const firstSubsc = subscriptionChangedEvent(r).pop();
 
@@ -74,7 +72,5 @@ contract('pos-v2-high-level-flows', async () => {
 
     expect(await d.erc20.balanceOf(d.subscriptions.address)).is.bignumber.equal(firstPayment.add(secondPayment));
   });
-
-  it('does something logical when people pay after expiration', ()=> {});
 
 });
