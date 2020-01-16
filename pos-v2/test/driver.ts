@@ -10,29 +10,35 @@ import PosV2Contract = Contracts.PosV2Contract;
 import ERC20Contract = Contracts.ERC20Contract;
 import StakingContract = Contracts.StakingContract;
 import SubscriptionsContract = Contracts.SubscriptionsContract;
-import MonthlySubscriptionContract = Contracts.MonthlySubscriptionContract;
+import MonthlySubscriptionContract = Contracts.MonthlySubscriptionPlanContract;
+import RewardsContract = Contracts.RewardsContract;
 declare const web3: Web3;
 
 export class Driver {
     private participants: Participant[] = [];
 
     constructor(
-        public accounts,
+        public accounts: string[],
         public pos: PosV2Contract,
         public erc20: ERC20Contract,
         public staking: StakingContract,
-        public subscriptions: SubscriptionsContract) {}
+        public subscriptions: SubscriptionsContract,
+        public rewards: RewardsContract
+    ) {}
 
     static async new(maxCommitteeSize=2) {
         const accounts = await web3.eth.getAccounts();
-        const pos = await artifacts.require("PosV2").new(maxCommitteeSize);
         const erc20 = await artifacts.require('TestingERC20').new();
+        const rewards = await artifacts.require('Rewards').new(erc20.address);
+        const subscriptions = await artifacts.require('Subscriptions').new(rewards.address, erc20.address);
+        const pos = await artifacts.require("PosV2").new(maxCommitteeSize, rewards.address /* committee listener */);
         const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, pos.address /* IStakingListener */, erc20.address /* _token */);
-        const subscriptions = await artifacts.require('Subscriptions').new();
 
+        await rewards.setCommitteeProvider(pos.address);
+        await rewards.setStakingContract(staking.address);
         await pos.setStakingContract(staking.address);
 
-        return new Driver(accounts, pos, erc20, staking, subscriptions);
+        return new Driver(accounts, pos, erc20, staking, subscriptions, rewards);
     }
 
     get contractsOwner() {

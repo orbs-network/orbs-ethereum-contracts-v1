@@ -2,6 +2,7 @@ pragma solidity 0.4.26;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./Rewards.sol";
 
 contract Subscriptions is Ownable {
     using SafeMath for uint256;
@@ -24,8 +25,14 @@ contract Subscriptions is Ownable {
 
     uint nextVcid;
 
-    constructor () public {
+    Rewards rewardsContract;
+    IERC20 erc20;
+
+    constructor (Rewards _rewardsContract, IERC20 _erc20) public {
+        require(_rewardsContract != address(0), "rewardsContract should not be 0");
         nextVcid = 1000000;
+        rewardsContract = _rewardsContract;
+        erc20 = _erc20;
     }
 
     function addSubscriber(address addr) public onlyOwner {
@@ -54,6 +61,9 @@ contract Subscriptions is Ownable {
     function extendSubscription(uint256 vcid, uint256 amount, address payer) public {
         VirtualChain storage vc = virtualChains[vcid];
         vc.expiresAt = vc.expiresAt.add(amount.mul(30 days).div(vc.rate));
+
+        require(erc20.transfer(rewardsContract, amount), "failed to transfer subscription fees");
+        rewardsContract.fillFeeBuckets(amount, vc.rate);
 
         emit SubscriptionChanged(vcid, vc.genRef, vc.expiresAt, vc.tier);
         emit Payment(vcid, payer, amount, vc.tier, vc.rate);

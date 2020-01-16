@@ -8,7 +8,7 @@ export class CommitteeProvider {
     constructor(private ethereumEndpoint,
                 private posContractAddress) {}
 
-    async getCommitteeAsOf(blockNumber) {
+    async getCommitteeAsOf(blockNumber): Promise<Contracts.CommitteeChangedEvent> {
         const adapterPath = path.resolve(".", "management-adapter", "main.go");
         const {stdout, stderr} = await exec(`go run ${adapterPath} --as-of-block ${blockNumber} --addresses ${this.posContractAddress} --ethereum-endpoint ${this.ethereumEndpoint}`);
 

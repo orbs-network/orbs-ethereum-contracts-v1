@@ -4,6 +4,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 import "./IStakingListener.sol";
+import "./ICommitteeListener.sol";
 
 contract PosV2 is IStakingListener, Ownable {
 	using SafeMath for uint256;
@@ -19,23 +20,27 @@ contract PosV2 is IStakingListener, Ownable {
 	mapping (address => uint256) totalStakes;
 	mapping (address => address) delegations;
 
-	address _stakingContract;
+	ICommitteeListener committeeListener;
+	address stakingContract;
 
 	uint maxCommitteeSize;
 
 	modifier onlyStakingContract() {
-		require(msg.sender == _stakingContract, "caller is not the staking contract");
+		require(msg.sender == stakingContract, "caller is not the staking contract");
 
 		_;
 	}
 
-	constructor(uint _maxCommitteeSize) public {
+	constructor(uint _maxCommitteeSize, ICommitteeListener _committeeListener) public {
+		require(_committeeListener != address(0), "committee listener should not be 0");
+
 		maxCommitteeSize = _maxCommitteeSize;
+		committeeListener = _committeeListener;
 	}
 
 	function setStakingContract(address addr) public onlyOwner {
-		require(addr != 0, "Got staking contract address 0");
-		_stakingContract = addr;
+		require(addr != address(0), "Got staking contract address 0");
+		stakingContract = addr;
 	}
 
 	function registerValidator(bytes4 ip) public  {
@@ -93,6 +98,8 @@ contract PosV2 is IStakingListener, Ownable {
 		uint256[] memory stakes = _sortCommitteeMember(p);
 
 		assert(stakes.length == committee.length);
+
+		committeeListener.committeeChanged(committee, stakes);
 		emit CommitteeChanged(committee, stakes);
 	}
 
