@@ -24,9 +24,8 @@ export class StakingService implements IStakingService {
   }
 
   // CONFIG //
-  setFromAccount(address: string): this {
+  setFromAccount(address: string): void {
     this.stakingContract.options.from = address;
-    return this;
   }
 
   getStakingContractAddress() {
@@ -50,11 +49,6 @@ export class StakingService implements IStakingService {
     return this.stakingContract.methods.withdraw().send();
   }
 
-  selectGuardian(guardianAddress: string): PromiEvent<TransactionReceipt> {
-    // TODO: Implement
-    return null;
-  }
-
   // READ //
   async getStakeBalanceOf(stakeOwner: string): Promise<string> {
     return this.stakingContract.methods.getStakeBalanceOf(stakeOwner).call();
@@ -70,9 +64,5 @@ export class StakingService implements IStakingService {
       cooldownAmount: parseInt(result.cooldownAmount, 10),
       cooldownEndTime: parseInt(result.cooldownEndTime, 10),
     };
-  }
-
-  async getSelectedGuardianAddress(accountAddress: string): Promise<string> {
-    return null;
   }
 }

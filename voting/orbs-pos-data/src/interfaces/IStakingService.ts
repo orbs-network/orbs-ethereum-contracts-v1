@@ -15,16 +15,13 @@ export interface IStakingStatus {
 
 export interface IStakingService {
   getStakingContractAddress(): string;
-  setFromAccount(address: string): IStakingService;
+  setFromAccount(address: string): void;
 
   stake(amount: number): PromiEvent<TransactionReceipt>;
   unstake(amount: number): PromiEvent<TransactionReceipt>;
   restake(): PromiEvent<TransactionReceipt>;
   withdraw(): PromiEvent<TransactionReceipt>;
-  selectGuardian(guardianAddress: string): PromiEvent<TransactionReceipt>;
-
   getStakeBalanceOf(stakeOwner: string): Promise<string>;
   getTotalStakedTokens(): Promise<string>;
   getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
-  getSelectedGuardianAddress(accountAddress: string): Promise<string>;
 }

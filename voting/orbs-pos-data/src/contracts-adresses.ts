@@ -22,4 +22,5 @@ export const MainnetContractsAddresses: IOrbsPosContractsAddresses = {
   validatorsRegistryContract: '0x56A6895FD37f358c17cbb3F14A864ea5Fe871F0a',
   erc20Contract: '0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA',
 };
+
 export const STAKING_CONTRACT_ADDRESS = '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711';

@@ -8,7 +8,7 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 
 export interface IOrbsTokenService {
-  setFromAccount(address: string): IOrbsTokenService;
+  setFromAccount(address: string): void;
   readAllowance(ownerAddress: string, spenderAddress: string): Promise<string>;
   approve(spenderAddress: string, amountInOrbs: number): PromiEvent<TransactionReceipt>;
 

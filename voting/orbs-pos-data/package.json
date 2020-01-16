@@ -1,6 +1,6 @@
 {
   "name": "orbs-pos-data",
-  "version": "5.0.0",
+  "version": "5.0.2",
   "description": "",
   "main": "dist/orbs-pos-data.js",
   "browser": "dist/orbs-pos-data-web.js",
@@ -14,7 +14,8 @@
     "types": "tsc -p tsconfig-for-declarations.json",
     "dev": "webpack-dev-server -w",
     "contracts": "./scripts/generate-contracts-abi.ts",
-    "test": "jest"
+    "test": "jest",
+    "test-watch": "jest --watchAll"
   },
   "repository": {
     "type": "git",

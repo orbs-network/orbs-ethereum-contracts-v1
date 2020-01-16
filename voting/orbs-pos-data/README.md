@@ -116,29 +116,6 @@ interface IRewardsDistributionEvent {
 
 ---
 
-### `getGuardiansList(offset: number, limit: number): Promise<string[]>`
-
-Get a list of Guardians addresses, using `offset` and `limit` for pagination.
-
----
-
-### `getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>`
-
-Get information about the given Guardian.
-
-```ts
-interface IGuardianInfo {
-  name: string;
-  website: string;
-  hasEligibleVote: boolean;
-  currentVote: string[];
-  voted: boolean;
-  stake: number;
-}
-```
-
----
-
 ### `getUpcomingElectionBlockNumber(): Promise<number>`
 
 Get the upcoming election block number (on Ethereum)
@@ -148,30 +125,6 @@ Get the upcoming election block number (on Ethereum)
 ### `getEffectiveElectionBlockNumber(): Promise<number>`
 
 Get the effective election block number (on Ethereum)
-
----
-
-### `getDelegatee(address: string): Promise<string>`
-
-Get to whom the given `address` is currently delegating. Returns the address of the Delegator or address `0x0000000000000000000000000000000000000000` if no delegation was found.
-
----
-
-### `getDelegationInfo(address: string): Promise<IDelegationInfo>`
-
-Get detailed information about the given `address` delegation.
-
-**Note:** If no delegation was found, the `delegatedTo` will be `0x0000000000000000000000000000000000000000` and the `delegationBlockNumber` and `delegationTimestamp` fields will not exist in the result.
-
-```ts
-interface IDelegationInfo {
-  delegatedTo: string;
-  delegationType: "Not-Delegated" | "Transfer" | "Delegate";
-  delegatorBalance: number;
-  delegationBlockNumber?: number;
-  delegationTimestamp?: number;
-}
-```
 
 ---
 
