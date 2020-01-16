@@ -26,12 +26,12 @@ export class Driver {
         public rewards: RewardsContract
     ) {}
 
-    static async new(maxCommitteeSize=2) {
+    static async new(maxCommitteeSize=2, minimumStake=100) {
         const accounts = await web3.eth.getAccounts();
         const erc20 = await artifacts.require('TestingERC20').new();
         const rewards = await artifacts.require('Rewards').new(erc20.address);
         const subscriptions = await artifacts.require('Subscriptions').new(rewards.address, erc20.address);
-        const pos = await artifacts.require("PosV2").new(maxCommitteeSize, rewards.address /* committee listener */);
+        const pos = await artifacts.require("PosV2").new(maxCommitteeSize, minimumStake, rewards.address /* committee listener */);
         const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, pos.address /* IStakingListener */, erc20.address /* _token */);
 
         await rewards.setCommitteeProvider(pos.address);

@@ -10,6 +10,9 @@ import "./ICommitteeListener.sol";
 contract Rewards is ICommitteeListener, Ownable {
     using SafeMath for uint256;
 
+    event RewardAssigned(address assignee, uint256 amount, uint256 balance);
+    event FeeAddedToBucket(uint256 bucketId, uint256 added, uint256 total);
+
     uint256 constant bucketTimePeriod = 30 days;
 
     uint256 feePool;
@@ -22,7 +25,7 @@ contract Rewards is ICommitteeListener, Ownable {
     IERC20 erc20;
     address committeeProvider;
 
-    uint constant MAX_WEIGHT = 100000000; // TODO
+    uint256 constant MAX_WEIGHT = 10000000000000000000; // small enough to multiply by total token supply without overflow
 
     struct CommitteeMember {
         address addr;
@@ -31,7 +34,6 @@ contract Rewards is ICommitteeListener, Ownable {
 
     CommitteeMember[] currentCommittee;
 
-    event RewardAssigned(address assignee, uint256 amount, uint256 balance);
 
     modifier onlyCommitteeProvider() {
         require(msg.sender == committeeProvider, "caller is not the committee provider");
@@ -43,6 +45,14 @@ contract Rewards is ICommitteeListener, Ownable {
         require(_erc20 != address(0), "erc20 must not be 0");
         erc20 = _erc20;
         lastPayedAt = now;
+    }
+
+    function getBalance(address addr) public view returns (uint256) {
+        return balance[addr];
+    }
+
+    function getLastPayedAt() public view returns (uint256) {
+        return lastPayedAt;
     }
 
     function setCommitteeProvider(address _committeeProvider) external onlyOwner {
@@ -66,23 +76,28 @@ contract Rewards is ICommitteeListener, Ownable {
 
         currentCommittee.length = addrs.length;
         for (i = 0; i < addrs.length; i++) {
+            uint weight = 0;
+            if (totalStake > 0) {
+                weight = MAX_WEIGHT.mul(stakes[i]).div(totalStake);
+            }
             currentCommittee[i] = CommitteeMember({
                 addr: addrs[i],
-                weight:  MAX_WEIGHT.mul(stakes[i]).div(totalStake)
+                weight:  weight
             });
         }
     }
 
-    uint constant MAX_REWARD_BUCKET_ITERATIONS = 2;
+    uint constant MAX_REWARD_BUCKET_ITERATIONS = 6;
 
     function assignRewards() public returns (uint256) {
         uint bucketsPayed = 0;
         while (bucketsPayed < MAX_REWARD_BUCKET_ITERATIONS && lastPayedAt < now) {
             uint256 bucketStart = _bucketTime(lastPayedAt);
-            uint256 bucketEnd = bucketStart + bucketTimePeriod;
+            uint256 bucketEnd = bucketStart.add(bucketTimePeriod);
             uint256 payUntil = Math.min(bucketEnd, now);
-            uint256 duration = payUntil - lastPayedAt;
-            uint256 amount = feeBuckets[bucketStart] * duration / bucketTimePeriod;
+            uint256 duration = payUntil.sub(lastPayedAt);
+            uint256 remainingBucketTime = bucketEnd.sub(lastPayedAt);
+            uint256 amount = feeBuckets[bucketStart] * duration / remainingBucketTime;
 
             assignAmountToCommitteeMembers(amount);
             feeBuckets[bucketStart] = feeBuckets[bucketStart].sub(amount);
@@ -127,6 +142,7 @@ contract Rewards is ICommitteeListener, Ownable {
         uint256 bucketAmount = Math.min(amount, monthlyRate.mul(bucketTimePeriod - now % bucketTimePeriod).div(bucketTimePeriod));
         feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
         amount = amount.sub(bucketAmount);
+        emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
 
         // following buckets are added with the monthly rate
         while (amount > 0) {
@@ -134,6 +150,7 @@ contract Rewards is ICommitteeListener, Ownable {
             bucketAmount = Math.min(monthlyRate, amount);
             feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
             amount = amount.sub(bucketAmount);
+            emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
         }
 
         assert(amount == 0);

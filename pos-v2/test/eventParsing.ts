@@ -4,6 +4,7 @@ declare const web3: Web3;
 const pos = artifacts.require("PosV2");
 const staking = artifacts.require("StakingContract");
 const subscriptions = artifacts.require("Subscriptions");
+const rewards = artifacts.require("Rewards");
 
 function parseLogs(txResult, inputs, eventSignature) {
     const eventSignatureHash = web3.eth.abi.encodeEventSignature(eventSignature);
@@ -57,6 +58,20 @@ export function subscriptionChangedEvent(txResult) {
 export function paymentEvent(txResult) {
     const inputs = subscriptions.abi.find(e => e.name == "Payment").inputs;
     const eventSignature = "Payment(uint256,address,uint256,string,uint256)";
+
+    return parseLogs(txResult, inputs, eventSignature);
+}
+
+export function feeAddedToBucketEvent(txResult) {
+    const inputs = rewards.abi.find(e => e.name == "FeeAddedToBucket").inputs;
+    const eventSignature = "FeeAddedToBucket(uint256,uint256,uint256)";
+
+    return parseLogs(txResult, inputs, eventSignature);
+}
+
+export function rewardAssignedEvent(txResult) {
+    const inputs = rewards.abi.find(e => e.name == "RewardAssigned").inputs;
+    const eventSignature = "RewardAssigned(address,uint256,uint256)";
 
     return parseLogs(txResult, inputs, eventSignature);
 }

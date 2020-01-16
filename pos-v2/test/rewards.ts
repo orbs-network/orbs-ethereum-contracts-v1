@@ -7,7 +7,9 @@ import chai from "chai";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
-const {subscriptionChangedEvent} = require('./eventParsing');
+const {feeAddedToBucketEvent} = require('./eventParsing');
+
+const MONTH_IN_SECONDS = 30*24*60*60;
 
 async function txTimestamp(r): Promise<number> {
   return (await web3.eth.getBlock(r.receipt.blockNumber)).timestamp as number;
@@ -31,7 +33,7 @@ contract('pos-v2-high-level-flows', async () => {
     await v.stake(initialStake);
     await v.registerAsValidator();
 
-    const rate = 2000000;
+    const rate = 20000000;
     const subs = await d.newSubscriber('tier', rate);
 
     const appOwner = d.newParticipant();
@@ -39,24 +41,46 @@ contract('pos-v2-high-level-flows', async () => {
     await d.erc20.assign(appOwner.address, payment);
     await d.erc20.approve(subs.address, payment, {from: appOwner.address});
 
-    let r = await subs.createVC(12*rate, {from: appOwner.address});
+    let r = await subs.createVC(payment, {from: appOwner.address});
     let startTime = await txTimestamp(r); // TODO
+
+    const feesAdded = feeAddedToBucketEvent(r);
+
+    // all the payed rewards were added to a bucket
+    const totalAdded = feesAdded.reduce((t, l)=>t.add(new BN(l.added)), new BN(0));
+    expect(totalAdded).to.be.bignumber.equal(new BN(payment));
+
+    // the first bucket was added to with proportion to the remaining time
+    const secondsInFirstMonth = parseInt(feesAdded[1].bucketId) - startTime;
+    expect(parseInt(feesAdded[0].added)).to.equal(Math.floor(secondsInFirstMonth * rate / MONTH_IN_SECONDS));
+
+    // all middle buckets were added to by the monthly rate
+    const middleBuckets = feesAdded.filter((l, i)=>i>0 && i < feesAdded.length-1);
+    expect(middleBuckets).to.have.length(feesAdded.length-2);
+    middleBuckets.forEach(l=>{
+      expect(l.added).to.be.bignumber.equal(new BN(rate));
+    });
+
+    r = await d.rewards.getLastPayedAt();
+    expect(r).to.be.bignumber.equal(new BN(startTime));
 
     await sleep(3000);
 
     r = await d.rewards.assignRewards();
-
     const endTime = await txTimestamp(r); // TODO
 
-    const MONTH_IN_SECONDS = 30*24*60*60;
     const elapsedTime = endTime - startTime;
-    const expectedRewards = rate * elapsedTime / MONTH_IN_SECONDS;
+    const expectedRewards = Math.floor(rate * elapsedTime / MONTH_IN_SECONDS);
 
-    r = await d.rewards.distributeRewards([v.address], [Math.floor(expectedRewards)], {from: v.address});
+    r = await d.rewards.getBalance(v.address);
+    expect(r).to.be.bignumber.equal(new BN(expectedRewards));
+
+    r = await d.rewards.distributeRewards([v.address], [expectedRewards], {from: v.address});
     expect(r).to.have.a.stakedEvent({
       stakeOwner: v.address,
-      amount: new BN(initialStake + Math.floor(expectedRewards))
-    })
+      amount: `${expectedRewards}`,
+      totalStakedAmount: `${initialStake + expectedRewards}`
+    });
   });
 
 });

@@ -23,6 +23,7 @@ contract PosV2 is IStakingListener, Ownable {
 	ICommitteeListener committeeListener;
 	address stakingContract;
 
+	uint minimumStake;
 	uint maxCommitteeSize;
 
 	modifier onlyStakingContract() {
@@ -31,9 +32,11 @@ contract PosV2 is IStakingListener, Ownable {
 		_;
 	}
 
-	constructor(uint _maxCommitteeSize, ICommitteeListener _committeeListener) public {
+	constructor(uint _maxCommitteeSize, uint _minimumStake, ICommitteeListener _committeeListener) public {
 		require(_committeeListener != address(0), "committee listener should not be 0");
+		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 
+		minimumStake = _minimumStake;
 		maxCommitteeSize = _maxCommitteeSize;
 		committeeListener = _committeeListener;
 	}
@@ -145,6 +148,9 @@ contract PosV2 is IStakingListener, Ownable {
 			return (0, false);
 		}
 
+		if (minimumStake > totalStakes[stakeOwner]) {
+			return (0, false);
+		}
 		if (committee.length == maxCommitteeSize) { // a full committee
 			bool qualifyToEnter = totalStakes[stakeOwner] > totalStakes[committee[committee.length-1]];
 			if (!qualifyToEnter) {

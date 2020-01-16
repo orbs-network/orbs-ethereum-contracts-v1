@@ -23,6 +23,7 @@ contract('pos-v2-edge-cases', async () => {
         // Validator registers
 
         const v = d.newParticipant();
+        await v.stake(100);
         const r = await d.pos.registerValidator(v.ip, {from: v.address});
         expect(r).to.have.a.validatorRegisteredEvent({
             addr: v.address,
@@ -30,7 +31,7 @@ contract('pos-v2-edge-cases', async () => {
         });
         expect(r).to.have.a.committeeChangedEvent({
             addrs: [v.address],
-            stakes: [new BN(0)]
+            stakes: [new BN(100)]
         });
 
         // The first validator attempts to register again - should not emit events
