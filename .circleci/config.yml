@@ -79,8 +79,23 @@ jobs:
       - store_test_results:
           path: rewards-distribution/ethereum/_reports
 
+  posv2-contracts-e2e:
+    docker:
+      - image: circleci/node:11.2.0
+    steps:
+      - checkout
+      - run: cd pos-v2 && ./test.sh
+      - store_artifacts:
+          path: pos-v2/_out
+      - store_test_results:
+          path: pos-v2/_reports
+
+
 workflows:
   version: 2
+  posv2:
+    jobs:
+      - posv2-contracts-e2e
   voting:
     jobs:
       - voting-solidity-tests
