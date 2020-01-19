@@ -57,16 +57,16 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   // READ //
-  async getStakeBalanceOf(stakeOwner: string): Promise<string> {
+  async readStakeBalanceOf(stakeOwner: string): Promise<string> {
     const amount = this.addressToBalanceMap.get(stakeOwner);
     return amount ? amount.toString() : '0';
   }
 
-  async getTotalStakedTokens(): Promise<string> {
+  async readTotalStakedTokens(): Promise<string> {
     return this.totalStakedTokens;
   }
 
-  async getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
+  async readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
     const status = this.addressToStakeStatus.get(stakeOwner);
     return status ? status : { cooldownAmount: 0, cooldownEndTime: 0 };
   }

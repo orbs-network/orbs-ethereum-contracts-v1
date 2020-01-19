@@ -13,8 +13,8 @@ import { IGuardianInfo } from './IGuardianInfo';
 export interface IGuardiansService {
   setFromAccount(address: string): void;
   selectGuardian(guardianAddress: string): PromiEvent<TransactionReceipt>;
-  getSelectedGuardianAddress(accountAddress: string): Promise<string>;
-  getDelegationInfo(address: string): Promise<IDelegationInfo>;
-  getGuardiansList(offset: number, limit: number): Promise<string[]>;
-  getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>;
+  readSelectedGuardianAddress(accountAddress: string): Promise<string>;
+  readDelegationInfo(address: string): Promise<IDelegationInfo>;
+  readGuardiansList(offset: number, limit: number): Promise<string[]>;
+  readGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>;
 }

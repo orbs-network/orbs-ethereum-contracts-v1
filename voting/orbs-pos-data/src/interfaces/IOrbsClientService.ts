@@ -1,11 +1,11 @@
 export interface IOrbsClientService {
-  getTotalParticipatingTokens(): Promise<bigint>;
-  getGuardianVoteWeight(address: string): Promise<bigint>;
-  getValidatorVotes(address: string): Promise<bigint>;
-  getValidatorStake(address: string): Promise<bigint>;
-  getElectedValidators(): Promise<Uint8Array>;
-  getParticipationReward(address: string): Promise<bigint>;
-  getGuardianReward(address: string): Promise<bigint>;
-  getValidatorReward(address: string): Promise<bigint>;
-  getEffectiveElectionBlockNumber(): Promise<number>;
+  readTotalParticipatingTokens(): Promise<bigint>;
+  readGuardianVoteWeight(address: string): Promise<bigint>;
+  readValidatorVotes(address: string): Promise<bigint>;
+  readValidatorStake(address: string): Promise<bigint>;
+  readElectedValidators(): Promise<Uint8Array>;
+  readParticipationReward(address: string): Promise<bigint>;
+  readGuardianReward(address: string): Promise<bigint>;
+  readValidatorReward(address: string): Promise<bigint>;
+  readEffectiveElectionBlockNumber(): Promise<number>;
 }

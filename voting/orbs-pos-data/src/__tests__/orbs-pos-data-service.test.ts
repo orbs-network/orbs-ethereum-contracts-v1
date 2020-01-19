@@ -47,7 +47,7 @@ describe('Orbs POS data service', () => {
   describe('validators', () => {
     it('should return all the validators addresses', async () => {
       ethereumClient.withValidators(validatorsMap);
-      const actual = await orbsPOSDataService.getValidators();
+      const actual = await orbsPOSDataService.readValidators();
       expect(validatorsAddresses).toEqual(actual);
     });
 
@@ -57,7 +57,7 @@ describe('Orbs POS data service', () => {
       orbsClientService.withValidatorVotes(firstValidatorAddress, 100n);
       orbsClientService.withTotalParticipatingTokens(1_000n);
 
-      const actual = await orbsPOSDataService.getValidatorInfo(firstValidatorAddress);
+      const actual = await orbsPOSDataService.readValidatorInfo(firstValidatorAddress);
       const expected: IValidatorInfo = { votesAgainst: 10, ...validatorsMap[firstValidatorAddress] }; // 100/1000 = 10%
       expect(expected).toEqual(actual);
     });
@@ -68,7 +68,7 @@ describe('Orbs POS data service', () => {
       orbsClientService.withValidatorVotes(firstValidatorAddress, 100n);
       orbsClientService.withTotalParticipatingTokens(0n);
 
-      const actual = await orbsPOSDataService.getValidatorInfo(firstValidatorAddress);
+      const actual = await orbsPOSDataService.readValidatorInfo(firstValidatorAddress);
       const expected: IValidatorInfo = { votesAgainst: 0, ...validatorsMap[firstValidatorAddress] };
       expect(expected).toEqual(actual);
     });
@@ -79,7 +79,7 @@ describe('Orbs POS data service', () => {
       orbsClientService.withValidatorVotes(firstValidatorAddress, 0n);
       orbsClientService.withTotalParticipatingTokens(1_000n);
 
-      const actual = await orbsPOSDataService.getValidatorInfo(firstValidatorAddress);
+      const actual = await orbsPOSDataService.readValidatorInfo(firstValidatorAddress);
       const expected: IValidatorInfo = { votesAgainst: 0, ...validatorsMap[firstValidatorAddress] };
       expect(expected).toEqual(actual);
     });
@@ -90,7 +90,7 @@ describe('Orbs POS data service', () => {
       const DUMMY_ADDRESS = '0xcB6172196BbCf5b4cf9949D7f2e4Ee802EF2ABC';
       ethereumClient.withORBSBalance(DUMMY_ADDRESS, 125n);
 
-      const actual = await orbsPOSDataService.getOrbsBalance(DUMMY_ADDRESS);
+      const actual = await orbsPOSDataService.readOrbsBalance(DUMMY_ADDRESS);
       expect(actual).toEqual('125');
     });
 

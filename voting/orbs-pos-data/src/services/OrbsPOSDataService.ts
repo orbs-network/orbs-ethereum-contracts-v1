@@ -18,17 +18,17 @@ import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 export class OrbsPOSDataService implements IOrbsPOSDataService {
   constructor(private ethereumClient: IEthereumClientService, private orbsClientService: IOrbsClientService) {}
 
-  async getValidators(): Promise<string[]> {
-    return await this.ethereumClient.getValidators();
+  async readValidators(): Promise<string[]> {
+    return await this.ethereumClient.readValidators();
   }
 
-  async getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo> {
-    const validatorData: IValidatorData = await this.ethereumClient.getValidatorData(validatorAddress);
+  async readValidatorInfo(validatorAddress: string): Promise<IValidatorInfo> {
+    const validatorData: IValidatorData = await this.ethereumClient.readValidatorData(validatorAddress);
     const result: IValidatorInfo = { votesAgainst: 0, ...validatorData };
 
     const [validatorVotesResults, totalParticipatingTokens] = await Promise.all([
-      this.orbsClientService.getValidatorVotes(validatorAddress),
-      this.orbsClientService.getTotalParticipatingTokens(),
+      this.orbsClientService.readValidatorVotes(validatorAddress),
+      this.orbsClientService.readTotalParticipatingTokens(),
     ]);
 
     if (totalParticipatingTokens !== BigInt(0)) {
@@ -37,15 +37,15 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return result;
   }
 
-  async getTotalParticipatingTokens(): Promise<number> {
-    return Number(await this.orbsClientService.getTotalParticipatingTokens());
+  async readTotalParticipatingTokens(): Promise<number> {
+    return Number(await this.orbsClientService.readTotalParticipatingTokens());
   }
 
-  async getRewards(address: string): Promise<IRewards> {
+  async readRewards(address: string): Promise<IRewards> {
     const [delegatorReward, guardianReward, validatorReward] = await Promise.all([
-      this.orbsClientService.getParticipationReward(address),
-      this.orbsClientService.getGuardianReward(address),
-      this.orbsClientService.getValidatorReward(address),
+      this.orbsClientService.readParticipationReward(address),
+      this.orbsClientService.readGuardianReward(address),
+      this.orbsClientService.readValidatorReward(address),
     ]);
 
     return {
@@ -55,20 +55,20 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     };
   }
 
-  async getRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]> {
-    return await this.ethereumClient.getOrbsRewardsDistribution(address);
+  async readRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]> {
+    return await this.ethereumClient.readOrbsRewardsDistribution(address);
   }
 
-  async getUpcomingElectionBlockNumber(): Promise<number> {
-    return await this.ethereumClient.getUpcomingElectionBlockNumber();
+  async readUpcomingElectionBlockNumber(): Promise<number> {
+    return await this.ethereumClient.readUpcomingElectionBlockNumber();
   }
 
-  async getEffectiveElectionBlockNumber(): Promise<number> {
-    return await this.orbsClientService.getEffectiveElectionBlockNumber();
+  async readEffectiveElectionBlockNumber(): Promise<number> {
+    return await this.orbsClientService.readEffectiveElectionBlockNumber();
   }
 
-  async getElectedValidators(): Promise<string[]> {
-    const data = await this.orbsClientService.getElectedValidators();
+  async readElectedValidators(): Promise<string[]> {
+    const data = await this.orbsClientService.readElectedValidators();
     const addresses = [];
     const ADDRESS_LENGTH = 20;
     for (let i = 0; i < data.length; i += ADDRESS_LENGTH) {
@@ -78,9 +78,9 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return addresses;
   }
 
-  async getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo> {
-    const validatorData = await this.ethereumClient.getValidatorData(validatorAddress);
-    const stake = await this.orbsClientService.getValidatorStake(validatorAddress);
+  async readElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo> {
+    const validatorData = await this.ethereumClient.readValidatorData(validatorAddress);
+    const stake = await this.orbsClientService.readValidatorStake(validatorAddress);
 
     const result = {
       name: validatorData.name,
@@ -92,8 +92,8 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return result;
   }
 
-  async getOrbsBalance(address: string): Promise<string> {
-    return this.ethereumClient.getOrbsBalance(address);
+  async readOrbsBalance(address: string): Promise<string> {
+    return this.ethereumClient.readOrbsBalance(address);
   }
 
   subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): () => void {

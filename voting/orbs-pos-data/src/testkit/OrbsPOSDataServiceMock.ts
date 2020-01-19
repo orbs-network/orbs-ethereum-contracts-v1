@@ -9,43 +9,43 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   private orbsBalanceChangeCallback: (newBalance: string) => void;
   private totalTokens: bigint;
 
-  async getValidators(): Promise<string[]> {
+  async readValidators(): Promise<string[]> {
     return [];
   }
 
-  async getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo> {
+  async readValidatorInfo(validatorAddress: string): Promise<IValidatorInfo> {
     return null;
   }
 
-  async getTotalParticipatingTokens(): Promise<number> {
+  async readTotalParticipatingTokens(): Promise<number> {
     return Number(this.totalTokens);
   }
 
-  async getRewards(address: string): Promise<IRewards> {
+  async readRewards(address: string): Promise<IRewards> {
     return null;
   }
 
-  async getRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]> {
+  async readRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]> {
     return [];
   }
 
-  async getUpcomingElectionBlockNumber(): Promise<number> {
+  async readUpcomingElectionBlockNumber(): Promise<number> {
     return 0;
   }
 
-  async getEffectiveElectionBlockNumber(): Promise<number> {
+  async readEffectiveElectionBlockNumber(): Promise<number> {
     return 0;
   }
 
-  async getElectedValidators(): Promise<string[]> {
+  async readElectedValidators(): Promise<string[]> {
     return [];
   }
 
-  async getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo> {
+  async readElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo> {
     return null;
   }
 
-  async getOrbsBalance(address: string): Promise<string> {
+  async readOrbsBalance(address: string): Promise<string> {
     const resultBigInt = this.orbsBalanceMap.get(address);
     return resultBigInt ? resultBigInt.toString() : '0';
   }

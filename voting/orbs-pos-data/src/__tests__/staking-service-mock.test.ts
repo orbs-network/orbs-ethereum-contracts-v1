@@ -34,32 +34,32 @@ function testDataReadingMethods() {
     });
 
     it(`should allow to set and get stake balance`, async () => {
-      const beforeResult = await stakingService.getStakeBalanceOf('DUMMY_ADDRESS');
+      const beforeResult = await stakingService.readStakeBalanceOf('DUMMY_ADDRESS');
       expect(beforeResult).toEqual('0');
 
       stakingService.withStakeBalance('DUMMY_ADDRESS', 123_456);
 
-      const afterResult = await stakingService.getStakeBalanceOf('DUMMY_ADDRESS');
+      const afterResult = await stakingService.readStakeBalanceOf('DUMMY_ADDRESS');
       expect(afterResult).toEqual('123456');
     });
 
     it(`should allow to set and get total staked tokens`, async () => {
-      const beforeResult = await stakingService.getTotalStakedTokens();
+      const beforeResult = await stakingService.readTotalStakedTokens();
       expect(beforeResult).toEqual('0');
 
       stakingService.withTotalStakedTokens('123456');
 
-      const afterResult = await stakingService.getTotalStakedTokens();
+      const afterResult = await stakingService.readTotalStakedTokens();
       expect(afterResult).toEqual('123456');
     });
 
     it(`should allow to set and get unstake status`, async () => {
-      const beforeResult = await stakingService.getUnstakeStatus('DUMMY_ADDRESS');
+      const beforeResult = await stakingService.readUnstakeStatus('DUMMY_ADDRESS');
       expect(beforeResult).toEqual({ cooldownAmount: 0, cooldownEndTime: 0 });
 
       stakingService.withUnstakeStatus('DUMMY_ADDRESS', { cooldownAmount: 123, cooldownEndTime: 456 });
 
-      const afterResult = await stakingService.getUnstakeStatus('DUMMY_ADDRESS');
+      const afterResult = await stakingService.readUnstakeStatus('DUMMY_ADDRESS');
       expect(afterResult).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
     });
 
@@ -119,7 +119,7 @@ function testSubscription() {
       expect(callbackMount).toEqual('1400000'); 
 
       // but balance did change
-      const lastBalance = await stakingService.getStakeBalanceOf(ownerAddress);
+      const lastBalance = await stakingService.readStakeBalanceOf(ownerAddress);
       expect(lastBalance).toEqual('1700000');
     });
   });

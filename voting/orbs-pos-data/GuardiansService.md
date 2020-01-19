@@ -2,13 +2,13 @@
 A services that provides a simple way to with Guardians.
 
 
-### `getDelegatee(address: string): Promise<string>`
+### `readSelectedGuardianAddress(address: string): Promise<string>`
 
 Get to whom the given `address` is currently delegating. Returns the address of the Delegator or address `0x0000000000000000000000000000000000000000` if no delegation was found.
 
 ---
 
-### `getDelegationInfo(address: string): Promise<IDelegationInfo>`
+### `readDelegationInfo(address: string): Promise<IDelegationInfo>`
 
 Get detailed information about the given `address` delegation.
 
@@ -26,13 +26,13 @@ interface IDelegationInfo {
 
 ---
 
-### `getGuardiansList(offset: number, limit: number): Promise<string[]>`
+### `readGuardiansList(offset: number, limit: number): Promise<string[]>`
 
 Get a list of Guardians addresses, using `offset` and `limit` for pagination.
 
 ---
 
-### `getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>`
+### `readGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>`
 
 Get information about the given Guardian.
 

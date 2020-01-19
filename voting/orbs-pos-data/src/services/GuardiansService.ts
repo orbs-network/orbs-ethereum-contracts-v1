@@ -21,7 +21,7 @@ import { IGuardianInfo } from '../interfaces/IGuardianInfo';
 import { IGuardiansService } from '../interfaces/IGuardiansService';
 import { IOrbsClientService } from '../interfaces/IOrbsClientService';
 import { NOT_DELEGATED, ORBS_TDE_ETHEREUM_BLOCK, VALID_VOTE_LENGTH } from "./consts";
-import { getUpcomingElectionBlockNumber } from "./utils";
+import { readUpcomingElectionBlockNumber } from "./utils";
 
 function ensureNumericValue(numberOrString: number | string): number {
   return typeof numberOrString === 'string' ? parseInt(numberOrString) : numberOrString;
@@ -53,7 +53,7 @@ export class GuardiansService implements IGuardiansService {
   }
 
   // READ //
-  async getSelectedGuardianAddress(accountAddress: string): Promise<string> {
+  async readSelectedGuardianAddress(accountAddress: string): Promise<string> {
     let info: IDelegationData = await this.getCurrentDelegationByDelegate(accountAddress);
     if (info.delegatedTo === NOT_DELEGATED) {
       info = await this.getCurrentDelegationByTransfer(accountAddress);
@@ -62,7 +62,7 @@ export class GuardiansService implements IGuardiansService {
     return info.delegatedTo;
   }
 
-  async getDelegationInfo(address: string): Promise<IDelegationInfo> {
+  async readDelegationInfo(address: string): Promise<IDelegationInfo> {
     let info: IDelegationData = await this.getCurrentDelegationByDelegate(address);
     let delegationType: TDelegationType;
     if (info.delegatedTo === NOT_DELEGATED) {
@@ -76,7 +76,7 @@ export class GuardiansService implements IGuardiansService {
       delegationType = 'Delegate';
     }
 
-    const balance = await this.getOrbsBalance(address);
+    const balance = await this.readOrbsBalance(address);
     return {
       delegatorBalance: Number(balance),
       delegationType,
@@ -84,16 +84,16 @@ export class GuardiansService implements IGuardiansService {
     };
   }
 
-  async getGuardiansList(offset: number, limit: number): Promise<string[]> {
+  async readGuardiansList(offset: number, limit: number): Promise<string[]> {
     return await this.getGuardians(offset, limit);
   }
 
-  async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
+  async readGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
     const guardianData: IGuardianData = await this.getGuardianData(guardianAddress);
 
     const [votingWeightResults, totalParticipatingTokens] = await Promise.all([
-      this.orbsClientService.getGuardianVoteWeight(guardianAddress),
-      this.orbsClientService.getTotalParticipatingTokens(),
+      this.orbsClientService.readGuardianVoteWeight(guardianAddress),
+      this.orbsClientService.readTotalParticipatingTokens(),
     ]);
 
     const result: IGuardianInfo = {
@@ -119,7 +119,7 @@ export class GuardiansService implements IGuardiansService {
     const [guardianData, currentVote, upcomingElectionsBlockNumber] = await Promise.all([
       this.guardiansContract.methods.getGuardianData(address).call(),
       this.votingContract.methods.getCurrentVote(address).call(),
-      getUpcomingElectionBlockNumber(this.web3),
+      readUpcomingElectionBlockNumber(this.web3),
     ]);
 
     const votedAtBlockNumber = parseInt(currentVote.blockNumber);
@@ -164,7 +164,7 @@ export class GuardiansService implements IGuardiansService {
     };
   }
 
-  private async getOrbsBalance(address: string): Promise<string> {
+  private async readOrbsBalance(address: string): Promise<string> {
     const balance = await this.erc20Contract.methods.balanceOf(address).call();
     return this.web3.utils.fromWei(balance, 'ether');
   }

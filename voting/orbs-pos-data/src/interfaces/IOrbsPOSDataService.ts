@@ -13,15 +13,15 @@ import { IRewardsDistributionEvent } from './IRewardsDistributionEvent';
 import { IValidatorInfo } from './IValidatorInfo';
 
 export interface IOrbsPOSDataService {
-  getValidators(): Promise<string[]>;
-  getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo>;
-  getTotalParticipatingTokens(): Promise<number>;
-  getRewards(address: string): Promise<IRewards>;
-  getRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>;
-  getUpcomingElectionBlockNumber(): Promise<number>;
-  getEffectiveElectionBlockNumber(): Promise<number>;
-  getElectedValidators(): Promise<string[]>;
-  getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>;
-  getOrbsBalance(address: string): Promise<string>;
+  readValidators(): Promise<string[]>;
+  readValidatorInfo(validatorAddress: string): Promise<IValidatorInfo>;
+  readTotalParticipatingTokens(): Promise<number>;
+  readRewards(address: string): Promise<IRewards>;
+  readRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>;
+  readUpcomingElectionBlockNumber(): Promise<number>;
+  readEffectiveElectionBlockNumber(): Promise<number>;
+  readElectedValidators(): Promise<string[]>;
+  readElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>;
+  readOrbsBalance(address: string): Promise<string>;
   subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): () => void;
 }

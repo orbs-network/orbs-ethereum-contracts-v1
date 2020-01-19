@@ -13,39 +13,39 @@ export class OrbsClientServiceMock implements IOrbsClientService {
   private validatorsVotesMap: { [address: string]: bigint } = {};
   private totalTokens: bigint;
 
-  async getTotalParticipatingTokens(): Promise<bigint> {
+  async readTotalParticipatingTokens(): Promise<bigint> {
     return this.totalTokens;
   }
 
-  async getGuardianVoteWeight(address: string): Promise<bigint> {
+  async readGuardianVoteWeight(address: string): Promise<bigint> {
     return null;
   }
 
-  async getValidatorVotes(address: string): Promise<bigint> {
+  async readValidatorVotes(address: string): Promise<bigint> {
     return this.validatorsVotesMap[address];
   }
 
-  async getValidatorStake(address: string): Promise<bigint> {
+  async readValidatorStake(address: string): Promise<bigint> {
     return null;
   }
 
-  async getElectedValidators(): Promise<Uint8Array> {
+  async readElectedValidators(): Promise<Uint8Array> {
     return null;
   }
 
-  async getParticipationReward(address: string): Promise<bigint> {
+  async readParticipationReward(address: string): Promise<bigint> {
     return null;
   }
 
-  async getGuardianReward(address: string): Promise<bigint> {
+  async readGuardianReward(address: string): Promise<bigint> {
     return null;
   }
 
-  async getValidatorReward(address: string): Promise<bigint> {
+  async readValidatorReward(address: string): Promise<bigint> {
     return null;
   }
 
-  async getEffectiveElectionBlockNumber(): Promise<number> {
+  async readEffectiveElectionBlockNumber(): Promise<number> {
     return null;
   }
 

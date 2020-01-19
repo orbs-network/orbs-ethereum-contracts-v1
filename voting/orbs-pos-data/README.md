@@ -60,13 +60,13 @@ const orbsPosData = orbsPOSDataServiceFactoryIOC(web3, orbsClient);
 
 ## Usage
 
-### `getValidators(): Promise<string[]>`
+### `readValidators(): Promise<string[]>`
 
 Get a list of Orb's Validators addresses.
 
 ---
 
-### `getValidatorInfo(validatorAddress: string): Promise<IValidatorInfo>`
+### `readValidatorInfo(validatorAddress: string): Promise<IValidatorInfo>`
 
 Get detailed information about the given Validator.
 
@@ -82,13 +82,13 @@ interface IValidatorInfo {
 
 ---
 
-### `getTotalParticipatingTokens(): Promise<number>`
+### `readTotalParticipatingTokens(): Promise<number>`
 
 Get the current total number of participating ORBS in the POS.
 
 ---
 
-### `getRewards(address: string): Promise<IRewards>`
+### `readRewards(address: string): Promise<IRewards>`
 
 Get information about all the rewards of a given `address`.
 
@@ -102,7 +102,7 @@ export interface IRewards {
 
 ---
 
-### `getRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>`
+### `readRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>`
 
 Get a list of all the rewards distrebution events to a given `address`.
 
@@ -116,31 +116,31 @@ interface IRewardsDistributionEvent {
 
 ---
 
-### `getUpcomingElectionBlockNumber(): Promise<number>`
+### `readUpcomingElectionBlockNumber(): Promise<number>`
 
 Get the upcoming election block number (on Ethereum)
 
 ---
 
-### `getEffectiveElectionBlockNumber(): Promise<number>`
+### `readEffectiveElectionBlockNumber(): Promise<number>`
 
 Get the effective election block number (on Ethereum)
 
 ---
 
-### `getElectedValidators(): Promise<string[]>`
+### `readElectedValidators(): Promise<string[]>`
 
 Get a list of the currently elected Validator's addresses.
 
 ---
 
-### `getElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>`
+### `readElectedValidatorInfo(validatorAddress: string): Promise<IElectedValidatorInfo>`
 
 Get a detailed information about the given Validator.
 
 ---
 
-### `getOrbsBalance(address: string): Promise<string>`
+### `readOrbsBalance(address: string): Promise<string>`
 
 Get the amount of ORBS the given address is holding.
 ---

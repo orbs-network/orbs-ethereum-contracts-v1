@@ -24,11 +24,11 @@ export class EthereumClientServiceMock implements IEthereumClientService {
     Map<number, OrbsBalanceChangeCallback>
   >();
 
-  async getValidators(): Promise<string[]> {
+  async readValidators(): Promise<string[]> {
     return Object.keys(this.validatorsMap);
   }
 
-  async getValidatorData(address: string): Promise<IValidatorData> {
+  async readValidatorData(address: string): Promise<IValidatorData> {
     return this.validatorsMap[address];
   }
 
@@ -45,15 +45,15 @@ export class EthereumClientServiceMock implements IEthereumClientService {
     };
   }
 
-  async getOrbsRewardsDistribution(address: string): Promise<IRewardsDistributionEvent[]> {
+  async readOrbsRewardsDistribution(address: string): Promise<IRewardsDistributionEvent[]> {
     return [];
   }
 
-  async getUpcomingElectionBlockNumber(): Promise<number> {
+  async readUpcomingElectionBlockNumber(): Promise<number> {
     return 0;
   }
 
-  async getOrbsBalance(address: string): Promise<string> {
+  async readOrbsBalance(address: string): Promise<string> {
     const resultBigInt = this.orbsBalanceMap.get(address);
     return resultBigInt ? resultBigInt.toString() : '0';
   }

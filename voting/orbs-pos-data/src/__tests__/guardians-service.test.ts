@@ -60,12 +60,4 @@ describe('Guardians service', () => {
     const result = await guardiansService.selectGuardian('DUMMY_GUARDIAN_ADDRESS');
     expect(web3Mock.methodParams('delegate')).toEqual(['DUMMY_GUARDIAN_ADDRESS']);
   });
-
-  // it('should call "getStakeBalanceOf" with the owner address', async () => {
-  //   web3Mock.getStakeBalanceOfResult = '123';
-  //   const actual = await guardiansService.getStakeBalanceOf('DUMMY_ADDRESS');
-
-  //   expect(web3Mock.methodParams('getStakeBalanceOf')).toEqual(['DUMMY_ADDRESS']);
-  //   expect(actual).toEqual('123');
-  // });
 });

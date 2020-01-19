@@ -19,7 +19,7 @@ import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEve
 import { IValidatorData } from '../interfaces/IValidatorData';
 import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
 import { ORBS_TDE_ETHEREUM_BLOCK } from "./consts";
-import { getUpcomingElectionBlockNumber } from "./utils";
+import { readUpcomingElectionBlockNumber } from "./utils";
 
 export class EthereumClientService implements IEthereumClientService {
   private orbsRewardsDistributionContract: Contract;
@@ -43,15 +43,15 @@ export class EthereumClientService implements IEthereumClientService {
     this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addresses.erc20Contract);
   }
 
-  getValidators(): Promise<string[]> {
+  readValidators(): Promise<string[]> {
     return this.validatorsContract.methods.getValidators().call();
   }
 
-  getValidatorData(address: string): Promise<IValidatorData> {
+  readValidatorData(address: string): Promise<IValidatorData> {
     return this.validatorsRegistryContract.methods.getValidatorData(address).call();
   }
 
-  async getOrbsRewardsDistribution(address: string): Promise<IRewardsDistributionEvent[]> {
+  async readOrbsRewardsDistribution(address: string): Promise<IRewardsDistributionEvent[]> {
     const options = {
       fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
       toBlock: 'latest',
@@ -71,11 +71,11 @@ export class EthereumClientService implements IEthereumClientService {
     return readRewards;
   }
 
-  getUpcomingElectionBlockNumber(): Promise<number> {
-    return getUpcomingElectionBlockNumber(this.web3);
+  readUpcomingElectionBlockNumber(): Promise<number> {
+    return readUpcomingElectionBlockNumber(this.web3);
   }
 
-  async getOrbsBalance(address: string): Promise<string> {
+  async readOrbsBalance(address: string): Promise<string> {
     const balance = await this.erc20Contract.methods.balanceOf(address).call();
     return this.web3.utils.fromWei(balance, 'ether');
   }
@@ -94,7 +94,7 @@ export class EthereumClientService implements IEthereumClientService {
           throw error;
         }
 
-        const newBalance = await this.getOrbsBalance(address);
+        const newBalance = await this.readOrbsBalance(address);
         callback(newBalance);
       },
     );
@@ -115,7 +115,7 @@ export class EthereumClientService implements IEthereumClientService {
           return;
         }
 
-        const newBalance = await this.getOrbsBalance(address);
+        const newBalance = await this.readOrbsBalance(address);
         callback(newBalance);
       },
     );

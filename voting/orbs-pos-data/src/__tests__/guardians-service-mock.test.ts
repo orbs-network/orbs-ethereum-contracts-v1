@@ -26,11 +26,11 @@ function testEffectsMethods() {
   
       guardiansServiceMock.setFromAccount('SENDER_1_ADDRESS');
       await guardiansServiceMock.selectGuardian('SENDER_1_GUARDIAN_ADDRESS');
-      const sender1GuardianAddress = await guardiansServiceMock.getSelectedGuardianAddress('SENDER_1_ADDRESS');
+      const sender1GuardianAddress = await guardiansServiceMock.readSelectedGuardianAddress('SENDER_1_ADDRESS');
   
       guardiansServiceMock.setFromAccount('SENDER_2_ADDRESS');
       await guardiansServiceMock.selectGuardian('SENDER_2_GUARDIAN_ADDRESS');
-      const sender2GuardianAddress = await guardiansServiceMock.getSelectedGuardianAddress('SENDER_2_ADDRESS');
+      const sender2GuardianAddress = await guardiansServiceMock.readSelectedGuardianAddress('SENDER_2_ADDRESS');
   
       expect(sender1GuardianAddress).toEqual('SENDER_1_GUARDIAN_ADDRESS');
       expect(sender2GuardianAddress).toEqual('SENDER_2_GUARDIAN_ADDRESS');

@@ -99,7 +99,7 @@ describe('Staking service', () => {
 
   it('should call "getStakeBalanceOf" with the owner address', async () => {
     web3Mock.getStakeBalanceOfResult = '123';
-    const actual = await stakingService.getStakeBalanceOf('DUMMY_ADDRESS');
+    const actual = await stakingService.readStakeBalanceOf('DUMMY_ADDRESS');
 
     expect(web3Mock.methodParams('getStakeBalanceOf')).toEqual(['DUMMY_ADDRESS']);
     expect(actual).toEqual('123');
@@ -107,7 +107,7 @@ describe('Staking service', () => {
 
   it('should call "getTotalStakedTokens"', async () => {
     web3Mock.getTotalStakedTokensResult = '123456';
-    const actual = await stakingService.getTotalStakedTokens();
+    const actual = await stakingService.readTotalStakedTokens();
 
     expect(web3Mock.methodParams('getTotalStakedTokens')).toEqual([]);
     expect(actual).toEqual('123456');
@@ -115,8 +115,8 @@ describe('Staking service', () => {
 
   it('should call "getUnstakeStatus"', async () => {
     web3Mock.getUnstakeStatusResult = { cooldownAmount: '123', cooldownEndTime: '456' };
-    const actual = await stakingService.getUnstakeStatus('DUMMY_ADDRESS');
-
+    const actual = await stakingService.readUnstakeStatus('DUMMY_ADDRESS');
+ 
     expect(web3Mock.methodParams('getUnstakeStatus')).toEqual(['DUMMY_ADDRESS']);
     expect(actual).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
   });

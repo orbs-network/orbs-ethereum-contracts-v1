@@ -51,15 +51,15 @@ export class StakingService implements IStakingService {
   }
 
   // READ //
-  async getStakeBalanceOf(stakeOwner: string): Promise<string> {
+  async readStakeBalanceOf(stakeOwner: string): Promise<string> {
     return this.stakingContract.methods.getStakeBalanceOf(stakeOwner).call();
   }
 
-  async getTotalStakedTokens(): Promise<string> {
-    return this.stakingContract.methods.getTotalStakedTokens().call();
+  async readTotalStakedTokens(): Promise<string> {
+    return this.stakingContract.methods.getTotalStakedTokens().call(); 
   }
 
-  async getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
+  async readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
     const result = this.stakingContract.methods.getUnstakeStatus(stakeOwner).call();
     return {
       cooldownAmount: parseInt(result.cooldownAmount, 10),

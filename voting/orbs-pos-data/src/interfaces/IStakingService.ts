@@ -23,9 +23,10 @@ export interface IStakingService {
   unstake(amount: number): PromiEvent<TransactionReceipt>;
   restake(): PromiEvent<TransactionReceipt>;
   withdraw(): PromiEvent<TransactionReceipt>;
-  getStakeBalanceOf(stakeOwner: string): Promise<string>;
-  getTotalStakedTokens(): Promise<string>;
-  getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
+
+  readStakeBalanceOf(stakeOwner: string): Promise<string>;
+  readTotalStakedTokens(): Promise<string>;
+  readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
 
   subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean>;
 }

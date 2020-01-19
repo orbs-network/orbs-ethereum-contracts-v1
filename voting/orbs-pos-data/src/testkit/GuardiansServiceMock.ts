@@ -32,18 +32,18 @@ export class GuardiansServiceMock implements IGuardiansService, ITxCreatingServi
   }
 
   // READ //
-  async getSelectedGuardianAddress(accountAddress: string): Promise<string> {
+  async readSelectedGuardianAddress(accountAddress: string): Promise<string> {
     return this.selectedGuardiansMap.get(accountAddress) || null;
   }
 
-  async getDelegationInfo(address: string): Promise<IDelegationInfo> {
+  async readDelegationInfo(address: string): Promise<IDelegationInfo> {
     return null;
   }
-  async getGuardiansList(offset: number, limit: number): Promise<string[]> {
+  async readGuardiansList(offset: number, limit: number): Promise<string[]> {
     return this.guardiansList;
   }
 
-  async getGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
+  async readGuardianInfo(guardianAddress: string): Promise<IGuardianInfo> {
     return this.guardiansMap.get(guardianAddress);
   }
 
