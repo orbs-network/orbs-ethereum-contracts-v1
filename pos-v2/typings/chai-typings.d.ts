@@ -3,7 +3,7 @@ declare namespace Chai
     export interface TypeComparison
     {
         delegatedEvent(data?: Partial<Contracts.DelegatedEvent>): void;
-        committeeChangedEvent(data?: Contracts.CommitteeChangedEvent): void;
+        committeeChangedEvent(data?: Partial<Contracts.CommitteeChangedEvent>): void;
         validatorRegisteredEvent(data?: Partial<Contracts.ValidatorRegisteredEvent>): void;
         totalStakeChangedEvent(data?: Partial<Contracts.TotalStakeChangedEvent>): void;
         stakedEvent(data?: Partial<Contracts.StakedEvent>): void;

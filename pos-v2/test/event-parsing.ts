@@ -15,7 +15,7 @@ function parseLogs(txResult, inputs, eventSignature) {
 
 export function committeeChangedEvents(txResult) {
     const inputs = elections.abi.find(e => e.name == "CommitteeChanged").inputs;
-    const eventSignature = "CommitteeChanged(address[],uint256[])";
+    const eventSignature = "CommitteeChanged(address[],address[],uint256[])";
 
     return parseLogs(txResult, inputs, eventSignature)
 }

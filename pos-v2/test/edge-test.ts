@@ -49,7 +49,7 @@ contract('pos-v2-edge-cases', async () => {
 
         const v = d.newParticipant();
         await v.stake(100);
-        const r = await d.elections.registerValidator(v.ip, {from: v.address});
+        const r = await d.elections.registerValidator(v.ip, v.orbsAddress, {from: v.address});
         expect(r).to.have.a.validatorRegisteredEvent({
             addr: v.address,
             ip: v.ip
@@ -60,7 +60,7 @@ contract('pos-v2-edge-cases', async () => {
         });
 
         // The first validator attempts to register again - should not emit events
-        await expectRejected(d.elections.registerValidator(v.ip, {from: v.address}));
+        await expectRejected(d.elections.registerValidator(v.ip, v.orbsAddress,{from: v.address}));
     });
 
     it('should only accept stake notifications from the staking contract', async () => {

@@ -19,11 +19,33 @@ type Adapter struct {
 }
 
 type CommitteeChanged struct {
-	Addrs  []common.Address `json:"addrs"`
-	Stakes []*big.Int       `json:"stakes"`
+	Addrs     []common.Address `json:"addrs"`
+	OrbsAddrs []common.Address `json:"orbsAddrs"`
+	Stakes    []*big.Int       `json:"stakes"`
 }
 
-const committeeChangedABIJSON = `[{"anonymous":false,"inputs":[{"indexed":false,"name":"addrs","type":"address[]"},{"indexed":false,"name":"stakes","type":"uint256[]"}],"name":"CommitteeChanged","type":"event"}]`
+const committeeChangedABIJSON = `[{
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "addrs",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "name": "orbsAddrs",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "name": "stakes",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "CommitteeChanged",
+      "type": "event"
+    }]`
 
 func NewEthereumAdapter(ethereumEndpoint string, contractAddresses []common.Address) *Adapter {
 	parsedABI, err := abi.JSON(bytes.NewReader([]byte(committeeChangedABIJSON)))

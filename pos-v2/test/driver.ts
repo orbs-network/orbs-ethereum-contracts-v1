@@ -55,8 +55,8 @@ export class Driver {
         return subscriber;
     }
 
-    newParticipant(): Participant {
-        const v = new Participant(this.accounts[this.participants.length], this);
+    newParticipant(): Participant { // consumes two addresses from accounts for each participant - ethereum address and an orbs address
+        const v = new Participant(this.accounts[this.participants.length*2], this.accounts[this.participants.length*2+1], this);
         this.participants.push(v);
         return v
     }
@@ -74,7 +74,7 @@ export class Participant {
     private staking: StakingContract;
     private elections: ElectionsContract;
 
-    constructor(public address: string, driver: Driver) {
+    constructor(public address: string, public orbsAddress: string, driver: Driver) {
         this.ip = address.substring(0, 10).toLowerCase();
         this.erc20 = driver.erc20;
         this.staking = driver.staking;
@@ -96,7 +96,7 @@ export class Participant {
     }
 
     async registerAsValidator() {
-        return await this.elections.registerValidator(this.ip, {from: this.address});
+        return await this.elections.registerValidator(this.ip, this.orbsAddress, {from: this.address});
     }
 }
 

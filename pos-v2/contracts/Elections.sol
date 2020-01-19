@@ -10,12 +10,19 @@ contract Elections is IStakingListener, Ownable {
 	using SafeMath for uint256;
 
 	event ValidatorRegistered(address addr, bytes4 ip);
-	event CommitteeChanged(address[] addrs, uint256[] stakes);
+	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
+
 	event Delegated(address from, address to);
 	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
 
 	address[] committee;
-	mapping (address => bool) registeredValidators;
+
+	struct Validator {
+		bytes4 ip;
+		address orbsAddress;
+	}
+
+	mapping (address => Validator) registeredValidators;
 	mapping (address => uint256) ownStakes;
 	mapping (address => uint256) totalStakes;
 	mapping (address => address) delegations;
@@ -46,11 +53,13 @@ contract Elections is IStakingListener, Ownable {
 		stakingContract = addr;
 	}
 
-	function registerValidator(bytes4 ip) public  {
-		require(registeredValidators[msg.sender] == false, "Validator is already registered");
+	function registerValidator(bytes4 _ip, address _orbsAddress) public  {
+		require(registeredValidators[msg.sender].orbsAddress == address(0), "Validator is already registered");
+		require(_orbsAddress != address(0), "orbs address must be non zero");
 
-		registeredValidators[msg.sender] = true;
-		emit ValidatorRegistered(msg.sender, ip);
+		registeredValidators[msg.sender].orbsAddress = _orbsAddress;
+		registeredValidators[msg.sender].ip = _ip;
+		emit ValidatorRegistered(msg.sender, _ip);
 
 		_placeInCommittee(msg.sender);
 	}
@@ -93,7 +102,7 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _satisfiesCommitteePrerequisites(address validator) private view returns (bool) {
-		return registeredValidators[validator] &&    // validator must be registered
+		return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
 		       minimumStake <= ownStakes[validator]; // validator must hold the minimum required stake
 	}
 
@@ -126,8 +135,14 @@ contract Elections is IStakingListener, Ownable {
 		assert(stakes.length == committee.length);
 		assert(committee.length <= maxCommitteeSize);
 
+		address[] memory orbsAddresses = new address[](committee.length);
+
+		for (uint i = 0; i < orbsAddresses.length; i++) {
+			Validator storage val = registeredValidators[committee[i]];
+			orbsAddresses[i] = val.orbsAddress;
+		}
 		committeeListener.committeeChanged(committee, stakes);
-		emit CommitteeChanged(committee, stakes);
+		emit CommitteeChanged(committee, orbsAddresses, stakes);
 	}
 
 	function _placeInCommittee(address validator) private {

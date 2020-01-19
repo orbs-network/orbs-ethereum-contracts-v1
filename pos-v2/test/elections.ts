@@ -49,12 +49,14 @@ contract('elections-high-level-flows', async () => {
     });
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked100.address],
+      orbsAddrs: [validatorStaked100.orbsAddress],
       stakes: [stake100],
     });
 
     const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
     expect(committeeFromAdapter).to.haveCommittee({
       addrs: [validatorStaked100.address.toLowerCase()],
+      orbsAddrs: [validatorStaked100.orbsAddress.toLowerCase()],
       stakes: [stake100],
     });
 
@@ -70,6 +72,7 @@ contract('elections-high-level-flows', async () => {
     });
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked200.address, validatorStaked100.address],
+      orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
       stakes: [stake200, stake100]
     });
 
@@ -86,18 +89,21 @@ contract('elections-high-level-flows', async () => {
     });
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked300.address, validatorStaked200.address],
+      orbsAddrs: [validatorStaked300.orbsAddress, validatorStaked200.orbsAddress],
       stakes: [stake300, stake200]
     });
 
     r = await d.delegateMoreStake(stake300, validatorStaked200);
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked200.address, validatorStaked300.address],
+      orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked300.orbsAddress],
       stakes: [stake500, stake300]
     });
 
     r = await d.delegateMoreStake(stake500, validatorStaked100);
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked100.address, validatorStaked200.address],
+      orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
       stakes: [stake100.add(stake500), stake500]
     });
 
