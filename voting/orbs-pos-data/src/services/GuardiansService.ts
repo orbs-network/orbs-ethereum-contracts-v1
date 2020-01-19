@@ -35,7 +35,7 @@ export class GuardiansService implements IGuardiansService {
   constructor(
     private web3: Web3,
     private orbsClientService: IOrbsClientService,
-    addresses: IOrbsPosContractsAddresses,
+    addresses?: Partial<IOrbsPosContractsAddresses>,
   ) {
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], addresses.votingContract);
     this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addresses.erc20Contract);
