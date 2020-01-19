@@ -6,7 +6,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IStakingListener.sol";
 import "./ICommitteeListener.sol";
 
-contract PosV2 is IStakingListener, Ownable {
+contract Elections is IStakingListener, Ownable {
 	using SafeMath for uint256;
 
 	event ValidatorRegistered(address addr, bytes4 ip);

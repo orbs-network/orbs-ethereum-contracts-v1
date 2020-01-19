@@ -4,10 +4,10 @@ declare const web3: Web3;
 import BN from "bn.js";
 import {Driver} from "./driver";
 import chai from "chai";
+import {feeAddedToBucketEvents} from "./event-parsing";
+
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
-
-const {feeAddedToBucketEvents} = require('./eventParsing');
 
 const MONTH_IN_SECONDS = 30*24*60*60;
 
@@ -23,7 +23,7 @@ async function sleep(ms): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-contract('pos-v2-high-level-flows', async () => {
+contract('rewards-level-flows', async () => {
 
   it('should distribute fees to validators in committee', async () => {
     const d = await Driver.new();

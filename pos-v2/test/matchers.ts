@@ -9,10 +9,10 @@ import {
     paymentEvents,
     rewardAssignedEvents,
     feeAddedToBucketEvents, unstakedEvents
-} from "./eventParsing";
+} from "./event-parsing";
 import {expectBNArrayEqual} from "./driver";
 
-function compare(a, b) {
+function compare(a: any, b: any) {
     if (BN.isBN(a) || BN.isBN(b)) {
         return new BN(a).eq(new BN(b));
     } else {

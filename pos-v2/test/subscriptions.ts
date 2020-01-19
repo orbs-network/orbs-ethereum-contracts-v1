@@ -4,14 +4,13 @@ declare const web3: Web3;
 import BN from "bn.js";
 import {Driver} from "./driver";
 import chai from "chai";
+import {subscriptionChangedEvents} from "./event-parsing";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
-const {subscriptionChangedEvents} = require('./eventParsing');
-
 const expect = chai.expect;
 
-contract('pos-v2-high-level-flows', async () => {
+contract('subscriptions-high-level-flows', async () => {
 
   it('registers and pays for a VC', async () => {
     const d = await Driver.new();

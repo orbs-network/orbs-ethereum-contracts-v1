@@ -1,7 +1,7 @@
 import Web3 from "web3";
 declare const web3: Web3;
 
-const pos = artifacts.require("PosV2");
+const elections = artifacts.require("Elections");
 const staking = artifacts.require("StakingContract");
 const subscriptions = artifacts.require("Subscriptions");
 const rewards = artifacts.require("Rewards");
@@ -14,14 +14,14 @@ function parseLogs(txResult, inputs, eventSignature) {
 }
 
 export function committeeChangedEvents(txResult) {
-    const inputs = pos.abi.find(e => e.name == "CommitteeChanged").inputs;
+    const inputs = elections.abi.find(e => e.name == "CommitteeChanged").inputs;
     const eventSignature = "CommitteeChanged(address[],uint256[])";
 
     return parseLogs(txResult, inputs, eventSignature)
 }
 
 export function validatorRegisteredEvents(txResult) {
-    const inputs = pos.abi.find(e => e.name == "ValidatorRegistered").inputs;
+    const inputs = elections.abi.find(e => e.name == "ValidatorRegistered").inputs;
     const eventSignature = "ValidatorRegistered(address,bytes4)";
 
     return parseLogs(txResult, inputs, eventSignature)
@@ -42,14 +42,14 @@ export function unstakedEvents(txResult) {
 }
 
 export function delegatedEvents(txResult) {
-    const inputs = pos.abi.find(e => e.name == "Delegated").inputs;
+    const inputs = elections.abi.find(e => e.name == "Delegated").inputs;
     const eventSignature = "Delegated(address,address)";
 
     return parseLogs(txResult, inputs, eventSignature)
 }
 
 export function totalStakeChangedEvents(txResult) {
-    const inputs = pos.abi.find(e => e.name == "TotalStakeChanged").inputs;
+    const inputs = elections.abi.find(e => e.name == "TotalStakeChanged").inputs;
     const eventSignature = "TotalStakeChanged(address,uint256)";
 
     return parseLogs(txResult, inputs, eventSignature)

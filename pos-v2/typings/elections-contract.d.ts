@@ -2,7 +2,7 @@ declare namespace Contracts {
     import TransactionDetails = Truffle.TransactionDetails;
     import TransactionResponse = Truffle.TransactionResponse;
 
-    export interface PosV2Contract extends Contract {
+    export interface ElectionsContract extends Contract {
 
         registerValidator(ip: string, params?: TransactionDetails): Promise<TransactionResponse>
         setStakingContract(address: string, params?: TransactionDetails): Promise<TransactionResponse>

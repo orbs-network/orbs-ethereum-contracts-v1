@@ -49,7 +49,7 @@ contract('pos-v2-edge-cases', async () => {
 
         const v = d.newParticipant();
         await v.stake(100);
-        const r = await d.pos.registerValidator(v.ip, {from: v.address});
+        const r = await d.elections.registerValidator(v.ip, {from: v.address});
         expect(r).to.have.a.validatorRegisteredEvent({
             addr: v.address,
             ip: v.ip
@@ -60,24 +60,24 @@ contract('pos-v2-edge-cases', async () => {
         });
 
         // The first validator attempts to register again - should not emit events
-        await expectRejected(d.pos.registerValidator(v.ip, {from: v.address}));
+        await expectRejected(d.elections.registerValidator(v.ip, {from: v.address}));
     });
 
     it('should only accept stake notifications from the staking contract', async () => {
         const d = await Driver.new();
 
-        await expectRejected(d.pos.setStakingContract(d.contractsNonOwner, {from: d.contractsNonOwner}), "only owner should be able to set the staking contract");
-        await expectRejected(d.pos.setStakingContract(ZERO_ADDR, {from: d.contractsOwner}), "staking contract should not be zero");
+        await expectRejected(d.elections.setStakingContract(d.contractsNonOwner, {from: d.contractsNonOwner}), "only owner should be able to set the staking contract");
+        await expectRejected(d.elections.setStakingContract(ZERO_ADDR, {from: d.contractsOwner}), "staking contract should not be zero");
 
         const stakingAddr = d.accounts[1];
         const nonStakingAddr = d.accounts[2];
-        await d.pos.setStakingContract(stakingAddr, {from: d.contractsOwner});
+        await d.elections.setStakingContract(stakingAddr, {from: d.contractsOwner});
 
-        await expectRejected(d.pos.staked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
-        await expectRejected(d.pos.unstaked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
+        await expectRejected(d.elections.staked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
+        await expectRejected(d.elections.unstaked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
 
-        await d.pos.staked(d.accounts[0], 1, {from: stakingAddr});
-        await d.pos.unstaked(d.accounts[0], 1, {from: stakingAddr});
+        await d.elections.staked(d.accounts[0], 1, {from: stakingAddr});
+        await d.elections.unstaked(d.accounts[0], 1, {from: stakingAddr});
     });
 
     it('staking before or after delegating has the same effect', async () => {

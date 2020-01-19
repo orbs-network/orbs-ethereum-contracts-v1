@@ -12,7 +12,7 @@ const expect = chai.expect;
 import {CommitteeProvider} from './committee-provider';
 
 
-contract('pos-v2-high-level-flows', async () => {
+contract('elections-high-level-flows', async () => {
 
   it('handle delegation requests', async () => {
     const d = await Driver.new();
@@ -29,7 +29,7 @@ contract('pos-v2-high-level-flows', async () => {
 
   it('sorts committee by stake', async () => {
     const d = await Driver.new(2);
-    const committeeProvider = new CommitteeProvider((web3.currentProvider as any).host, d.pos.address);
+    const committeeProvider = new CommitteeProvider((web3.currentProvider as any).host, d.elections.address);
 
     const stake100 = new BN(100);
     const stake200 = new BN(200);
