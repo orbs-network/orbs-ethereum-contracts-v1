@@ -26,7 +26,7 @@ export class Driver {
         public rewards: RewardsContract
     ) {}
 
-    static async new(maxCommitteeSize=2, minimumStake=100) {
+    static async new(maxCommitteeSize=2, minimumStake:number|BN=100) {
         const accounts = await web3.eth.getAccounts();
         const erc20 = await artifacts.require('TestingERC20').new();
         const rewards = await artifacts.require('Rewards').new(erc20.address);
@@ -70,9 +70,9 @@ export class Driver {
 
 export class Participant {
     public ip: string;
-    private erc20;
-    private staking;
-    private pos;
+    private erc20: ERC20Contract;
+    private staking: StakingContract;
+    private pos: PosV2Contract;
 
     constructor(public address: string, driver) {
         this.ip = address.substring(0, 10).toLowerCase();
@@ -82,10 +82,13 @@ export class Participant {
     }
 
     async stake(amount: number|BN) {
-        const bnAmount = new BN(amount);
-        await this.erc20.assign(this.address, bnAmount);
-        await this.erc20.approve(this.staking.address, bnAmount, {from: this.address});
-        return this.staking.stake(bnAmount, {from: this.address});
+        await this.erc20.assign(this.address, amount);
+        await this.erc20.approve(this.staking.address, amount, {from: this.address});
+        return this.staking.stake(amount, {from: this.address});
+    }
+
+    async unstake(amount: number|BN) {
+        return this.staking.unstake(amount);
     }
 
     async delegate(to: Participant) {

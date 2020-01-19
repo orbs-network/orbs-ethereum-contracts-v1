@@ -7,7 +7,7 @@ import chai from "chai";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
-const {subscriptionChangedEvent} = require('./eventParsing');
+const {subscriptionChangedEvents} = require('./eventParsing');
 
 const expect = chai.expect;
 
@@ -29,7 +29,7 @@ contract('pos-v2-high-level-flows', async () => {
     let r = await subscriber.createVC(firstPayment, {from: appOwner.address});
 
     expect(r).to.have.subscriptionChangedEvent();
-    const firstSubsc = subscriptionChangedEvent(r).pop();
+    const firstSubsc = subscriptionChangedEvents(r).pop();
 
     const blockNumber = new BN(r.receipt.blockNumber);
     const blockTimestamp = new BN((await web3.eth.getBlock(blockNumber)).timestamp);
@@ -56,7 +56,7 @@ contract('pos-v2-high-level-flows', async () => {
     expect(r).to.have.paymentEvent({vcid, by: anotherPayer.address, amount: secondPayment, tier: "defaultTier", rate: monthlyRate});
 
     expect(r).to.have.subscriptionChangedEvent();
-    const secondSubsc = subscriptionChangedEvent(r).pop();
+    const secondSubsc = subscriptionChangedEvents(r).pop();
 
     expectedExpiration = new BN(firstSubsc.expiresAt).add(secondPayment.mul(secondsInMonth).div(monthlyRate));
 

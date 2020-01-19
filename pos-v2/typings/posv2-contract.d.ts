@@ -8,6 +8,7 @@ declare namespace Contracts {
         setStakingContract(address: string, params?: TransactionDetails): Promise<TransactionResponse>
         staked(stakeOwner: string, amount: number, params?: TransactionDetails): Promise<TransactionResponse>
         unstaked(stakeOwner: string, amount: number, params?: TransactionDetails): Promise<TransactionResponse>
+        delegate(to: string, params?: TransactionDetails): Promise<TransactionResponse>
     }
 
     export interface DelegatedEvent {

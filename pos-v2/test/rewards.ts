@@ -7,7 +7,7 @@ import chai from "chai";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
-const {feeAddedToBucketEvent} = require('./eventParsing');
+const {feeAddedToBucketEvents} = require('./eventParsing');
 
 const MONTH_IN_SECONDS = 30*24*60*60;
 
@@ -25,10 +25,10 @@ async function sleep(ms): Promise<void> {
 
 contract('pos-v2-high-level-flows', async () => {
 
-  it('registers and pays for a VC', async () => {
+  it('should distribute fees to validators in committee', async () => {
     const d = await Driver.new();
 
-    const initialStake = 1000;
+    const initialStake = new BN(1000);
     const v = d.newParticipant();
     await v.stake(initialStake);
     await v.registerAsValidator();
@@ -44,7 +44,7 @@ contract('pos-v2-high-level-flows', async () => {
     let r = await subs.createVC(payment, {from: appOwner.address});
     let startTime = await txTimestamp(r); // TODO
 
-    const feesAdded = feeAddedToBucketEvent(r);
+    const feesAdded = feeAddedToBucketEvents(r);
 
     // all the payed rewards were added to a bucket
     const totalAdded = feesAdded.reduce((t, l)=>t.add(new BN(l.added)), new BN(0));
@@ -70,7 +70,7 @@ contract('pos-v2-high-level-flows', async () => {
     const endTime = await txTimestamp(r); // TODO
 
     const elapsedTime = endTime - startTime;
-    const expectedRewards = Math.floor(rate * elapsedTime / MONTH_IN_SECONDS);
+    const expectedRewards = new BN(Math.floor(rate * elapsedTime / MONTH_IN_SECONDS));
 
     r = await d.rewards.getBalance(v.address);
     expect(r).to.be.bignumber.equal(new BN(expectedRewards));
@@ -78,8 +78,8 @@ contract('pos-v2-high-level-flows', async () => {
     r = await d.rewards.distributeRewards([v.address], [expectedRewards], {from: v.address});
     expect(r).to.have.a.stakedEvent({
       stakeOwner: v.address,
-      amount: `${expectedRewards}`,
-      totalStakedAmount: `${initialStake + expectedRewards}`
+      amount: expectedRewards,
+      totalStakedAmount: initialStake.add(expectedRewards)
     });
   });
 

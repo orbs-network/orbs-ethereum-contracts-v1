@@ -34,6 +34,13 @@ export function stakedEvents(txResult) {
     return parseLogs(txResult, inputs, eventSignature)
 }
 
+export function unstakedEvents(txResult) {
+    const inputs = staking.abi.find(e => e.name == "Unstaked").inputs;
+    const eventSignature = "Unstaked(address,uint256,uint256)";
+
+    return parseLogs(txResult, inputs, eventSignature)
+}
+
 export function delegatedEvents(txResult) {
     const inputs = pos.abi.find(e => e.name == "Delegated").inputs;
     const eventSignature = "Delegated(address,address)";
@@ -48,28 +55,28 @@ export function totalStakeChangedEvents(txResult) {
     return parseLogs(txResult, inputs, eventSignature)
 }
 
-export function subscriptionChangedEvent(txResult) {
+export function subscriptionChangedEvents(txResult) {
     const inputs = subscriptions.abi.find(e => e.name == "SubscriptionChanged").inputs;
     const eventSignature = "SubscriptionChanged(uint256,uint256,uint256,string)";
 
     return parseLogs(txResult, inputs, eventSignature);
 }
 
-export function paymentEvent(txResult) {
+export function paymentEvents(txResult) {
     const inputs = subscriptions.abi.find(e => e.name == "Payment").inputs;
     const eventSignature = "Payment(uint256,address,uint256,string,uint256)";
 
     return parseLogs(txResult, inputs, eventSignature);
 }
 
-export function feeAddedToBucketEvent(txResult) {
+export function feeAddedToBucketEvents(txResult) {
     const inputs = rewards.abi.find(e => e.name == "FeeAddedToBucket").inputs;
     const eventSignature = "FeeAddedToBucket(uint256,uint256,uint256)";
 
     return parseLogs(txResult, inputs, eventSignature);
 }
 
-export function rewardAssignedEvent(txResult) {
+export function rewardAssignedEvents(txResult) {
     const inputs = rewards.abi.find(e => e.name == "RewardAssigned").inputs;
     const eventSignature = "RewardAssigned(address,uint256,uint256)";
 

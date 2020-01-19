@@ -92,21 +92,70 @@ contract PosV2 is IStakingListener, Ownable {
 		_placeInCommittee(delegatee);
 	}
 
-	function _placeInCommittee(address validator) private {
-		(uint p, bool inCommittee) = _qualifyAndAppend(validator);
-		if (!inCommittee) {
-			return;
+	function _satisfiesCommitteePrerequisites(address validator) private view returns (bool) {
+		return registeredValidators[validator] &&    // validator must be registered
+		       minimumStake <= ownStakes[validator]; // validator must hold the minimum required stake
+	}
+
+	function _isQualifiedByRank(address validator) private view returns (bool) {
+		return committee.length < maxCommitteeSize || // committee is not full
+				totalStakes[validator] > totalStakes[committee[committee.length-1]]; // validator has more stake the the bottom committee validator
+	}
+
+	function _loadCommitteeStakes() private view returns (uint256[]) {
+		uint256[] memory stakes = new uint256[](committee.length);
+		for (uint i=0; i<committee.length; i++) {
+			stakes[i] = totalStakes[committee[i]];
 		}
+		return stakes;
+	}
 
-		uint256[] memory stakes = _sortCommitteeMember(p);
+	function _removeFromCommittee(uint p) private {
+		assert(committee.length > 0);
+		assert(p < committee.length);
 
+		for (;p < committee.length - 1; p++) {
+			committee[p] = committee[p + 1];
+		}
+		committee.length = committee.length - 1;
+
+		_onCommitteeChanged(_loadCommitteeStakes());
+	}
+
+	function _onCommitteeChanged(uint256[] memory stakes) private {
 		assert(stakes.length == committee.length);
+		assert(committee.length <= maxCommitteeSize);
 
 		committeeListener.committeeChanged(committee, stakes);
 		emit CommitteeChanged(committee, stakes);
 	}
 
-	function _sortCommitteeMember(uint memberPos) private returns (uint256[]){
+	function _placeInCommittee(address validator) private {
+		(uint p, bool inCurrentCommittee) = _findInCommittee(validator);
+
+		if (!_satisfiesCommitteePrerequisites(validator)) {
+			if (inCurrentCommittee) {
+				_removeFromCommittee(p);
+			}
+			return;
+		}
+
+		if (!inCurrentCommittee && !_isQualifiedByRank(validator)) {
+			return;
+		}
+
+		if (!inCurrentCommittee) {
+			if (committee.length == maxCommitteeSize) {
+				p = committee.length - 1;
+				committee[p] = validator;
+			} else {
+				p = committee.push(validator) - 1;
+			}
+		}
+		_sortCommitteeMember(p);
+	}
+
+	function _sortCommitteeMember(uint memberPos) private {
 		assert(committee.length > memberPos);
 
 		uint256[] memory stakes = new uint256[](committee.length);
@@ -123,7 +172,8 @@ contract PosV2 is IStakingListener, Ownable {
 			_replace(stakes, memberPos, memberPos+1);
 			memberPos++;
 		}
-		return stakes;
+
+		_onCommitteeChanged(stakes);
 	}
 
 	function _replace(uint256[] memory stakes, uint p1, uint p2) private {
@@ -137,20 +187,13 @@ contract PosV2 is IStakingListener, Ownable {
 		committee[p2] = tempValidator;
 	}
 
-	function _qualifyAndAppend(address stakeOwner) private returns (uint, bool) {
+	function _append(address stakeOwner) private returns (uint, bool) {
 		(uint p, bool found) = _findInCommittee(stakeOwner);
 
 		if (found) {
 			return (p, true);
 		}
 
-		if (!registeredValidators[stakeOwner]) {
-			return (0, false);
-		}
-
-		if (minimumStake > totalStakes[stakeOwner]) {
-			return (0, false);
-		}
 		if (committee.length == maxCommitteeSize) { // a full committee
 			bool qualifyToEnter = totalStakes[stakeOwner] > totalStakes[committee[committee.length-1]];
 			if (!qualifyToEnter) {

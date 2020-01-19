@@ -5,10 +5,10 @@ import {
     delegatedEvents, stakedEvents,
     totalStakeChangedEvents,
     validatorRegisteredEvents,
-    subscriptionChangedEvent,
-    paymentEvent,
-    rewardAssignedEvent,
-    feeAddedToBucketEvent
+    subscriptionChangedEvents,
+    paymentEvents,
+    rewardAssignedEvents,
+    feeAddedToBucketEvents, unstakedEvents
 } from "./eventParsing";
 import {expectBNArrayEqual} from "./driver";
 
@@ -45,15 +45,17 @@ const containEvent = (eventParser) => function(_super) {
     }
 };
 
-module.exports = function (chai, utils) {
+module.exports = function (chai) {
     chai.Assertion.overwriteMethod('delegatedEvent', containEvent(delegatedEvents));
     chai.Assertion.overwriteMethod('validatorRegisteredEvent', containEvent(validatorRegisteredEvents));
     chai.Assertion.overwriteMethod('committeeChangedEvent', containEvent(committeeChangedEvents));
     chai.Assertion.overwriteMethod('totalStakeChangedEvent', containEvent(totalStakeChangedEvents));
     chai.Assertion.overwriteMethod('stakedEvent', containEvent(stakedEvents));
-    chai.Assertion.overwriteMethod('subscriptionChangedEvent', containEvent(subscriptionChangedEvent));
-    chai.Assertion.overwriteMethod('paymentEvent', containEvent(paymentEvent));
-    chai.Assertion.overwriteMethod('feeAddedToBucketEvent', containEvent(feeAddedToBucketEvent));
-    chai.Assertion.overwriteMethod('rewardAssignedEvent', containEvent(rewardAssignedEvent));
+    chai.Assertion.overwriteMethod('unstakedEvent', containEvent(unstakedEvents));
+    chai.Assertion.overwriteMethod('subscriptionChangedEvent', containEvent(subscriptionChangedEvents));
+    chai.Assertion.overwriteMethod('paymentEvent', containEvent(paymentEvents));
+    chai.Assertion.overwriteMethod('feeAddedToBucketEvent', containEvent(feeAddedToBucketEvents));
+    chai.Assertion.overwriteMethod('rewardAssignedEvent', containEvent(rewardAssignedEvents));
+
     chai.Assertion.overwriteMethod('haveCommittee', containEvent(function(o) { return [o]}));
 };

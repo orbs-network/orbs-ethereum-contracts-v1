@@ -7,6 +7,31 @@ chai.use(require('./matchers'));
 const expect = chai.expect;
 
 contract('pos-v2-edge-cases', async () => {
+    it('should remove a validator with insufficient stake from committee', async() => {
+        const MIN_STAKE = new BN(100);
+        const d = await Driver.new(10, MIN_STAKE);
+
+        const v = d.newParticipant();
+        await v.stake(MIN_STAKE);
+        let r = await v.registerAsValidator();
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: [v.address],
+            stakes: [MIN_STAKE]
+        });
+
+        const unstakeAmount = MIN_STAKE.div(new BN(4));
+        r = await v.unstake(unstakeAmount);
+        expect(r).to.have.a.unstakedEvent({
+            stakeOwner: v.address,
+            amount: unstakeAmount,
+            totalStakedAmount: MIN_STAKE.sub(unstakeAmount)
+        });
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: [],
+            stakes: []
+        })
+    });
+
     it('does not elect without registration', async() => {
         const d = await Driver.new();
 
