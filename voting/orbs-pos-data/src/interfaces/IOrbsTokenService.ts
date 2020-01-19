@@ -7,6 +7,8 @@
  */
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 
+export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => void;
+
 export interface IOrbsTokenService {
   setFromAccount(address: string): void;
   readAllowance(ownerAddress: string, spenderAddress: string): Promise<string>;
@@ -20,6 +22,6 @@ export interface IOrbsTokenService {
   subscribeToAllowanceChange(
     ownerAddress: string,
     spenderAddress: string,
-    callback: (error: Error, allowance: string) => void,
-  ): () => void;
+    callback: OrbsAllowanceChangeCallback,
+  ): () => Promise<boolean>;
 }

@@ -83,14 +83,17 @@ export class TxsMocker<T extends string> {
     return promievent;
   }
 
-  public completeTx(eventEmitter: any): void {
-    setTimeout(() => {
-      this.sendTxHash(eventEmitter);
-      this.performTxEffect(eventEmitter); // NOTE : To mock the real world, all effects should take effect by the time the receipt is created.
-      this.sendTxReceipt(eventEmitter);
-      this.sendTxConfirmation(eventEmitter, 1);
-      this.resolveTx(eventEmitter);
-    }, 1);
+  public completeTx(eventEmitter: any): Promise<void> {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        this.sendTxHash(eventEmitter);
+        this.performTxEffect(eventEmitter); // NOTE : To mock the real world, all effects should take effect by the time the receipt is created.
+        this.sendTxReceipt(eventEmitter);
+        this.sendTxConfirmation(eventEmitter, 1);
+        this.resolveTx(eventEmitter);
+        resolve();
+      }, 1);  
+    })
   }
 
   public sendTxHash(eventEmitter: any): void {

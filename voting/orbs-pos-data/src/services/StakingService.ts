@@ -9,10 +9,11 @@
 import * as IStakingContractABI from 'orbs-staking-contract/build/abi/IStakingContract.json';
 import Web3 from 'web3';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { Contract } from 'web3-eth-contract';
+import { Contract, EventData } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
 import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
+import { IStakingService, IStakingStatus, StakeAmountChangeCallback } from '../interfaces/IStakingService';
+import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
 
 export class StakingService implements IStakingService {
   private readonly stakingContractAddress: string;
@@ -64,5 +65,28 @@ export class StakingService implements IStakingService {
       cooldownAmount: parseInt(result.cooldownAmount, 10),
       cooldownEndTime: parseInt(result.cooldownEndTime, 10),
     };
+  }
+
+  // SUBSCRIPTIONS //
+  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean> {
+    const specificEventEmitter = this.stakingContract.events.Staked(
+      {
+        filter: {
+          stakeOwner: [stakeOwner],
+        },
+      },
+      async (error: Error, event: EventData) => {
+        if (error) {
+          callback(error, null);
+          return;
+        }
+
+        const totalStakedAmountInOrbsWei = event.returnValues[2];
+        const totalStakedAmountInOrbs = this.web3.utils.fromWei(totalStakedAmountInOrbsWei, 'ether');
+        callback(null, totalStakedAmountInOrbs);
+      },
+    );
+
+    return () => getUnsubscribePromise(specificEventEmitter);
   }
 }

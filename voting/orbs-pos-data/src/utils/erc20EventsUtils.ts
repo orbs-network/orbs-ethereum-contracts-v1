@@ -6,7 +6,7 @@ import { Subscription } from 'web3-core-subscriptions';
  * Therefore we will wait until it is connected in order to disconnect it.
  */
 export function getUnsubscribePromise(eventEmitter: Subscription<EventData>) {
-  let unsubscribePromise;
+  let unsubscribePromise: Promise<boolean>;
 
   if (eventEmitter.id === null) {
     unsubscribePromise = new Promise((resolve, reject) => {

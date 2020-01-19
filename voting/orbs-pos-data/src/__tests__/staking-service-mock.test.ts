@@ -12,6 +12,7 @@ import { testTxCreatingForServiceMock } from './testUtils/txCreatingMethodTests'
 describe(`Staking service mock`, () => {
   testTxCreatingMethods();
   testDataReadingMethods();
+  testSubscription();
 });
 
 function testTxCreatingMethods() {
@@ -26,52 +27,100 @@ function testTxCreatingMethods() {
 
 function testDataReadingMethods() {
   describe(`Data reading methods`, () => {
-    let stakingServiceMock: StakingServiceMock;
-    let stakingServiceApi: IStakingService;
+    let stakingService: StakingServiceMock;
 
     beforeEach(() => {
-      stakingServiceMock = new StakingServiceMock(false);
-      stakingServiceApi = stakingServiceMock;
+      stakingService = new StakingServiceMock(false);
     });
 
     it(`should allow to set and get stake balance`, async () => {
-      const beforeResult = await stakingServiceApi.getStakeBalanceOf('DUMMY_ADDRESS');
+      const beforeResult = await stakingService.getStakeBalanceOf('DUMMY_ADDRESS');
       expect(beforeResult).toEqual('0');
 
-      stakingServiceMock.withStakeBalance('DUMMY_ADDRESS', '123456');
+      stakingService.withStakeBalance('DUMMY_ADDRESS', 123_456);
 
-      const afterResult = await stakingServiceApi.getStakeBalanceOf('DUMMY_ADDRESS');
+      const afterResult = await stakingService.getStakeBalanceOf('DUMMY_ADDRESS');
       expect(afterResult).toEqual('123456');
     });
 
     it(`should allow to set and get total staked tokens`, async () => {
-      const beforeResult = await stakingServiceApi.getTotalStakedTokens();
+      const beforeResult = await stakingService.getTotalStakedTokens();
       expect(beforeResult).toEqual('0');
 
-      stakingServiceMock.withTotalStakedTokens('123456');
+      stakingService.withTotalStakedTokens('123456');
 
-      const afterResult = await stakingServiceApi.getTotalStakedTokens();
+      const afterResult = await stakingService.getTotalStakedTokens();
       expect(afterResult).toEqual('123456');
     });
 
     it(`should allow to set and get unstake status`, async () => {
-      const beforeResult = await stakingServiceApi.getUnstakeStatus('DUMMY_ADDRESS');
+      const beforeResult = await stakingService.getUnstakeStatus('DUMMY_ADDRESS');
       expect(beforeResult).toEqual({ cooldownAmount: 0, cooldownEndTime: 0 });
 
-      stakingServiceMock.withUnstakeStatus('DUMMY_ADDRESS', { cooldownAmount: 123, cooldownEndTime: 456 });
+      stakingService.withUnstakeStatus('DUMMY_ADDRESS', { cooldownAmount: 123, cooldownEndTime: 456 });
 
-      const afterResult = await stakingServiceMock.getUnstakeStatus('DUMMY_ADDRESS');
+      const afterResult = await stakingService.getUnstakeStatus('DUMMY_ADDRESS');
       expect(afterResult).toEqual({ cooldownAmount: 123, cooldownEndTime: 456 });
     });
 
     it(`should allow to set and get contract address`, async () => {
       const newContractAddress = 'NEW_CONTRACT_ADDRESS';
 
-      expect(stakingServiceApi.getStakingContractAddress()).toEqual('DUMMY_CONTRACT_ADDRESS');
+      expect(stakingService.getStakingContractAddress()).toEqual('DUMMY_CONTRACT_ADDRESS');
 
-      stakingServiceMock.withStakingContractAddress(newContractAddress);
+      stakingService.withStakingContractAddress(newContractAddress);
 
-      expect(stakingServiceMock.getStakingContractAddress()).toBe(newContractAddress);
+      expect(stakingService.getStakingContractAddress()).toBe(newContractAddress);
+    });
+  });
+}
+
+function testSubscription() {
+  describe(`Subscriptions`, () => {
+    let stakingService: StakingServiceMock;
+
+    beforeEach(() => {
+      stakingService = new StakingServiceMock(false);
+    });
+
+    it(`should allow to subscribe and unsubscribe from staking changed event`, async () => {
+      const ownerAddress = 'DUMMY_ADDRESS';
+      stakingService.setFromAccount(ownerAddress);
+
+      // start with 500,000 staked orbs
+      stakingService.withStakeBalance(ownerAddress, 500000);
+
+      let callbackMount = 'NOT_CALLED';
+      const callback = (error: Error, amount: string) => callbackMount = amount;
+
+      const unsubscribe = stakingService.subscribeToStakeAmountChange(ownerAddress, callback)
+
+      // stake 1,000,000 orbs
+      const stakePromievent1 = stakingService.stake(1_000_000);
+      await stakingService.txsMocker.completeTx(stakePromievent1);
+
+      // make sure that we got the event
+      expect(callbackMount).toEqual('1500000');
+  
+      // unstake 100,000 orbs
+      const unstakePromievent = stakingService.unstake(100_000);
+      await stakingService.txsMocker.completeTx(unstakePromievent);
+
+      // make sure that we got the event
+      expect(callbackMount).toEqual('1400000');
+
+      await unsubscribe();
+
+      // stake another 300,000
+      const stakePromievent2 = stakingService.stake(300_000);
+      await stakingService.txsMocker.completeTx(stakePromievent2);
+  
+      // same as before because we didn't get the callback
+      expect(callbackMount).toEqual('1400000'); 
+
+      // but balance did change
+      const lastBalance = await stakingService.getStakeBalanceOf(ownerAddress);
+      expect(lastBalance).toEqual('1700000');
     });
   });
 }

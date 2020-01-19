@@ -25,11 +25,9 @@ function testTxCreatingMethods() {
 function testDataReadingMethods() {
   describe(`Data reading methods`, () => {
     let orbsTokenServiceMock: OrbsTokenServiceMock;
-    let orbsTokenServiceApi: IOrbsTokenService;
 
     beforeEach(() => {
       orbsTokenServiceMock = new OrbsTokenServiceMock(false);
-      orbsTokenServiceApi = orbsTokenServiceMock;
     });
 
     it(`should allow to set and get allowance`, async () => {
@@ -37,12 +35,12 @@ function testDataReadingMethods() {
       const spenderAddress = 'SPENDER_ADDRESS';
       const allowanceAmount = '2000';
 
-      const valueBefore = await orbsTokenServiceApi.readAllowance(ownerAddress, spenderAddress);
+      const valueBefore = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
       expect(valueBefore).toEqual('0');
 
       orbsTokenServiceMock.setAllowance(ownerAddress, spenderAddress, allowanceAmount);
 
-      const valueAfter = await orbsTokenServiceApi.readAllowance(ownerAddress, spenderAddress);
+      const valueAfter = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
       expect(valueAfter).toEqual(allowanceAmount);
     });
   });

@@ -13,6 +13,8 @@ export interface IStakingStatus {
   cooldownEndTime: number;
 }
 
+export type StakeAmountChangeCallback = (error: Error, amount: string) => void;
+
 export interface IStakingService {
   getStakingContractAddress(): string;
   setFromAccount(address: string): void;
@@ -24,4 +26,6 @@ export interface IStakingService {
   getStakeBalanceOf(stakeOwner: string): Promise<string>;
   getTotalStakedTokens(): Promise<string>;
   getUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
+
+  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean>;
 }

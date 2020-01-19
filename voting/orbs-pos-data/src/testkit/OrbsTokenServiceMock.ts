@@ -1,9 +1,7 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
+import { IOrbsTokenService, OrbsAllowanceChangeCallback } from '../interfaces/IOrbsTokenService';
 import { TxsMocker } from './TxsMocker';
 import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
-
-export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => void;
 
 type TTxCreatingActionNames = 'approve';
 
@@ -36,8 +34,8 @@ export class OrbsTokenServiceMock implements IOrbsTokenService, ITxCreatingServi
   subscribeToAllowanceChange(
     ownerAddress: string,
     spenderAddress: string,
-    callback: (error: Error, allowance: string) => void,
-  ) {
+    callback: OrbsAllowanceChangeCallback,
+  ): () => Promise<boolean> {
     // Ensure we have a mapping for the given owner
     if (!this.allowanceChangeEventsMap.has(ownerAddress)) {
       this.allowanceChangeEventsMap.set(ownerAddress, new Map<string, Map<number, OrbsAllowanceChangeCallback>>());
@@ -61,6 +59,7 @@ export class OrbsTokenServiceMock implements IOrbsTokenService, ITxCreatingServi
         .get(ownerAddress)
         .get(spenderAddress)
         .delete(eventTransmitterId);
+      return Promise.resolve(true);
     };
   }
 
@@ -81,7 +80,7 @@ export class OrbsTokenServiceMock implements IOrbsTokenService, ITxCreatingServi
   }
 
   // State test utils //
-  private setAllowance(ownerAddress: string, spenderAddress: string, allowanceSum: string) {
+  public setAllowance(ownerAddress: string, spenderAddress: string, allowanceSum: string) {
     if (!this.addressToAllowancesMap.has(ownerAddress)) {
       this.addressToAllowancesMap.set(ownerAddress, new Map<string, string>());
     }

@@ -39,7 +39,7 @@ export class OrbsTokenService implements IOrbsTokenService {
     spenderAddress: string,
     callback: (error: Error, allowance: string) => void,
   ) {
-    const specificApprovalEventEmitter = this.erc20TokenContract.events.Approval(
+    const specificEventEmitter = this.erc20TokenContract.events.Approval(
       {
         filter: {
           owner: [ownerAddress],
@@ -49,6 +49,7 @@ export class OrbsTokenService implements IOrbsTokenService {
       async (error: Error, event: EventData) => {
         if (error) {
           callback(error, null);
+          return;
         }
 
         const newAllowanceInOrbsWei = event.returnValues[2];
@@ -57,11 +58,7 @@ export class OrbsTokenService implements IOrbsTokenService {
       },
     );
 
-    return async () => {
-      let unsubscribeOfSpecificApprovalPromise = getUnsubscribePromise(specificApprovalEventEmitter);
-
-      return unsubscribeOfSpecificApprovalPromise;
-    };
+    return () => getUnsubscribePromise(specificEventEmitter);
   }
 
   // WRITE //

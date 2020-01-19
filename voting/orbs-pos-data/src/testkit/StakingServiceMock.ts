@@ -1,5 +1,5 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import { IStakingService, IStakingStatus } from '../interfaces/IStakingService';
+import { IStakingService, IStakingStatus, StakeAmountChangeCallback } from '../interfaces/IStakingService';
 import { TxsMocker } from './TxsMocker';
 import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 
@@ -9,8 +9,9 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
 
   private stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
-  private addressToBalanceMap: Map<string, string> = new Map();
+  private addressToBalanceMap: Map<string, number> = new Map();
   private addressToStakeStatus: Map<string, IStakingStatus> = new Map();
+  private stakeAmountChangeEventsMap: Map<string, StakeAmountChangeCallback> = new Map();
   private totalStakedTokens: string = '0';
 
   constructor(autoCompleteTxes: boolean = true) {
@@ -24,11 +25,27 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
   // WRITE (TX creation) //
   stake(amount: number): PromiEvent<TransactionReceipt> {
-    return this.txsMocker.createTxOf('stake');
+    const txEffect = () => {
+      const currentBalance = this.addressToBalanceMap.get(this.txsMocker.getFromAccount()) || 0;
+      const newBalance = currentBalance + amount;
+      this.addressToBalanceMap.set(this.txsMocker.getFromAccount(), newBalance);
+      for (let callback of this.stakeAmountChangeEventsMap.values()) {
+        callback(null, newBalance.toString());
+      }
+    }
+    return this.txsMocker.createTxOf('stake', txEffect);
   }
 
   unstake(amount: number): PromiEvent<TransactionReceipt> {
-    return this.txsMocker.createTxOf('unstake');
+    const txEffect = () => {
+      const currentBalance = this.addressToBalanceMap.get(this.txsMocker.getFromAccount()) || 0;
+      const newBalance = currentBalance - amount;
+      this.addressToBalanceMap.set(this.txsMocker.getFromAccount(), newBalance);
+      for (let callback of this.stakeAmountChangeEventsMap.values()) {
+        callback(null, newBalance.toString());
+      }
+    }
+    return this.txsMocker.createTxOf('unstake', txEffect);
   }
 
   restake(): PromiEvent<TransactionReceipt> {
@@ -42,7 +59,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   // READ //
   async getStakeBalanceOf(stakeOwner: string): Promise<string> {
     const amount = this.addressToBalanceMap.get(stakeOwner);
-    return amount ? amount : '0';
+    return amount ? amount.toString() : '0';
   }
 
   async getTotalStakedTokens(): Promise<string> {
@@ -58,9 +75,21 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     return this.stakingContractAddress;
   }
 
+  // SUBSCRIPTIONS //
+  subscribeToStakeAmountChange(
+    stakeOwner: string,
+    callback: StakeAmountChangeCallback,
+  ): () => Promise<boolean> {
+    this.stakeAmountChangeEventsMap.set(stakeOwner, callback);
+    return () => {
+      this.stakeAmountChangeEventsMap.delete(stakeOwner);
+      return Promise.resolve(true)
+    };
+  }
+
   // Test Utils //
 
-  public withStakeBalance(address: string, amount: string) {
+  public withStakeBalance(address: string, amount: number) {
     this.addressToBalanceMap.set(address, amount);
   }
 
