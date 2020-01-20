@@ -18,8 +18,8 @@ import { IEthereumClientService } from '../interfaces/IEthereumClientService';
 import { IRewardsDistributionEvent } from '../interfaces/IRewardsDistributionEvent';
 import { IValidatorData } from '../interfaces/IValidatorData';
 import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
-import { ORBS_TDE_ETHEREUM_BLOCK } from "./consts";
-import { readUpcomingElectionBlockNumber } from "./utils";
+import { ORBS_TDE_ETHEREUM_BLOCK } from './consts';
+import { readUpcomingElectionBlockNumber } from './utils';
 
 export class EthereumClientService implements IEthereumClientService {
   private orbsRewardsDistributionContract: Contract;

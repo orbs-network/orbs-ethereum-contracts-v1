@@ -24,7 +24,6 @@ function testTxCreatingMethods() {
   });
 }
 
-
 function testDataReadingMethods() {
   describe(`Data reading methods`, () => {
     let stakingService: StakingServiceMock;
@@ -91,9 +90,9 @@ function testSubscription() {
       stakingService.withStakeBalance(ownerAddress, 500000);
 
       let callbackMount = 'NOT_CALLED';
-      const callback = (error: Error, amount: string) => callbackMount = amount;
+      const callback = (error: Error, amount: string) => (callbackMount = amount);
 
-      const unsubscribe = stakingService.subscribeToStakeAmountChange(ownerAddress, callback)
+      const unsubscribe = stakingService.subscribeToStakeAmountChange(ownerAddress, callback);
 
       // stake 1,000,000 orbs
       const stakePromievent1 = stakingService.stake(1_000_000);
@@ -101,7 +100,7 @@ function testSubscription() {
 
       // make sure that we got the event
       expect(callbackMount).toEqual('1500000');
-  
+
       // unstake 100,000 orbs
       const unstakePromievent = stakingService.unstake(100_000);
       await stakingService.txsMocker.completeTx(unstakePromievent);
@@ -114,9 +113,9 @@ function testSubscription() {
       // stake another 300,000
       const stakePromievent2 = stakingService.stake(300_000);
       await stakingService.txsMocker.completeTx(stakePromievent2);
-  
+
       // same as before because we didn't get the callback
-      expect(callbackMount).toEqual('1400000'); 
+      expect(callbackMount).toEqual('1400000');
 
       // but balance did change
       const lastBalance = await stakingService.readStakeBalanceOf(ownerAddress);
