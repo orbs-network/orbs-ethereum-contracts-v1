@@ -28,7 +28,7 @@ contract('elections-high-level-flows', async () => {
   });
 
   it('sorts committee by stake', async () => {
-    const d = await Driver.new(2);
+    const d = await Driver.new(2, 3);
     const committeeProvider = new CommitteeProvider((web3.currentProvider as any).host, d.elections.address);
 
     const stake100 = new BN(100);
@@ -51,6 +51,10 @@ contract('elections-high-level-flows', async () => {
       addrs: [validatorStaked100.address],
       orbsAddrs: [validatorStaked100.orbsAddress],
       stakes: [stake100],
+    });
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked100.orbsAddress],
+      ips: [validatorStaked100.ip]
     });
 
     const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
@@ -75,6 +79,10 @@ contract('elections-high-level-flows', async () => {
       orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
       stakes: [stake200, stake100]
     });
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
+      ips: [validatorStaked200.ip, validatorStaked100.ip]
+    });
 
     // A third validator registers high ranked
 
@@ -92,12 +100,20 @@ contract('elections-high-level-flows', async () => {
       orbsAddrs: [validatorStaked300.orbsAddress, validatorStaked200.orbsAddress],
       stakes: [stake300, stake200]
     });
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked300.orbsAddress, validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
+      ips: [validatorStaked300.ip, validatorStaked200.ip, validatorStaked100.ip]
+    });
 
     r = await d.delegateMoreStake(stake300, validatorStaked200);
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked200.address, validatorStaked300.address],
       orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked300.orbsAddress],
-      stakes: [stake500, stake300]
+      stakes: [stake200.add(stake300), stake300]
+    });
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked300.orbsAddress, validatorStaked100.orbsAddress],
+      ips: [validatorStaked200.ip, validatorStaked300.ip, validatorStaked100.ip]
     });
 
     r = await d.delegateMoreStake(stake500, validatorStaked100);
@@ -106,7 +122,10 @@ contract('elections-high-level-flows', async () => {
       orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
       stakes: [stake100.add(stake500), stake500]
     });
-
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress, validatorStaked300.orbsAddress],
+      ips: [validatorStaked100.ip, validatorStaked200.ip, validatorStaked300.ip]
+    });
   });
 
 });

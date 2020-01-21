@@ -22,6 +22,11 @@ declare namespace Contracts {
         stakes: (number|BN)[],
     }
 
+    export interface TopologyChangedEvent {
+        orbsAddrs: string[],
+        ips: string[],
+    }
+
     export interface ValidatorRegisteredEvent {
         addr: string,
         ip: string,

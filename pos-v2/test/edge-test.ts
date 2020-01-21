@@ -9,7 +9,7 @@ const expect = chai.expect;
 contract('pos-v2-edge-cases', async () => {
     it('should remove a validator with insufficient stake from committee', async() => {
         const MIN_STAKE = new BN(100);
-        const d = await Driver.new(10, MIN_STAKE);
+        const d = await Driver.new(10, 15, MIN_STAKE);
 
         const v = d.newParticipant();
         await v.stake(MIN_STAKE);
