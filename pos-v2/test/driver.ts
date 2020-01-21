@@ -88,7 +88,7 @@ export class Participant {
     }
 
     async unstake(amount: number|BN) {
-        return this.staking.unstake(amount);
+        return this.staking.unstake(amount, {from: this.address});
     }
 
     async delegate(to: Participant) {
