@@ -26,12 +26,12 @@ export class Driver {
         public rewards: RewardsContract
     ) {}
 
-    static async new(maxCommitteeSize=2, minimumStake:number|BN=100) {
+    static async new(maxCommitteeSize=2, maxTopologySize=3, minimumStake:number|BN=100) {
         const accounts = await web3.eth.getAccounts();
         const erc20 = await artifacts.require('TestingERC20').new();
         const rewards = await artifacts.require('Rewards').new(erc20.address);
         const subscriptions = await artifacts.require('Subscriptions').new(rewards.address, erc20.address);
-        const pos = await artifacts.require("Elections").new(maxCommitteeSize, minimumStake, rewards.address /* committee listener */);
+        const pos = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, rewards.address /* committee listener */);
         const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, pos.address /* IStakingListener */, erc20.address /* _token */);
 
         await rewards.setCommitteeProvider(pos.address);
@@ -55,8 +55,8 @@ export class Driver {
         return subscriber;
     }
 
-    newParticipant(): Participant {
-        const v = new Participant(this.accounts[this.participants.length], this);
+    newParticipant(): Participant { // consumes two addresses from accounts for each participant - ethereum address and an orbs address
+        const v = new Participant(this.accounts[this.participants.length*2], this.accounts[this.participants.length*2+1], this);
         this.participants.push(v);
         return v
     }
@@ -74,7 +74,7 @@ export class Participant {
     private staking: StakingContract;
     private elections: ElectionsContract;
 
-    constructor(public address: string, driver: Driver) {
+    constructor(public address: string, public orbsAddress: string, driver: Driver) {
         this.ip = address.substring(0, 10).toLowerCase();
         this.erc20 = driver.erc20;
         this.staking = driver.staking;
@@ -88,7 +88,7 @@ export class Participant {
     }
 
     async unstake(amount: number|BN) {
-        return this.staking.unstake(amount);
+        return this.staking.unstake(amount, {from: this.address});
     }
 
     async delegate(to: Participant) {
@@ -96,7 +96,7 @@ export class Participant {
     }
 
     async registerAsValidator() {
-        return await this.elections.registerValidator(this.ip, {from: this.address});
+        return await this.elections.registerValidator(this.ip, this.orbsAddress, {from: this.address});
     }
 }
 

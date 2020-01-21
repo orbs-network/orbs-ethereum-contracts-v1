@@ -8,7 +8,7 @@ import {
     subscriptionChangedEvents,
     paymentEvents,
     rewardAssignedEvents,
-    feeAddedToBucketEvents, unstakedEvents
+    feeAddedToBucketEvents, unstakedEvents, topologyChangedEvents
 } from "./event-parsing";
 import {expectBNArrayEqual} from "./driver";
 
@@ -56,6 +56,7 @@ module.exports = function (chai) {
     chai.Assertion.overwriteMethod('paymentEvent', containEvent(paymentEvents));
     chai.Assertion.overwriteMethod('feeAddedToBucketEvent', containEvent(feeAddedToBucketEvents));
     chai.Assertion.overwriteMethod('rewardAssignedEvent', containEvent(rewardAssignedEvents));
+    chai.Assertion.overwriteMethod('topologyChangedEvent', containEvent(topologyChangedEvents));
 
     chai.Assertion.overwriteMethod('haveCommittee', containEvent(function(o) { return [o]}));
 };
