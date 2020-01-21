@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import * as IStakingContractABI from 'orbs-staking-contract/build/abi/IStakingContract.json';
+import IStakingContractABI from 'orbs-staking-contract/build/abi/IStakingContract.json';
 import Web3 from 'web3';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract, EventData } from 'web3-eth-contract';
@@ -14,6 +14,8 @@ import { AbiItem } from 'web3-utils';
 import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
 import { IStakingService, IStakingStatus, StakeAmountChangeCallback } from '../interfaces/IStakingService';
 import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
+import { ITypedEventData } from './contractsTypes/contractTypes';
+import { IStakeEventValues } from './contractsTypes/stakingContractTypes';
 
 export class StakingService implements IStakingService {
   private readonly stakingContractAddress: string;
@@ -67,23 +69,66 @@ export class StakingService implements IStakingService {
     };
   }
 
-  // SUBSCRIPTIONS //
+  // State Subscriptions //
   subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean> {
+    return this.subscribeToStakeEvent(stakeOwner, (error, stakedAmountInEvent, totalStakedAmount) =>
+      callback(error, totalStakedAmount),
+    );
+  }
+
+  // Events Subscriptions //
+  public subscribeToStakeEvent(
+    stakeOwner: string,
+    callback: (error: Error, stakedAmountInEvent: string, totalStakedAmount: string) => void,
+  ): () => Promise<boolean> {
     const specificEventEmitter = this.stakingContract.events.Staked(
       {
         filter: {
           stakeOwner: [stakeOwner],
         },
       },
-      async (error: Error, event: EventData) => {
+      (error: Error, event: ITypedEventData<IStakeEventValues>) => {
         if (error) {
-          callback(error, null);
+          callback(error, null, null);
           return;
         }
 
-        const totalStakedAmountInOrbsWei = event.returnValues[2];
+        const amountStakedInOrbsWei = event.returnValues.amount;
+        const amountStakedInOrbs = this.web3.utils.fromWei(amountStakedInOrbsWei, 'ether');
+
+        const totalStakedAmountInOrbsWei = event.returnValues.totalStakedAmount;
         const totalStakedAmountInOrbs = this.web3.utils.fromWei(totalStakedAmountInOrbsWei, 'ether');
-        callback(null, totalStakedAmountInOrbs);
+
+        callback(null, amountStakedInOrbs, totalStakedAmountInOrbs);
+      },
+    );
+
+    return () => getUnsubscribePromise(specificEventEmitter);
+  }
+
+  private subscribeToUnstakeEvent(
+    stakeOwner: string,
+    callback: (error: Error, orbsInCooldown: string, stakedOrbs: string) => void,
+  ): () => Promise<boolean> {
+    const specificEventEmitter = this.stakingContract.events.Unstaked(
+      {
+        filter: {
+          stakeOwner: [stakeOwner],
+        },
+      },
+      (error: Error, event: EventData) => {
+        if (error) {
+          callback(error, null, null);
+          return;
+        }
+
+        const cooldownAmountInOrbsWei = event.returnValues[2];
+        const totalStakedAmountInOrbsWei = event.returnValues[3];
+
+        const cooldownAmountInOrbs = this.web3.utils.fromWei(cooldownAmountInOrbsWei, 'ether');
+        const totalStakedAmountInOrbs = this.web3.utils.fromWei(totalStakedAmountInOrbsWei, 'ether');
+
+        callback(null, cooldownAmountInOrbs, totalStakedAmountInOrbs);
       },
     );
 
