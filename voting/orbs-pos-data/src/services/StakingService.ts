@@ -12,10 +12,26 @@ import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract, EventData } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
-import { IStakingService, IStakingStatus, StakeAmountChangeCallback } from '../interfaces/IStakingService';
+import {
+  IStakingService,
+  IStakingStatus,
+  StakeAmountChangeCallback,
+  StakingServiceEventCallback,
+} from '../interfaces/IStakingService';
 import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
-import { ITypedEventData } from './contractsTypes/contractTypes';
-import { IStakeEventValues } from './contractsTypes/stakingContractTypes';
+import { ITypedEventData, TUnsubscribeFunction } from './contractsTypes/contractTypes';
+
+/**
+ * It just so happens that all of the staking related events have the same signature.
+ */
+interface IStakingContractEventValues {
+  1: string;
+  2: string;
+  3: string;
+  stakeOwner: string;
+  amount: string;
+  totalStakedAmount: string;
+}
 
 export class StakingService implements IStakingService {
   private readonly stakingContractAddress: string;
@@ -70,65 +86,74 @@ export class StakingService implements IStakingService {
   }
 
   // State Subscriptions //
-  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean> {
-    return this.subscribeToStakeEvent(stakeOwner, (error, stakedAmountInEvent, totalStakedAmount) =>
-      callback(error, totalStakedAmount),
-    );
+  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): TUnsubscribeFunction {
+    const callbackAdapter = (error: Error, stakedAmountInEvent: string, totalStakedAmount: string) =>
+      callback(error, totalStakedAmount);
+
+    const stakeEventUnsubscribe = this.subscribeToStakedEvent(stakeOwner, callbackAdapter);
+    const unstakeEventUnsubscribe = this.subscribeToUnstakedEvent(stakeOwner, callbackAdapter);
+    const restakeEventUnsubscribe = this.subscribeToRestakedEvent(stakeOwner, callbackAdapter);
+
+    return async () => {
+      try {
+        await Promise.all([stakeEventUnsubscribe, unstakeEventUnsubscribe, restakeEventUnsubscribe]);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
   }
 
   // Events Subscriptions //
-  public subscribeToStakeEvent(
-    stakeOwner: string,
-    callback: (error: Error, stakedAmountInEvent: string, totalStakedAmount: string) => void,
-  ): () => Promise<boolean> {
-    const specificEventEmitter = this.stakingContract.events.Staked(
-      {
-        filter: {
-          stakeOwner: [stakeOwner],
-        },
-      },
-      (error: Error, event: ITypedEventData<IStakeEventValues>) => {
-        if (error) {
-          callback(error, null, null);
-          return;
-        }
-
-        const amountStakedInOrbsWei = event.returnValues.amount;
-        const amountStakedInOrbs = this.web3.utils.fromWei(amountStakedInOrbsWei, 'ether');
-
-        const totalStakedAmountInOrbsWei = event.returnValues.totalStakedAmount;
-        const totalStakedAmountInOrbs = this.web3.utils.fromWei(totalStakedAmountInOrbsWei, 'ether');
-
-        callback(null, amountStakedInOrbs, totalStakedAmountInOrbs);
-      },
-    );
-
-    return () => getUnsubscribePromise(specificEventEmitter);
+  public subscribeToStakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
+    const eventSubscriptionFunction = this.stakingContract.events.Stake;
+    return this.subscribeToStakingContractEvent(eventSubscriptionFunction, stakeOwner, callback);
   }
 
-  private subscribeToUnstakeEvent(
+  public subscribeToUnstakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
+    const eventSubscriptionFunction = this.stakingContract.events.Unstaked;
+    return this.subscribeToStakingContractEvent(eventSubscriptionFunction, stakeOwner, callback);
+  }
+
+  public subscribeToRestakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
+    const eventSubscriptionFunction = this.stakingContract.events.Restaked;
+    return this.subscribeToStakingContractEvent(eventSubscriptionFunction, stakeOwner, callback);
+  }
+
+  public subscribeToWithdrewEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
+    const eventSubscriptionFunction = this.stakingContract.events.Withdrew;
+    return this.subscribeToStakingContractEvent(eventSubscriptionFunction, stakeOwner, callback);
+  }
+
+  /**
+   * Dev Note : O.L : This function should be extracted and isolated for testing purpose.
+   * Dev Note #2 : All the events of the 'Staking contract' have exactly the same signature.
+   */
+  private subscribeToStakingContractEvent(
+    eventSubscriptionFunction: any,
     stakeOwner: string,
-    callback: (error: Error, orbsInCooldown: string, stakedOrbs: string) => void,
+    callback: (error: Error, amount: string, totalStakedOrbs: string) => void,
   ): () => Promise<boolean> {
-    const specificEventEmitter = this.stakingContract.events.Unstaked(
+    const specificEventEmitter = eventSubscriptionFunction(
       {
         filter: {
           stakeOwner: [stakeOwner],
         },
       },
-      (error: Error, event: EventData) => {
+      (error: Error, event: ITypedEventData<IStakingContractEventValues>) => {
         if (error) {
           callback(error, null, null);
           return;
         }
 
-        const cooldownAmountInOrbsWei = event.returnValues[2];
-        const totalStakedAmountInOrbsWei = event.returnValues[3];
+        const eventAmountInOrbsWei = event.returnValues.amount;
+        const totalStakedAmountInOrbsWei = event.returnValues.totalStakedAmount;
 
-        const cooldownAmountInOrbs = this.web3.utils.fromWei(cooldownAmountInOrbsWei, 'ether');
+        // TODO : O.L : Decide about the return format (wei-orbs vs complete orbs)
+        const eventAmountInOrbs = this.web3.utils.fromWei(eventAmountInOrbsWei, 'ether');
         const totalStakedAmountInOrbs = this.web3.utils.fromWei(totalStakedAmountInOrbsWei, 'ether');
 
-        callback(null, cooldownAmountInOrbs, totalStakedAmountInOrbs);
+        callback(null, eventAmountInOrbs, totalStakedAmountInOrbs);
       },
     );
 

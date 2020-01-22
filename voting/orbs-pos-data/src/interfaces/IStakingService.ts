@@ -7,6 +7,7 @@
  */
 
 import { PromiEvent, TransactionReceipt } from 'web3-core';
+import { TUnsubscribeFunction } from '../services/contractsTypes/contractTypes';
 
 export interface IStakingStatus {
   cooldownAmount: number;
@@ -14,6 +15,7 @@ export interface IStakingStatus {
 }
 
 export type StakeAmountChangeCallback = (error: Error, amount: string) => void;
+export type StakingServiceEventCallback = (error: Error, amount: string, totalStakedAmount: string) => void;
 
 export interface IStakingService {
   getStakingContractAddress(): string;
@@ -28,5 +30,11 @@ export interface IStakingService {
   readTotalStakedTokens(): Promise<string>;
   readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
 
-  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean>;
+  // TODO : Change to 'staked' on next major version
+  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): TUnsubscribeFunction;
+
+  subscribeToStakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction;
+  subscribeToUnstakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction;
+  subscribeToRestakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction;
+  subscribeToWithdrewEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction;
 }
