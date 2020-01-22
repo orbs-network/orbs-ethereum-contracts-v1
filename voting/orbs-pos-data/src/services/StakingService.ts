@@ -29,8 +29,8 @@ interface IStakingContractEventValues {
   2: string;
   3: string;
   stakeOwner: string;
-  amount: string;
-  totalStakedAmount: string;
+  amount: string; // Amount for the event
+  totalStakedAmount: string; // Total staked amount for given owner
 }
 
 export class StakingService implements IStakingService {
@@ -96,7 +96,7 @@ export class StakingService implements IStakingService {
 
     return async () => {
       try {
-        await Promise.all([stakeEventUnsubscribe, unstakeEventUnsubscribe, restakeEventUnsubscribe]);
+        await Promise.all([stakeEventUnsubscribe(), unstakeEventUnsubscribe(), restakeEventUnsubscribe()]);
         return true;
       } catch (e) {
         return false;

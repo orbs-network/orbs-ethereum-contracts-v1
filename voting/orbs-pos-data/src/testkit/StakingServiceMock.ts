@@ -19,19 +19,21 @@ type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
 export class StakingServiceMock implements IStakingService, ITxCreatingServiceMock {
   public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
+  private cooldownTimeInSeconds: number;
 
   private stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
   private addressToTotalStakedAmountMap: Map<string, number> = new Map();
-  private addressToStakeStatus: Map<string, IStakingStatus> = new Map();
+  private addressToCooldownStatus: Map<string, IStakingStatus> = new Map();
   private totalStakedTokens: string = '0';
 
-  private stakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>>;
-  private restakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>>;
-  private unstakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>>;
-  private withdrewEventsMap: Map<string, Map<number, StakingServiceEventCallback>>;
+  private stakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
+  private restakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
+  private unstakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
+  private withdrewEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
 
   constructor(autoCompleteTxes: boolean = true) {
     this.txsMocker = new TxsMocker<TTxCreatingActionNames>(autoCompleteTxes);
+    this.cooldownTimeInSeconds = 1000;
   }
 
   // CONFIG //
@@ -39,12 +41,21 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     this.txsMocker.setFromAccount(address);
   }
 
+  getCooldownTime(): number {
+    return this.cooldownTimeInSeconds;
+  }
+
+  setCooldownTime(cooldownTimeInSeconds: number): void {
+    this.cooldownTimeInSeconds = cooldownTimeInSeconds;
+  }
+
   // WRITE (TX creation) //
   stake(amount: number): PromiEvent<TransactionReceipt> {
+    const stakeOwner = this.txsMocker.getFromAccount();
+
     const txEffect = () => {
-      const stakeOwner = this.txsMocker.getFromAccount();
-      const currentStakedAmount = this.addressToTotalStakedAmountMap.get(stakeOwner) || 0;
-      const totalStakedAmount = currentStakedAmount + amount;
+      const totalStakedAmount = this.updateStakedTokensForOwner(stakeOwner, amount);
+      this.updateTotalStakedTokens(amount);
 
       this.triggerStakedEvent(stakeOwner, amount.toString(), totalStakedAmount.toString());
     };
@@ -52,18 +63,39 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   unstake(amount: number): PromiEvent<TransactionReceipt> {
+    const stakeOwner = this.txsMocker.getFromAccount();
     const txEffect = () => {
-      const stakeOwner = this.txsMocker.getFromAccount();
-      const currentStakedAmount = this.addressToTotalStakedAmountMap.get(stakeOwner) || 0;
-      const totalStakedAmount = currentStakedAmount - amount;
+      const totalStakedAmount = this.updateStakedTokensForOwner(stakeOwner, -amount);
+      this.updateTotalStakedTokens(-amount);
+
+      this.setOrUpdateCooldownStatusForOwner(stakeOwner, amount, true);
 
       this.triggerUnstakedEvent(stakeOwner, amount.toString(), totalStakedAmount.toString());
     };
+
     return this.txsMocker.createTxOf('unstake', txEffect);
   }
 
   restake(): PromiEvent<TransactionReceipt> {
-    return this.txsMocker.createTxOf('restake');
+    const stakeOwner = this.txsMocker.getFromAccount();
+    let txEffect = () => {}; // No orbs in cooldown, no effect
+
+    // TODO : O.L : Should think about adding a mechanism that fails if the user does not have orbs in cooldown.
+
+    // Owner has orbs in cooldown ?
+    if (this.addressToCooldownStatus.has(stakeOwner)) {
+      const cooldownStatus = this.addressToCooldownStatus.get(stakeOwner);
+      const { cooldownAmount } = cooldownStatus;
+
+      txEffect = () => {
+        // Nothing left in cooldown
+        this.clearCooldownStatusForOwner(stakeOwner);
+
+        this.updateTotalStakedTokens(cooldownAmount);
+      };
+    }
+
+    return this.txsMocker.createTxOf('restake', txEffect);
   }
 
   withdraw(): PromiEvent<TransactionReceipt> {
@@ -81,7 +113,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   async readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
-    const status = this.addressToStakeStatus.get(stakeOwner);
+    const status = this.addressToCooldownStatus.get(stakeOwner);
     return status ? status : { cooldownAmount: 0, cooldownEndTime: 0 };
   }
 
@@ -91,6 +123,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
   // STATE SUBSCRIPTIONS //
   subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean> {
+    // DEV_NOTE : This implementation is identical to the real service
     const callbackAdapter = (error: Error, stakedAmountInEvent: string, totalStakedAmount: string) =>
       callback(error, totalStakedAmount);
 
@@ -100,7 +133,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
     return async () => {
       try {
-        await Promise.all([stakeEventUnsubscribe, unstakeEventUnsubscribe, restakeEventUnsubscribe]);
+        await Promise.all([stakeEventUnsubscribe(), unstakeEventUnsubscribe(), restakeEventUnsubscribe()]);
         return true;
       } catch (e) {
         return false;
@@ -144,7 +177,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   public withUnstakeStatus(address: string, status: IStakingStatus) {
-    this.addressToStakeStatus.set(address, status);
+    this.addressToCooldownStatus.set(address, status);
   }
 
   public withStakingContractAddress(address: string) {
@@ -180,5 +213,54 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     totalStakedAmount: string,
   ) {
     callAllEventCallbacks(eventCallbackMap, stakeOwner, callback => callback(null, stakedAmount, totalStakedAmount));
+  }
+
+  // Inner state changes
+  private updateTotalStakedTokens(byAmount: number) {
+    const currentTotalStakedSumAsNumber = parseInt(this.totalStakedTokens);
+    const updatedTotalStakedSumAsNumber = currentTotalStakedSumAsNumber + byAmount;
+    this.totalStakedTokens = updatedTotalStakedSumAsNumber.toString();
+  }
+
+  private updateStakedTokensForOwner(stakeOwner: string, byAmount: number): number {
+    const currentStakedAmount = this.addressToTotalStakedAmountMap.get(stakeOwner) || 0;
+    const totalStakedAmountForOwner = currentStakedAmount + byAmount;
+    this.addressToTotalStakedAmountMap.set(stakeOwner, totalStakedAmountForOwner);
+
+    return totalStakedAmountForOwner;
+  }
+
+  private setOrUpdateCooldownStatusForOwner(
+    stakeOwner: string,
+    byAmount: number,
+    shouldResetCooldownTimeFromNow: boolean = false,
+  ) {
+    if (!this.addressToCooldownStatus.has(stakeOwner)) {
+      const defaultCooldownStatus: IStakingStatus = {
+        cooldownAmount: 0,
+        cooldownEndTime: this.getCooldownTimeFromNow(),
+      };
+
+      this.addressToCooldownStatus.set(stakeOwner, defaultCooldownStatus);
+    }
+
+    const cooldownStatus = this.addressToCooldownStatus.get(stakeOwner);
+
+    // Update amount
+    cooldownStatus.cooldownAmount += byAmount;
+
+    if (shouldResetCooldownTimeFromNow) {
+      cooldownStatus.cooldownEndTime = this.getCooldownTimeFromNow();
+    }
+  }
+
+  private clearCooldownStatusForOwner(stakeOwner: string) {
+    this.addressToCooldownStatus.delete(stakeOwner);
+  }
+
+  private getCooldownTimeFromNow(): number {
+    const nowInSeconds = new Date().getTime() / 1000;
+
+    return nowInSeconds + this.cooldownTimeInSeconds;
   }
 }
