@@ -31,7 +31,10 @@ export interface IStakingService {
   readTotalStakedTokens(): Promise<string>;
   readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
 
-  // TODO : NEXT_MAJOR : Change to 'staked' on next major version
+  // TODO : NEXT_MAJOR : Delete this
+  /**
+   * @deprecated
+   */
   subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): TUnsubscribeFunction;
 
   subscribeToStakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction;
