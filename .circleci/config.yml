@@ -79,7 +79,6 @@ jobs:
       - store_test_results:
           path: rewards-distribution/ethereum/_reports
 
-
   posv2-contracts-e2e:
     docker:
       - image: aviramstern/aviram-orbs:ubuntu-go-node
