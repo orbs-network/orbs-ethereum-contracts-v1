@@ -23,11 +23,9 @@ import { ITypedEventData, TUnsubscribeFunction } from './contractsTypes/contract
 
 /**
  * It just so happens that all of the staking related events have the same signature.
+ * DEV_NOTE : The real object will also have array accessors ("1", "2", "3") that match the named members.
  */
 interface IStakingContractEventValues {
-  1: string;
-  2: string;
-  3: string;
   stakeOwner: string;
   amount: string; // Amount for the event
   totalStakedAmount: string; // Total staked amount for given owner

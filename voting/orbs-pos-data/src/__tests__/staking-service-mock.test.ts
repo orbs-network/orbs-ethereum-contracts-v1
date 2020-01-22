@@ -12,8 +12,8 @@ import 'jest-expect-message';
 
 describe(`Staking service mock`, () => {
   testTxCreatingMethods();
-  testDataReadingMethodsWitchMockHelpers();
-  testDataReadingMethodsWitchRealAPI();
+  testDataReadingMethodsWithMockHelpers();
+  testImitationOfRealContractLogic();
   testStateSubscription();
 });
 
@@ -26,7 +26,7 @@ function testTxCreatingMethods() {
   });
 }
 
-function testDataReadingMethodsWitchRealAPI() {
+function testImitationOfRealContractLogic() {
   describe('Data reading methods with real writing API', () => {
     const ownerAddress = '0xowner';
     let stakingService: IStakingService;
@@ -105,7 +105,7 @@ function testDataReadingMethodsWitchRealAPI() {
   });
 }
 
-function testDataReadingMethodsWitchMockHelpers() {
+function testDataReadingMethodsWithMockHelpers() {
   describe(`Data reading methods with mock helpers`, () => {
     let stakingServiceMock: StakingServiceMock;
 
