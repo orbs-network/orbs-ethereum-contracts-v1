@@ -76,8 +76,8 @@ function testImitationOfRealContractLogic() {
     });
 
     it(`Should return the correct cooldown status after stake, unstake and restake`, async () => {
-      const cooldownPeriodTimeInSeconds = 100;
-      (stakingService as StakingServiceMock).setCooldownTime(cooldownPeriodTimeInSeconds);
+      const cooldownReleaseTimestamp = 123456;
+      (stakingService as StakingServiceMock).setCooldownReleaseTimestamp(cooldownReleaseTimestamp);
 
       const beforeResult = await stakingService.readUnstakeStatus(ownerAddress);
       expect(beforeResult).toEqual({ cooldownAmount: 0, cooldownEndTime: 0 });
@@ -85,10 +85,8 @@ function testImitationOfRealContractLogic() {
       // Stake and unstake to create a cooldown
       await stakingService.stake(5000);
       await stakingService.unstake(2000);
-      // DEV_NOTE : A bit fragile, because we are measuring seconds, all actions will happen in the same second.
-      //            we should mock 'Date().getTime'
-      const currentTime = new Date().getTime() / 1000;
-      const expectedCooldownTime = currentTime + cooldownPeriodTimeInSeconds;
+
+      const expectedCooldownTime = cooldownReleaseTimestamp;
 
       const afterResult = await stakingService.readUnstakeStatus(ownerAddress);
       expect(afterResult).toEqual({ cooldownAmount: 2000, cooldownEndTime: expectedCooldownTime });

@@ -19,7 +19,7 @@ type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
 export class StakingServiceMock implements IStakingService, ITxCreatingServiceMock {
   public readonly txsMocker: TxsMocker<TTxCreatingActionNames>;
-  private cooldownTimeInSeconds: number;
+  private cooldownReleaseTimestamp: number;
 
   private stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
   private addressToTotalStakedAmountMap: Map<string, number> = new Map();
@@ -33,7 +33,8 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
   constructor(autoCompleteTxes: boolean = true) {
     this.txsMocker = new TxsMocker<TTxCreatingActionNames>(autoCompleteTxes);
-    this.cooldownTimeInSeconds = 1000;
+    const nowInSeconds = new Date().getTime() / 1000;
+    this.cooldownReleaseTimestamp = nowInSeconds + 60 * 60 * 24;
   }
 
   // CONFIG //
@@ -41,12 +42,12 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     this.txsMocker.setFromAccount(address);
   }
 
-  getCooldownTime(): number {
-    return this.cooldownTimeInSeconds;
+  getCooldownReleaseTimestamp(): number {
+    return this.cooldownReleaseTimestamp;
   }
 
-  setCooldownTime(cooldownTimeInSeconds: number): void {
-    this.cooldownTimeInSeconds = cooldownTimeInSeconds;
+  setCooldownReleaseTimestamp(cooldownReleaseTimestamp: number): void {
+    this.cooldownReleaseTimestamp = cooldownReleaseTimestamp;
   }
 
   // WRITE (TX creation) //
@@ -68,7 +69,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
       const totalStakedAmount = this.updateStakedTokensForOwner(stakeOwner, -amount);
       this.updateTotalStakedTokens(-amount);
 
-      this.setOrUpdateCooldownStatusForOwner(stakeOwner, amount, true);
+      this.setOrUpdateCooldownStatusForOwner(stakeOwner, amount);
 
       this.triggerUnstakedEvent(stakeOwner, amount.toString(), totalStakedAmount.toString());
     };
@@ -79,8 +80,6 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   restake(): PromiEvent<TransactionReceipt> {
     const stakeOwner = this.txsMocker.getFromAccount();
     let txEffect = () => {}; // No orbs in cooldown, no effect
-
-    // TODO : O.L : Should think about adding a mechanism that fails if the user does not have orbs in cooldown.
 
     // Owner has orbs in cooldown ?
     if (this.addressToCooldownStatus.has(stakeOwner)) {
@@ -230,15 +229,11 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     return totalStakedAmountForOwner;
   }
 
-  private setOrUpdateCooldownStatusForOwner(
-    stakeOwner: string,
-    byAmount: number,
-    shouldResetCooldownTimeFromNow: boolean = false,
-  ) {
+  private setOrUpdateCooldownStatusForOwner(stakeOwner: string, byAmount: number) {
     if (!this.addressToCooldownStatus.has(stakeOwner)) {
       const defaultCooldownStatus: IStakingStatus = {
         cooldownAmount: 0,
-        cooldownEndTime: this.getCooldownTimeFromNow(),
+        cooldownEndTime: this.cooldownReleaseTimestamp,
       };
 
       this.addressToCooldownStatus.set(stakeOwner, defaultCooldownStatus);
@@ -248,19 +243,10 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
     // Update amount
     cooldownStatus.cooldownAmount += byAmount;
-
-    if (shouldResetCooldownTimeFromNow) {
-      cooldownStatus.cooldownEndTime = this.getCooldownTimeFromNow();
-    }
+    cooldownStatus.cooldownEndTime = this.cooldownReleaseTimestamp;
   }
 
   private clearCooldownStatusForOwner(stakeOwner: string) {
     this.addressToCooldownStatus.delete(stakeOwner);
-  }
-
-  private getCooldownTimeFromNow(): number {
-    const nowInSeconds = new Date().getTime() / 1000;
-
-    return nowInSeconds + this.cooldownTimeInSeconds;
   }
 }
