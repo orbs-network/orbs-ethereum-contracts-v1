@@ -92,8 +92,8 @@ export class TxsMocker<T extends string> {
         this.sendTxConfirmation(eventEmitter, 1);
         this.resolveTx(eventEmitter);
         resolve();
-      }, 1);  
-    })
+      }, 1);
+    });
   }
 
   public sendTxHash(eventEmitter: any): void {

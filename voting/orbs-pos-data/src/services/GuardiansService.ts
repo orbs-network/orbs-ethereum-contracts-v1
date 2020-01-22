@@ -20,8 +20,8 @@ import { IGuardianData } from '../interfaces/IGuardianData';
 import { IGuardianInfo } from '../interfaces/IGuardianInfo';
 import { IGuardiansService } from '../interfaces/IGuardiansService';
 import { IOrbsClientService } from '../interfaces/IOrbsClientService';
-import { NOT_DELEGATED, ORBS_TDE_ETHEREUM_BLOCK, VALID_VOTE_LENGTH } from "./consts";
-import { readUpcomingElectionBlockNumber } from "./utils";
+import { NOT_DELEGATED, ORBS_TDE_ETHEREUM_BLOCK, VALID_VOTE_LENGTH } from './consts';
+import { readUpcomingElectionBlockNumber } from './utils';
 
 function ensureNumericValue(numberOrString: number | string): number {
   return typeof numberOrString === 'string' ? parseInt(numberOrString) : numberOrString;

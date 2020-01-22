@@ -32,7 +32,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
       for (let callback of this.stakeAmountChangeEventsMap.values()) {
         callback(null, newBalance.toString());
       }
-    }
+    };
     return this.txsMocker.createTxOf('stake', txEffect);
   }
 
@@ -44,7 +44,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
       for (let callback of this.stakeAmountChangeEventsMap.values()) {
         callback(null, newBalance.toString());
       }
-    }
+    };
     return this.txsMocker.createTxOf('unstake', txEffect);
   }
 
@@ -76,14 +76,11 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   // SUBSCRIPTIONS //
-  subscribeToStakeAmountChange(
-    stakeOwner: string,
-    callback: StakeAmountChangeCallback,
-  ): () => Promise<boolean> {
+  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean> {
     this.stakeAmountChangeEventsMap.set(stakeOwner, callback);
     return () => {
       this.stakeAmountChangeEventsMap.delete(stakeOwner);
-      return Promise.resolve(true)
+      return Promise.resolve(true);
     };
   }
 

@@ -56,7 +56,7 @@ export class StakingService implements IStakingService {
   }
 
   async readTotalStakedTokens(): Promise<string> {
-    return this.stakingContract.methods.getTotalStakedTokens().call(); 
+    return this.stakingContract.methods.getTotalStakedTokens().call();
   }
 
   async readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
