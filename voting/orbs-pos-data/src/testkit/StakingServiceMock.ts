@@ -8,7 +8,7 @@ import {
 import { TxsMocker } from './TxsMocker';
 import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 import { TUnsubscribeFunction } from '../services/contractsTypes/contractTypes';
-import { SingleKeyEventSubscriber } from './utils/SingleKeyEventSubscriber';
+import { EventSubscriber } from './utils/EventSubscriber';
 
 type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
@@ -21,18 +21,10 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   private addressToCooldownStatus: Map<string, IStakingStatus> = new Map();
   private totalStakedTokens: string = '0';
 
-  private stakedEventsSubscriber: SingleKeyEventSubscriber<
-    StakingServiceEventCallback
-  > = new SingleKeyEventSubscriber();
-  private restakedEventsSubscriber: SingleKeyEventSubscriber<
-    StakingServiceEventCallback
-  > = new SingleKeyEventSubscriber();
-  private unstakedEventsSubscriber: SingleKeyEventSubscriber<
-    StakingServiceEventCallback
-  > = new SingleKeyEventSubscriber();
-  private withdrewEventsSubscriber: SingleKeyEventSubscriber<
-    StakingServiceEventCallback
-  > = new SingleKeyEventSubscriber();
+  private stakedEventsSubscriber: EventSubscriber<StakingServiceEventCallback> = new EventSubscriber();
+  private restakedEventsSubscriber: EventSubscriber<StakingServiceEventCallback> = new EventSubscriber();
+  private unstakedEventsSubscriber: EventSubscriber<StakingServiceEventCallback> = new EventSubscriber();
+  private withdrewEventsSubscriber: EventSubscriber<StakingServiceEventCallback> = new EventSubscriber();
 
   constructor(autoCompleteTxes: boolean = true) {
     this.txsMocker = new TxsMocker<TTxCreatingActionNames>(autoCompleteTxes);
@@ -201,7 +193,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
    * this function.
    */
   private triggerStakingContractEvent(
-    singleKeyEventSubscriber: SingleKeyEventSubscriber<StakingServiceEventCallback>,
+    singleKeyEventSubscriber: EventSubscriber<StakingServiceEventCallback>,
     stakeOwner: string,
     stakedAmount: string,
     totalStakedAmount: string,
