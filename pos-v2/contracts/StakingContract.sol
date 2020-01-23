@@ -45,6 +45,10 @@ contract StakingContract is IStakingContract, IMigratableStakingContract {
 
     IStakingListener stakingListener;
 
+    // The gas limit for stake change notifications.
+    uint public constant UNSTAKE_NOTIFICATION_GAS_LIMIT = 2000000;
+    event Error(string message);
+
     // Represents whether the contract accepts new staking requests. Please note, that even when it's turned off,
     // it'd be still possible to unstake or withdraw tokens.
     //
@@ -219,8 +223,10 @@ contract StakingContract is IStakingContract, IMigratableStakingContract {
         stakeData.cooldownEndTime = now.add(cooldownPeriodInSec);
 
         totalStakedTokens = totalStakedTokens.sub(_amount);
-        stakingListener.unstaked(stakeOwner, _amount);
         emit Unstaked(stakeOwner, _amount, stakeData.amount);
+        if (!address(stakingListener).call.gas(UNSTAKE_NOTIFICATION_GAS_LIMIT)(abi.encodeWithSelector(stakingListener.unstaked.selector, stakeOwner, _amount))) {
+            emit Error("Oh No! error notifying stakingListener of unstake");
+        }
 
     }
 
