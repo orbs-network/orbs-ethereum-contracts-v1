@@ -15,5 +15,6 @@ module.exports = {
     "json",
     "node"
   ],
-  "transformIgnorePatterns": ['<rootDir>/node_modules/']
+  "transformIgnorePatterns": ['<rootDir>/node_modules/'],
+  "setupFilesAfterEnv": ["jest-expect-message"]
 };
