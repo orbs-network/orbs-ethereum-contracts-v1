@@ -340,6 +340,7 @@ contract StakingContract is IStakingContract, IMigratableStakingContract {
         require(_totalAmount == expectedTotalAmount, "StakingContract::distributeRewards - incorrect total amount");
 
         totalStakedTokens = totalStakedTokens.add(_totalAmount);
+        stakingListener.distributedStake(_stakeOwners, _amounts);
     }
 
     /// @dev Returns the stake of the specified stake owner (excluding unstaked tokens).

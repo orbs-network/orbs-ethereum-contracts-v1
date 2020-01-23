@@ -81,6 +81,11 @@ contract('rewards-level-flows', async () => {
       amount: expectedRewards,
       totalStakedAmount: initialStake.add(expectedRewards)
     });
+    expect(r).to.have.committeeChangedEvent({
+      orbsAddrs: [v.orbsAddress],
+      addrs: [v.address],
+      stakes: [initialStake.add(expectedRewards)]
+    })
   });
 
 });

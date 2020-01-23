@@ -88,7 +88,15 @@ contract Elections is IStakingListener, Ownable {
 		emit Delegated(msg.sender, to);
 	}
 
-	function staked(address staker, uint256 amount) external onlyStakingContract {
+	function distributedStake(address[] stakeOwners, uint256[] amounts) external onlyStakingContract {
+		require(stakeOwners.length == amounts.length);
+
+		for (uint i = 0; i < stakeOwners.length; i++) {
+			staked(stakeOwners[i], amounts[i]);
+		}
+	}
+
+	function staked(address staker, uint256 amount) public onlyStakingContract {
 		address delegatee = delegations[staker];
 		if (delegatee == address(0)) {
 			delegatee = staker;
@@ -282,4 +290,6 @@ contract Elections is IStakingListener, Ownable {
 		}
 		return (0, false);
 	}
+
+
 }
