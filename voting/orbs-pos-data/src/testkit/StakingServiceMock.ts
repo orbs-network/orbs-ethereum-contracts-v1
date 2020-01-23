@@ -8,12 +8,7 @@ import {
 import { TxsMocker } from './TxsMocker';
 import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
 import { TUnsubscribeFunction } from '../services/contractsTypes/contractTypes';
-import {
-  callAllEventCallbacks,
-  ensureAndGetInnerMap,
-  setValueWithUniqueIdAndUnsubscribeFunction,
-} from './testKitHelpers';
-import { CANCELLED } from 'dns';
+import { SingleKeyEventSubscriber } from './utils/SingleKeyEventSubscriber';
 
 type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
 
@@ -26,10 +21,18 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   private addressToCooldownStatus: Map<string, IStakingStatus> = new Map();
   private totalStakedTokens: string = '0';
 
-  private stakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
-  private restakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
-  private unstakedEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
-  private withdrewEventsMap: Map<string, Map<number, StakingServiceEventCallback>> = new Map();
+  private stakedEventsSubscriber: SingleKeyEventSubscriber<
+    StakingServiceEventCallback
+  > = new SingleKeyEventSubscriber();
+  private restakedEventsSubscriber: SingleKeyEventSubscriber<
+    StakingServiceEventCallback
+  > = new SingleKeyEventSubscriber();
+  private unstakedEventsSubscriber: SingleKeyEventSubscriber<
+    StakingServiceEventCallback
+  > = new SingleKeyEventSubscriber();
+  private withdrewEventsSubscriber: SingleKeyEventSubscriber<
+    StakingServiceEventCallback
+  > = new SingleKeyEventSubscriber();
 
   constructor(autoCompleteTxes: boolean = true) {
     this.txsMocker = new TxsMocker<TTxCreatingActionNames>(autoCompleteTxes);
@@ -142,27 +145,19 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
   // EVENTS SUBSCRIPTIONS //
   subscribeToStakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
-    const stakeOwnerCallbacksMap = ensureAndGetInnerMap(this.stakedEventsMap, stakeOwner);
-
-    return setValueWithUniqueIdAndUnsubscribeFunction(stakeOwnerCallbacksMap, callback);
+    return this.stakedEventsSubscriber.subscribeToEvent(stakeOwner, callback);
   }
 
   subscribeToRestakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
-    const stakeOwnerCallbacksMap = ensureAndGetInnerMap(this.restakedEventsMap, stakeOwner);
-
-    return setValueWithUniqueIdAndUnsubscribeFunction(stakeOwnerCallbacksMap, callback);
+    return this.restakedEventsSubscriber.subscribeToEvent(stakeOwner, callback);
   }
 
   subscribeToUnstakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
-    const stakeOwnerCallbacksMap = ensureAndGetInnerMap(this.unstakedEventsMap, stakeOwner);
-
-    return setValueWithUniqueIdAndUnsubscribeFunction(stakeOwnerCallbacksMap, callback);
+    return this.unstakedEventsSubscriber.subscribeToEvent(stakeOwner, callback);
   }
 
   subscribeToWithdrewEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
-    const stakeOwnerCallbacksMap = ensureAndGetInnerMap(this.withdrewEventsMap, stakeOwner);
-
-    return setValueWithUniqueIdAndUnsubscribeFunction(stakeOwnerCallbacksMap, callback);
+    return this.withdrewEventsSubscriber.subscribeToEvent(stakeOwner, callback);
   }
 
   // Test Utils //
@@ -186,19 +181,19 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   // Subscription triggering
 
   private triggerStakedEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
-    this.triggerStakingContractEvent(this.stakedEventsMap, stakeOwner, stakedAmount, totalStakedAmount);
+    this.triggerStakingContractEvent(this.stakedEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
   private triggerRestakedEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
-    this.triggerStakingContractEvent(this.restakedEventsMap, stakeOwner, stakedAmount, totalStakedAmount);
+    this.triggerStakingContractEvent(this.restakedEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
   private triggerUnstakedEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
-    this.triggerStakingContractEvent(this.unstakedEventsMap, stakeOwner, stakedAmount, totalStakedAmount);
+    this.triggerStakingContractEvent(this.unstakedEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
   private triggerWithdrewEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
-    this.triggerStakingContractEvent(this.withdrewEventsMap, stakeOwner, stakedAmount, totalStakedAmount);
+    this.triggerStakingContractEvent(this.withdrewEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
   /**
@@ -206,12 +201,14 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
    * this function.
    */
   private triggerStakingContractEvent(
-    eventCallbackMap: Map<string, Map<number, StakingServiceEventCallback>>,
+    singleKeyEventSubscriber: SingleKeyEventSubscriber<StakingServiceEventCallback>,
     stakeOwner: string,
     stakedAmount: string,
     totalStakedAmount: string,
   ) {
-    callAllEventCallbacks(eventCallbackMap, stakeOwner, callback => callback(null, stakedAmount, totalStakedAmount));
+    singleKeyEventSubscriber.triggerEventCallbacks(stakeOwner, callback =>
+      callback(null, stakedAmount, totalStakedAmount),
+    );
   }
 
   // Inner state changes
