@@ -104,7 +104,7 @@ export class StakingService implements IStakingService {
 
   // Events Subscriptions //
   public subscribeToStakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
-    const eventSubscriptionFunction = this.stakingContract.events.Stake;
+    const eventSubscriptionFunction = this.stakingContract.events.Staked;
     return this.subscribeToStakingContractEvent(eventSubscriptionFunction, stakeOwner, callback);
   }
 
