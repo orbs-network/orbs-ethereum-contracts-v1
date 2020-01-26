@@ -1,10 +1,10 @@
 import Web3 from "web3";
-declare const web3: Web3;
-
 import BN from "bn.js";
 import {Driver} from "./driver";
 import chai from "chai";
-import {feeAddedToBucketEvents} from "./event-parsing";
+import {feeAddedToBucketEvents, rewardAssignedEvents} from "./event-parsing";
+
+declare const web3: Web3;
 
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
@@ -28,10 +28,15 @@ contract('rewards-level-flows', async () => {
   it('should distribute fees to validators in committee', async () => {
     const d = await Driver.new();
 
-    const initialStake = new BN(1000);
-    const v = d.newParticipant();
-    await v.stake(initialStake);
-    await v.registerAsValidator();
+    const initStakeLesser = new BN(17000);
+    const v1 = d.newParticipant();
+    await v1.stake(initStakeLesser);
+    await v1.registerAsValidator();
+
+    const initStakeLarger = new BN(21000);
+    const v2 = d.newParticipant();
+    await v2.stake(initStakeLarger);
+    await v2.registerAsValidator();
 
     const rate = 20000000;
     const subs = await d.newSubscriber('tier', rate);
@@ -42,7 +47,7 @@ contract('rewards-level-flows', async () => {
     await d.erc20.approve(subs.address, payment, {from: appOwner.address});
 
     let r = await subs.createVC(payment, {from: appOwner.address});
-    let startTime = await txTimestamp(r); // TODO
+    let startTime = await txTimestamp(r);
 
     const feesAdded = feeAddedToBucketEvents(r);
 
@@ -67,24 +72,52 @@ contract('rewards-level-flows', async () => {
     await sleep(3000);
 
     r = await d.rewards.assignRewards();
-    const endTime = await txTimestamp(r); // TODO
+    const rewardAssigned = rewardAssignedEvents(r);
+    const endTime = await txTimestamp(r);
 
     const elapsedTime = endTime - startTime;
+    const totalCommitteeStake = initStakeLesser.add(initStakeLarger);
     const expectedRewards = new BN(Math.floor(rate * elapsedTime / MONTH_IN_SECONDS));
+    const expectedRewardsArr  = [(expectedRewards.mul(initStakeLarger).div(totalCommitteeStake)), (expectedRewards.mul(initStakeLesser).div(totalCommitteeStake))];
+    const remainder = expectedRewards.sub(expectedRewardsArr[1]).sub(expectedRewardsArr[0]);
 
-    r = await d.rewards.getBalance(v.address);
-    expect(r).to.be.bignumber.equal(new BN(expectedRewards));
+    const remainderWinnerIdx = endTime % expectedRewardsArr.length;
+    expectedRewardsArr[remainderWinnerIdx] = expectedRewardsArr[remainderWinnerIdx].add(remainder);
 
-    r = await d.rewards.distributeRewards([v.address], [expectedRewards], {from: v.address});
+    let r1:any = await d.rewards.getBalance(v1.address);
+    let r2:any = await d.rewards.getBalance(v2.address);
+
+    if (r1.toNumber() != expectedRewardsArr[1].toNumber() ||
+        r2.toNumber() != expectedRewardsArr[0].toNumber()) {
+        console.log("events start ----------------\n", rewardAssigned);
+        console.log("events end   ----------------");
+    }
+    expect(r1).to.be.bignumber.equal(new BN(expectedRewardsArr[1]));
+    expect(r2).to.be.bignumber.equal(new BN(expectedRewardsArr[0]));
+
+    r = await d.rewards.distributeRewards([v1.address], [expectedRewardsArr[1]], {from: v1.address});
     expect(r).to.have.a.stakedEvent({
-      stakeOwner: v.address,
-      amount: expectedRewards,
-      totalStakedAmount: initialStake.add(expectedRewards)
+      stakeOwner: v1.address,
+      amount: expectedRewardsArr[1],
+      totalStakedAmount: initStakeLesser.add(expectedRewardsArr[1])
+    });
+
+    expect(r).to.have.committeeChangedEvent({
+      orbsAddrs: [v2.orbsAddress, v1.orbsAddress],
+      addrs: [v2.address, v1.address],
+      stakes: [initStakeLarger, initStakeLesser.add(expectedRewardsArr[1])]
+    });
+
+    r = await d.rewards.distributeRewards([v2.address], [expectedRewardsArr[0]], {from: v2.address});
+    expect(r).to.have.a.stakedEvent({
+      stakeOwner: v2.address,
+      amount: expectedRewardsArr[0],
+      totalStakedAmount: initStakeLarger.add(expectedRewardsArr[0])
     });
     expect(r).to.have.committeeChangedEvent({
-      orbsAddrs: [v.orbsAddress],
-      addrs: [v.address],
-      stakes: [initialStake.add(expectedRewards)]
+      orbsAddrs: [v2.orbsAddress, v1.orbsAddress],
+      addrs: [v2.address, v1.address],
+      stakes: [initStakeLarger.add(expectedRewardsArr[0]), initStakeLesser.add(expectedRewardsArr[1])]
     })
   });
 

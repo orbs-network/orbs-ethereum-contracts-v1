@@ -25,13 +25,12 @@ contract Rewards is ICommitteeListener, Ownable {
     IERC20 erc20;
     address committeeProvider;
 
-    uint256 constant MAX_WEIGHT = 10000000000000000000; // small enough to multiply by total token supply without overflow
-
     struct CommitteeMember {
         address addr;
-        uint weight; // on a scale from 0 to MAX_WEIGHT
+        uint256 stake;
     }
 
+    uint256 currentTotalStake;
     CommitteeMember[] currentCommittee;
 
 
@@ -69,22 +68,16 @@ contract Rewards is ICommitteeListener, Ownable {
 
         assignRewards(); // We want the previous committee to take the rewards
 
-        uint256 totalStake = 0;
-        for (uint i = 0; i < stakes.length; i++) {
-            totalStake += stakes[i];
-        }
-
+        uint256 totalStake;
         currentCommittee.length = addrs.length;
-        for (i = 0; i < addrs.length; i++) {
-            uint weight = 0;
-            if (totalStake > 0) {
-                weight = MAX_WEIGHT.mul(stakes[i]).div(totalStake);
-            }
+        for (uint i = 0; i < addrs.length; i++) {
+            totalStake += stakes[i];
             currentCommittee[i] = CommitteeMember({
                 addr: addrs[i],
-                weight:  weight
+                stake: stakes[i]
             });
         }
+        currentTotalStake = totalStake;
     }
 
     uint constant MAX_REWARD_BUCKET_ITERATIONS = 6;
@@ -99,7 +92,7 @@ contract Rewards is ICommitteeListener, Ownable {
             uint256 remainingBucketTime = bucketEnd.sub(lastPayedAt);
             uint256 amount = feeBuckets[bucketStart] * duration / remainingBucketTime;
 
-            assignAmountToCommitteeMembers(amount);
+            assignAmountToCommitteeMembers(amount); // TODO for an empty committee or a committee with 0 total stake the amount will be subtracted from the bucket and locked in the contract FOREVER
             feeBuckets[bucketStart] = feeBuckets[bucketStart].sub(amount);
             lastPayedAt = payUntil;
 
@@ -116,8 +109,14 @@ contract Rewards is ICommitteeListener, Ownable {
 
     function assignAmountToCommitteeMembers(uint256 amount) private {
         uint256 totalAssigned = 0;
+        uint256 totalStake = currentTotalStake;
+
+        if (totalStake == 0) { // TODO - handle this case. consider also an empty committee. consider returning a boolean saying if the amount was successfully distributed or not and handle on caller side.
+            return;
+        }
+
         for (uint i = 0; i < currentCommittee.length; i++) {
-            uint256 curAmount = amount.mul(currentCommittee[i].weight).div(MAX_WEIGHT);
+            uint256 curAmount = amount.mul(currentCommittee[i].stake).div(totalStake);
             address curAddr = currentCommittee[i].addr;
             balance[curAddr] = balance[curAddr].add(curAmount);
             emit RewardAssigned(curAddr, curAmount, balance[curAddr]);
