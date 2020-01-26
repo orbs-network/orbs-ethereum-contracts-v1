@@ -84,14 +84,9 @@ contract('rewards-level-flows', async () => {
     const remainderWinnerIdx = endTime % expectedRewardsArr.length;
     expectedRewardsArr[remainderWinnerIdx] = expectedRewardsArr[remainderWinnerIdx].add(remainder);
 
-    let r1:any = await d.rewards.getBalance(v1.address);
-    let r2:any = await d.rewards.getBalance(v2.address);
+    let r1 = await d.rewards.getBalance(v1.address);
+    let r2 = await d.rewards.getBalance(v2.address);
 
-    if (r1.toNumber() != expectedRewardsArr[1].toNumber() ||
-        r2.toNumber() != expectedRewardsArr[0].toNumber()) {
-        console.log("events start ----------------\n", rewardAssigned);
-        console.log("events end   ----------------");
-    }
     expect(r1).to.be.bignumber.equal(new BN(expectedRewardsArr[1]));
     expect(r2).to.be.bignumber.equal(new BN(expectedRewardsArr[0]));
 
