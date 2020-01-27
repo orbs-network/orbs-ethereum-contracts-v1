@@ -14,6 +14,7 @@ describe(`Staking service mock`, () => {
   testTxCreatingMethods();
   testDataReadingMethodsWithMockHelpers();
   testImitationOfRealContractLogic();
+  testImitationOfRealEventsSubscription();
   testStateSubscription();
 });
 
@@ -26,6 +27,7 @@ function testTxCreatingMethods() {
   });
 }
 
+// TODO : FUTURE : Add test with multiple owners and check the 'total staked amount'
 function testImitationOfRealContractLogic() {
   describe('Data reading methods with real writing API', () => {
     const ownerAddress = '0xowner';
@@ -199,6 +201,66 @@ function testStateSubscription() {
       // but balance did change
       const lastBalance = await stakingService.readStakeBalanceOf(ownerAddress);
       expect(lastBalance).toEqual('1700000');
+    });
+  });
+}
+
+function testImitationOfRealEventsSubscription() {
+  describe('RealEvents subscription', () => {
+    const ownerAddress = '0xowner';
+    let stakingService: IStakingService;
+    let callbackSpy: jest.Mock;
+
+    beforeEach(async () => {
+      stakingService = new StakingServiceMock();
+      stakingService.setFromAccount(ownerAddress);
+
+      // Starting with 1000 staked orbs
+      await stakingService.stake(1000);
+
+      callbackSpy = jest.fn();
+    });
+
+    it('Should trigger "Staked" event after staking', async () => {
+      stakingService.subscribeToStakedEvent(ownerAddress, callbackSpy);
+
+      await stakingService.stake(100);
+
+      expect(callbackSpy).toBeCalledTimes(1);
+      expect(callbackSpy).toBeCalledWith(null, '100', '1100');
+    });
+
+    it('Should trigger "Unstaked" event after unstaking', async () => {
+      stakingService.subscribeToUnstakedEvent(ownerAddress, callbackSpy);
+
+      await stakingService.unstake(100);
+
+      expect(callbackSpy).toBeCalledTimes(1);
+      expect(callbackSpy).toBeCalledWith(null, '100', '900');
+    });
+
+    it('Should trigger "Restaked" event after restaking', async () => {
+      stakingService.subscribeToRestakedEvent(ownerAddress, callbackSpy);
+
+      // Unstake so we could restake
+      await stakingService.unstake(400);
+
+      await stakingService.restake();
+
+      expect(callbackSpy).toBeCalledTimes(1);
+      expect(callbackSpy).toBeCalledWith(null, '400', '1000');
+    });
+
+    it('Should trigger "Withdrew" event after withdrawing', async () => {
+      stakingService.subscribeToWithdrewEvent(ownerAddress, callbackSpy);
+
+      // Unstake so we could withdraw
+      await stakingService.unstake(400);
+
+      await stakingService.withdraw();
+
+      expect(callbackSpy).toBeCalledTimes(1);
+      expect(callbackSpy).toBeCalledWith(null, '400', '600');
     });
   });
 }

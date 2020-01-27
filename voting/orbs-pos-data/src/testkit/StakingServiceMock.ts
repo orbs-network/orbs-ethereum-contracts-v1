@@ -50,8 +50,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     const stakeOwner = this.txsMocker.getFromAccount();
 
     const txEffect = () => {
-      const totalStakedAmount = this.updateStakedTokensForOwner(stakeOwner, amount);
-      this.updateTotalStakedTokens(amount);
+      const totalStakedAmount = this.updateStakedTokensForOwnerBy(stakeOwner, amount);
 
       this.triggerStakedEvent(stakeOwner, amount.toString(), totalStakedAmount.toString());
     };
@@ -61,12 +60,11 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   unstake(amount: number): PromiEvent<TransactionReceipt> {
     const stakeOwner = this.txsMocker.getFromAccount();
     const txEffect = () => {
-      const totalStakedAmount = this.updateStakedTokensForOwner(stakeOwner, -amount);
-      this.updateTotalStakedTokens(-amount);
+      const totalStakedAmountByOwner = this.updateStakedTokensForOwnerBy(stakeOwner, -amount);
 
       this.setOrUpdateCooldownStatusForOwner(stakeOwner, amount);
 
-      this.triggerUnstakedEvent(stakeOwner, amount.toString(), totalStakedAmount.toString());
+      this.triggerUnstakedEvent(stakeOwner, amount.toString(), totalStakedAmountByOwner.toString());
     };
 
     return this.txsMocker.createTxOf('unstake', txEffect);
@@ -82,10 +80,14 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
       const { cooldownAmount } = cooldownStatus;
 
       txEffect = () => {
-        // Nothing left in cooldown
+        // Nothing left in cooldown after a restake
         this.clearCooldownStatusForOwner(stakeOwner);
 
-        this.updateTotalStakedTokens(cooldownAmount);
+        // Add unstaked amount to the owner total staked amount
+        const totalStakedAmountByOwner = this.updateStakedTokensForOwnerBy(stakeOwner, cooldownAmount);
+
+        // Trigger event
+        this.triggerRestakedEvent(stakeOwner, cooldownAmount.toString(), totalStakedAmountByOwner.toString());
       };
     }
 
@@ -93,12 +95,32 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   withdraw(): PromiEvent<TransactionReceipt> {
-    return this.txsMocker.createTxOf('withdraw');
+    const stakeOwner = this.txsMocker.getFromAccount();
+    let txEffect = () => {}; // No orbs in cooldown, no effect
+
+    // Owner has orbs in cooldown ?
+    if (this.addressToCooldownStatus.has(stakeOwner)) {
+      const cooldownStatus = this.addressToCooldownStatus.get(stakeOwner);
+      const { cooldownAmount } = cooldownStatus;
+
+      txEffect = () => {
+        // Nothing left in cooldown after a restake
+        this.clearCooldownStatusForOwner(stakeOwner);
+
+        // DEV_NOTE : The total amount of staked orbs should not get effected.
+        const totalStakedAmountByOwner = this.getTotalStakedAmountFor(stakeOwner);
+
+        // Trigger event
+        this.triggerWithdrewEvent(stakeOwner, cooldownAmount.toString(), totalStakedAmountByOwner.toString());
+      };
+    }
+
+    return this.txsMocker.createTxOf('withdraw', txEffect);
   }
 
   // READ //
   async readStakeBalanceOf(stakeOwner: string): Promise<string> {
-    const amount = this.addressToTotalStakedAmountMap.get(stakeOwner);
+    const amount = this.getTotalStakedAmountFor(stakeOwner);
     return amount ? amount.toString() : '0';
   }
 
@@ -203,17 +225,26 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     );
   }
 
+  // Inner getters
+  private getTotalStakedAmountFor(stakeOwner: string): number {
+    return this.addressToTotalStakedAmountMap.get(stakeOwner) || 0;
+  }
+
   // Inner state changes
-  private updateTotalStakedTokens(byAmount: number) {
+  private updateTotalStakedTokensBy(byAmount: number) {
     const currentTotalStakedSumAsNumber = parseInt(this.totalStakedTokens);
     const updatedTotalStakedSumAsNumber = currentTotalStakedSumAsNumber + byAmount;
     this.totalStakedTokens = updatedTotalStakedSumAsNumber.toString();
   }
 
-  private updateStakedTokensForOwner(stakeOwner: string, byAmount: number): number {
-    const currentStakedAmount = this.addressToTotalStakedAmountMap.get(stakeOwner) || 0;
+  private updateStakedTokensForOwnerBy(stakeOwner: string, byAmount: number): number {
+    // Updates the balance for the owner
+    const currentStakedAmount = this.getTotalStakedAmountFor(stakeOwner);
     const totalStakedAmountForOwner = currentStakedAmount + byAmount;
     this.addressToTotalStakedAmountMap.set(stakeOwner, totalStakedAmountForOwner);
+
+    // Update the balance for total staked orbs (by all owners)
+    this.updateTotalStakedTokensBy(byAmount);
 
     return totalStakedAmountForOwner;
   }
