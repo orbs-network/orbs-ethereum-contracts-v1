@@ -77,9 +77,20 @@ export class StakingService implements IStakingService {
 
   async readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
     const result = this.stakingContract.methods.getUnstakeStatus(stakeOwner).call();
+
+    let cooldownAmountInteger = parseInt(result.cooldownAmount, 10);
+    let cooldownEndTimeInteger = parseInt(result.cooldownEndTime, 10);
+
+    // DEV_NOTE : NaN means that the given stake owner has no "active" cooldown process.
+    if (Number.isNaN(cooldownAmountInteger) || Number.isNaN(cooldownEndTimeInteger)) {
+      cooldownAmountInteger = 0;
+      cooldownEndTimeInteger = 0;
+    }
+
+    // TODO : O.L : The amount is not in full orbs, we need to decide about the interface
     return {
-      cooldownAmount: parseInt(result.cooldownAmount, 10),
-      cooldownEndTime: parseInt(result.cooldownEndTime, 10),
+      cooldownAmount: cooldownAmountInteger,
+      cooldownEndTime: cooldownEndTimeInteger,
     };
   }
 
@@ -104,7 +115,7 @@ export class StakingService implements IStakingService {
 
   // Events Subscriptions //
   public subscribeToStakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction {
-    const eventSubscriptionFunction = this.stakingContract.events.Stake;
+    const eventSubscriptionFunction = this.stakingContract.events.Staked;
     return this.subscribeToStakingContractEvent(eventSubscriptionFunction, stakeOwner, callback);
   }
 
