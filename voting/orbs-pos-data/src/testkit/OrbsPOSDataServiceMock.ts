@@ -6,7 +6,7 @@ import { IValidatorInfo } from '../interfaces/IValidatorInfo';
 
 export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
   private orbsBalanceMap: Map<string, bigint> = new Map();
-  private orbsBalanceChangeCallback: (newBalance: string) => void;
+  private orbsBalanceChangeCallback: (newBalance: bigint) => void;
   private totalTokens: bigint;
 
   async readValidators(): Promise<string[]> {
@@ -17,8 +17,8 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     return null;
   }
 
-  async readTotalParticipatingTokens(): Promise<number> {
-    return Number(this.totalTokens);
+  async readTotalParticipatingTokens(): Promise<bigint> {
+    return this.totalTokens;
   }
 
   async readRewards(address: string): Promise<IRewards> {
@@ -45,12 +45,12 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     return null;
   }
 
-  async readOrbsBalance(address: string): Promise<string> {
+  async readOrbsBalance(address: string): Promise<bigint> {
     const resultBigInt = this.orbsBalanceMap.get(address);
-    return resultBigInt ? resultBigInt.toString() : '0';
+    return resultBigInt ? resultBigInt : BigInt(0);
   }
 
-  subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): () => void {
+  subscribeToORBSBalanceChange(address: string, callback: (newBalance: bigint) => void): () => void {
     this.orbsBalanceChangeCallback = callback;
     return () => (this.orbsBalanceChangeCallback = null);
   }
@@ -66,7 +66,7 @@ export class OrbsPOSDataServiceMock implements IOrbsPOSDataService {
     return this;
   }
 
-  fireORBSBalanceChange(newBalance: string): this {
+  fireORBSBalanceChange(newBalance: bigint): this {
     if (this.orbsBalanceChangeCallback) {
       this.orbsBalanceChangeCallback(newBalance);
     }

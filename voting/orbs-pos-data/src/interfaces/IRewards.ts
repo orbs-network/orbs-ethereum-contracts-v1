@@ -1,5 +1,5 @@
 export interface IRewards {
-  delegatorReward: number;
-  guardianReward: number;
-  validatorReward: number;
+  delegatorReward: bigint;
+  guardianReward: bigint;
+  validatorReward: bigint;
 }

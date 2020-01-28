@@ -7,12 +7,12 @@
  */
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 
-export type OrbsAllowanceChangeCallback = (error: Error, allowance: string) => void;
+export type OrbsAllowanceChangeCallback = (error: Error, allowance: bigint) => void;
 
 export interface IOrbsTokenService {
   setFromAccount(address: string): void;
-  readAllowance(ownerAddress: string, spenderAddress: string): Promise<string>;
-  approve(spenderAddress: string, amountInOrbs: number): PromiEvent<TransactionReceipt>;
+  readAllowance(ownerAddress: string, spenderAddress: string): Promise<bigint>;
+  approve(spenderAddress: string, amount: bigint): PromiEvent<TransactionReceipt>;
 
   /**
    * Triggers the given callback when an 'Approval' event is emitted.

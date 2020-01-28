@@ -63,7 +63,7 @@ export class EthereumClientService implements IEthereumClientService {
     const readRewards = events.map(log => {
       return {
         distributionEvent: log.returnValues.distributionEvent as string,
-        amount: parseInt(log.returnValues.amount, 10) / 10 ** 18,
+        amount: BigInt(log.returnValues.amount),
         transactionHash: log.transactionHash,
       };
     });
@@ -75,14 +75,14 @@ export class EthereumClientService implements IEthereumClientService {
     return readUpcomingElectionBlockNumber(this.web3);
   }
 
-  async readOrbsBalance(address: string): Promise<string> {
+  async readOrbsBalance(address: string): Promise<bigint> {
     const balance = await this.erc20Contract.methods.balanceOf(address).call();
-    return this.web3.utils.fromWei(balance, 'ether');
+    return BigInt(balance);
   }
 
   // TODO : FUTURE : We need to change the signature of this function to have a standard callback usage (with err and values).
   //                  or to find a way to handle errors.
-  subscribeToORBSBalanceChange(address: string, callback: (orbsBalance: string) => void): () => void {
+  subscribeToORBSBalanceChange(address: string, callback: (orbsBalance: bigint) => void): () => void {
     const transferFromAddressEventEmitter = this.erc20Contract.events.Transfer(
       {
         filter: {

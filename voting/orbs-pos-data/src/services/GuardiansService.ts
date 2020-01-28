@@ -98,12 +98,12 @@ export class GuardiansService implements IGuardiansService {
 
     const result: IGuardianInfo = {
       voted: votingWeightResults !== BigInt(0),
-      stake: 0,
+      stakePercent: 0,
       ...guardianData,
     };
 
     if (totalParticipatingTokens !== BigInt(0)) {
-      result.stake = Number(votingWeightResults) / Number(totalParticipatingTokens);
+      result.stakePercent = Number(votingWeightResults) / Number(totalParticipatingTokens);
     }
 
     return result;

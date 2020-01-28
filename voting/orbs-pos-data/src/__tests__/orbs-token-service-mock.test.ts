@@ -6,7 +6,6 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 import { OrbsTokenServiceMock } from '../testkit';
-import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 import { testTxCreatingForServiceMock } from './testUtils/txCreatingMethodTests';
 
 describe(`Orbs Token service mock`, () => {
@@ -17,7 +16,7 @@ describe(`Orbs Token service mock`, () => {
 function testTxCreatingMethods() {
   describe(`Tx creating methods`, () => {
     testTxCreatingForServiceMock(OrbsTokenServiceMock, 'approve', serviceMock =>
-      serviceMock.approve('spenderAddress', 1_000_000),
+      serviceMock.approve('spenderAddress', 1_000_000n),
     );
   });
 }
@@ -33,10 +32,10 @@ function testDataReadingMethods() {
     it(`should allow to set and get allowance`, async () => {
       const ownerAddress = 'OWNER_ADDRESS';
       const spenderAddress = 'SPENDER_ADDRESS';
-      const allowanceAmount = '2000';
+      const allowanceAmount = 2_000n;
 
       const valueBefore = await orbsTokenServiceMock.readAllowance(ownerAddress, spenderAddress);
-      expect(valueBefore).toEqual('0');
+      expect(valueBefore).toEqual(0n);
 
       orbsTokenServiceMock.setAllowance(ownerAddress, spenderAddress, allowanceAmount);
 

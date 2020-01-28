@@ -9,33 +9,26 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { TUnsubscribeFunction } from '../services/contractsTypes/contractTypes';
 
-// TODO : NEXT_MAJOR : Change this to 'ICooldownStatus' on next major version
-export interface IStakingStatus {
-  cooldownAmount: number;
+export interface IUnstakingStatus {
+  cooldownAmount: bigint;
   cooldownEndTime: number;
 }
 
-export type StakeAmountChangeCallback = (error: Error, amount: string) => void;
-export type StakingServiceEventCallback = (error: Error, amount: string, totalStakedAmount: string) => void;
+export type StakeAmountChangeCallback = (error: Error, amount: bigint) => void;
+export type StakingServiceEventCallback = (error: Error, amount: bigint, totalStakedAmount: bigint) => void;
 
 export interface IStakingService {
   getStakingContractAddress(): string;
   setFromAccount(address: string): void;
 
-  stake(amount: number): PromiEvent<TransactionReceipt>;
-  unstake(amount: number): PromiEvent<TransactionReceipt>;
+  stake(amount: bigint): PromiEvent<TransactionReceipt>;
+  unstake(amount: bigint): PromiEvent<TransactionReceipt>;
   restake(): PromiEvent<TransactionReceipt>;
   withdraw(): PromiEvent<TransactionReceipt>;
 
-  readStakeBalanceOf(stakeOwner: string): Promise<string>;
-  readTotalStakedTokens(): Promise<string>;
-  readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus>;
-
-  // TODO : NEXT_MAJOR : Delete this
-  /**
-   * @deprecated
-   */
-  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): TUnsubscribeFunction;
+  readStakeBalanceOf(stakeOwner: string): Promise<bigint>;
+  readTotalStakedTokens(): Promise<bigint>;
+  readUnstakeStatus(stakeOwner: string): Promise<IUnstakingStatus>;
 
   subscribeToStakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction;
   subscribeToUnstakedEvent(stakeOwner: string, callback: StakingServiceEventCallback): TUnsubscribeFunction;

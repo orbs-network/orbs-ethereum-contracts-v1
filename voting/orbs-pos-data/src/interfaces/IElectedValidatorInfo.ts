@@ -3,5 +3,5 @@ export interface IElectedValidatorInfo {
   ipAddress: string;
   website: string;
   orbsAddress: string;
-  stake: number;
+  stake: bigint;
 }
