@@ -139,7 +139,7 @@ After the transactions are committed, run batch execution script. Make sure your
 * The batch size is the same as used when generating
 * The distribution event name must be the same as used when setting the batches into the contract
 
-Beofre executing the batches, pay attention to:
+Before executing the batches, pay attention to:
 * Use a new wallet (nmemonic) (The environment variable MAINNET_SECRET)
 * Each batch of 50 will cost about 1.1M gas
 * Ensure that there is enough ether in the account executing the batches (it will be a lot of gas 'burned')
