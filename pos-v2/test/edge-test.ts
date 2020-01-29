@@ -112,5 +112,24 @@ contract('pos-v2-edge-cases', async () => {
     it('should not add a subscriber with a zero address', async () => {
         const d = await Driver.new();
         await expectRejected(d.subscriptions.addSubscriber(ZERO_ADDR, {from: d.contractsOwner}), "Should not deploy a subscriber with a zero address");
+    });
+
+    it('does not count delegated stake twice', async () => {
+       const d = await Driver.new();
+
+       const v1 = d.newParticipant();
+       const v2 = d.newParticipant();
+
+       await v1.stake(100);
+       let r = await v1.delegate(v2);
+       expect(r).to.have.a.totalStakeChangedEvent({
+           addr: v1.address,
+           newTotal: new BN(0)
+       });
+       expect(r).to.have.a.totalStakeChangedEvent({
+           addr: v2.address,
+           newTotal: new BN(100)
+       });
+
     })
 });

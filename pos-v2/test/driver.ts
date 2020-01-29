@@ -100,13 +100,6 @@ export class Participant {
     }
 }
 
-export function expectBNArrayEqual(a1: Array<any>, a2: Array<any>) {
-    expect(a1).to.be.length(a2.length);
-    a1.forEach((v, i) => {
-        expect(new BN(a1[i])).to.be.bignumber.equal(new BN(a2[i]));
-    });
-}
-
 export async function expectRejected(promise: Promise<any>, msg?: string) {
     try {
         await promise;

@@ -10,18 +10,22 @@ import {
     rewardAssignedEvents,
     feeAddedToBucketEvents, unstakedEvents, topologyChangedEvents
 } from "./event-parsing";
-import {expectBNArrayEqual} from "./driver";
+import * as _ from "lodash";
 
-function compare(a: any, b: any) {
+export function isBNArrayEqual(a1: Array<any>, a2: Array<any>): boolean {
+    return a1.length == a2.length && a1.find((v, i) =>
+        !(new BN(a1[i]).eq(new BN(a2[i])))
+    ) == null;
+}
+
+function compare(a: any, b: any): boolean {
     if (BN.isBN(a) || BN.isBN(b)) {
         return new BN(a).eq(new BN(b));
     } else {
         if (Array.isArray(a) && BN.isBN(a[0]) || Array.isArray(b) && BN.isBN(b[0])) {
-            expectBNArrayEqual(a, b);
-            return true;
+            return isBNArrayEqual(a, b);
         }
-        expect(a).to.deep.equal(b);
-        return true;
+        return _.isEqual(a,b);
     }
 }
 
@@ -29,18 +33,35 @@ const containEvent = (eventParser) => function(_super) {
     return function (this: any, data) {
         data = data || {};
 
-        const log = eventParser(this._obj).pop(); // TODO - currently only checks last event of the required type
+        const logs = eventParser(this._obj);
 
-        this.assert(log != null, "expected the event to exist", "expected no event to exist");
+        this.assert(logs.length != 0, "expected the event to exist", "expected no event to exist");
 
-        for (const k in data) {
-            this.assert(
-                compare(data[k], log[k])
-                , "expected #{this} to be #{exp} but got #{act}"
-                , "expected #{this} to not be #{act}"
-                , data[k]    // expected
-                , log[k]   // actual
-            );
+        if (logs.length == 1) {
+            const log = logs.pop();
+            for (const k in data) {
+                this.assert(
+                    compare(data[k], log[k])
+                    , "expected #{this} to be #{exp} but got #{act}"
+                    , "expected #{this} to not be #{act}"
+                    , data[k]    // expected
+                    , log[k]   // actual
+                );
+            }
+        } else {
+            for (const log of logs) {
+                let foundDiff = false;
+                for (const k in data) {
+                    if (!compare(data[k], log[k])) {
+                        foundDiff = true;
+                        break;
+                    }
+                }
+                if (!foundDiff) {
+                    return;
+                }
+            }
+            this.assert(false, `No event with properties ${JSON.stringify(data)} found. Events are ${JSON.stringify(logs)}`) // TODO make this log prettier
         }
     }
 };

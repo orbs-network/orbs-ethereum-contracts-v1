@@ -75,11 +75,13 @@ contract Elections is IStakingListener, Ownable {
 
 	function delegate(address to) public {
 		address prevDelegatee = delegations[msg.sender];
+        if (prevDelegatee == address(0)) {
+            prevDelegatee = msg.sender;
+        }
+
 		uint256 stake = ownStakes[msg.sender];
-		if (prevDelegatee != address(0)) {
-			_updateTotalStake(prevDelegatee, totalStakes[prevDelegatee].sub(stake));
-			_placeInTopology(prevDelegatee); // TODO may emit superfluous event
-		}
+        _updateTotalStake(prevDelegatee, totalStakes[prevDelegatee].sub(stake));
+        _placeInTopology(prevDelegatee); // TODO may emit superfluous event
 		_updateTotalStake(to, totalStakes[to].add(stake));
 		_placeInTopology(to);
 
