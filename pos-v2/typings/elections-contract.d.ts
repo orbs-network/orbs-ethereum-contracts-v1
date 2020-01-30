@@ -9,6 +9,7 @@ declare namespace Contracts {
         unstaked(stakeOwner: string, amount: number, params?: TransactionDetails): Promise<TransactionResponse>
         delegate(to: string, params?: TransactionDetails): Promise<TransactionResponse>
         getTopology(): Promise<TransactionResponse>
+        notifyReadyForCommittee(params?: TransactionDetails): Promise<TransactionResponse>
     }
 
     export interface DelegatedEvent {

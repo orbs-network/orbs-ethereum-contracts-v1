@@ -32,11 +32,13 @@ contract('rewards-level-flows', async () => {
     const v1 = d.newParticipant();
     await v1.stake(initStakeLesser);
     await v1.registerAsValidator();
+    await v1.notifyReadyForCommittee();
 
     const initStakeLarger = new BN(21000);
     const v2 = d.newParticipant();
     await v2.stake(initStakeLarger);
     await v2.registerAsValidator();
+    await v2.notifyReadyForCommittee();
 
     const rate = 20000000;
     const subs = await d.newSubscriber('tier', rate);

@@ -13,7 +13,9 @@ contract('pos-v2-edge-cases', async () => {
 
         const v = d.newParticipant();
         await v.stake(MIN_STAKE);
-        let r = await v.registerAsValidator();
+
+        await v.registerAsValidator();
+        let r = await v.notifyReadyForCommittee();
         expect(r).to.have.a.committeeChangedEvent({
             addrs: [v.address],
             stakes: [MIN_STAKE]
@@ -49,14 +51,11 @@ contract('pos-v2-edge-cases', async () => {
 
         const v = d.newParticipant();
         await v.stake(100);
+
         const r = await d.elections.registerValidator(v.ip, v.orbsAddress, {from: v.address});
         expect(r).to.have.a.validatorRegisteredEvent({
             addr: v.address,
             ip: v.ip
-        });
-        expect(r).to.have.a.committeeChangedEvent({
-            addrs: [v.address],
-            stakes: [new BN(100)]
         });
 
         // The first validator attempts to register again - should not emit events
@@ -115,21 +114,23 @@ contract('pos-v2-edge-cases', async () => {
     });
 
     it('does not count delegated stake twice', async () => {
-       const d = await Driver.new();
+        const d = await Driver.new();
 
-       const v1 = d.newParticipant();
-       const v2 = d.newParticipant();
+        const v1 = d.newParticipant();
+        const v2 = d.newParticipant();
 
-       await v1.stake(100);
-       let r = await v1.delegate(v2);
-       expect(r).to.have.a.totalStakeChangedEvent({
+        await v1.stake(100);
+        await v2.stake(100); // required due to the delegation cap ratio
+
+        const r = await v1.delegate(v2);
+        expect(r).to.have.a.totalStakeChangedEvent({
            addr: v1.address,
            newTotal: new BN(0)
-       });
-       expect(r).to.have.a.totalStakeChangedEvent({
+        });
+        expect(r).to.have.a.totalStakeChangedEvent({
            addr: v2.address,
-           newTotal: new BN(100)
-       });
+           newTotal: new BN(200)
+        });
     });
 
     it('enforces effective stake limit of x-times the own stake', async () => {
@@ -139,6 +140,8 @@ contract('pos-v2-edge-cases', async () => {
         const v2 = d.newParticipant();
 
         await v1.registerAsValidator();
+        await v1.notifyReadyForCommittee();
+
         await v2.delegate(v1);
 
         await v1.stake(100);
@@ -210,12 +213,30 @@ contract('pos-v2-edge-cases', async () => {
        await v1.delegate(v2);
        await v1.stake(DEFAULT_MINIMUM_STAKE);
        await v1.registerAsValidator();
+       await v1.notifyReadyForCommittee();
 
        await v2.registerAsValidator();
+       await v2.notifyReadyForCommittee();
        let r = await v2.stake(DEFAULT_MINIMUM_STAKE);
 
        expect(r).to.have.a.committeeChangedEvent({ // Make sure v1 does not enter the committee
            addrs: [v2.address],
        })
     });
+
+    it('ensures a non-ready validator cannot join the committee even when owning enough stake', async() => {
+        const d = await Driver.new();
+        const v = d.newParticipant();
+        await v.registerAsValidator();
+        let r = await v.stake(DEFAULT_MINIMUM_STAKE);
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [v.orbsAddress]
+        });
+        expect(r).to.not.have.a.committeeChangedEvent();
+
+        r = await v.notifyReadyForCommittee();
+        expect(r).to.have.a.committeeChangedEvent({
+            orbsAddrs: [v.orbsAddress]
+        })
+    })
 });
