@@ -138,7 +138,7 @@ export class GuardiansService implements IGuardiansService {
 
     if (currentDelegation === NOT_DELEGATED) {
       return {
-        delegatedTo: currentDelegation,
+        delegatedTo: NOT_DELEGATED,
       };
     }
 
@@ -152,6 +152,11 @@ export class GuardiansService implements IGuardiansService {
     };
 
     const events = await this.votingContract.getPastEvents('Delegate', options);
+    if (events.length === 0) {
+      return {
+        delegatedTo: NOT_DELEGATED,
+      };
+    }
     const lastEvent = events.pop();
 
     let { timestamp } = await this.web3.eth.getBlock(lastEvent.blockNumber);
