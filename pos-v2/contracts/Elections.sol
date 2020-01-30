@@ -27,6 +27,7 @@ contract Elections is IStakingListener, Ownable {
 	mapping (address => Validator) registeredValidators;
 	mapping (address => uint256) ownStakes;
 	mapping (address => uint256) totalStakes;
+	mapping (address => uint256) uncappedStakes;
 	mapping (address => address) delegations;
 
 	ICommitteeListener committeeListener;
@@ -35,6 +36,7 @@ contract Elections is IStakingListener, Ownable {
 	uint minimumStake;
 	uint maxCommitteeSize;
 	uint maxTopologySize;
+	uint maxDelegationRatio; // TODO consider using a hardcoded constant instead.
 
 	modifier onlyStakingContract() {
 		require(msg.sender == stakingContract, "caller is not the staking contract");
@@ -42,15 +44,17 @@ contract Elections is IStakingListener, Ownable {
 		_;
 	}
 
-	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, ICommitteeListener _committeeListener) public {
+	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, ICommitteeListener _committeeListener) public {
 		require(_maxTopologySize >= _maxCommitteeSize, "topology must be large enough to hold a full committee");
 		require(_committeeListener != address(0), "committee listener should not be 0");
 		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
+		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
 
 		minimumStake = _minimumStake;
 		maxCommitteeSize = _maxCommitteeSize;
 		committeeListener = _committeeListener;
 		maxTopologySize = _maxTopologySize;
+	    maxDelegationRatio = _maxDelegationRatio;
 	}
 
 	function getTopology() public view returns (address[]) {
@@ -80,9 +84,9 @@ contract Elections is IStakingListener, Ownable {
         }
 
 		uint256 stake = ownStakes[msg.sender];
-        _updateTotalStake(prevDelegatee, totalStakes[prevDelegatee].sub(stake));
+        _updateTotalStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake));
         _placeInTopology(prevDelegatee); // TODO may emit superfluous event
-		_updateTotalStake(to, totalStakes[to].add(stake));
+		_updateTotalStake(to, uncappedStakes[to].add(stake));
 		_placeInTopology(to);
 
 		delegations[msg.sender] = to;
@@ -103,8 +107,8 @@ contract Elections is IStakingListener, Ownable {
 		if (delegatee == address(0)) {
 			delegatee = staker;
 		}
-		_updateTotalStake(delegatee, totalStakes[delegatee].add(amount));
 		ownStakes[staker] = ownStakes[staker].add(amount);
+		_updateTotalStake(delegatee, uncappedStakes[delegatee].add(amount));
 
 		_placeInTopology(delegatee);
 	}
@@ -114,15 +118,16 @@ contract Elections is IStakingListener, Ownable {
 		if (delegatee == address(0)) {
 			delegatee = staker;
 		}
-		_updateTotalStake(delegatee, totalStakes[delegatee].sub(amount));
 		ownStakes[staker] = ownStakes[staker].sub(amount);
+		_updateTotalStake(delegatee, uncappedStakes[delegatee].sub(amount));
 
 		_placeInTopology(delegatee);
 	}
 
 	function _satisfiesCommitteePrerequisites(address validator) private view returns (bool) {
 		return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
-		       minimumStake <= ownStakes[validator]; // validator must hold the minimum required stake
+		       minimumStake <= ownStakes[validator] && // validator must hold the minimum required stake (own)
+		       minimumStake <= totalStakes[validator]; // validator must hold the minimum required stake (effective)
 	}
 
 	function _isQualifiedByRank(address validator) private view returns (bool) {
@@ -279,8 +284,25 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _updateTotalStake(address addr, uint256 newTotal) private {
-		totalStakes[addr] = newTotal;
-		emit TotalStakeChanged(addr, newTotal);
+		uncappedStakes[addr] = newTotal;
+		uint256 ownStake = 0;
+		if (delegations[addr] == addr || delegations[addr] == address(0)) {
+			ownStake = ownStakes[addr];
+		}
+		uint256 capped = _capStake(newTotal, ownStake);
+		totalStakes[addr] = capped;
+		emit TotalStakeChanged(addr, capped);
+	}
+
+	function _capStake(uint256 uncapped, uint256 own) view private returns (uint256){
+		if (own == 0) {
+			return 0;
+		}
+		uint256 maxRatio = maxDelegationRatio;
+		if (uncapped.div(own) < maxRatio) {
+			return uncapped;
+		}
+		return own.mul(maxRatio); // never overflows
 	}
 
 	function _findInTopology(address v) private view returns (uint, bool) {

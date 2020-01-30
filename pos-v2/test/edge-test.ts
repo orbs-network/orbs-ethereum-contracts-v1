@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import {Driver, expectRejected, ZERO_ADDR} from "./driver";
+import {DEFAULT_MINIMUM_STAKE, Driver, expectRejected, ZERO_ADDR} from "./driver";
 import chai from "chai";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
@@ -130,6 +130,92 @@ contract('pos-v2-edge-cases', async () => {
            addr: v2.address,
            newTotal: new BN(100)
        });
+    });
 
-    })
+    it('enforces effective stake limit of x-times the own stake', async () => {
+        const d = await Driver.new(2, 3, 100, 10);
+
+        const v1 = d.newParticipant();
+        const v2 = d.newParticipant();
+
+        await v1.registerAsValidator();
+        await v2.delegate(v1);
+
+        await v1.stake(100);
+
+        let r = await v2.stake(900);
+        expect(r).to.have.a.totalStakeChangedEvent({
+           addr: v1.address,
+           newTotal: new BN(1000),
+        });
+
+        r = await v2.stake(1);
+        expect(r).to.have.a.totalStakeChangedEvent({
+           addr: v1.address,
+           newTotal: new BN(1000),
+        });
+
+        r = await v2.unstake(2);
+        expect(r).to.have.a.totalStakeChangedEvent({
+           addr: v1.address,
+           newTotal: new BN(999),
+        });
+
+        r = await v2.stake(11);
+        expect(r).to.have.a.totalStakeChangedEvent({
+            addr: v1.address,
+            newTotal: new BN(1000),
+        });
+        expect(r).to.have.a.committeeChangedEvent({
+           addrs: [v1.address],
+           stakes: [new BN(1000)]
+        });
+
+        r = await v1.stake(2);
+        expect(r).to.have.a.totalStakeChangedEvent({
+            addr: v1.address,
+            newTotal: new BN(1012),
+        });
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: [v1.address],
+            stakes: [new BN(1012)]
+        });
+
+        r = await v2.stake(30);
+        expect(r).to.have.a.totalStakeChangedEvent({
+            addr: v1.address,
+            newTotal: new BN(1020),
+        });
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: [v1.address],
+            stakes: [new BN(1020)]
+        });
+
+        r = await v1.stake(1);
+        expect(r).to.have.a.totalStakeChangedEvent({
+            addr: v1.address,
+            newTotal: new BN(1030),
+        });
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: [v1.address],
+            stakes: [new BN(1030)]
+        });
+    });
+
+    it('ensures validator who delegated cannot join committee even when owning enough stake', async () => {
+       const d = await Driver.new();
+       const v1 = d.newParticipant();
+       const v2 = d.newParticipant();
+
+       await v1.delegate(v2);
+       await v1.stake(DEFAULT_MINIMUM_STAKE);
+       await v1.registerAsValidator();
+
+       await v2.registerAsValidator();
+       let r = await v2.stake(DEFAULT_MINIMUM_STAKE);
+
+       expect(r).to.have.a.committeeChangedEvent({ // Make sure v1 does not enter the committee
+           addrs: [v2.address],
+       })
+    });
 });
