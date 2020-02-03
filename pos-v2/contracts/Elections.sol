@@ -175,7 +175,7 @@ contract Elections is IStakingListener, Ownable {
 		topology.length = topology.length - 1;
 
 		if (inCommittee) {
-			_onCommitteeChanged(_loadCommitteeStakes());
+			_onCommitteeChanged();
 		}
 		_onTopologyChanged();
 	}
@@ -193,7 +193,7 @@ contract Elections is IStakingListener, Ownable {
 		emit TopologyChanged(topologyOrbsAddresses, ips);
 	}
 
-	function _onCommitteeChanged(uint256[] memory stakes) private {
+	function _onCommitteeChanged() private {
 		assert(topology.length <= maxTopologySize);
 
 		// Update the size of the committee. This assume a change of 1 member at most per _onCommitteeChange call
@@ -205,14 +205,13 @@ contract Elections is IStakingListener, Ownable {
 		}
 		currentCommitteeSize = currentSize;
 
-		uint256[] memory committeeStakes = new uint256[](currentSize);
+		uint256[] memory committeeStakes = _loadCommitteeStakes();
 		address[] memory committeeOrbsAddresses = new address[](currentSize);
 		address[] memory committeeAddresses = new address[](currentSize);
 		for (uint i = 0; i < currentSize; i++) {
 			Validator storage val = registeredValidators[topology[i]];
 			committeeOrbsAddresses[i] = val.orbsAddress;
 			committeeAddresses[i] = topology[i];
-			committeeStakes[i] = stakes[i];
 		}
 		committeeListener.committeeChanged(committeeAddresses, committeeStakes);
 		emit CommitteeChanged(committeeAddresses, committeeOrbsAddresses, committeeStakes);
@@ -257,35 +256,29 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _sortTopologyMember(uint memberPos) private {
-		assert(topology.length > memberPos);
-
-		uint256[] memory stakes = _loadTopologyStakes();
+        uint topologySize = topology.length;
+		assert(topologySize > memberPos);
 
 		uint origPos = memberPos;
 
 		while (memberPos > 0 && _compareValidators(memberPos, memberPos - 1) > 0) {
-			_replace(stakes, memberPos-1, memberPos);
+			_replace(memberPos-1, memberPos);
 			memberPos--;
 		}
 
-		while (memberPos < stakes.length - 1 && _compareValidators(memberPos, memberPos + 1) < 0) {
-			_replace(stakes, memberPos, memberPos+1);
+		while (memberPos < topologySize - 1 && _compareValidators(memberPos, memberPos + 1) < 0) {
+			_replace(memberPos, memberPos+1);
 			memberPos++;
 		}
 
 		if (origPos < currentCommitteeSize || memberPos < currentCommitteeSize || (currentCommitteeSize == 0 && maxCommitteeSize > 0 && topology.length > 0 && readyValidators[topology[0]])) {
-			_onCommitteeChanged(stakes);
+			_onCommitteeChanged();
 		}
 	}
 
-	function _replace(uint256[] memory stakes, uint p1, uint p2) private {
-		uint tempStake = stakes[p1];
+	function _replace(uint p1, uint p2) private {
 		address tempValidator = topology[p1];
-
-		stakes[p1] = stakes[p2];
 		topology[p1] = topology[p2];
-
-		stakes[p2] = tempStake;
 		topology[p2] = tempValidator;
 	}
 
