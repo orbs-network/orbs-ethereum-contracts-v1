@@ -48,14 +48,17 @@ contract('elections-high-level-flows', async () => {
       addr: validatorStaked100.address,
       ip: validatorStaked100.ip
     });
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked100.orbsAddress],
+      ips: [validatorStaked100.ip]
+    });
+    expect(r).to.not.have.a.committeeChangedEvent();
+
+    r = await validatorStaked100.notifyReadyForCommittee();
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked100.address],
       orbsAddrs: [validatorStaked100.orbsAddress],
       stakes: [stake100],
-    });
-    expect(r).to.have.a.topologyChangedEvent({
-      orbsAddrs: [validatorStaked100.orbsAddress],
-      ips: [validatorStaked100.ip]
     });
 
     const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
@@ -70,19 +73,21 @@ contract('elections-high-level-flows', async () => {
     expect(r).to.have.a.totalStakeChangedEvent({addr: validatorStaked200.address, newTotal: stake200});
 
     r = await validatorStaked200.registerAsValidator();
-
     expect(r).to.have.a.validatorRegisteredEvent({
       addr: validatorStaked200.address,
       ip: validatorStaked200.ip,
     });
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
+      ips: [validatorStaked100.ip, validatorStaked200.ip]
+    });
+    expect(r).to.not.have.a.committeeChangedEvent();
+
+    r = await validatorStaked200.notifyReadyForCommittee();
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked200.address, validatorStaked100.address],
       orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
       stakes: [stake200, stake100]
-    });
-    expect(r).to.have.a.topologyChangedEvent({
-      orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
-      ips: [validatorStaked200.ip, validatorStaked100.ip]
     });
 
     // A third validator registers high ranked
@@ -96,14 +101,17 @@ contract('elections-high-level-flows', async () => {
       addr: validatorStaked300.address,
       ip: validatorStaked300.ip
     });
+    expect(r).to.have.a.topologyChangedEvent({
+      orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress, validatorStaked300.orbsAddress],
+      ips: [validatorStaked200.ip, validatorStaked100.ip, validatorStaked300.ip]
+    });
+    expect(r).to.not.have.a.committeeChangedEvent();
+
+    r = await validatorStaked300.notifyReadyForCommittee();
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validatorStaked300.address, validatorStaked200.address],
       orbsAddrs: [validatorStaked300.orbsAddress, validatorStaked200.orbsAddress],
       stakes: [stake300, stake200]
-    });
-    expect(r).to.have.a.topologyChangedEvent({
-      orbsAddrs: [validatorStaked300.orbsAddress, validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
-      ips: [validatorStaked300.ip, validatorStaked200.ip, validatorStaked100.ip]
     });
 
     r = await d.delegateMoreStake(stake300, validatorStaked200);
@@ -128,11 +136,14 @@ contract('elections-high-level-flows', async () => {
     r = await inTopologyValidator.stake(stake100);
     expect(r).to.have.a.stakedEvent();
     r = await inTopologyValidator.registerAsValidator();
-    expect(r).to.not.have.a.committeeChangedEvent();
     expect(r).to.have.a.topologyChangedEvent({
       orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress, validatorStaked300.orbsAddress, inTopologyValidator.orbsAddress],
       ips: [validatorStaked100.ip, validatorStaked200.ip, validatorStaked300.ip, inTopologyValidator.ip],
     });
+    expect(r).to.not.have.a.committeeChangedEvent();
+
+    r = await inTopologyValidator.notifyReadyForCommittee();
+    expect(r).to.not.have.a.committeeChangedEvent();
 
     // The bottom validator in the topology delegates more stake and switches places with the second to last
     // This does not change the committee nor the topology, so no event should be emitted
@@ -149,12 +160,14 @@ contract('elections-high-level-flows', async () => {
     r = await outOfTopologyValidator.stake(stake100);
     expect(r).to.have.a.stakedEvent();
     r = await outOfTopologyValidator.registerAsValidator();
-    expect(r).to.not.have.a.committeeChangedEvent();
     expect(r).to.not.have.a.topologyChangedEvent();
+    r = await outOfTopologyValidator.notifyReadyForCommittee();
+    expect(r).to.not.have.a.committeeChangedEvent();
 
     // A new validator stakes enough to get to the top
     const validator = d.newParticipant();
     await validator.registerAsValidator();
+    await validator.notifyReadyForCommittee();
     r = await validator.stake(stake1000); // now top of committee
     expect(r).to.have.a.committeeChangedEvent({
       addrs: [validator.address, validatorStaked100.address],
@@ -167,6 +180,7 @@ contract('elections-high-level-flows', async () => {
       orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
       stakes: [stake100.add(stake500), stake500]
     });
+    expect(r).to.not.have.a.topologyChangedEvent();
   });
 
 });

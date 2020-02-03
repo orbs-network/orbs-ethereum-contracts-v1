@@ -100,6 +100,10 @@ export class Participant {
     async registerAsValidator() {
         return await this.elections.registerValidator(this.ip, this.orbsAddress, {from: this.address});
     }
+
+    async notifyReadyForCommittee() {
+        return await this.elections.notifyReadyForCommittee({from: this.address});
+    }
 }
 
 export async function expectRejected(promise: Promise<any>, msg?: string) {
