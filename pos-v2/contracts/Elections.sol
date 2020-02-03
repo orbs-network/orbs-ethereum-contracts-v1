@@ -24,14 +24,15 @@ contract Elections is IStakingListener, Ownable {
 		address orbsAddress;
 	}
 
+	// TODO consider using structs instead of multiple mappings
 	mapping (address => Validator) registeredValidators;
-	mapping (address => bool) readyValidators;
+	mapping (address => bool) readyValidators; // TODO if out-of-topology validators cannot be be ready-for-committee, this mapping can be replaced by a single uint
 	mapping (address => uint256) ownStakes;
 	mapping (address => uint256) totalStakes;
 	mapping (address => uint256) uncappedStakes;
 	mapping (address => address) delegations;
 
-	uint currentCommitteeSize;
+	uint currentCommitteeSize; // TODO may be redundant if readyValidators mapping is present
 
 	ICommitteeListener committeeListener;
 	address stakingContract;
@@ -81,7 +82,7 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function notifyReadyForCommittee() external {
-		readyValidators[msg.sender] = true;
+		readyValidators[msg.sender] = true; // TODO convert msg.sender (orbs-address) to validator address
 		_placeInTopology(msg.sender);
 	}
 
@@ -132,10 +133,20 @@ contract Elections is IStakingListener, Ownable {
 		_placeInTopology(delegatee);
 	}
 
+	// TODO what is the requirement? should an absolute minimum stake be enforced?
+	function holdsMinimumStake(address validator) private view returns (bool) {
+		return minimumStake <= ownStakes[validator] && // validator must hold the minimum required stake (own)
+		       minimumStake <= totalStakes[validator]; // validator must hold the minimum required stake (effective)
+	}
+
+	function isSelfDelegating(address validator) private view returns (bool) {
+		return delegations[validator] == address(0) || delegations[validator] == validator;
+	}
+
 	function _satisfiesTopologyPrerequisites(address validator) private view returns (bool) {
 		return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
-		       minimumStake <= ownStakes[validator] && // validator must hold the minimum required stake (own)
-		       minimumStake <= totalStakes[validator]; // validator must hold the minimum required stake (effective)
+			   isSelfDelegating(validator) &&
+		       holdsMinimumStake(validator);
 	}
 
 	function _isQualifiedForTopologyByRank(address validator) private view returns (bool) {
@@ -271,7 +282,7 @@ contract Elections is IStakingListener, Ownable {
 			memberPos++;
 		}
 
-		if (origPos < currentCommitteeSize || memberPos < currentCommitteeSize || (currentCommitteeSize == 0 && maxCommitteeSize > 0 && topology.length > 0 && readyValidators[topology[0]])) {
+		if (origPos < currentCommitteeSize || memberPos < currentCommitteeSize || (currentCommitteeSize == 0 && maxCommitteeSize > 0 && topology.length > 0 && readyValidators[topology[0]])) { // TODO consider refactoring this check into onCommitteeChanged
 			_onCommitteeChanged();
 		}
 	}
@@ -305,7 +316,7 @@ contract Elections is IStakingListener, Ownable {
 	function _updateTotalStake(address addr, uint256 newTotal) private {
 		uncappedStakes[addr] = newTotal;
 		uint256 ownStake = 0;
-		if (delegations[addr] == addr || delegations[addr] == address(0)) {
+		if (isSelfDelegating(addr)) {
 			ownStake = ownStakes[addr];
 		}
 		uint256 capped = _capStake(newTotal, ownStake);
