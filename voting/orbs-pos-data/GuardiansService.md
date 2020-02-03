@@ -1,6 +1,6 @@
-# Guardians Service
-A services that provides a simple way to with Guardians.
+## Guardians Service
 
+A services that provides a simple way to with Guardians.
 
 ### `readSelectedGuardianAddress(address: string): Promise<string>`
 

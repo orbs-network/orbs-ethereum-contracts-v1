@@ -3,5 +3,5 @@ export interface IGuardianInfo {
   website: string;
   hasEligibleVote: boolean;
   voted: boolean;
-  stake: number;
+  stakePercent: number;
 }

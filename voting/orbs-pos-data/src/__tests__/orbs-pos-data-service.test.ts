@@ -91,7 +91,7 @@ describe('Orbs POS data service', () => {
       ethereumClient.withORBSBalance(DUMMY_ADDRESS, 125n);
 
       const actual = await orbsPOSDataService.readOrbsBalance(DUMMY_ADDRESS);
-      expect(actual).toEqual('125');
+      expect(actual).toEqual(125n);
     });
 
     it('should trigger the given callback on account balance change', async () => {
@@ -105,7 +105,7 @@ describe('Orbs POS data service', () => {
       ethereumClient.updateORBSBalance(DUMMY_ADDRESS, 500n);
 
       expect(balanceChangeCb).toBeCalledTimes(1);
-      expect(balanceChangeCb).toBeCalledWith('500');
+      expect(balanceChangeCb).toBeCalledWith(500n);
     });
 
     it("should return an 'unsubscribe' function and not call 'unsubscribed' CBs", () => {
@@ -123,24 +123,24 @@ describe('Orbs POS data service', () => {
       ethereumClient.updateORBSBalance(DUMMY_ADDRESS, 500n);
 
       expect(balanceChangeCb1).toBeCalledTimes(1);
-      expect(balanceChangeCb1).toBeCalledWith('500');
+      expect(balanceChangeCb1).toBeCalledWith(500n);
       expect(balanceChangeCb2).toBeCalledTimes(1);
-      expect(balanceChangeCb2).toBeCalledWith('500');
+      expect(balanceChangeCb2).toBeCalledWith(500n);
       expect(balanceChangeCb3).toBeCalledTimes(1);
-      expect(balanceChangeCb3).toBeCalledWith('500');
+      expect(balanceChangeCb3).toBeCalledWith(500n);
 
       // Unsubscribe ane test
       unsubscribe2();
 
       ethereumClient.updateORBSBalance(DUMMY_ADDRESS, 1000n);
       expect(balanceChangeCb1).toBeCalledTimes(2);
-      expect(balanceChangeCb1).toBeCalledWith('500');
-      expect(balanceChangeCb1).toBeCalledWith('1000');
+      expect(balanceChangeCb1).toBeCalledWith(500n);
+      expect(balanceChangeCb1).toBeCalledWith(1000n);
       expect(balanceChangeCb2).toBeCalledTimes(1);
-      expect(balanceChangeCb2).not.toBeCalledWith('1000');
+      expect(balanceChangeCb2).not.toBeCalledWith(1000n);
       expect(balanceChangeCb3).toBeCalledTimes(2);
-      expect(balanceChangeCb3).toBeCalledWith('500');
-      expect(balanceChangeCb3).toBeCalledWith('1000');
+      expect(balanceChangeCb3).toBeCalledWith(500n);
+      expect(balanceChangeCb3).toBeCalledWith(1000n);
     });
   });
 });

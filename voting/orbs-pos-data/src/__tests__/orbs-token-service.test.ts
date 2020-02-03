@@ -70,13 +70,12 @@ describe('Orbs Token service', () => {
   });
 
   // WRITE //
-  it('should send "approve" tx with the amount in wei-orbs', async () => {
+  it('should send "approve" tx with the amount', async () => {
     const spenderAddress = 'spenderAddress';
-    const amountIntOrbs = 1_000_000;
-    const rawAmount = (BigInt(amountIntOrbs) * 10n ** 18n).toString(); // Convert orbs to 'wei-orbs"
+    const amount = 1_000_000n;
 
-    const result = await orbsTokenService.approve(spenderAddress, amountIntOrbs);
-    expect(web3Mock.methodParams('approve')).toEqual([spenderAddress, rawAmount]);
+    await orbsTokenService.approve(spenderAddress, amount);
+    expect(web3Mock.methodParams('approve')).toEqual([spenderAddress, amount.toString()]);
   });
 
   // TODO : O.L : FUTURE : Add tests for subscriptions

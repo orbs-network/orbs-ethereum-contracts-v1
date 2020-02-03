@@ -1,13 +1,8 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import {
-  IStakingService,
-  IStakingStatus,
-  StakeAmountChangeCallback,
-  StakingServiceEventCallback,
-} from '../interfaces/IStakingService';
-import { TxsMocker } from './TxsMocker';
-import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
+import { IStakingService, IUnstakingStatus, StakingServiceEventCallback } from '../interfaces/IStakingService';
 import { TUnsubscribeFunction } from '../services/contractsTypes/contractTypes';
+import { ITxCreatingServiceMock } from './ITxCreatingServiceMock';
+import { TxsMocker } from './TxsMocker';
 import { EventSubscriber } from './utils/EventSubscriber';
 
 type TTxCreatingActionNames = 'stake' | 'unstake' | 'restake' | 'withdraw';
@@ -17,9 +12,9 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   private cooldownReleaseTimestamp: number;
 
   private stakingContractAddress: string = 'DUMMY_CONTRACT_ADDRESS';
-  private addressToTotalStakedAmountMap: Map<string, number> = new Map();
-  private addressToCooldownStatus: Map<string, IStakingStatus> = new Map();
-  private totalStakedTokens: string = '0';
+  private addressToTotalStakedAmountMap: Map<string, bigint> = new Map();
+  private addressToCooldownStatus: Map<string, IUnstakingStatus> = new Map();
+  private totalStakedTokens: bigint = BigInt(0);
 
   private stakedEventsSubscriber: EventSubscriber<StakingServiceEventCallback> = new EventSubscriber();
   private restakedEventsSubscriber: EventSubscriber<StakingServiceEventCallback> = new EventSubscriber();
@@ -46,25 +41,25 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   // WRITE (TX creation) //
-  stake(amount: number): PromiEvent<TransactionReceipt> {
+  stake(amount: bigint): PromiEvent<TransactionReceipt> {
     const stakeOwner = this.txsMocker.getFromAccount();
 
     const txEffect = () => {
       const totalStakedAmount = this.updateStakedTokensForOwnerBy(stakeOwner, amount);
 
-      this.triggerStakedEvent(stakeOwner, amount.toString(), totalStakedAmount.toString());
+      this.triggerStakedEvent(stakeOwner, amount, totalStakedAmount);
     };
     return this.txsMocker.createTxOf('stake', txEffect);
   }
 
-  unstake(amount: number): PromiEvent<TransactionReceipt> {
+  unstake(amount: bigint): PromiEvent<TransactionReceipt> {
     const stakeOwner = this.txsMocker.getFromAccount();
     const txEffect = () => {
       const totalStakedAmountByOwner = this.updateStakedTokensForOwnerBy(stakeOwner, -amount);
 
       this.setOrUpdateCooldownStatusForOwner(stakeOwner, amount);
 
-      this.triggerUnstakedEvent(stakeOwner, amount.toString(), totalStakedAmountByOwner.toString());
+      this.triggerUnstakedEvent(stakeOwner, amount, totalStakedAmountByOwner);
     };
 
     return this.txsMocker.createTxOf('unstake', txEffect);
@@ -87,7 +82,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
         const totalStakedAmountByOwner = this.updateStakedTokensForOwnerBy(stakeOwner, cooldownAmount);
 
         // Trigger event
-        this.triggerRestakedEvent(stakeOwner, cooldownAmount.toString(), totalStakedAmountByOwner.toString());
+        this.triggerRestakedEvent(stakeOwner, cooldownAmount, totalStakedAmountByOwner);
       };
     }
 
@@ -111,7 +106,7 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
         const totalStakedAmountByOwner = this.getTotalStakedAmountFor(stakeOwner);
 
         // Trigger event
-        this.triggerWithdrewEvent(stakeOwner, cooldownAmount.toString(), totalStakedAmountByOwner.toString());
+        this.triggerWithdrewEvent(stakeOwner, cooldownAmount, totalStakedAmountByOwner);
       };
     }
 
@@ -119,42 +114,22 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   // READ //
-  async readStakeBalanceOf(stakeOwner: string): Promise<string> {
+  async readStakeBalanceOf(stakeOwner: string): Promise<bigint> {
     const amount = this.getTotalStakedAmountFor(stakeOwner);
-    return amount ? amount.toString() : '0';
+    return amount ? amount : BigInt(0);
   }
 
-  async readTotalStakedTokens(): Promise<string> {
+  async readTotalStakedTokens(): Promise<bigint> {
     return this.totalStakedTokens;
   }
 
-  async readUnstakeStatus(stakeOwner: string): Promise<IStakingStatus> {
+  async readUnstakeStatus(stakeOwner: string): Promise<IUnstakingStatus> {
     const status = this.addressToCooldownStatus.get(stakeOwner);
-    return status ? status : { cooldownAmount: 0, cooldownEndTime: 0 };
+    return status ? status : { cooldownAmount: BigInt(0), cooldownEndTime: 0 };
   }
 
   public getStakingContractAddress(): string {
     return this.stakingContractAddress;
-  }
-
-  // STATE SUBSCRIPTIONS //
-  subscribeToStakeAmountChange(stakeOwner: string, callback: StakeAmountChangeCallback): () => Promise<boolean> {
-    // DEV_NOTE : This implementation is identical to the real service
-    const callbackAdapter = (error: Error, stakedAmountInEvent: string, totalStakedAmount: string) =>
-      callback(error, totalStakedAmount);
-
-    const stakeEventUnsubscribe = this.subscribeToStakedEvent(stakeOwner, callbackAdapter);
-    const unstakeEventUnsubscribe = this.subscribeToUnstakedEvent(stakeOwner, callbackAdapter);
-    const restakeEventUnsubscribe = this.subscribeToRestakedEvent(stakeOwner, callbackAdapter);
-
-    return async () => {
-      try {
-        await Promise.all([stakeEventUnsubscribe(), unstakeEventUnsubscribe(), restakeEventUnsubscribe()]);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    };
   }
 
   // EVENTS SUBSCRIPTIONS //
@@ -176,15 +151,15 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
   // Test Utils //
 
-  public withStakeBalance(address: string, amount: number) {
+  public withStakeBalance(address: string, amount: bigint) {
     this.addressToTotalStakedAmountMap.set(address, amount);
   }
 
-  public withTotalStakedTokens(amount: string) {
+  public withTotalStakedTokens(amount: bigint) {
     this.totalStakedTokens = amount;
   }
 
-  public withUnstakeStatus(address: string, status: IStakingStatus) {
+  public withUnstakeStatus(address: string, status: IUnstakingStatus) {
     this.addressToCooldownStatus.set(address, status);
   }
 
@@ -194,19 +169,19 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
 
   // Subscription triggering
 
-  private triggerStakedEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
+  private triggerStakedEvent(stakeOwner: string, stakedAmount: bigint, totalStakedAmount: bigint): void {
     this.triggerStakingContractEvent(this.stakedEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
-  private triggerRestakedEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
+  private triggerRestakedEvent(stakeOwner: string, stakedAmount: bigint, totalStakedAmount: bigint): void {
     this.triggerStakingContractEvent(this.restakedEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
-  private triggerUnstakedEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
+  private triggerUnstakedEvent(stakeOwner: string, stakedAmount: bigint, totalStakedAmount: bigint): void {
     this.triggerStakingContractEvent(this.unstakedEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
-  private triggerWithdrewEvent(stakeOwner: string, stakedAmount: string, totalStakedAmount: string): void {
+  private triggerWithdrewEvent(stakeOwner: string, stakedAmount: bigint, totalStakedAmount: bigint): void {
     this.triggerStakingContractEvent(this.withdrewEventsSubscriber, stakeOwner, stakedAmount, totalStakedAmount);
   }
 
@@ -217,8 +192,8 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   private triggerStakingContractEvent(
     singleKeyEventSubscriber: EventSubscriber<StakingServiceEventCallback>,
     stakeOwner: string,
-    stakedAmount: string,
-    totalStakedAmount: string,
+    stakedAmount: bigint,
+    totalStakedAmount: bigint,
   ) {
     singleKeyEventSubscriber.triggerEventCallbacks(stakeOwner, callback =>
       callback(null, stakedAmount, totalStakedAmount),
@@ -226,18 +201,16 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
   }
 
   // Inner getters
-  private getTotalStakedAmountFor(stakeOwner: string): number {
-    return this.addressToTotalStakedAmountMap.get(stakeOwner) || 0;
+  private getTotalStakedAmountFor(stakeOwner: string): bigint {
+    return this.addressToTotalStakedAmountMap.get(stakeOwner) || BigInt(0);
   }
 
   // Inner state changes
-  private updateTotalStakedTokensBy(byAmount: number) {
-    const currentTotalStakedSumAsNumber = parseInt(this.totalStakedTokens);
-    const updatedTotalStakedSumAsNumber = currentTotalStakedSumAsNumber + byAmount;
-    this.totalStakedTokens = updatedTotalStakedSumAsNumber.toString();
+  private updateTotalStakedTokensBy(byAmount: bigint) {
+    this.totalStakedTokens = this.totalStakedTokens + byAmount;
   }
 
-  private updateStakedTokensForOwnerBy(stakeOwner: string, byAmount: number): number {
+  private updateStakedTokensForOwnerBy(stakeOwner: string, byAmount: bigint): bigint {
     // Updates the balance for the owner
     const currentStakedAmount = this.getTotalStakedAmountFor(stakeOwner);
     const totalStakedAmountForOwner = currentStakedAmount + byAmount;
@@ -249,10 +222,10 @@ export class StakingServiceMock implements IStakingService, ITxCreatingServiceMo
     return totalStakedAmountForOwner;
   }
 
-  private setOrUpdateCooldownStatusForOwner(stakeOwner: string, byAmount: number) {
+  private setOrUpdateCooldownStatusForOwner(stakeOwner: string, byAmount: bigint) {
     if (!this.addressToCooldownStatus.has(stakeOwner)) {
-      const defaultCooldownStatus: IStakingStatus = {
-        cooldownAmount: 0,
+      const defaultCooldownStatus: IUnstakingStatus = {
+        cooldownAmount: BigInt(0),
         cooldownEndTime: this.cooldownReleaseTimestamp,
       };
 

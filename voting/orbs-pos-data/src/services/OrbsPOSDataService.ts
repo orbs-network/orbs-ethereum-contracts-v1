@@ -37,8 +37,8 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     return result;
   }
 
-  async readTotalParticipatingTokens(): Promise<number> {
-    return Number(await this.orbsClientService.readTotalParticipatingTokens());
+  async readTotalParticipatingTokens(): Promise<bigint> {
+    return this.orbsClientService.readTotalParticipatingTokens();
   }
 
   async readRewards(address: string): Promise<IRewards> {
@@ -49,9 +49,9 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
     ]);
 
     return {
-      delegatorReward: Number(delegatorReward),
-      guardianReward: Number(guardianReward),
-      validatorReward: Number(validatorReward),
+      delegatorReward,
+      guardianReward,
+      validatorReward,
     };
   }
 
@@ -87,16 +87,16 @@ export class OrbsPOSDataService implements IOrbsPOSDataService {
       ipAddress: validatorData.ipAddress,
       website: validatorData.website,
       orbsAddress: validatorData.orbsAddress,
-      stake: Number(stake),
+      stake,
     };
     return result;
   }
 
-  async readOrbsBalance(address: string): Promise<string> {
+  async readOrbsBalance(address: string): Promise<bigint> {
     return this.ethereumClient.readOrbsBalance(address);
   }
 
-  subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): () => void {
+  subscribeToORBSBalanceChange(address: string, callback: (newBalance: bigint) => void): () => void {
     return this.ethereumClient.subscribeToORBSBalanceChange(address, callback);
   }
 }

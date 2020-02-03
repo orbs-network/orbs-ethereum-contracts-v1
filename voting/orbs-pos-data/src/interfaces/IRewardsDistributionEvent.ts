@@ -1,5 +1,5 @@
 export interface IRewardsDistributionEvent {
   distributionEvent: string;
-  amount: number;
+  amount: bigint;
   transactionHash: string;
 }

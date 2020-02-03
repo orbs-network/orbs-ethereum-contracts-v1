@@ -98,12 +98,12 @@ export class GuardiansService implements IGuardiansService {
 
     const result: IGuardianInfo = {
       voted: votingWeightResults !== BigInt(0),
-      stake: 0,
+      stakePercent: 0,
       ...guardianData,
     };
 
     if (totalParticipatingTokens !== BigInt(0)) {
-      result.stake = Number(votingWeightResults) / Number(totalParticipatingTokens);
+      result.stakePercent = Number(votingWeightResults) / Number(totalParticipatingTokens);
     }
 
     return result;
@@ -138,7 +138,7 @@ export class GuardiansService implements IGuardiansService {
 
     if (currentDelegation === NOT_DELEGATED) {
       return {
-        delegatedTo: currentDelegation,
+        delegatedTo: NOT_DELEGATED,
       };
     }
 
@@ -152,6 +152,11 @@ export class GuardiansService implements IGuardiansService {
     };
 
     const events = await this.votingContract.getPastEvents('Delegate', options);
+    if (events.length === 0) {
+      return {
+        delegatedTo: NOT_DELEGATED,
+      };
+    }
     const lastEvent = events.pop();
 
     let { timestamp } = await this.web3.eth.getBlock(lastEvent.blockNumber);

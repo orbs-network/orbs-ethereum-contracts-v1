@@ -28,16 +28,16 @@ export class OrbsTokenService implements IOrbsTokenService {
   }
 
   // READ //
-  async readAllowance(ownerAddress: string, spenderAddress: string): Promise<string> {
-    const allowance: string = await this.erc20TokenContract.methods.allowance(ownerAddress, spenderAddress).call();
-    return this.web3.utils.fromWei(allowance, 'ether');
+  async readAllowance(ownerAddress: string, spenderAddress: string): Promise<bigint> {
+    const allowanceStr: string = await this.erc20TokenContract.methods.allowance(ownerAddress, spenderAddress).call();
+    return BigInt(allowanceStr);
   }
 
   // SUBSCRIPTIONS //
   subscribeToAllowanceChange(
     ownerAddress: string,
     spenderAddress: string,
-    callback: (error: Error, allowance: string) => void,
+    callback: (error: Error, allowance: bigint) => void,
   ) {
     const specificEventEmitter = this.erc20TokenContract.events.Approval(
       {
@@ -52,9 +52,8 @@ export class OrbsTokenService implements IOrbsTokenService {
           return;
         }
 
-        const newAllowanceInOrbsWei = event.returnValues[2];
-        const newAllowanceInOrbs = this.web3.utils.fromWei(newAllowanceInOrbsWei, 'ether');
-        callback(null, newAllowanceInOrbs);
+        const newAllowance = event.returnValues[2];
+        callback(null, newAllowance);
       },
     );
 
@@ -62,8 +61,7 @@ export class OrbsTokenService implements IOrbsTokenService {
   }
 
   // WRITE //
-  approve(spenderAddress: string, amountInOrbs: number): PromiEvent<TransactionReceipt> {
-    const rawAmount = this.web3.utils.toWei(amountInOrbs.toString(), 'ether');
-    return this.erc20TokenContract.methods.approve(spenderAddress, rawAmount).send();
+  approve(spenderAddress: string, amount: bigint): PromiEvent<TransactionReceipt> {
+    return this.erc20TokenContract.methods.approve(spenderAddress, amount.toString()).send();
   }
 }

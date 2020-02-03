@@ -1,10 +1,13 @@
 # Orbs POS Data
+
 A library that provides a simple way to read data about the Orbs POS, like Guardians, rewards, etc.
 
 ## Installation
+
 `npm install orbs-pos-data --save`
 
 ## Requirements
+
 * If you are using this library on a browser, make sure that you can provide a web3 instance in version 1.2.1 and up (Probably via metamask), also make sure that you have `orbs-client-sdk` instance.
 
 ## Setup - NodeJs
@@ -15,7 +18,7 @@ import Web3 from "web3";
 import { Client, NetworkType } from "orbs-client-sdk";
 
 // web3 instance
-const ethereumProviderUrl = 'https://mainnet.infura.io/v3/YOUR_KEY';	// The Ethereum that we will query
+const ethereumProviderUrl = 'https://mainnet.infura.io/v3/YOUR_KEY';   // The Ethereum that we will query
 const web3 = new Web3(new Web3.providers.HttpProvider(ethereumProviderUrl));
 
 // orbs client instance
@@ -50,8 +53,8 @@ if ((window as any).ethereum) {
 const web3 = new Web3(provider);
 
 // create the orbs-client-sdk instance
-const orbsNodeAddress = '18.197.127.2';	// The Orbs node that we will query
-const virtualChainId = 1100000;	// The virtual chain Id on the Orbs network
+const orbsNodeAddress = '18.197.127.2';  // The Orbs node that we will query
+const virtualChainId = 1100000;          // The virtual chain Id on the Orbs network
 const orbsNodeUrl = `http://${orbsNodeAddress}/vchains/${virtualChainId.toString()}`;
 const orbsClient = new Client(orbsNodeUrl, virtualChainId, NetworkType.NETWORK_TYPE_TEST_NET);
 
@@ -94,9 +97,9 @@ Get information about all the rewards of a given `address`.
 
 ```ts
 export interface IRewards {
-  delegatorReward: number;
-  guardianReward: number;
-  validatorReward: number;
+  delegatorReward: bigint;
+  guardianReward: bigint;
+  validatorReward: bigint;
 }
 ```
 
@@ -140,9 +143,10 @@ Get a detailed information about the given Validator.
 
 ---
 
-### `readOrbsBalance(address: string): Promise<string>`
+### `readOrbsBalance(address: string): Promise<bigint>`
 
 Get the amount of ORBS the given address is holding.
+
 ---
 
 ### `subscribeToORBSBalanceChange(address: string, callback: (newBalance: string) => void): Promise<() => void>`

@@ -14,7 +14,7 @@ import EventEmitter = NodeJS.EventEmitter;
 
 export type ValidatorsMap = { [key: string]: IValidatorData };
 
-export type OrbsBalanceChangeCallback = (orbsBalance: string) => void;
+export type OrbsBalanceChangeCallback = (orbsBalance: bigint) => void;
 
 export class EthereumClientServiceMock implements IEthereumClientService {
   private validatorsMap: ValidatorsMap = {};
@@ -53,9 +53,9 @@ export class EthereumClientServiceMock implements IEthereumClientService {
     return 0;
   }
 
-  async readOrbsBalance(address: string): Promise<string> {
+  async readOrbsBalance(address: string): Promise<bigint> {
     const resultBigInt = this.orbsBalanceMap.get(address);
-    return resultBigInt ? resultBigInt.toString() : '0';
+    return resultBigInt ? resultBigInt : BigInt(0);
   }
 
   subscribeToORBSBalanceChange(address: string, callback: OrbsBalanceChangeCallback): () => void {
@@ -100,7 +100,7 @@ export class EthereumClientServiceMock implements IEthereumClientService {
       const callbacks = this.balanceChangeEventsMap.get(address).values();
 
       for (let callback of callbacks) {
-        callback(`${newBalance}`);
+        callback(newBalance);
       }
     }
   }
