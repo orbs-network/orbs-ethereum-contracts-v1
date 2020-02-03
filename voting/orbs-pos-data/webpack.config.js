@@ -9,9 +9,10 @@
 const path = require("path");
 var nodeExternals = require("webpack-node-externals");
 
-const production = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === "production";
 const libraryName = "OrbsPOSData";
 const plugins = [];
+const targets = isProduction ? '> 0.25%, not dead' : { chrome: '79', firefox: '72' };
 
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 // plugins.push(new BundleAnalyzerPlugin());
@@ -19,8 +20,8 @@ function genConfig(target, entry, filename) {
   return {
     target,
     externals: [nodeExternals()],
-    mode: production ? "production" : "development",
-    devtool: production ? "" : "inline-source-map",
+    mode: isProduction ? "production" : "development",
+    devtool: isProduction ? "" : "inline-source-map",
     entry,
     output: {
       path: path.join(__dirname, "dist"),
@@ -32,6 +33,9 @@ function genConfig(target, entry, filename) {
     resolve: {
       extensions: [".js", ".ts"],
     },
+    optimization: {
+      minimize: isProduction,
+    },
     plugins,
     module: {
       rules: [
@@ -41,7 +45,7 @@ function genConfig(target, entry, filename) {
           use: {
             loader: "babel-loader",
             options: {
-              presets: [["@babel/env", { modules: false }], "@babel/typescript"],
+              presets: [["@babel/env", { modules: false, targets: targets }], "@babel/typescript"],
               plugins: ["@babel/plugin-transform-runtime", "@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-object-rest-spread"],
             },
           },

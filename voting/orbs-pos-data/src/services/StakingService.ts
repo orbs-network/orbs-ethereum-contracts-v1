@@ -19,11 +19,14 @@ import { ITypedEventData, TUnsubscribeFunction } from './contractsTypes/contract
 /**
  * It just so happens that all of the staking related events have the same signature.
  * DEV_NOTE : The real object will also have array accessors ("1", "2", "3") that match the named members.
+ * DEV_NOTE : Currently amounts are strings, in the future should change to bigint)
  */
 interface IStakingContractEventValues {
   stakeOwner: string;
-  amount: bigint; // Amount for the event
-  totalStakedAmount: bigint; // Total staked amount for given owner
+  // TODO : O.L : Change this to bigint after web3 change
+  amount: string; // Amount for the event
+  // TODO : O.L : Change this to bigint after web3 change
+  totalStakedAmount: string; // Total staked amount for given owner
 }
 
 export class StakingService implements IStakingService {
@@ -46,11 +49,11 @@ export class StakingService implements IStakingService {
 
   // WRITE //
   stake(amount: bigint): PromiEvent<TransactionReceipt> {
-    return this.stakingContract.methods.stake(amount).send();
+    return this.stakingContract.methods.stake(amount.toString()).send();
   }
 
   unstake(amount: bigint): PromiEvent<TransactionReceipt> {
-    return this.stakingContract.methods.unstake(amount).send();
+    return this.stakingContract.methods.unstake(amount.toString()).send();
   }
 
   restake(): PromiEvent<TransactionReceipt> {
@@ -71,7 +74,7 @@ export class StakingService implements IStakingService {
   }
 
   async readUnstakeStatus(stakeOwner: string): Promise<IUnstakingStatus> {
-    const result = this.stakingContract.methods.getUnstakeStatus(stakeOwner).call();
+    const result = await this.stakingContract.methods.getUnstakeStatus(stakeOwner).call();
 
     let cooldownAmountBigInt = BigInt(result.cooldownAmount);
     let cooldownEndTimeNumber = Number(result.cooldownEndTime);
@@ -130,7 +133,7 @@ export class StakingService implements IStakingService {
           return;
         }
 
-        callback(null, event.returnValues.amount, event.returnValues.totalStakedAmount);
+        callback(null, BigInt(event.returnValues.amount), BigInt(event.returnValues.totalStakedAmount));
       },
     );
 
