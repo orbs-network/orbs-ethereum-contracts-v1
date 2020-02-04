@@ -14,6 +14,17 @@ import { AbiItem } from 'web3-utils';
 import { MainnetContractsAddresses } from '../contracts-adresses';
 import { IOrbsTokenService } from '../interfaces/IOrbsTokenService';
 import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
+import { ITypedEventData } from './contractsTypes/contractTypes';
+
+/**
+ * DEV_NOTE : The real object will also have array accessors ("1", "2", "3") that match the named members.
+ */
+interface IApprovalEventValues {
+  owner: string; // Owner of the account
+  spender: string; // Account approved to spend owners tokens
+  // TODO : O.L : Change this to bigint after web3 change
+  value: string; // Amount (DEV_NOTE : Currently string, in the future should change to bigint)
+}
 
 export class OrbsTokenService implements IOrbsTokenService {
   private erc20TokenContract: Contract;
@@ -46,14 +57,14 @@ export class OrbsTokenService implements IOrbsTokenService {
           spender: [spenderAddress],
         },
       },
-      async (error: Error, event: EventData) => {
+      async (error: Error, event: ITypedEventData<IApprovalEventValues>) => {
         if (error) {
           callback(error, null);
           return;
         }
 
-        const newAllowance = event.returnValues[2];
-        callback(null, newAllowance);
+        const newAllowance = event.returnValues.value;
+        callback(null, BigInt(newAllowance));
       },
     );
 

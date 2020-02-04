@@ -78,13 +78,15 @@ describe('Staking service', () => {
   });
 
   it('should call "stake" with the amount', async () => {
-    const result = await stakingService.stake(1_000_000n);
-    expect(web3Mock.methodParams('stake')).toEqual([1_000_000n]);
+    const result = await stakingService.stake(BigInt(1_000_000));
+    // TODO : O.L : The usage of string is temporal and should be changed to Bigint after web3 update
+    expect(web3Mock.methodParams('stake')).toEqual([BigInt(1_000_000).toString()]);
   });
 
   it('should call "unstake" with the amount', async () => {
-    await stakingService.unstake(2_000_000n);
-    expect(web3Mock.methodParams('unstake')).toEqual([2_000_000n]);
+    await stakingService.unstake(BigInt(2_000_000));
+    // TODO : O.L : The usage of string is temporal and should be changed to Bigint after web3 update
+    expect(web3Mock.methodParams('unstake')).toEqual([BigInt(2_000_000).toString()]);
   });
 
   it('should call "restake"', async () => {
@@ -98,27 +100,27 @@ describe('Staking service', () => {
   });
 
   it('should call "getStakeBalanceOf" with the owner address', async () => {
-    web3Mock.getStakeBalanceOfResult = 123n;
+    web3Mock.getStakeBalanceOfResult = BigInt(123);
     const actual = await stakingService.readStakeBalanceOf('DUMMY_ADDRESS');
 
     expect(web3Mock.methodParams('getStakeBalanceOf')).toEqual(['DUMMY_ADDRESS']);
-    expect(actual).toEqual(123n);
+    expect(actual).toEqual(BigInt(123));
   });
 
   it('should call "getTotalStakedTokens"', async () => {
-    web3Mock.getTotalStakedTokensResult = 123456n;
+    web3Mock.getTotalStakedTokensResult = BigInt(123456);
     const actual = await stakingService.readTotalStakedTokens();
 
     expect(web3Mock.methodParams('getTotalStakedTokens')).toEqual([]);
-    expect(actual).toEqual(123456n);
+    expect(actual).toEqual(BigInt(123456));
   });
 
   it('should call "getUnstakeStatus"', async () => {
-    web3Mock.getUnstakeStatusResult = { cooldownAmount: 123n, cooldownEndTime: 456 };
+    web3Mock.getUnstakeStatusResult = { cooldownAmount: BigInt(123), cooldownEndTime: 456 };
     const actual = await stakingService.readUnstakeStatus('DUMMY_ADDRESS');
 
     expect(web3Mock.methodParams('getUnstakeStatus')).toEqual(['DUMMY_ADDRESS']);
-    expect(actual).toEqual({ cooldownAmount: 123n, cooldownEndTime: 456 });
+    expect(actual).toEqual({ cooldownAmount: BigInt(123), cooldownEndTime: 456 });
   });
 
   it('should set options.from address to the given address', async () => {
