@@ -24,6 +24,6 @@ export const delegatedEvents = (txResult) => parseLogs(txResult, elections, "Del
 export const totalStakeChangedEvents = (txResult) => parseLogs(txResult, elections, "TotalStakeChanged(address,uint256)");
 export const subscriptionChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "SubscriptionChanged(uint256,uint256,uint256,string)");
 export const paymentEvents = (txResult) => parseLogs(txResult, subscriptions, "Payment(uint256,address,uint256,string,uint256)");
-export const feeAddedToBucketEvents = (txResult) => parseLogs(txResult, rewards, "FeeAddedToBucket(uint256,uint256,uint256)");
+export const feeAddedToBucketEvents = (txResult) => parseLogs(txResult, rewards, "FeeAddedToBucket(uint8,uint256,uint256,uint256)");
 export const rewardAssignedEvents = (txResult) => parseLogs(txResult, rewards, "RewardAssigned(address,uint256,uint256)");
 export const topologyChangedEvents = (txResult) => parseLogs(txResult, elections, "TopologyChanged(address[],bytes4[])");
