@@ -27,7 +27,6 @@ const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
     }
 
     validators[address].name = data['name'];
-    validators[address].address;
     validators[address].orbsAddress = data['orbsAddress'];
     validators[address].stake = data['stake'];
 

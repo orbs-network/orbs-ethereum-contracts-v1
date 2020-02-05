@@ -4,7 +4,7 @@ RUN apt-get update
 
 RUN apt-get install -y jq curl git vim build-essential
 
-RUN npm install yarn -g
+RUN npm install yarn -g --force
 RUN ls -la /root/.npm/
 
 ENV GANACHE_URL="http://ganache:7545"

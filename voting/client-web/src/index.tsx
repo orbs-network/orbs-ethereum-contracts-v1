@@ -9,5 +9,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './components/App/App';
+import { configs } from './config';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App configs={configs} />, document.getElementById('root'));

@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
-export const AppTheme = (lang: string) =>
+export const AppTheme = (fontFamily: string) =>
   createMuiTheme({
     palette: {
       type: 'dark',
@@ -13,7 +13,7 @@ export const AppTheme = (lang: string) =>
     },
     typography: {
       useNextVariants: true,
-      fontFamily: lang === 'jp' ? 'Meiryo,Hiragino Kaku Gothic ProN,MS PGothic,sans-serif' : 'Montserrat',
+      fontFamily,
     },
     overrides: {
       MuiTypography: {

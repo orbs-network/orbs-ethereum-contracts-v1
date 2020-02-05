@@ -38,69 +38,67 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         const shf = electionContracts.newStakeHolderFactory();
 
-        const [v1, v2, v3, v4, v5] = await Promise.all([
-            shf.aValidator({stake: 10000}),
-            shf.aValidator({stake: 20000}),
-            shf.aValidator({stake: 15000}),
-            shf.aValidator({stake: 5000}),
-            shf.aValidator({stake: 7000})]);
+        const [v1, v2, v3, v4, v5] = [
+            await shf.aValidator({stake: 10000}),
+            await shf.aValidator({stake: 20000}),
+            await shf.aValidator({stake: 15000}),
+            await shf.aValidator({stake: 5000}),
+            await shf.aValidator({stake: 7000})];
 
         // sanity - all validators are listed in both contracts
         const orbsValidatorAddresses = await electionContracts.getOrbsValidatorAddresses();
         expect(orbsValidatorAddresses.map(a => a.toLowerCase())).to.have.members([v1, v2, v3, v4, v5].map(v => v.orbsAccount.address.toLowerCase()));
 
-        const [g1, g2, g3, g4] = await Promise.all([
-            shf.aGuardian({stake: 6000}),
+        const [g1, g2, g3, g4] = [
+            await shf.aGuardian({stake: 6000}),
             await shf.aGuardian({stake: 34000}),
             await shf.aGuardian({stake: 5000}),
             await shf.aGuardian({stake: 0})
-        ]);
+        ];
 
         // TODO verify registration?
 
-        const [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9] = await Promise.all([
-            shf.aDelegator({stake: 10000}),
-            shf.aDelegator({stake: 10000}),
-            shf.aDelegator({stake: 8000}),
-            shf.aDelegator({stake: 8000}),
-            shf.aDelegator({stake: 6000}),
-            shf.aDelegator({stake: 6000}),
-            shf.aDelegator({stake: 34000}),
-            shf.aDelegator({stake: 10}),
-            shf.aDelegator({stake: 20000}),
-            shf.aDelegator({stake: 5000}),
-        ]);
+        const [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9] = [
+            await shf.aDelegator({stake: 10000}),
+            await shf.aDelegator({stake: 10000}),
+            await shf.aDelegator({stake: 8000}),
+            await shf.aDelegator({stake: 8000}),
+            await shf.aDelegator({stake: 6000}),
+            await shf.aDelegator({stake: 6000}),
+            await shf.aDelegator({stake: 34000}),
+            await shf.aDelegator({stake: 10}),
+            await shf.aDelegator({stake: 20000}),
+            await shf.aDelegator({stake: 5000}),
+        ];
 
         await shf.waitForFundingSuccess(); //TODO we don't need this anymore, make initStakeHolder() wait for this promise
         const DELEGATE_AMOUNT = ethereum.web3.utils.toBN("70000000000000000");
 
-        await Promise.all([
-            d0.transferTo(d6, DELEGATE_AMOUNT),
-            d2.transferTo(d6, DELEGATE_AMOUNT),
-            d5.transferTo(d3, DELEGATE_AMOUNT),
-            d8.transferTo(d4, 50),
-            d8.transferTo(d4, DELEGATE_AMOUNT),
-            d8.transferTo(d1, 10),
-            d3.transferTo(g3, DELEGATE_AMOUNT),
-            d9.transferTo(g3, DELEGATE_AMOUNT),
-            d1.transferTo(d6, DELEGATE_AMOUNT),
-            d2.transferTo(d4, DELEGATE_AMOUNT),
-            d8.transferTo(d6, DELEGATE_AMOUNT),
-            d5.transferTo(d9, 10),
-            // TODO verify transfers
+        await d0.transferTo(d6, DELEGATE_AMOUNT),
+        await d2.transferTo(d6, DELEGATE_AMOUNT),
+        await d5.transferTo(d3, DELEGATE_AMOUNT),
+        await d8.transferTo(d4, 50),
+        await d8.transferTo(d4, DELEGATE_AMOUNT),
+        await d8.transferTo(d1, 10),
+        await d3.transferTo(g3, DELEGATE_AMOUNT),
+        await d9.transferTo(g3, DELEGATE_AMOUNT),
+        await d1.transferTo(d6, DELEGATE_AMOUNT),
+        await d2.transferTo(d4, DELEGATE_AMOUNT),
+        await d8.transferTo(d6, DELEGATE_AMOUNT),
+        await d5.transferTo(d9, 10),
+        // TODO verify transfers
 
-            d1.delegateExplicitly(d4),
-            d7.delegateExplicitly(g3),
+        await d1.delegateExplicitly(d4),
+        await d7.delegateExplicitly(g3),
 
-            // TODO verify delegation in contract state
+        // TODO verify delegation in contract state
 
-            g1.voteOut(v1, v3),
-            g3.voteOut(v3, v4, v5),
-            g2.voteOut(v3),
-            g1.voteOut(v2), // second vote
-            g4.voteOut(),
-            d2.voteOut(v5, v2, v3), // not an guardian
-        ]);
+        await g1.voteOut(v1, v3),
+        await g3.voteOut(v3, v4, v5),
+        await g2.voteOut(v3),
+        await g1.voteOut(v2), // second vote
+        await g4.voteOut(),
+        await d2.voteOut(v5, v2, v3), // not an guardian
 
         console.log("Start First Block Election");
 
@@ -170,7 +168,7 @@ describe("voting contracts on orbs and ethereum", async () => {
             .to.be.equal(2*VALIDATOR2_BLOCK_BASED_CALCULATED_EXPECTED_REWARD); // re-elected add reward
     });
 
-    it("perform two time based elections", async () => {
+    xit("perform two time based elections", async () => {
         const options = {
             maxVoteOut: 3,
             validatorsLimit: 20,
@@ -188,18 +186,18 @@ describe("voting contracts on orbs and ethereum", async () => {
         const shf = electionContracts.newStakeHolderFactory();
 
         const [v1, v2, v3, v4, v5] = await Promise.all([
-            shf.aValidator({stake: 10000}),
-            shf.aValidator({stake: 20000}),
-            shf.aValidator({stake: 15000}),
-            shf.aValidator({stake: 5000}),
-            shf.aValidator({stake: 7000})]);
+            await shf.aValidator({stake: 10000}),
+            await shf.aValidator({stake: 20000}),
+            await shf.aValidator({stake: 15000}),
+            await shf.aValidator({stake: 5000}),
+            await shf.aValidator({stake: 7000})]);
 
         // sanity - all validators are listed in both contracts
         const orbsValidatorAddresses = await electionContracts.getOrbsValidatorAddresses();
         expect(orbsValidatorAddresses.map(a => a.toLowerCase())).to.have.members([v1, v2, v3, v4, v5].map(v => v.orbsAccount.address.toLowerCase()));
 
         const [g1, g2, g3, g4] = await Promise.all([
-            shf.aGuardian({stake: 6000}),
+            await shf.aGuardian({stake: 6000}),
             await shf.aGuardian({stake: 34000}),
             await shf.aGuardian({stake: 5000}),
             await shf.aGuardian({stake: 0})
@@ -208,34 +206,34 @@ describe("voting contracts on orbs and ethereum", async () => {
         // TODO verify registration?
 
         const [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9] = await Promise.all([
-            shf.aDelegator({stake: 10000}),
-            shf.aDelegator({stake: 10000}),
-            shf.aDelegator({stake: 8000}),
-            shf.aDelegator({stake: 8000}),
-            shf.aDelegator({stake: 6000}),
-            shf.aDelegator({stake: 6000}),
-            shf.aDelegator({stake: 34000}),
-            shf.aDelegator({stake: 10}),
-            shf.aDelegator({stake: 20000}),
-            shf.aDelegator({stake: 5000}),
+            await shf.aDelegator({stake: 10000}),
+            await shf.aDelegator({stake: 10000}),
+            await shf.aDelegator({stake: 8000}),
+            await shf.aDelegator({stake: 8000}),
+            await shf.aDelegator({stake: 6000}),
+            await shf.aDelegator({stake: 6000}),
+            await shf.aDelegator({stake: 34000}),
+            await shf.aDelegator({stake: 10}),
+            await shf.aDelegator({stake: 20000}),
+            await shf.aDelegator({stake: 5000}),
         ]);
 
         await shf.waitForFundingSuccess(); //TODO we don't need this anymore, make initStakeHolder() wait for this promise
         const DELEGATE_AMOUNT = ethereum.web3.utils.toBN("70000000000000000");
 
         await Promise.all([
-            d0.transferTo(d6, DELEGATE_AMOUNT),
-            d2.transferTo(d6, DELEGATE_AMOUNT),
-            d5.transferTo(d3, DELEGATE_AMOUNT),
-            d8.transferTo(d4, 50),
-            d8.transferTo(d4, DELEGATE_AMOUNT),
-            d8.transferTo(d1, 10),
-            d3.transferTo(g3, DELEGATE_AMOUNT),
-            d9.transferTo(g3, DELEGATE_AMOUNT),
-            d1.transferTo(d6, DELEGATE_AMOUNT),
-            d2.transferTo(d4, DELEGATE_AMOUNT),
-            d8.transferTo(d6, DELEGATE_AMOUNT),
-            d5.transferTo(d9, 10),
+            await d0.transferTo(d6, DELEGATE_AMOUNT),
+            await d2.transferTo(d6, DELEGATE_AMOUNT),
+            await d5.transferTo(d3, DELEGATE_AMOUNT),
+            await d8.transferTo(d4, 50),
+            await d8.transferTo(d4, DELEGATE_AMOUNT),
+            await d8.transferTo(d1, 10),
+            await d3.transferTo(g3, DELEGATE_AMOUNT),
+            await d9.transferTo(g3, DELEGATE_AMOUNT),
+            await d1.transferTo(d6, DELEGATE_AMOUNT),
+            await d2.transferTo(d4, DELEGATE_AMOUNT),
+            await d8.transferTo(d6, DELEGATE_AMOUNT),
+            await d5.transferTo(d9, 10),
             // TODO verify transfers
 
             d1.delegateExplicitly(d4),
@@ -316,7 +314,7 @@ describe("voting contracts on orbs and ethereum", async () => {
             .to.be.equal(2*VALIDATOR2_TIME_BASED_CALCULATED_EXPECTED_REWARD); // re-elected add reward
     });
 
-    it("perform block based elections then time based elections", async () => {
+    xit("perform block based elections then time based elections", async () => {
         const options = {
             maxVoteOut: 3,
             validatorsLimit: 20,
@@ -337,36 +335,36 @@ describe("voting contracts on orbs and ethereum", async () => {
         const shf = electionContracts.newStakeHolderFactory();
 
         const [v1, v2, v3, v4, v5] = await Promise.all([
-            shf.aValidator({stake: 10000}),
-            shf.aValidator({stake: 20000}),
-            shf.aValidator({stake: 15000}),
-            shf.aValidator({stake: 5000}),
-            shf.aValidator({stake: 7000})]);
+            await shf.aValidator({stake: 10000}),
+            await shf.aValidator({stake: 20000}),
+            await shf.aValidator({stake: 15000}),
+            await shf.aValidator({stake: 5000}),
+            await shf.aValidator({stake: 7000})]);
 
         // sanity - all validators are listed in both contracts
         const orbsValidatorAddresses = await electionContracts.getOrbsValidatorAddresses();
         expect(orbsValidatorAddresses.map(a => a.toLowerCase())).to.have.members([v1, v2, v3, v4, v5].map(v => v.orbsAccount.address.toLowerCase()));
 
         const [g1, g2, g3, g4] = await Promise.all([
-            shf.aGuardian({stake: 6000}),
-            await shf.aGuardian({stake: 34000}),
-            await shf.aGuardian({stake: 5000}),
-            await shf.aGuardian({stake: 0})
+            await shf.aGuardian({stake: 6000}),
+            await await shf.aGuardian({stake: 34000}),
+            await await shf.aGuardian({stake: 5000}),
+            await await shf.aGuardian({stake: 0})
         ]);
 
         // TODO verify registration?
 
         const [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9] = await Promise.all([
-            shf.aDelegator({stake: 10000}),
-            shf.aDelegator({stake: 10000}),
-            shf.aDelegator({stake: 8000}),
-            shf.aDelegator({stake: 8000}),
-            shf.aDelegator({stake: 6000}),
-            shf.aDelegator({stake: 6000}),
-            shf.aDelegator({stake: 34000}),
-            shf.aDelegator({stake: 10}),
-            shf.aDelegator({stake: 20000}),
-            shf.aDelegator({stake: 5000}),
+            await shf.aDelegator({stake: 10000}),
+            await shf.aDelegator({stake: 10000}),
+            await shf.aDelegator({stake: 8000}),
+            await shf.aDelegator({stake: 8000}),
+            await shf.aDelegator({stake: 6000}),
+            await shf.aDelegator({stake: 6000}),
+            await shf.aDelegator({stake: 34000}),
+            await shf.aDelegator({stake: 10}),
+            await shf.aDelegator({stake: 20000}),
+            await shf.aDelegator({stake: 5000}),
         ]);
 
         await shf.waitForFundingSuccess();
@@ -469,4 +467,5 @@ describe("voting contracts on orbs and ethereum", async () => {
     });
 
 });
+
 

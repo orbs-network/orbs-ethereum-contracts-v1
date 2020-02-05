@@ -8,7 +8,7 @@
 
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { withRouter } from 'react-router';
+import { ChangeLangLink } from '../multi-lang/ChangeLangLink';
 import EN_FLAG from './en-us.png';
 import JP_FLAG from './jp.png';
 import KO_FLAG from './ko.png';
@@ -29,33 +29,26 @@ const styles = () => ({
   },
 });
 
-function addLangToCurrentLocation(location, lang: string) {
-  const langRegexp = /\/(en|ko|jp)\//;
-  return location.pathname.match(langRegexp)
-    ? location.pathname.replace(langRegexp, `/${lang}/`)
-    : `${process.env.PUBLIC_URL}/${lang}${location.pathname}`;
-}
-
-const LanguagesImpl = ({ classes, location }) => {
+const LanguagesImpl = ({ classes }) => {
   return (
     <ul className={classes.list}>
       <li className={classes.item}>
-        <a href={addLangToCurrentLocation(location, 'en')}>
+        <ChangeLangLink lang='en'>
           <img src={EN_FLAG} alt='English' />
-        </a>
+        </ChangeLangLink>
       </li>
       <li className={classes.item}>
-        <a href={addLangToCurrentLocation(location, 'jp')}>
+        <ChangeLangLink lang='jp'>
           <img src={JP_FLAG} alt='Japanese' />
-        </a>
+        </ChangeLangLink>
       </li>
       <li className={classes.item}>
-        <a href={addLangToCurrentLocation(location, 'ko')}>
+        <ChangeLangLink lang='ko'>
           <img src={KO_FLAG} alt='Korean' />
-        </a>
+        </ChangeLangLink>
       </li>
     </ul>
   );
 };
 
-export const Languages = withRouter(withStyles(styles)(LanguagesImpl) as any);
+export const Languages = withStyles(styles)(LanguagesImpl);

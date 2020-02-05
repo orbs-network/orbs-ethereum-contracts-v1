@@ -1,2 +1,6 @@
-export { orbsPOSDataServiceFactory } from './orbs-pos-data-service-factory';
-export { OrbsPOSDataService } from './orbs-pos-data-service';
+export { orbsPOSDataServiceFactory } from './factories/orbsPOSDataServiceFactory';
+export { OrbsPOSDataService } from './services/OrbsPOSDataService';
+export { StakingService } from './services/StakingService';
+export { GuardiansService } from './services/GuardiansService';
+export { OrbsTokenService } from './services/OrbsTokenService';
+export { OrbsClientService } from './services/OrbsClientService';

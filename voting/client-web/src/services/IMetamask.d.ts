@@ -8,6 +8,7 @@
 
 export interface IMetamask {
   isMainNet(): boolean;
+  displayOrbsInMetamask(): Promise<void>;
   getCurrentAddress(): Promise<string>;
   delegate(candidate: string): Promise<void>;
   voteOut(validators: string[]): Promise<void>;

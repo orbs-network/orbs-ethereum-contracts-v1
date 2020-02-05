@@ -51,10 +51,14 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
   const fetchRewardsHistory = address => remoteService.getRewardsHistory(address).then(setRewardsHistory);
 
   const fetchDelegationInfo = async address => {
-    const info = await remoteService.getCurrentDelegationInfo(address);
+    const info: any = await remoteService.getCurrentDelegationInfo(address);
     setDelegatorInfo(info);
-    const guardianData = await remoteService.getGuardianData(info['delegatedTo']);
-    setGuardianInfo(guardianData);
+    if (info.delegationType === 'Not-Delegated') {
+      setGuardianInfo({});
+    } else {
+      const guardianData = await remoteService.getGuardianData(info['delegatedTo']);
+      setGuardianInfo(guardianData);
+    }
   };
 
   const fetchEffectiveElectionBlock = () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock);

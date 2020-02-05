@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./dist",
+    "module": "es6",
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "target": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "downlevelIteration": true,
+    "emitDeclarationOnly": true,
+    "resolveJsonModule": true,
+    "lib": ["esnext", "esnext.bigint"],
+    "types": ["node", "jest"]
+  },
+  "files": ["src/declarations-index.ts", "src/testkit/index.ts", "src/types.d.ts"]
+}

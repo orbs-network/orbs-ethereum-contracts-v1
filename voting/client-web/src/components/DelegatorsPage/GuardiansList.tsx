@@ -75,7 +75,8 @@ const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, del
                   checked={guardian['address'] === candidate}
                   value={guardian['address']}
                   onChange={ev => {
-                    setCandidate(ev.target.value), onSelect(ev.target.value);
+                    setCandidate(ev.target.value);
+                    onSelect(ev.target.value);
                   }}
                 />
               )}

@@ -8,7 +8,7 @@ jobs:
 #
   voting-orbs-tests:
     docker:
-      - image: circleci/golang:1.11.4
+      - image: circleci/golang:1.12.9
     steps:
       - checkout
       - run: cd voting/orbs && ./test.sh
@@ -45,6 +45,8 @@ jobs:
       - store_artifacts:
           path: _out
           destination: test-output
+      - store_test_results:
+          path: _out
 
   subscription-e2e:
     machine: true
@@ -92,3 +94,16 @@ workflows:
   rewards-distribution:
     jobs:
       - rewards-distribution-solidity-tests
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 23 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      # tests that integrate with orbs-network-go
+      - voting-orbs-tests
+      - voting-e2e
+      - subscription-e2e

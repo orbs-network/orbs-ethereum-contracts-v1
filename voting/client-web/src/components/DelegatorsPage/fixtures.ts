@@ -7,6 +7,7 @@ export const generateGuardiansData = () => {
     acc[currAddress] = {
       name: chance.name(),
       website: chance.url(),
+      currentVote: [],
     };
     return acc;
   }, {});

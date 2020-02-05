@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { render } from 'react-testing-library';
+import { render } from '@testing-library/react';
 import { ApiContext } from '../../services/ApiContext';
 import { IMetamask } from '../../services/IMetamask';
 import { IRemoteService } from '../../services/IRemoteService';

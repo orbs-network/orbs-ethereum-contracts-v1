@@ -875,8 +875,9 @@ func mirrorDelegationByTransfer(hexEncodedEthTxHash string) {
 }
 
 type Delegate struct {
-	Delegator [20]byte
-	To        [20]byte
+	Delegator         [20]byte
+	To                [20]byte
+	DelegationCounter *big.Int // this is needed even though we don't read it, otherwise ABI parse would fail with message abi: field delegationCounter can't be found in the given value
 }
 
 func mirrorDelegation(hexEncodedEthTxHash string) {
@@ -917,8 +918,8 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint
 	stateMethod := state.ReadString(_formatDelegatorMethod(delegator))
 	stateBlockNumber := uint64(0)
 	if stateMethod == DELEGATION_NAME && eventName == DELEGATION_BY_TRANSFER_NAME {
-		panic(fmt.Errorf("delegate with medthod %s from %v to %v failed since already have delegation with method %s",
-			eventName, delegator, agent, stateMethod))
+		panic(fmt.Errorf("delegate with method %s from %s to %s failed since already have delegation with method %s",
+			eventName, hex.EncodeToString(delegator), hex.EncodeToString(agent), stateMethod))
 	} else if stateMethod == DELEGATION_BY_TRANSFER_NAME && eventName == DELEGATION_NAME {
 		stateBlockNumber = eventBlockNumber
 	} else if stateMethod == eventName {

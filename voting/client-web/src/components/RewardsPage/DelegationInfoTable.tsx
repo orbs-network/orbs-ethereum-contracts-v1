@@ -29,40 +29,65 @@ const formatTimestamp = timestamp =>
 
 export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
   const { t } = useTranslation();
+  let delegatorBalance: string;
+  let delegatedTo: string;
+  let delegationBlockNumber: string;
+  let delegationTimestamp: string;
+  const delegationType = delegatorInfo.delegationType;
+  if (delegationType === 'Not-Delegated') {
+    delegatorBalance = '-';
+    delegatedTo = '-';
+    delegationBlockNumber = '-';
+    delegationTimestamp = '-';
+  } else {
+    delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
+    delegatedTo = delegatorInfo.delegatedTo;
+    delegationBlockNumber = (delegatorInfo.delegationBlockNumber || 0).toLocaleString();
+    delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
+  }
+
   return (
     <Table padding='none'>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegated To')}</TableCell>
-          <TableCell align='right'>{delegatorInfo['delegatedTo']}</TableCell>
+          <TableCell align='right'>{delegatedTo}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t(`Delegator's ORBS Balance`)}</TableCell>
-          <TableCell align='right'>{(delegatorInfo['delegatorBalance'] || 0).toLocaleString()} ORBS</TableCell>
+          <TableCell align='right'>{delegatorBalance}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
-          <TableCell align='right'>{guardianInfo['voted'] && <VoteChip value={guardianInfo['voted']} />}</TableCell>
+          <TableCell align='right'>
+            {guardianInfo['voted'] === true || guardianInfo['voted'] === false ? (
+              <VoteChip value={guardianInfo['voted']} />
+            ) : (
+              '-'
+            )}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted for next elections')}</TableCell>
           <TableCell align='right'>
-            {guardianInfo['hasEligibleVote'] && <VoteChip value={guardianInfo['hasEligibleVote']} />}
+            {guardianInfo['hasEligibleVote'] === true || guardianInfo['hasEligibleVote'] === false ? (
+              <VoteChip value={guardianInfo['hasEligibleVote']} />
+            ) : (
+              '-'
+            )}
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation method')}</TableCell>
-          <TableCell align='right'>{delegatorInfo['delegationType']}</TableCell>
+          <TableCell align='right'>{delegationType}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation block number')}</TableCell>
-          <TableCell align='right'>{(delegatorInfo.delegationBlockNumber || 0).toLocaleString()}</TableCell>
+          <TableCell align='right'>{delegationBlockNumber}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Delegation timestamp')}</TableCell>
-          <TableCell align='right'>
-            {delegatorInfo['delegationTimestamp'] && formatTimestamp(delegatorInfo['delegationTimestamp'])}
-          </TableCell>
+          <TableCell align='right'>{delegationTimestamp}</TableCell>
         </TableRow>
       </TableBody>
     </Table>

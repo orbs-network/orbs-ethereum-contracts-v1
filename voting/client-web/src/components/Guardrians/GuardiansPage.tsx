@@ -118,7 +118,6 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
       const receipt = await metamask.voteOut(stagedValidators);
       save(from, stagedValidators);
       fetchLastVote();
-      console.log(receipt);
     }
   };
 

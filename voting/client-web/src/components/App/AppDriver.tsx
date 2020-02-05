@@ -8,10 +8,11 @@
 
 import React from 'react';
 import { App } from './App';
-import { render } from 'react-testing-library';
+import { render } from '@testing-library/react';
+import { configs } from '../../config';
 
 export class AppDriver {
   render() {
-    return render(<App />);
+    return render(<App configs={configs} />);
   }
 }

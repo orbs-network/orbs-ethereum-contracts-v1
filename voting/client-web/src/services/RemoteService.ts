@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { IRemoteService } from './IRemoteService';
 
-// const remoteAddress = 'http://localhost:5678/api';
-const remoteAddress = 'https://orbs-voting-proxy-server.herokuapp.com/api';
-
 export class RemoteService implements IRemoteService {
+  constructor(private remoteAddress: string) {}
+
   private async callRemote(path: string, params?: any) {
     const config = params ? { params } : undefined;
-    const res = await axios.get(`${remoteAddress}${path}`, config);
+    const res = await axios.get(`${this.remoteAddress}${path}`, config);
     return res.data;
   }
 

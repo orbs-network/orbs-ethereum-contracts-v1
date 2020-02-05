@@ -22,8 +22,7 @@ const NewGuardianImpl = ({ classes }: { classes: any }) => {
 
   const addGuardian = async () => {
     if (metamask) {
-      const receipt = await metamask.registerGuardian({ name, website });
-      console.log(receipt);
+      await metamask.registerGuardian({ name, website });
     }
   };
 
