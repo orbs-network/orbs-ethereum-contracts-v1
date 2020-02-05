@@ -42,8 +42,6 @@ contract Elections is IStakingListener, Ownable {
 	uint maxTopologySize;
 	uint maxDelegationRatio; // TODO consider using a hardcoded constant instead.
 
-	uint constant OUT_OF_TOPOLOGY = uint(-1);
-
 	modifier onlyStakingContract() {
 		require(msg.sender == stakingContract, "caller is not the staking contract");
 
@@ -226,19 +224,31 @@ contract Elections is IStakingListener, Ownable {
 		return (prevSize, currentSize);
 	}
 
-	function _onValidatorPositionChange(uint fromPos, uint toPos) private {
-		assert(topology.length <= maxTopologySize);
+	function _onValidatorLeftTopology(uint fromPos) private {
 		(uint prevSize, uint currentSize) = _updateCommitteeSize();
 
-		if (prevSize != currentSize ||
-			fromPos != OUT_OF_TOPOLOGY && fromPos < currentSize ||
-		    toPos != OUT_OF_TOPOLOGY && toPos < currentSize) {
-				_notifyCommitteeChanged();
+		if (prevSize != currentSize || fromPos < currentSize) {
+			_notifyCommitteeChanged();
 		}
 
-		if (fromPos == OUT_OF_TOPOLOGY  && toPos != OUT_OF_TOPOLOGY
-			|| toPos == OUT_OF_TOPOLOGY && fromPos != OUT_OF_TOPOLOGY) {
-			_notifyTopologyChanged();
+		_notifyTopologyChanged();
+	}
+
+	function _onValidatorEnteredTopology(uint toPos) private {
+		(uint prevSize, uint currentSize) = _updateCommitteeSize();
+
+		if (prevSize != currentSize || toPos < currentSize) {
+			_notifyCommitteeChanged();
+		}
+
+		_notifyTopologyChanged();
+	}
+
+	function _onValidatorPositionChange(uint fromPos, uint toPos) private {
+		(uint prevSize, uint currentSize) = _updateCommitteeSize();
+
+		if (prevSize != currentSize || fromPos < currentSize || toPos < currentSize) {
+			_notifyCommitteeChanged();
 		}
 	}
 
@@ -254,25 +264,23 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _placeInTopology(address validator) private {
-		uint oldPos = _findInTopology(validator);
-		uint newPos;
+		(uint oldPos, bool inTopology) = _findInTopology(validator);
 
-		if (!_satisfiesTopologyPrerequisites(validator)) {
-			if (oldPos != OUT_OF_TOPOLOGY) {
-				_removeFromTopology(oldPos);
-			}
-			newPos = OUT_OF_TOPOLOGY;
-		} else if (oldPos != OUT_OF_TOPOLOGY || _isQualifiedForTopologyByRank(validator)) {
-			uint p = oldPos;
-			if (p == OUT_OF_TOPOLOGY) {
-				p = _appendToTopology(validator);
-			}
-			newPos = _sortTopologyMember(p);
-		} else {
-			newPos = oldPos;
+		if (inTopology && !_satisfiesTopologyPrerequisites(validator)) { // leaving topology
+			_removeFromTopology(oldPos);
+			_onValidatorLeftTopology(oldPos);
+			return;
 		}
 
-		_onValidatorPositionChange(oldPos, newPos);
+		if (inTopology) { // remains in topology
+			_onValidatorPositionChange(oldPos, _sortTopologyMember(oldPos));
+			return;
+		}
+
+		if (_satisfiesTopologyPrerequisites(validator) && _isQualifiedForTopologyByRank(validator)) { // entering topology
+			uint newPos = _sortTopologyMember(_appendToTopology(validator));
+			_onValidatorEnteredTopology(newPos);
+		}
 	}
 
 	function _compareValidators(uint v1pos, uint v2pos) private view returns (int) {
@@ -330,14 +338,14 @@ contract Elections is IStakingListener, Ownable {
 		return own.mul(maxRatio); // never overflows
 	}
 
-	function _findInTopology(address v) private view returns (uint) {
+	function _findInTopology(address v) private view returns (uint, bool) {
 		uint l =  topology.length;
 		for (uint i=0; i < l; i++) {
 			if (topology[i] == v) {
-				return i;
+				return (i, true);
 			}
 		}
-		return OUT_OF_TOPOLOGY;
+		return (0, false);
 	}
 
 
