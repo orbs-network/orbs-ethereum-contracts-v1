@@ -211,7 +211,7 @@ contract Elections is IStakingListener, Ownable {
 		emit CommitteeChanged(committeeAddresses, committeeOrbsAddresses, committeeStakes);
 	}
 
-	function _updateCommitteeSize() private returns (uint, uint) {
+	function _refreshCommitteeSize() private returns (uint, uint) {
 		uint currentSize = currentCommitteeSize;
 		uint prevSize = currentSize;
 		while (currentSize > 0 && (topology.length < currentSize || !readyValidators[topology[currentSize - 1]])) {
@@ -224,30 +224,35 @@ contract Elections is IStakingListener, Ownable {
 		return (prevSize, currentSize);
 	}
 
-	function _onValidatorLeftTopology(uint fromPos) private {
-		(uint prevSize, uint currentSize) = _updateCommitteeSize();
+	function _updateTopologyRemove(uint pos) private {
+		_removeFromTopology(pos);
 
-		if (prevSize != currentSize || fromPos < currentSize) {
+		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
+
+		if (prevSize != currentSize || pos < currentSize) {
 			_notifyCommitteeChanged();
 		}
 
 		_notifyTopologyChanged();
 	}
 
-	function _onValidatorEnteredTopology(uint toPos) private {
-		(uint prevSize, uint currentSize) = _updateCommitteeSize();
+	function _updateTopologyInsert(address validator) private {
+		uint pos = _appendToTopology(validator);
+		pos = _sortTopologyMember(pos);
+		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
-		if (prevSize != currentSize || toPos < currentSize) {
+		if (prevSize != currentSize || pos < currentSize) {
 			_notifyCommitteeChanged();
 		}
 
 		_notifyTopologyChanged();
 	}
 
-	function _onValidatorPositionChange(uint fromPos, uint toPos) private {
-		(uint prevSize, uint currentSize) = _updateCommitteeSize();
+	function _updateTopologySort(uint pos) private {
+		uint newPos = _sortTopologyMember(pos);
+		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
-		if (prevSize != currentSize || fromPos < currentSize || toPos < currentSize) {
+		if (prevSize != currentSize || pos < currentSize || newPos < currentSize) {
 			_notifyCommitteeChanged();
 		}
 	}
@@ -264,22 +269,21 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _placeInTopology(address validator) private {
-		(uint oldPos, bool inTopology) = _findInTopology(validator);
+		(uint pos, bool inTopology) = _findInTopology(validator);
 
-		if (inTopology && !_satisfiesTopologyPrerequisites(validator)) { // leaving topology
-			_removeFromTopology(oldPos);
-			_onValidatorLeftTopology(oldPos);
+		if (inTopology && !_satisfiesTopologyPrerequisites(validator)) {
+			_updateTopologyRemove(pos);
 			return;
 		}
 
-		if (inTopology) { // remains in topology
-			_onValidatorPositionChange(oldPos, _sortTopologyMember(oldPos));
+		if (inTopology) {
+			_updateTopologySort(pos);
 			return;
 		}
 
-		if (_satisfiesTopologyPrerequisites(validator) && _isQualifiedForTopologyByRank(validator)) { // entering topology
-			uint newPos = _sortTopologyMember(_appendToTopology(validator));
-			_onValidatorEnteredTopology(newPos);
+		if (_satisfiesTopologyPrerequisites(validator) && _isQualifiedForTopologyByRank(validator)) {
+			_updateTopologyInsert(validator);
+			return;
 		}
 	}
 
