@@ -10,10 +10,8 @@ import "./ICommitteeListener.sol";
 contract Rewards is ICommitteeListener, Ownable {
     using SafeMath for uint256;
 
-    enum BucketType {Fixed, ProRata}
-
     event RewardAssigned(address assignee, uint256 amount, uint256 balance);
-    event FeeAddedToBucket(BucketType bucketType, uint256 bucketId, uint256 added, uint256 total);
+    event FeeAddedToBucket(uint256 bucketId, uint256 added, uint256 total);
 
     uint256 constant bucketTimePeriod = 30 days;
 
@@ -142,7 +140,7 @@ contract Rewards is ICommitteeListener, Ownable {
         uint256 bucketAmount = Math.min(amount, monthlyRate.mul(bucketTimePeriod - now % bucketTimePeriod).div(bucketTimePeriod));
         feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
         amount = amount.sub(bucketAmount);
-        emit FeeAddedToBucket(BucketType.ProRata, bucket, bucketAmount, feeBuckets[bucket]);
+        emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
 
         // following buckets are added with the monthly rate
         while (amount > 0) {
@@ -150,7 +148,7 @@ contract Rewards is ICommitteeListener, Ownable {
             bucketAmount = Math.min(monthlyRate, amount);
             feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
             amount = amount.sub(bucketAmount);
-            emit FeeAddedToBucket(BucketType.ProRata, bucket, bucketAmount, feeBuckets[bucket]);
+            emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
         }
 
         assert(amount == 0);
