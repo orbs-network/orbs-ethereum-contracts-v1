@@ -238,5 +238,22 @@ contract('pos-v2-edge-cases', async () => {
         expect(r).to.have.a.committeeChangedEvent({
             orbsAddrs: [v.orbsAddress]
         })
+    });
+
+    it('publishes a CommiteeChangedEvent when the commitee becomes empty', async () => {
+        const d = await Driver.new();
+        const v = d.newParticipant();
+        await v.registerAsValidator();
+        await v.stake(DEFAULT_MINIMUM_STAKE);
+
+        let r = await v.notifyReadyForCommittee();
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: [v.address]
+        });
+
+        r = await v.unstake(DEFAULT_MINIMUM_STAKE);
+        expect(r).to.have.a.committeeChangedEvent({
+            addrs: []
+        });
     })
 });
