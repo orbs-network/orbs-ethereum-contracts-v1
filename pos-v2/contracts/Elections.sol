@@ -174,16 +174,6 @@ contract Elections is IStakingListener, Ownable {
 		return _loadStakes(currentCommitteeSize);
 	}
 
-	function _removeFromTopology(uint pos) private {
-		assert(topology.length > 0);
-		assert(p < topology.length);
-
-		for (uint p = pos; p < topology.length - 1; p++) {
-			topology[p] = topology[p + 1];
-		}
-		topology.length = topology.length - 1;
-	}
-
 	function _notifyTopologyChanged() private {
 		assert(topology.length <= maxTopologySize);
 		address[] memory topologyOrbsAddresses = new address[](topology.length);
@@ -224,8 +214,15 @@ contract Elections is IStakingListener, Ownable {
 		return (prevSize, currentSize);
 	}
 
-	function _updateTopologyRemove(uint pos) private {
-		_removeFromTopology(pos);
+	function _removeFromTopology(uint pos) private {
+		assert(topology.length > 0);
+		assert(p < topology.length);
+
+		for (uint p = pos; p < topology.length - 1; p++) {
+			topology[p] = topology[p + 1];
+		}
+
+		topology.length = topology.length - 1;
 
 		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
@@ -236,9 +233,18 @@ contract Elections is IStakingListener, Ownable {
 		_notifyTopologyChanged();
 	}
 
-	function _updateTopologyInsert(address validator) private {
-		uint pos = _appendToTopology(validator);
+	function _appendToTopology(address validator) private {
+		uint pos = topology.length - 1; // current last
+
+		if (topology.length < maxTopologySize) { // extend topology
+			topology.length++;
+			pos++;
+		}
+
+		topology[pos] = validator;
+
 		pos = _sortTopologyMember(pos);
+
 		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
 		if (prevSize != currentSize || pos < currentSize) {
@@ -248,7 +254,7 @@ contract Elections is IStakingListener, Ownable {
 		_notifyTopologyChanged();
 	}
 
-	function _updateTopologySort(uint pos) private {
+	function _adjustPositionInTopology(uint pos) private {
 		uint newPos = _sortTopologyMember(pos);
 		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
@@ -257,32 +263,21 @@ contract Elections is IStakingListener, Ownable {
 		}
 	}
 
-	function _appendToTopology(address validator) private returns (uint) {
-		uint p;
-		if (topology.length == maxTopologySize) {
-			p = topology.length - 1;
-			topology[p] = validator;
-		} else {
-			p = topology.push(validator) - 1;
-		}
-		return p;
-	}
-
 	function _placeInTopology(address validator) private {
 		(uint pos, bool inTopology) = _findInTopology(validator);
 
 		if (inTopology && !_satisfiesTopologyPrerequisites(validator)) {
-			_updateTopologyRemove(pos);
+			_removeFromTopology(pos);
 			return;
 		}
 
 		if (inTopology) {
-			_updateTopologySort(pos);
+			_adjustPositionInTopology(pos);
 			return;
 		}
 
 		if (_satisfiesTopologyPrerequisites(validator) && _isQualifiedForTopologyByRank(validator)) {
-			_updateTopologyInsert(validator);
+			_appendToTopology(validator);
 			return;
 		}
 	}
