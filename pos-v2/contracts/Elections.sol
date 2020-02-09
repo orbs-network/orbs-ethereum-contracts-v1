@@ -32,7 +32,7 @@ contract Elections is IStakingListener, Ownable {
 	mapping (address => uint256) uncappedStakes;
 	mapping (address => address) delegations;
 
-	uint currentCommitteeSize; // TODO may be redundant if readyValidators mapping is present
+	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
 	ICommitteeListener committeeListener;
 	address stakingContract;
@@ -171,7 +171,7 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _loadCommitteeStakes() private view returns (uint256[]) {
-		return _loadStakes(currentCommitteeSize);
+		return _loadStakes(committeeSize);
 	}
 
 	function _notifyTopologyChanged() private {
@@ -202,16 +202,16 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _refreshCommitteeSize() private returns (uint, uint) {
-		uint currentSize = currentCommitteeSize;
-		uint prevSize = currentSize;
-		while (currentSize > 0 && (topology.length < currentSize || !readyValidators[topology[currentSize - 1]])) {
-			currentSize--;
+		uint newSize = committeeSize;
+		uint prevSize = newSize;
+		while (newSize > 0 && (topology.length < newSize || !readyValidators[topology[newSize - 1]])) {
+			newSize--;
 		}
-		while (topology.length > currentSize && readyValidators[topology[currentSize]] && currentSize < maxCommitteeSize){
-			currentSize++;
+		while (topology.length > newSize && readyValidators[topology[newSize]] && newSize < maxCommitteeSize){
+			newSize++;
 		}
-		currentCommitteeSize = currentSize;
-		return (prevSize, currentSize);
+		committeeSize = newSize;
+		return (prevSize, newSize);
 	}
 
 	function _removeFromTopology(uint pos) private {
@@ -223,7 +223,6 @@ contract Elections is IStakingListener, Ownable {
 		}
 
 		topology.length = topology.length - 1;
-
 		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
 		if (prevSize != currentSize || pos < currentSize) {
@@ -243,8 +242,7 @@ contract Elections is IStakingListener, Ownable {
 
 		topology[pos] = validator;
 
-		pos = _sortTopologyMember(pos);
-
+		pos = _repositionTopologyMember(pos);
 		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
 		if (prevSize != currentSize || pos < currentSize) {
@@ -255,7 +253,7 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _adjustPositionInTopology(uint pos) private {
-		uint newPos = _sortTopologyMember(pos);
+		uint newPos = _repositionTopologyMember(pos);
 		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
 
 		if (prevSize != currentSize || pos < currentSize || newPos < currentSize) {
@@ -292,7 +290,7 @@ contract Elections is IStakingListener, Ownable {
 		return v1Ready && !v2Ready || v1Ready == v2Ready && v1Stake > v2Stake ? int(1) : -1;
 	}
 
-	function _sortTopologyMember(uint memberPos) private returns (uint) {
+	function _repositionTopologyMember(uint memberPos) private returns (uint) {
         uint topologySize = topology.length;
 		assert(topologySize > memberPos);
 
