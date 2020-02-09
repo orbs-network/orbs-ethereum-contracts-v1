@@ -33,7 +33,6 @@ contract Rewards is ICommitteeListener, Ownable {
     uint256 currentTotalStake;
     CommitteeMember[] currentCommittee;
 
-
     modifier onlyCommitteeProvider() {
         require(msg.sender == committeeProvider, "caller is not the committee provider");
 
@@ -46,11 +45,11 @@ contract Rewards is ICommitteeListener, Ownable {
         lastPayedAt = now;
     }
 
-    function getBalance(address addr) public view returns (uint256) {
+    function getBalance(address addr) external view returns (uint256) {
         return balance[addr];
     }
 
-    function getLastPayedAt() public view returns (uint256) {
+    function getLastPayedAt() external view returns (uint256) {
         return lastPayedAt;
     }
 
@@ -92,7 +91,7 @@ contract Rewards is ICommitteeListener, Ownable {
             uint256 remainingBucketTime = bucketEnd.sub(lastPayedAt);
             uint256 amount = feeBuckets[bucketStart] * duration / remainingBucketTime;
 
-            assignAmountToCommitteeMembers(amount); // TODO for an empty committee or a committee with 0 total stake the amount will be subtracted from the bucket and locked in the contract FOREVER
+            _assignAmountToCommitteeMembers(amount); // TODO for an empty committee or a committee with 0 total stake the amount will be subtracted from the bucket and locked in the contract FOREVER
             feeBuckets[bucketStart] = feeBuckets[bucketStart].sub(amount);
             lastPayedAt = payUntil;
 
@@ -107,7 +106,7 @@ contract Rewards is ICommitteeListener, Ownable {
         return lastPayedAt;
     }
 
-    function assignAmountToCommitteeMembers(uint256 amount) private {
+    function _assignAmountToCommitteeMembers(uint256 amount) private {
         uint256 totalAssigned = 0;
         uint256 totalStake = currentTotalStake;
 
@@ -155,7 +154,7 @@ contract Rewards is ICommitteeListener, Ownable {
         assert(amount == 0);
     }
 
-    function distributeRewards(address[] to, uint256[] amounts) public {
+    function distributeRewards(address[] to, uint256[] amounts) external {
         require(to.length == amounts.length, "expected to and amounts to be of same length");
 
         uint256 totalAmount = 0;
