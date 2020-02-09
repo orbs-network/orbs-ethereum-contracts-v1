@@ -10,7 +10,7 @@ import Web3 from 'web3';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
-import { IOrbsPosContractsAddresses } from '../contracts-adresses';
+import { IOrbsPosContractsAddresses, MainnetContractsAddresses } from '../contracts-adresses';
 import guardiansContractJSON from '../contracts/OrbsGuardians.json';
 import votingContractJSON from '../contracts/OrbsVoting.json';
 import erc20ContactAbi from '../erc20-abi';
@@ -35,7 +35,7 @@ export class GuardiansService implements IGuardiansService {
   constructor(
     private web3: Web3,
     private orbsClientService: IOrbsClientService,
-    addresses?: Partial<IOrbsPosContractsAddresses>,
+    addresses: Partial<IOrbsPosContractsAddresses> = MainnetContractsAddresses,
   ) {
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], addresses.votingContract);
     this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addresses.erc20Contract);
