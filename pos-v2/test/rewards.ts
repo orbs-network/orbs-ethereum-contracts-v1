@@ -3,7 +3,7 @@ import Web3 from "web3";
 import BN from "bn.js";
 import {Driver} from "./driver";
 import chai from "chai";
-import {feeAddedToBucketEvents, rewardAssignedEvents} from "./event-parsing";
+import {feeAddedToBucketEvents} from "./event-parsing";
 
 declare const web3: Web3;
 
@@ -30,8 +30,8 @@ contract('rewards-level-flows', async () => {
     /* top up fixed pool */
     const g = d.rewardsGovernor;
 
-    const fixedPoolRate = 1000;
-    const fixedPoolAmount = 1000*12;
+    const fixedPoolRate = 10000000;
+    const fixedPoolAmount = fixedPoolRate*12;
 
     await d.rewards.setFixedPoolMonthlyRate(fixedPoolRate, {from: g.address});
     await g.assignAndApproveExternalToken(fixedPoolAmount, d.rewards.address);
@@ -39,8 +39,8 @@ contract('rewards-level-flows', async () => {
 
     /* top up pro-rata pool */
 
-    const proRataPoolRate = 2000;
-    const proRataPoolAmount = 2000*12;
+    const proRataPoolRate = 2000000000;
+    const proRataPoolAmount = proRataPoolRate*12;
 
     await d.rewards.setProRataPoolMonthlyRate(proRataPoolRate, {from: g.address});
     await g.assignAndApproveOrbs(proRataPoolAmount, d.rewards.address);
@@ -72,7 +72,7 @@ contract('rewards-level-flows', async () => {
 
     // create a new VC
 
-    const vcRate = 20000000;
+    const vcRate = 3000000000;
     const subs = await d.newSubscriber('tier', vcRate);
 
     const appOwner = d.newParticipant();
@@ -100,8 +100,17 @@ contract('rewards-level-flows', async () => {
       expect(l.added).to.be.bignumber.equal(new BN(vcRate));
     });
 
-    r = await d.rewards.getLastPayedAt();
-    expect(r).to.be.bignumber.equal(new BN(startTime));
+    expect(await d.rewards.getLastPayedAt()).to.be.bignumber.equal(new BN(startTime));
+
+    // creating the VC has triggered reward assignment. we wish to ignore it, so we take initial balance
+    // and subtract it afterwards
+
+    const initialOrbsBalances:BN[] = [];
+    const initialExternalBalances:BN[] = [];
+    for (const v of validators) {
+      initialOrbsBalances.push(new BN(await d.rewards.getOrbsBalance(v.v.address)));
+      initialExternalBalances.push(new BN(await d.rewards.getExternalTokenBalance(v.v.address)));
+    }
 
     await sleep(3000);
 
@@ -111,11 +120,11 @@ contract('rewards-level-flows', async () => {
 
     const calcRewards = (rate: number, type:"fixed"|"prorata") => {
       const remainderWinnerIdx = endTime % nValidators;
-      const totalCommitteeStake = new BN(_.sumBy(validators, v => v.stake));
+      const totalCommitteeStake = new BN(_.sumBy(validators, v => v.stake.toNumber()));
 
       const rewards = new BN(Math.floor(rate * elapsedTime / MONTH_IN_SECONDS));
       const rewardsArr = type == "fixed" ?
-          validators.map(v => rewards.div(new BN(validators.length)))
+          validators.map(() => rewards.div(new BN(validators.length)))
           :
           validators.map(v => rewards.mul(v.stake).div(totalCommitteeStake));
       const remainder =  rewards.sub(new BN(_.sumBy(rewardsArr, r => r.toNumber())));
@@ -132,13 +141,23 @@ contract('rewards-level-flows', async () => {
     // Calculate expected rewards from fixed pool
     const expectedFixedPoolRewardsArr = calcRewards(fixedPoolRate, "fixed");
 
+    // Total of each token
     const totalOrbsRewardsArr = expectedFeesRewardsArr.map((r, i) => r.add(expectedProRataPoolRewardsArr[i]));
     const totalExternalTokenRewardsArr = expectedFixedPoolRewardsArr;
 
-    await Promise.all(validators.map(async (v, i) => {
-      let orbsBalance = await d.rewards.getOrbsBalance(v.v.address);
-      let externalTokenBalance = await d.rewards.getExternalTokenBalance(v.v.address);
+    const orbsBalances:BN[] = [];
+    const externalBalances:BN[] = [];
+    for (const v of validators) {
+      orbsBalances.push(new BN(await d.rewards.getOrbsBalance(v.v.address)));
+      externalBalances.push(new BN(await d.rewards.getExternalTokenBalance(v.v.address)));
+    }
+
+    for (const v of validators) {
+      const i = validators.indexOf(v);
+      let orbsBalance = orbsBalances[i].sub(initialOrbsBalances[i]);
       expect(orbsBalance).to.be.bignumber.equal(new BN(totalOrbsRewardsArr[i]));
+
+      let externalTokenBalance = externalBalances[i].sub(initialExternalBalances[i]);
       expect(externalTokenBalance).to.be.bignumber.equal(new BN(totalExternalTokenRewardsArr[i]));
 
       r = await d.rewards.distributeOrbsTokenRewards([v.v.address], [totalOrbsRewardsArr[i]], {from: v.v.address});
@@ -147,11 +166,19 @@ contract('rewards-level-flows', async () => {
         amount: totalOrbsRewardsArr[i],
         totalStakedAmount: new BN(v.stake).add(totalOrbsRewardsArr[i])
       });
-      expect(r).to.have.committeeChangedEvent({
+      expect(r).to.have.a.committeeChangedEvent({
         orbsAddrs: validators.map(v => v.v.orbsAddress),
         addrs: validators.map(v => v.v.address),
         stakes: validators.map((_v, _i) => (_i <= i) ? new BN(_v.stake).add(totalOrbsRewardsArr[_i]) : new BN(_v.stake))
       });
-    }));
+
+      // claim the external token rewards
+      const expectedBalance = parseInt(await d.rewards.getExternalTokenBalance(v.v.address));
+      expect(expectedBalance).to.be.at.least(externalBalances[i].toNumber()); // at least - because new rewards may have already been assigned
+      await d.rewards.claimExternalTokenRewards({from: v.v.address});
+      const externalBalance = await d.externalToken.balanceOf(v.v.address);
+      expect(new BN(externalBalance)).to.bignumber.equal(new BN(expectedBalance));
+    }
+
   })
 });
