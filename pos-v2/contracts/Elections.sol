@@ -189,10 +189,9 @@ contract Elections is IStakingListener, Ownable {
 
 	function _notifyCommitteeChanged() private {
 		uint256[] memory committeeStakes = _loadCommitteeStakes();
-		uint committeeSize = committeeStakes.length;
-		address[] memory committeeOrbsAddresses = new address[](committeeSize);
-		address[] memory committeeAddresses = new address[](committeeSize);
-		for (uint i = 0; i < committeeSize; i++) {
+		address[] memory committeeOrbsAddresses = new address[](committeeStakes.length);
+		address[] memory committeeAddresses = new address[](committeeStakes.length);
+		for (uint i = 0; i < committeeStakes.length; i++) {
 			Validator storage val = registeredValidators[topology[i]];
 			committeeOrbsAddresses[i] = val.orbsAddress;
 			committeeAddresses[i] = topology[i];
