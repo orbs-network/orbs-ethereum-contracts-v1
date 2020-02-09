@@ -7,6 +7,7 @@
  */
 
 import Web3 from 'web3';
+import isNil from 'lodash/isNil';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
@@ -22,24 +23,52 @@ import { IGuardiansService } from '../interfaces/IGuardiansService';
 import { IOrbsClientService } from '../interfaces/IOrbsClientService';
 import { NOT_DELEGATED, ORBS_TDE_ETHEREUM_BLOCK, VALID_VOTE_LENGTH } from './consts';
 import { readUpcomingElectionBlockNumber } from './utils';
+import { ITypedEventData } from './contractsTypes/contractTypes';
+import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
 
 function ensureNumericValue(numberOrString: number | string): number {
   return typeof numberOrString === 'string' ? parseInt(numberOrString) : numberOrString;
 }
+
+/**
+ *
+ * DEV_NOTE : The real object will also have array accessors ("1", "2", "3") that match the named members.
+ * DEV_NOTE : Currently amounts are strings, in the future should change to bigint)
+ */
+interface IVotingContractDelegateEventValues {
+  delegator: string;
+  to: string;
+  // TODO : O.L : Change this to bigint after web3 change
+  delegationCounter: string;
+}
+
+interface IGuardianServiceOptions {
+  earliestBlockForDelegation: number;
+}
+
+// TODO : FUTURE : The selection and reading of selected guardian happens on the 'Voting' contract.
+//  We should create a dedicated service for that contract and its functionality.
 
 export class GuardiansService implements IGuardiansService {
   private votingContract: Contract;
   private erc20Contract: Contract;
   private guardiansContract: Contract;
 
+  private earliestBlockForDelegation: number;
+
   constructor(
     private web3: Web3,
     private orbsClientService: IOrbsClientService,
     addresses: Partial<IOrbsPosContractsAddresses> = MainnetContractsAddresses,
+    options: Partial<IGuardianServiceOptions> = {},
   ) {
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], addresses.votingContract);
     this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addresses.erc20Contract);
     this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addresses.guardiansContract);
+
+    this.earliestBlockForDelegation = !isNil(options.earliestBlockForDelegation)
+      ? options.earliestBlockForDelegation
+      : ORBS_TDE_ETHEREUM_BLOCK;
   }
 
   // CONFIG //
@@ -109,6 +138,35 @@ export class GuardiansService implements IGuardiansService {
     return result;
   }
 
+  // Events Subscriptions //
+  subscribeToDelegateEvent(
+    stakeOwner: string,
+    callback: (error: Error, delegator: string, delegate: string, delegationCounter: number) => void,
+  ): () => Promise<boolean> {
+    const specificEventEmitter = this.votingContract.events.Delegate(
+      {
+        filter: {
+          delegator: [stakeOwner],
+        },
+      },
+      (error: Error, event: ITypedEventData<IVotingContractDelegateEventValues>) => {
+        if (error) {
+          callback(error, null, null, null);
+          return;
+        }
+
+        callback(
+          null,
+          event.returnValues.delegator,
+          event.returnValues.to,
+          parseInt(event.returnValues.delegationCounter),
+        );
+      },
+    );
+
+    return () => getUnsubscribePromise(specificEventEmitter);
+  }
+
   ////////////////////////// PRIVATES ///////////////////////////
 
   private getGuardians(offset: number, limit: number): Promise<string[]> {
@@ -143,7 +201,7 @@ export class GuardiansService implements IGuardiansService {
     }
 
     const options = {
-      fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
+      fromBlock: this.earliestBlockForDelegation,
       toBlock: 'latest',
       filter: {
         delegator: this.web3.utils.padLeft(address, 40, '0'),
@@ -179,7 +237,7 @@ export class GuardiansService implements IGuardiansService {
 
     const paddedAddress = this.web3.utils.padLeft(address, 40, '0');
     const options = {
-      fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
+      fromBlock: this.earliestBlockForDelegation,
       toBlock: 'latest',
       filter: { from: paddedAddress },
     };
