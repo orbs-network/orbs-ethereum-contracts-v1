@@ -15,24 +15,33 @@ contract Rewards is ICommitteeListener, Ownable {
 
     uint256 constant bucketTimePeriod = 30 days;
 
-    uint256 feePool;
-    mapping(uint256 => uint256) feeBuckets;
+    mapping(uint256 => uint256) feePoolBuckets;
+    uint256 fixedPool;
+    uint256 fixedPoolMonthlyRate;
+    uint256 proRataPool;
+    uint256 proRataPoolMonthlyRate;
+
     uint256 lastPayedAt;
 
-    mapping(address => uint256) balance;
+    mapping(address => uint256) orbsBalance;
+    mapping(address => uint256) externalTokenBalance;
 
     IStakingContract stakingContract;
     IERC20 erc20;
+    IERC20 externalToken;
     address committeeProvider;
+    address rewardsGovernor;
 
     struct CommitteeMember {
         address addr;
         uint256 stake;
     }
-
+    enum TokenType {
+        Orbs,
+        ExternalToken
+    }
     uint256 currentTotalStake;
     CommitteeMember[] currentCommittee;
-
 
     modifier onlyCommitteeProvider() {
         require(msg.sender == committeeProvider, "caller is not the committee provider");
@@ -40,14 +49,50 @@ contract Rewards is ICommitteeListener, Ownable {
         _;
     }
 
-    constructor(IERC20 _erc20) public {
-        require(_erc20 != address(0), "erc20 must not be 0");
-        erc20 = _erc20;
-        lastPayedAt = now;
+    modifier onlyRewardsGovernor() {
+        require(msg.sender == rewardsGovernor, "caller is not the rewards governor");
+
+        _;
     }
 
-    function getBalance(address addr) public view returns (uint256) {
-        return balance[addr];
+    constructor(IERC20 _erc20, IERC20 _externalToken, address _rewardsGovernor) public {
+        require(_erc20 != address(0), "erc20 must not be 0");
+        require(_externalToken != address(0), "externalToken must not be 0");
+
+        erc20 = _erc20;
+        externalToken = _externalToken;
+        lastPayedAt = now;
+        rewardsGovernor = _rewardsGovernor;
+    }
+
+    function setFixedPoolMonthlyRate(uint256 rate) external onlyRewardsGovernor {
+        assignRewards();
+        fixedPoolMonthlyRate = rate;
+    }
+
+    function setProRataPoolMonthlyRate(uint256 rate) external onlyRewardsGovernor {
+        assignRewards();
+        proRataPoolMonthlyRate = rate;
+    }
+
+    function topUpFixedPool(uint256 amount) external {
+        assignRewards(); // TODO is this necessary?
+        fixedPool = fixedPool.add(amount);
+        require(externalToken.transferFrom(msg.sender, address(this), amount), "Rewards::topUpFixedPool - insufficient allowance");
+    }
+
+    function topUpProRataPool(uint256 amount) external {
+        assignRewards(); // TODO is this necessary?
+        proRataPool = proRataPool.add(amount);
+        require(erc20.transferFrom(msg.sender, address(this), amount), "Rewards::topUpProRataPool - insufficient allowance");
+    }
+
+    function getOrbsBalance(address addr) public view returns (uint256) {
+        return orbsBalance[addr];
+    }
+
+    function getExternalTokenBalance(address addr) public view returns (uint256) {
+        return externalTokenBalance[addr];
     }
 
     function getLastPayedAt() public view returns (uint256) {
@@ -83,31 +128,63 @@ contract Rewards is ICommitteeListener, Ownable {
     uint constant MAX_REWARD_BUCKET_ITERATIONS = 6;
 
     function assignRewards() public returns (uint256) {
+        duration = now.sub(lastPayedAt);
+
+        // Fee pool
         uint bucketsPayed = 0;
+        uint feePoolAmount = 0;
         while (bucketsPayed < MAX_REWARD_BUCKET_ITERATIONS && lastPayedAt < now) {
             uint256 bucketStart = _bucketTime(lastPayedAt);
             uint256 bucketEnd = bucketStart.add(bucketTimePeriod);
             uint256 payUntil = Math.min(bucketEnd, now);
             uint256 duration = payUntil.sub(lastPayedAt);
             uint256 remainingBucketTime = bucketEnd.sub(lastPayedAt);
-            uint256 amount = feeBuckets[bucketStart] * duration / remainingBucketTime;
+            uint256 amount = feePoolBuckets[bucketStart] * duration / remainingBucketTime;
 
-            assignAmountToCommitteeMembers(amount); // TODO for an empty committee or a committee with 0 total stake the amount will be subtracted from the bucket and locked in the contract FOREVER
-            feeBuckets[bucketStart] = feeBuckets[bucketStart].sub(amount);
+            feePoolAmount += amount;
+            feePoolBuckets[bucketStart] = feePoolBuckets[bucketStart].sub(amount);
             lastPayedAt = payUntil;
 
             assert(lastPayedAt <= bucketEnd);
             if (lastPayedAt == bucketEnd) {
-                delete feeBuckets[bucketStart];
+                delete feePoolBuckets[bucketStart];
             }
 
             bucketsPayed++;
         }
+        assignAmountFixed(amount, TokenType.Orbs); // TODO for an empty committee or a committee with 0 total stake the amount will be subtracted from the bucket and locked in the contract FOREVER
+
+        // Pro-rata pool
+        amount = Math.min(proRataPoolMonthlyRate.mul(duration).div(30 days), proRataPool);
+        assignAmountProRata(amount, TokenType.Orbs);
+        proRataPool = proRataPool.sub(amount);
+
+        // Fixed pool
+        amount = Math.min(fixedPoolMonthlyRate.mul(duration).div(30 days), fixedPool);
+        assignAmountFixed(amount, TokenType.ExternalToken);
+        fixedPool = fixedPool.sub(amount);
 
         return lastPayedAt;
     }
 
-    function assignAmountToCommitteeMembers(uint256 amount) private {
+    function addToBalance(address addr, uint256 amount, TokenType tokenType) private {
+        if (tokenType == TokenType.Orbs) {
+            orbsBalance[addr] = orbsBalance[addr].add(amount);
+        } else {
+            assert(tokenType == TokenType.ExternalToken);
+            externalTokenBalance[addr] = externalTokenBalance[addr].add(amount);
+        }
+    }
+
+    function assignRoundingRemainder(uint256 remainder, TokenType tokenType) private {
+        if (remainder > 0 && currentCommittee.length > 0) {
+            address addr = currentCommittee[now % currentCommittee.length].addr;
+            addToBalance(addr, remainder, tokenType);
+            //            emit RewardAssigned(addr, roundingRemainder, externalTokenBalance[addr]);
+        }
+    }
+
+    function assignAmountProRata(uint256 amount, TokenType tokenType) private {
         uint256 totalAssigned = 0;
         uint256 totalStake = currentTotalStake;
 
@@ -118,18 +195,25 @@ contract Rewards is ICommitteeListener, Ownable {
         for (uint i = 0; i < currentCommittee.length; i++) {
             uint256 curAmount = amount.mul(currentCommittee[i].stake).div(totalStake);
             address curAddr = currentCommittee[i].addr;
-            balance[curAddr] = balance[curAddr].add(curAmount);
-            emit RewardAssigned(curAddr, curAmount, balance[curAddr]);
+            addToBalance(curAddr, curAmount, tokenType);
             totalAssigned = totalAssigned.add(curAmount);
         }
 
-        // assign remainder to a random committee member
-        uint256 roundingRemainder = amount.sub(totalAssigned);
-        if (roundingRemainder > 0 && currentCommittee.length > 0) {
-            address addr = currentCommittee[now % currentCommittee.length].addr;
-            balance[addr] = balance[addr].add(roundingRemainder);
-            emit RewardAssigned(addr, roundingRemainder, balance[addr]);
+        assignRoundingRemainder(amount.sub(totalAssigned), tokenType);
+    }
+
+    function assignAmountFixed(uint256 amount, TokenType tokenType) private {
+        uint256 totalAssigned = 0;
+
+        for (uint i = 0; i < currentCommittee.length; i++) {
+            uint256 curAmount = amount.div(currentCommittee.length);
+            address curAddr = currentCommittee[i].addr;
+            addToBalance(curAddr, curAmount, tokenType);
+            //            emit RewardAssigned(curAddr, curAmount, externalTokenBalance[curAddr]);
+            totalAssigned = totalAssigned.add(curAmount);
         }
+
+        assignRoundingRemainder(amount.sub(totalAssigned), tokenType);
     }
 
     function fillFeeBuckets(uint256 amount, uint256 monthlyRate) public {
@@ -139,34 +223,41 @@ contract Rewards is ICommitteeListener, Ownable {
 
         // add the partial amount to the first bucket
         uint256 bucketAmount = Math.min(amount, monthlyRate.mul(bucketTimePeriod - now % bucketTimePeriod).div(bucketTimePeriod));
-        feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
+        feePoolBuckets[bucket] = feePoolBuckets[bucket].add(bucketAmount);
         amount = amount.sub(bucketAmount);
-        emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
+        emit FeeAddedToBucket(bucket, bucketAmount, feePoolBuckets[bucket]);
 
         // following buckets are added with the monthly rate
         while (amount > 0) {
             bucket = bucket.add(bucketTimePeriod);
             bucketAmount = Math.min(monthlyRate, amount);
-            feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
+            feePoolBuckets[bucket] = feePoolBuckets[bucket].add(bucketAmount);
             amount = amount.sub(bucketAmount);
-            emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
+            emit FeeAddedToBucket(bucket, bucketAmount, feePoolBuckets[bucket]);
         }
 
         assert(amount == 0);
     }
 
-    function distributeRewards(address[] to, uint256[] amounts) public {
+    function distributeOrbsTokenRewards(address[] to, uint256[] amounts) public {
         require(to.length == amounts.length, "expected to and amounts to be of same length");
 
         uint256 totalAmount = 0;
         for (uint i = 0; i < to.length; i++) {
             totalAmount = totalAmount.add(amounts[i]);
         }
-        require(totalAmount <= balance[msg.sender], "not enough balance for this distribution");
-        balance[msg.sender] = balance[msg.sender].sub(totalAmount);
+        require(totalAmount <= orbsBalance[msg.sender], "not enough balance for this distribution");
+        orbsBalance[msg.sender] = orbsBalance[msg.sender].sub(totalAmount);
 
         erc20.approve(stakingContract, totalAmount);
         stakingContract.distributeRewards(totalAmount, to, amounts);
+    }
+
+    function claimExternalTokenRewards() public returns (uint256) {
+        uint256 amount = externalTokenBalance[msg.sender];
+        externalTokenBalance[msg.sender] = externalTokenBalance[msg.sender].sub(amount);
+        require(externalToken.transfer(msg.sender, amount), "Rewards::claimExternalTokenRewards - insufficient funds");
+        return amount;
     }
 
     function _bucketTime(uint256 time) private pure returns (uint256) {
