@@ -18,8 +18,6 @@ async function txTimestamp(r): Promise<number> {
 
 const expect = chai.expect;
 
-declare const Promise: any;
-
 async function sleep(ms): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -152,7 +150,7 @@ contract('rewards-level-flows', async () => {
       expect(r).to.have.committeeChangedEvent({
         orbsAddrs: validators.map(v => v.v.orbsAddress),
         addrs: validators.map(v => v.v.address),
-        stakes: validators.map((_v, _i) => _i <= i ? new BN(_v.stake).add(totalOrbsRewardsArr[_i]) : new BN(_v.stake))
+        stakes: validators.map((_v, _i) => (_i <= i) ? new BN(_v.stake).add(totalOrbsRewardsArr[_i]) : new BN(_v.stake))
       });
     }));
   })
