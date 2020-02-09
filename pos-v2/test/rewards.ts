@@ -26,14 +26,14 @@ async function sleep(ms): Promise<void> {
 
 contract('rewards-level-flows', async () => {
 
-  it.only('should distribute fees to validators in committee', async () => {
+  it('should distribute fees to validators in committee', async () => {
     const d = await Driver.new();
 
     /* top up fixed pool */
     const g = d.rewardsGovernor;
 
-    const fixedPoolRate = new BN(1000);
-    const fixedPoolAmount = new BN(1000).mul(new BN(12));
+    const fixedPoolRate = 1000;
+    const fixedPoolAmount = 1000*12;
 
     await d.rewards.setFixedPoolMonthlyRate(fixedPoolRate, {from: g.address});
     await g.assignAndApproveExternalToken(fixedPoolAmount, d.rewards.address);
@@ -41,8 +41,8 @@ contract('rewards-level-flows', async () => {
 
     /* top up pro-rata pool */
 
-    const proRataPoolRate = new BN(2000);
-    const proRataPoolAmount = new BN(2000).mul(new BN(12));
+    const proRataPoolRate = 2000;
+    const proRataPoolAmount = 2000*12;
 
     await d.rewards.setProRataPoolMonthlyRate(proRataPoolRate, {from: g.address});
     await g.assignAndApproveOrbs(proRataPoolAmount, d.rewards.address);
@@ -109,28 +109,30 @@ contract('rewards-level-flows', async () => {
 
     r = await d.rewards.assignRewards();
     const endTime = await txTimestamp(r);
-
-    const remainderWinnerIdx = endTime % nValidators;
     const elapsedTime = endTime - startTime;
-    const totalCommitteeStake = new BN(_.sumBy(validators, v => v.stake));
+
+    const calcRewards = (rate: number, type:"fixed"|"prorata") => {
+      const remainderWinnerIdx = endTime % nValidators;
+      const totalCommitteeStake = new BN(_.sumBy(validators, v => v.stake));
+
+      const rewards = new BN(Math.floor(rate * elapsedTime / MONTH_IN_SECONDS));
+      const rewardsArr = type == "fixed" ?
+          validators.map(v => rewards.div(new BN(validators.length)))
+          :
+          validators.map(v => rewards.mul(v.stake).div(totalCommitteeStake));
+      const remainder =  rewards.sub(new BN(_.sumBy(rewardsArr, r => r.toNumber())));
+      rewardsArr[remainderWinnerIdx] = rewardsArr[remainderWinnerIdx].add(remainder);
+      return rewardsArr;
+    };
 
     // Calculate expected rewards from VC fees
-    const expectedFeesRewards = new BN(Math.floor(vcRate * elapsedTime / MONTH_IN_SECONDS));
-    const expectedFeesRewardsArr = [expectedFeesRewards.div(new BN(nValidators)), expectedFeesRewards.div(new BN(nValidators))];
-    const feesRemainder = expectedFeesRewards.sub(expectedFeesRewardsArr[1]).sub(expectedFeesRewardsArr[0]);
-    expectedFeesRewardsArr[remainderWinnerIdx] = expectedFeesRewardsArr[remainderWinnerIdx].add(feesRemainder);
+    const expectedFeesRewardsArr = calcRewards(vcRate, "fixed");
 
     // Calculate expected rewards from pro-rata pool
-    const expectedProRataPoolRewards = proRataPoolRate.mul(new BN(elapsedTime)).div(new BN(MONTH_IN_SECONDS));
-    const expectedProRataPoolRewardsArr = [(expectedProRataPoolRewards.mul(initStakeLarger).div(totalCommitteeStake)), (expectedProRataPoolRewards.mul(initStakeLesser).div(totalCommitteeStake))];
-    const proRataPoolRemainder = expectedProRataPoolRewards.sub(expectedProRataPoolRewardsArr[1]).sub(expectedProRataPoolRewardsArr[0]);
-    expectedProRataPoolRewardsArr[remainderWinnerIdx] = expectedProRataPoolRewardsArr[remainderWinnerIdx].add(proRataPoolRemainder);
+    const expectedProRataPoolRewardsArr = calcRewards(proRataPoolRate, "prorata");
 
     // Calculate expected rewards from fixed pool
-    const expectedFixedPoolRewards = fixedPoolRate.mul(new BN(elapsedTime)).div(new BN(MONTH_IN_SECONDS));
-    const expectedFixedPoolRewardsArr = [expectedFixedPoolRewards.div(new BN(nValidators)), expectedFixedPoolRewards.div(new BN(nValidators))];
-    const fixedPoolRemainder = expectedFixedPoolRewards.sub(expectedFixedPoolRewardsArr[1]).sub(expectedFixedPoolRewardsArr[0]);
-    expectedFixedPoolRewardsArr[remainderWinnerIdx] = expectedFixedPoolRewardsArr[remainderWinnerIdx].add(fixedPoolRemainder);
+    const expectedFixedPoolRewardsArr = calcRewards(fixedPoolRate, "fixed");
 
     const totalOrbsRewardsArr = expectedFeesRewardsArr.map((r, i) => r.add(expectedProRataPoolRewardsArr[i]));
     const totalExternalTokenRewardsArr = expectedFixedPoolRewardsArr;
@@ -151,7 +153,6 @@ contract('rewards-level-flows', async () => {
         orbsAddrs: validators.map(v => v.v.orbsAddress),
         addrs: validators.map(v => v.v.address),
         stakes: validators.map((_v, _i) => _i <= i ? new BN(_v.stake).add(totalOrbsRewardsArr[_i]) : new BN(_v.stake))
-        // stakes: [initStakeLarger, initStakeLesser.add(totalOrbsRewardsArr[1])]
       });
     }));
   })
