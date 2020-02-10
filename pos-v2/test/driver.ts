@@ -15,6 +15,9 @@ import RewardsContract = Contracts.RewardsContract;
 declare const web3: Web3;
 
 export const DEFAULT_MINIMUM_STAKE = 100;
+export const DEFAULT_COMMITTEE_SIZE = 2;
+export const DEFAULT_TOPOLOGY_SIZE = 3;
+export const DEFAULT_MAX_DELEGATION_RATIO = 10;
 
 export class Driver {
     private participants: Participant[] = [];
@@ -28,7 +31,7 @@ export class Driver {
         public rewards: RewardsContract
     ) {}
 
-    static async new(maxCommitteeSize=2, maxTopologySize=3, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=10) {
+    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO) {
         const accounts = await web3.eth.getAccounts();
         const erc20 = await artifacts.require('TestingERC20').new();
         const rewards = await artifacts.require('Rewards').new(erc20.address);

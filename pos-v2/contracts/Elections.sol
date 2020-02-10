@@ -10,7 +10,7 @@ import "./ICommitteeListener.sol";
 contract Elections is IStakingListener, Ownable {
 	using SafeMath for uint256;
 
-	event ValidatorRegistered(address addr, bytes4 ip);
+	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
 	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
 
@@ -49,7 +49,8 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, ICommitteeListener _committeeListener) public {
-		require(_maxTopologySize >= _maxCommitteeSize, "topology must be large enough to hold a full committee");
+		require(_maxCommitteeSize > 0, "maxCommitteeSize must be larger than 0");
+		require(_maxTopologySize > _maxCommitteeSize, "topology must be larger than a full committee");
 		require(_committeeListener != address(0), "committee listener should not be 0");
 		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
@@ -76,7 +77,7 @@ contract Elections is IStakingListener, Ownable {
 
 		registeredValidators[msg.sender].orbsAddress = _orbsAddress;
 		registeredValidators[msg.sender].ip = _ip;
-		emit ValidatorRegistered(msg.sender, _ip);
+		emit ValidatorRegistered(msg.sender, _ip, _orbsAddress);
 
 		_placeInTopology(msg.sender);
 	}
@@ -150,8 +151,9 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _isQualifiedForTopologyByRank(address validator) private view returns (bool) {
-		return topology.length < maxTopologySize || // committee is not full
-				totalStakes[validator] > totalStakes[topology[topology.length-1]]; // validator has more stake the the bottom committee validator
+		// this assumes maxTopologySize > maxCommitteeSize, otherwise a non ready-for-committee validator may override one that is ready.
+		return topology.length < maxTopologySize || // topology is not full
+				totalStakes[validator] > totalStakes[topology[topology.length-1]]; // validator has more stake the the bottom topology validator
 	}
 
 	function _loadStakes(uint limit) private view returns (uint256[]) {

@@ -7,9 +7,7 @@ const subscriptions = artifacts.require("Subscriptions");
 const rewards = artifacts.require("Rewards");
 
 function parseLogs(txResult, contract, eventSignature) {
-
     const inputs = contract.abi.find(e => e.name == eventSignature.split('(')[0]).inputs;
-
     const eventSignatureHash = web3.eth.abi.encodeEventSignature(eventSignature);
     return txResult.receipt.rawLogs
         .filter(rl => rl.topics[0] === eventSignatureHash)
@@ -17,7 +15,7 @@ function parseLogs(txResult, contract, eventSignature) {
 }
 
 export const committeeChangedEvents = (txResult) => parseLogs(txResult, elections, "CommitteeChanged(address[],address[],uint256[])");
-export const validatorRegisteredEvents = (txResult) => parseLogs(txResult, elections, "ValidatorRegistered(address,bytes4)");
+export const validatorRegisteredEvents = (txResult) => parseLogs(txResult, elections, "ValidatorRegistered(address,bytes4,address)");
 export const stakedEvents = (txResult) => parseLogs(txResult, staking, "Staked(address,uint256,uint256)");
 export const unstakedEvents = (txResult) => parseLogs(txResult, staking, "Unstaked(address,uint256,uint256)");
 export const delegatedEvents = (txResult) => parseLogs(txResult, elections, "Delegated(address,address)");
