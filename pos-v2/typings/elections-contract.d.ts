@@ -10,6 +10,7 @@ declare namespace Contracts {
         delegate(to: string, params?: TransactionDetails): Promise<TransactionResponse>
         getTopology(): Promise<TransactionResponse>
         notifyReadyForCommittee(params?: TransactionDetails): Promise<TransactionResponse>
+        voteOut(address: string, param?: TransactionDetails): Promise<TransactionResponse>
     }
 
     export interface DelegatedEvent {
