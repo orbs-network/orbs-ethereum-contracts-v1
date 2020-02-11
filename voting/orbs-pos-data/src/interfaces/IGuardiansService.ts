@@ -9,6 +9,14 @@
 import { PromiEvent, TransactionReceipt } from 'web3-core';
 import { IDelegationInfo } from './IDelegationInfo';
 import { IGuardianInfo } from './IGuardianInfo';
+import { TUnsubscribeFunction } from '../services/contractsTypes/contractTypes';
+
+export type GuardiansServiceDelegateEventCallback = (
+  error: Error,
+  delegator: string,
+  delegatee: string,
+  delegationCounter: number,
+) => void;
 
 export interface IGuardiansService {
   setFromAccount(address: string): void;
@@ -17,4 +25,5 @@ export interface IGuardiansService {
   readDelegationInfo(address: string): Promise<IDelegationInfo>;
   readGuardiansList(offset: number, limit: number): Promise<string[]>;
   readGuardianInfo(guardianAddress: string): Promise<IGuardianInfo>;
+  subscribeToDelegateEvent(stakeOwner: string, callback: GuardiansServiceDelegateEventCallback): TUnsubscribeFunction;
 }
