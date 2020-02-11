@@ -2,9 +2,10 @@ pragma solidity 0.4.26;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "./Rewards.sol";
+import "./interfaces/ISubscriptions.sol";
+import "./interfaces/IRewards.sol";
 
-contract Subscriptions is Ownable {
+contract Subscriptions is ISubscriptions, Ownable{
     using SafeMath for uint256;
 
     event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier);
@@ -25,23 +26,23 @@ contract Subscriptions is Ownable {
 
     uint nextVcid;
 
-    Rewards rewardsContract;
+    IRewards rewardsContract;
     IERC20 erc20;
 
-    constructor (Rewards _rewardsContract, IERC20 _erc20) public {
+    constructor (IRewards _rewardsContract, IERC20 _erc20) public {
         require(_rewardsContract != address(0), "rewardsContract should not be 0");
         nextVcid = 1000000;
         rewardsContract = _rewardsContract;
         erc20 = _erc20;
     }
 
-    function addSubscriber(address addr) public onlyOwner {
+    function addSubscriber(address addr) external onlyOwner {
         require(addr != address(0), "must provide a valid address");
 
         authorizedSubscribers[addr] = true;
     }
 
-    function createVC(string tier, uint256 rate, uint256 amount, address owner) public returns (uint, uint) {
+    function createVC(string tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint) {
         require(authorizedSubscribers[msg.sender], "must be an authorized subscriber");
 
         uint vcid = nextVcid++;
@@ -54,11 +55,15 @@ contract Subscriptions is Ownable {
         });
         virtualChains[vcid] = vc;
 
-        extendSubscription(vcid, amount, owner);
+        _extendSubscription(vcid, amount, owner);
         return (vcid, vc.genRef);
     }
 
-    function extendSubscription(uint256 vcid, uint256 amount, address payer) public {
+    function extendSubscription(uint256 vcid, uint256 amount, address payer) external {
+        _extendSubscription(vcid, amount, payer);
+    }
+
+    function _extendSubscription(uint256 vcid, uint256 amount, address payer) private {
         VirtualChain storage vc = virtualChains[vcid];
         vc.expiresAt = vc.expiresAt.add(amount.mul(30 days).div(vc.rate));
 

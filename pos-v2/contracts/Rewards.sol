@@ -4,10 +4,11 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 
-import "./IStakingContract.sol";
-import "./ICommitteeListener.sol";
+import "./interfaces/IStakingContract.sol";
+import "./interfaces/ICommitteeListener.sol";
+import "./interfaces/IRewards.sol";
 
-contract Rewards is ICommitteeListener, Ownable {
+contract Rewards is IRewards, ICommitteeListener, Ownable {
     using SafeMath for uint256;
 
     event RewardAssigned(address assignee, uint256 amount, uint256 balance);
@@ -65,7 +66,7 @@ contract Rewards is ICommitteeListener, Ownable {
     function committeeChanged(address[] addrs, uint256[] stakes) external onlyCommitteeProvider {
         require(addrs.length == stakes.length, "expected addrs and stakes to be of same length");
 
-        assignRewards(); // We want the previous committee to take the rewards
+        _assignRewards(); // We want the previous committee to take the rewards
 
         uint256 totalStake;
         currentCommittee.length = addrs.length;
@@ -81,7 +82,11 @@ contract Rewards is ICommitteeListener, Ownable {
 
     uint constant MAX_REWARD_BUCKET_ITERATIONS = 6;
 
-    function assignRewards() public returns (uint256) {
+    function assignRewards() external returns (uint256) {
+        return _assignRewards();
+    }
+
+    function _assignRewards() private returns (uint256) {
         uint bucketsPayed = 0;
         while (bucketsPayed < MAX_REWARD_BUCKET_ITERATIONS && lastPayedAt < now) {
             uint256 bucketStart = _bucketTime(lastPayedAt);
@@ -131,27 +136,28 @@ contract Rewards is ICommitteeListener, Ownable {
         }
     }
 
-    function fillFeeBuckets(uint256 amount, uint256 monthlyRate) public {
-        assignRewards(); // to handle rate change in the middle of a bucket time period (TBD - this is nice to have, consider removing)
+    function fillFeeBuckets(uint256 amount, uint256 monthlyRate) external {
+        _assignRewards(); // to handle rate change in the middle of a bucket time period (TBD - this is nice to have, consider removing)
 
         uint256 bucket = _bucketTime(now);
+        uint256 _amount = amount;
 
         // add the partial amount to the first bucket
-        uint256 bucketAmount = Math.min(amount, monthlyRate.mul(bucketTimePeriod - now % bucketTimePeriod).div(bucketTimePeriod));
+        uint256 bucketAmount = Math.min(_amount, monthlyRate.mul(bucketTimePeriod - now % bucketTimePeriod).div(bucketTimePeriod));
         feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
-        amount = amount.sub(bucketAmount);
+        _amount = _amount.sub(bucketAmount);
         emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
 
         // following buckets are added with the monthly rate
-        while (amount > 0) {
+        while (_amount > 0) {
             bucket = bucket.add(bucketTimePeriod);
-            bucketAmount = Math.min(monthlyRate, amount);
+            bucketAmount = Math.min(monthlyRate, _amount);
             feeBuckets[bucket] = feeBuckets[bucket].add(bucketAmount);
-            amount = amount.sub(bucketAmount);
+            _amount = _amount.sub(bucketAmount);
             emit FeeAddedToBucket(bucket, bucketAmount, feeBuckets[bucket]);
         }
 
-        assert(amount == 0);
+        assert(_amount == 0);
     }
 
     function distributeRewards(address[] to, uint256[] amounts) external {

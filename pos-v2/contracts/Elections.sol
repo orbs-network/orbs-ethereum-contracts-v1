@@ -4,10 +4,11 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-import "./IStakingListener.sol";
-import "./ICommitteeListener.sol";
+import "./interfaces/IStakingListener.sol";
+import "./interfaces/ICommitteeListener.sol";
+import "./interfaces/IElections.sol";
 
-contract Elections is IStakingListener, Ownable {
+contract Elections is IElections, IStakingListener, Ownable {
 	using SafeMath for uint256;
 
 	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
@@ -70,7 +71,7 @@ contract Elections is IStakingListener, Ownable {
 		voteOutTimeoutSeconds = _voteOutTimeoutSeconds;
 	}
 
-	function getTopology() public view returns (address[]) {
+	function getTopology() external view returns (address[]) {
 		return topology;
 	}
 
@@ -145,11 +146,15 @@ contract Elections is IStakingListener, Ownable {
 		require(stakeOwners.length == amounts.length);
 
 		for (uint i = 0; i < stakeOwners.length; i++) {
-			staked(stakeOwners[i], amounts[i]);
+			_staked(stakeOwners[i], amounts[i]);
 		}
 	}
 
-	function staked(address staker, uint256 amount) public onlyStakingContract {
+	function staked(address staker, uint256 amount) external onlyStakingContract {
+		_staked(staker, amount);
+	}
+
+	function _staked(address staker, uint256 amount) private {
 		address delegatee = delegations[staker];
 		if (delegatee == address(0)) {
 			delegatee = staker;
@@ -171,7 +176,7 @@ contract Elections is IStakingListener, Ownable {
 		_placeInTopology(delegatee);
 	}
 
-	function getMainAddrFromOrbsAddr(address orbsAddr) private returns (address) {
+	function getMainAddrFromOrbsAddr(address orbsAddr) private view returns (address) {
 		address sender = orbsAddressToMainAddress[orbsAddr];
 		require(sender != address(0), "unknown orbs address");
 		return sender;
