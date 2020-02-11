@@ -12,8 +12,9 @@ const nanos = 1000 * 1000 * 1000;
 const minBlocks = 250;
 
 class StakeHolderFactory {
-    constructor(web3, accounts, erc20, validators, validatorsRegistry, guardians, voting) {
+    constructor(web3, accounts, erc20, staking, validators, validatorsRegistry, guardians, voting) {
         this.erc20 = erc20;
+        this.staking = staking;
         this.nextStakeHolderIndex = 0;
         this.web3 = web3;
         this.accounts = accounts;
@@ -61,6 +62,7 @@ class StakeHolderFactory {
         const sh = new StakeHolder({
             web3: this.web3,
             erc20: this.erc20,
+            staking: this.staking,
             address: this.accounts[this.nextStakeHolderIndex++],
             initialStake: stake,
             voting: this.voting
@@ -81,10 +83,11 @@ class StakeHolderFactory {
 
 
 class StakeHolder {
-    constructor({web3, erc20, voting, address, initialStake}) {
+    constructor({web3, erc20, staking, voting, address, initialStake}) {
         this.address = address;
         this.initialStake = initialStake;
         this.erc20 = erc20;
+        this.staking = staking;
         this.web3 = web3;
         this.voting = voting;
     }
@@ -107,6 +110,16 @@ class StakeHolder {
         await this.voting.voteOut(addressesToVoteOut, {from: this.address});
         console.log(`StakeHolder ${this.address} voted out addresses ${addressesToVoteOut}`);
     }
+
+    async locks({lock}) {
+        const lockAmountBN = this.web3.utils.toBN(lock).mul(this.web3.utils.toBN("1000000000000000000"));
+
+        await this.erc20.approve(this.staking.address, lockAmountBN, {from: this.address});
+        await this.staking.stake(lockAmountBN, {from: this.address});
+        const balance = await this.staking.getStakeBalanceOf(this.address);
+        expect(balance.toString()).to.equal(lockAmountBN.toString());
+        console.log(`${this.address} locked stake of ${lockAmountBN.toString()}`);
+    }
 }
 
 class ElectionContracts {
@@ -118,7 +131,7 @@ class ElectionContracts {
     }
 
     newStakeHolderFactory() {
-        return new StakeHolderFactory(this.ethereum.web3, this.ethereum.accounts, this.erc20, this.validators, this.validatorsRegistry, this.guardians, this.voting);
+        return new StakeHolderFactory(this.ethereum.web3, this.ethereum.accounts, this.erc20, this.staking, this.validators, this.validatorsRegistry, this.guardians, this.voting);
     }
 
     async deploy() {
@@ -134,6 +147,10 @@ class ElectionContracts {
 
         this.erc20 = await deployErc20;
         console.log("ERC20 contract at", this.erc20.address);
+
+        const deployStaking = this.ethereum.deploySolidityContract(signer, 'StakingContract', votingContractsBuildDir, 500000, this.ethereum.accounts[0], this.ethereum.accounts[1], this.erc20.address);
+        this.staking = await deployStaking;
+        console.log("Staking contract at", this.staking.address);
 
         this.voting = await deployVoting;
         console.log("Voting contract at", this.voting.address);
@@ -185,6 +202,7 @@ class ElectionContracts {
         expect(await contract.transact(signer, "unsafetests_setVotingEthereumContractAddress", Orbs.argString(this.voting.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setGuardiansEthereumContractAddress", Orbs.argString(this.guardians.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setTokenEthereumContractAddress", Orbs.argString(this.erc20.address))).to.be.successful;
+        expect(await contract.transact(signer, "unsafetests_setStakingEthereumContractAddress", Orbs.argString(this.staking.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setValidatorsEthereumContractAddress", Orbs.argString(this.validators.address))).to.be.successful;
         expect(await contract.transact(signer, "unsafetests_setValidatorsRegistryEthereumContractAddress", Orbs.argString(this.validatorsRegistry.address))).to.be.successful;
 

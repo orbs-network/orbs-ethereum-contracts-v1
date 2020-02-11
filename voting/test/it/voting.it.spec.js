@@ -71,6 +71,10 @@ describe("voting contracts on orbs and ethereum", async () => {
             await shf.aDelegator({stake: 5000}),
         ];
 
+        // const [l0, ] = [
+        //     await shf.aDelegatorAlsoLocks(d0, {lock: 5000}),
+        // ];
+
         await shf.waitForFundingSuccess(); //TODO we don't need this anymore, make initStakeHolder() wait for this promise
         const DELEGATE_AMOUNT = ethereum.web3.utils.toBN("70000000000000000");
 
@@ -131,12 +135,21 @@ describe("voting contracts on orbs and ethereum", async () => {
 
         console.log("Done First Election\n");
 
-        console.log("Start Second Block Election");
+        console.log("Start Second Block Election (with locks)");
         // change election
         await g1.voteOut(v1);
         await g2.voteOut(v1);
         await g3.voteOut(v1);
         await g4.voteOut(v1);
+        await d0.locks({lock: 9000});
+        await d1.locks({lock: 9000});
+        await d2.locks({lock: 7000});
+        await d3.locks({lock: 7000});
+        await d4.locks({lock: 5000});
+        await d5.locks({lock: 5000});
+        await d6.locks({lock: 32000});
+        await d8.locks({lock: 1900});
+        await d9.locks({lock: 4000});
 
         await electionContracts.waitForOrbsFinality();
 

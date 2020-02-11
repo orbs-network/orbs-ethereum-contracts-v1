@@ -14,6 +14,7 @@ const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
 let verbose = false;
 let maxNumberOfProcess = 10000;
 let batchSize = 10;
+let maxPendings = 25;
 
 const slack = require('./src/slack');
 const _ = require('lodash');
@@ -33,12 +34,15 @@ function validateInput() {
     if (process.env.BATCH_SIZE) {
         batchSize = parseInt(process.env.BATCH_SIZE);
     }
+
+    if (process.env.MAX_PENDING) {
+        maxPendings = parseInt(process.env.MAX_PENDING);
+    }
 }
 
 let numErrors = 0;
 const maxErrors = 10;
 let numPendings = 0;
-const maxPendings = 25;
 
 async function processResults(orbs, results) {
     for (let i = 0; i < results.length; i++) {

@@ -1,0 +1,90 @@
+{
+  "contractName": "IMigratableStakingContract",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "AcceptedMigration",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getToken",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_stakeOwner",
+          "type": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "acceptMigration",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2020-02-03T15:43:57.910Z",
+  "devdoc": {
+    "methods": {
+      "acceptMigration(address,uint256)": {
+        "details": "Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least the required amount using ERC20 approve.",
+        "params": {
+          "_amount": "uint256 The number of tokens to stake.",
+          "_stakeOwner": "address The specified stake owner."
+        }
+      },
+      "getToken()": {
+        "details": "Returns the address of the underlying staked token.",
+        "return": "IERC20 The address of the token."
+      }
+    },
+    "title": "An interface for staking contracts which support stake migration."
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
