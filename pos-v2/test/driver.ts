@@ -107,7 +107,7 @@ export class Participant {
     }
 
     async notifyReadyForCommittee() {
-        return await this.elections.notifyReadyForCommittee({from: this.address});
+        return await this.elections.notifyReadyForCommittee({from: this.orbsAddress});
     }
 }
 

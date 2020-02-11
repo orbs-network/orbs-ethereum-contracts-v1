@@ -198,7 +198,7 @@ contract('elections-high-level-flows', async () => {
       const committeeSize = stakesPercentage.length;
       const thresholdCrossingIndex = 1;
 
-      const d = await Driver.new(committeeSize, 11);
+      const d = await Driver.new(committeeSize, stakesPercentage.length + 1);
 
       let r;
       const committee: Participant[] = [];
@@ -216,11 +216,11 @@ contract('elections-high-level-flows', async () => {
       // Part of the committee votes out, threshold is not yet reached
       const votedOutValidator = committee[committeeSize - 1];
       for (const v of committee.slice(0, thresholdCrossingIndex)) {
-          const r = await d.elections.voteOut(votedOutValidator.address, {from: v.address});
+          const r = await d.elections.voteOut(votedOutValidator.address, {from: v.orbsAddress});
           expect(r).to.not.have.a.committeeChangedEvent();
       }
 
-      r = await d.elections.voteOut(votedOutValidator.address, {from: committee[thresholdCrossingIndex].address}); // Threshold is reached
+      r = await d.elections.voteOut(votedOutValidator.address, {from: committee[thresholdCrossingIndex].orbsAddress}); // Threshold is reached
       expect(r).to.have.a.committeeChangedEvent({
           addrs: committee.filter(v => v != votedOutValidator).map(v => v.address)
       });
