@@ -2,8 +2,8 @@ pragma solidity 0.4.26;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-import "./IStakingContract.sol";
-import "./IStakingListener.sol";
+import "./interfaces/IStakingContract.sol";
+import "./interfaces/IStakingListener.sol";
 
 /// @title Orbs staking smart contract.
 contract StakingContract is IStakingContract, IMigratableStakingContract {

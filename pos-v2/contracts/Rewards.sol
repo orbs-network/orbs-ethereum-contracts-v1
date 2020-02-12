@@ -4,10 +4,11 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 
-import "./IStakingContract.sol";
-import "./ICommitteeListener.sol";
+import "./interfaces/IStakingContract.sol";
+import "./interfaces/ICommitteeListener.sol";
+import "./interfaces/IRewards.sol";
 
-contract Rewards is ICommitteeListener, Ownable {
+contract Rewards is IRewards, ICommitteeListener, Ownable {
     using SafeMath for uint256;
 
     event RewardAssigned(address assignee, uint256 amount, uint256 balance);
@@ -66,12 +67,12 @@ contract Rewards is ICommitteeListener, Ownable {
     }
 
     function setFixedPoolMonthlyRate(uint256 rate) external onlyRewardsGovernor {
-        assignRewards();
+        _assignRewards();
         fixedPoolMonthlyRate = rate;
     }
 
     function setProRataPoolMonthlyRate(uint256 rate) external onlyRewardsGovernor {
-        assignRewards();
+        _assignRewards();
         proRataPoolMonthlyRate = rate;
     }
 
@@ -109,7 +110,7 @@ contract Rewards is ICommitteeListener, Ownable {
     function committeeChanged(address[] addrs, uint256[] stakes) external onlyCommitteeProvider {
         require(addrs.length == stakes.length, "expected addrs and stakes to be of same length");
 
-        assignRewards(); // We want the previous committee to take the rewards
+        _assignRewards(); // We want the previous committee to take the rewards
 
         uint256 totalStake;
         currentCommittee.length = addrs.length;
@@ -125,7 +126,11 @@ contract Rewards is ICommitteeListener, Ownable {
 
     uint constant MAX_REWARD_BUCKET_ITERATIONS = 6;
 
-    function assignRewards() public returns (uint256) {
+    function assignRewards() external returns (uint256) {
+        return _assignRewards();
+    }
+
+    function _assignRewards() private returns (uint256) {
         // TODO we often do integer division for rate related calculation, which floors the result. Do we need to address this?
         // TODO for an empty committee or a committee with 0 total stake the divided amounts will be locked in the contract FOREVER
 
@@ -215,27 +220,28 @@ contract Rewards is ICommitteeListener, Ownable {
         assignRoundingRemainder(amount.sub(totalAssigned), tokenType);
     }
 
-    function fillFeeBuckets(uint256 amount, uint256 monthlyRate) public {
-        assignRewards(); // to handle rate change in the middle of a bucket time period (TBD - this is nice to have, consider removing)
+    function fillFeeBuckets(uint256 amount, uint256 monthlyRate) external {
+        _assignRewards(); // to handle rate change in the middle of a bucket time period (TBD - this is nice to have, consider removing)
 
         uint256 bucket = _bucketTime(now);
+        uint256 _amount = amount;
 
         // add the partial amount to the first bucket
         uint256 bucketAmount = Math.min(amount, monthlyRate.mul(bucketTimePeriod - now % bucketTimePeriod).div(bucketTimePeriod));
         feePoolBuckets[bucket] = feePoolBuckets[bucket].add(bucketAmount);
-        amount = amount.sub(bucketAmount);
+        _amount = _amount.sub(bucketAmount);
         emit FeeAddedToBucket(bucket, bucketAmount, feePoolBuckets[bucket]);
 
         // following buckets are added with the monthly rate
-        while (amount > 0) {
+        while (_amount > 0) {
             bucket = bucket.add(bucketTimePeriod);
-            bucketAmount = Math.min(monthlyRate, amount);
+            bucketAmount = Math.min(monthlyRate, _amount);
             feePoolBuckets[bucket] = feePoolBuckets[bucket].add(bucketAmount);
-            amount = amount.sub(bucketAmount);
+            _amount = _amount.sub(bucketAmount);
             emit FeeAddedToBucket(bucket, bucketAmount, feePoolBuckets[bucket]);
         }
 
-        assert(amount == 0);
+        assert(_amount == 0);
     }
 
     function distributeOrbsTokenRewards(address[] to, uint256[] amounts) external {
@@ -252,7 +258,7 @@ contract Rewards is ICommitteeListener, Ownable {
         stakingContract.distributeRewards(totalAmount, to, amounts);
     }
 
-    function withdrawExternalTokenRewards() public returns (uint256) {
+    function withdrawExternalTokenRewards() external returns (uint256) {
         uint256 amount = externalTokenBalance[msg.sender];
         externalTokenBalance[msg.sender] = externalTokenBalance[msg.sender].sub(amount);
         require(externalToken.transfer(msg.sender, amount), "Rewards::claimExternalTokenRewards - insufficient funds");
