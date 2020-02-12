@@ -18,6 +18,8 @@ export const DEFAULT_MINIMUM_STAKE = 100;
 export const DEFAULT_COMMITTEE_SIZE = 2;
 export const DEFAULT_TOPOLOGY_SIZE = 3;
 export const DEFAULT_MAX_DELEGATION_RATIO = 10;
+export const DEFAULT_VOTE_OUT_THRESHOLD = 80;
+export const DEFAULT_VOTE_OUT_TIMEOUT = 24*60*60;
 
 export class Driver {
     private participants: Participant[] = [];
@@ -32,20 +34,20 @@ export class Driver {
         public rewards: RewardsContract
     ) {}
 
-    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO) {
+    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT) {
         const accounts = await web3.eth.getAccounts();
         const erc20 = await artifacts.require('TestingERC20').new();
         const externalToken = await artifacts.require('TestingERC20').new();
         const rewards = await artifacts.require('Rewards').new(erc20.address, externalToken.address, accounts[0]);
         const subscriptions = await artifacts.require('Subscriptions').new(rewards.address, erc20.address);
-        const pos = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, rewards.address /* committee listener */);
-        const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, pos.address /* IStakingListener */, erc20.address /* _token */);
+        const elections = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout, rewards.address /* committee listener */);
+        const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, elections.address /* IStakingListener */, erc20.address /* _token */);
 
-        await rewards.setCommitteeProvider(pos.address);
+        await rewards.setCommitteeProvider(elections.address);
         await rewards.setStakingContract(staking.address);
-        await pos.setStakingContract(staking.address);
+        await elections.setStakingContract(staking.address);
 
-        return new Driver(accounts, pos, erc20, externalToken, staking, subscriptions, rewards);
+        return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards);
     }
 
     get contractsOwner() {

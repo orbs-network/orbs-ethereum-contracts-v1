@@ -13,6 +13,8 @@ contract Elections is IStakingListener, Ownable {
 	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
 	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
+	event VoteOut(address voter, address against);
+	event VotedOutOfCommittee(address addr);
 
 	event Delegated(address from, address to);
 	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
@@ -31,6 +33,7 @@ contract Elections is IStakingListener, Ownable {
 	mapping (address => uint256) totalStakes;
 	mapping (address => uint256) uncappedStakes;
 	mapping (address => address) delegations;
+	mapping (address => mapping (address => uint256)) voteOuts; // by => to => timestamp
 
 	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
@@ -41,6 +44,8 @@ contract Elections is IStakingListener, Ownable {
 	uint maxCommitteeSize;
 	uint maxTopologySize;
 	uint maxDelegationRatio; // TODO consider using a hardcoded constant instead.
+	uint8 voteOutPercentageThreshold;
+	uint256 voteOutTimeoutSeconds;
 
 	modifier onlyStakingContract() {
 		require(msg.sender == stakingContract, "caller is not the staking contract");
@@ -48,18 +53,21 @@ contract Elections is IStakingListener, Ownable {
 		_;
 	}
 
-	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, ICommitteeListener _committeeListener) public {
+	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds, ICommitteeListener _committeeListener) public {
 		require(_maxCommitteeSize > 0, "maxCommitteeSize must be larger than 0");
 		require(_maxTopologySize > _maxCommitteeSize, "topology must be larger than a full committee");
 		require(_committeeListener != address(0), "committee listener should not be 0");
 		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
+		require(_voteOutPercentageThreshold >= 0 && _voteOutPercentageThreshold <= 100, "voteOutPercentageThreshold must be between 0 and 100");
 
 		minimumStake = _minimumStake;
 		maxCommitteeSize = _maxCommitteeSize;
 		committeeListener = _committeeListener;
 		maxTopologySize = _maxTopologySize;
 	    maxDelegationRatio = _maxDelegationRatio;
+		voteOutPercentageThreshold = _voteOutPercentageThreshold;
+		voteOutTimeoutSeconds = _voteOutTimeoutSeconds;
 	}
 
 	function getTopology() public view returns (address[]) {
@@ -102,6 +110,36 @@ contract Elections is IStakingListener, Ownable {
 		delegations[msg.sender] = to;
 
 		emit Delegated(msg.sender, to);
+	}
+
+	function voteOut(address addr) external {
+		uint256 totalCommitteeStake = 0;
+		uint256 totalVoteOutStake = 0;
+
+		voteOuts[msg.sender][addr] = now;
+		for (uint i = 0; i < committeeSize; i++) {
+			address member = topology[i];
+			uint256 memberStake = totalStakes[member];
+
+			totalCommitteeStake = totalCommitteeStake.add(memberStake);
+			uint256 votedAt = voteOuts[member][addr];
+			if (votedAt != 0 && now.sub(votedAt) < voteOutTimeoutSeconds) {
+				totalVoteOutStake = totalVoteOutStake.add(memberStake);
+			}
+			// TODO - consider clearing up stale votes from the state (gas efficiency)
+		}
+
+		if (totalCommitteeStake > 0 && totalVoteOutStake.mul(100).div(totalCommitteeStake) >= voteOutPercentageThreshold) {
+			for (i = 0; i < committeeSize; i++) {
+				voteOuts[topology[i]][addr] = 0; // clear vote-outs
+			}
+			readyValidators[addr] = false;
+			_placeInTopology(addr);
+
+			emit VotedOutOfCommittee(addr);
+		}
+
+		emit VoteOut(msg.sender, addr);
 	}
 
 	function distributedStake(address[] stakeOwners, uint256[] amounts) external onlyStakingContract {

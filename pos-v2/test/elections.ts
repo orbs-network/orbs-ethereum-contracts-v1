@@ -1,8 +1,9 @@
+import * as _ from "lodash";
 import Web3 from "web3";
 declare const web3: Web3;
 
 import BN from "bn.js";
-import {Driver} from "./driver";
+import {DEFAULT_MINIMUM_STAKE, DEFAULT_VOTE_OUT_THRESHOLD, Driver, Participant} from "./driver";
 import chai from "chai";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
@@ -182,5 +183,66 @@ contract('elections-high-level-flows', async () => {
     });
     expect(r).to.not.have.a.topologyChangedEvent();
   });
+
+  it('votes out a committee member', async() => {
+      assert(DEFAULT_VOTE_OUT_THRESHOLD < 98); // so each committee member will hold a positive stake
+      assert(Math.floor(DEFAULT_VOTE_OUT_THRESHOLD / 2) >= 98 - DEFAULT_VOTE_OUT_THRESHOLD); // so the committee list will be ordered by stake
+
+      const stakesPercentage = [
+          Math.ceil(DEFAULT_VOTE_OUT_THRESHOLD / 2),
+          Math.floor(DEFAULT_VOTE_OUT_THRESHOLD / 2),
+          98 - DEFAULT_VOTE_OUT_THRESHOLD,
+          1,
+          1
+      ];
+      const committeeSize = stakesPercentage.length;
+      const thresholdCrossingIndex = 1;
+
+      const d = await Driver.new(committeeSize, committeeSize + 1);
+
+      let r;
+      const committee: Participant[] = [];
+      for (const p of stakesPercentage) {
+          const v = d.newParticipant();
+          await v.registerAsValidator();
+          await v.notifyReadyForCommittee();
+          r = await v.stake(DEFAULT_MINIMUM_STAKE * p);
+          committee.push(v);
+      }
+      expect(r).to.have.a.committeeChangedEvent({
+          orbsAddrs: committee.map(v => v.orbsAddress)
+      });
+
+      // Part of the committee votes out, threshold is not yet reached
+      const votedOutValidator = committee[committeeSize - 1];
+      for (const v of committee.slice(0, thresholdCrossingIndex)) {
+          const r = await d.elections.voteOut(votedOutValidator.address, {from: v.address});
+          expect(r).to.have.a.voteOutEvent({
+              voter: v.address,
+              against: votedOutValidator.address
+          });
+          expect(r).to.not.have.a.committeeChangedEvent();
+      }
+
+      r = await d.elections.voteOut(votedOutValidator.address, {from: committee[thresholdCrossingIndex].address}); // Threshold is reached
+      expect(r).to.have.a.voteOutEvent({
+          voter: committee[thresholdCrossingIndex].address,
+          against: votedOutValidator.address
+      });
+      expect(r).to.have.a.votedOutOfCommitteeEvent({
+          addr: votedOutValidator.address
+      });
+      expect(r).to.have.a.committeeChangedEvent({
+          addrs: committee.filter(v => v != votedOutValidator).map(v => v.address)
+      });
+      expect(r).to.not.have.a.topologyChangedEvent(); // should remain in topology
+
+      // voted-out validator re-joins by notifying ready-for-committee
+      r = await votedOutValidator.notifyReadyForCommittee();
+      expect(r).to.have.a.committeeChangedEvent({
+          addrs: committee.map(v => v.address)
+      });
+      expect(r).to.not.have.a.topologyChangedEvent();
+  })
 
 });
