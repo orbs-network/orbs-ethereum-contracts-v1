@@ -175,7 +175,7 @@ contract('rewards-level-flows', async () => {
       // claim the external token rewards
       const expectedBalance = parseInt(await d.rewards.getExternalTokenBalance(v.v.address));
       expect(expectedBalance).to.be.at.least(externalBalances[i].toNumber()); // at least - because new rewards may have already been assigned
-      await d.rewards.claimExternalTokenRewards({from: v.v.address});
+      await d.rewards.withdrawExternalTokenRewards({from: v.v.address});
       const externalBalance = await d.externalToken.balanceOf(v.v.address);
       expect(new BN(externalBalance)).to.bignumber.equal(new BN(expectedBalance));
     }

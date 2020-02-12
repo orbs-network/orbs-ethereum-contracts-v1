@@ -17,7 +17,7 @@ contract Rewards is ICommitteeListener, Ownable {
 
     mapping(uint256 => uint256) feePoolBuckets;
     uint256 fixedPool;
-    uint256 fixedPoolMonthlyRate;
+    uint256 fixedPoolMonthlyRate; // TODO - should the fixed pool rate be a function of the committee size?
     uint256 proRataPool;
     uint256 proRataPoolMonthlyRate;
 
@@ -76,13 +76,11 @@ contract Rewards is ICommitteeListener, Ownable {
     }
 
     function topUpFixedPool(uint256 amount) external {
-        assignRewards(); // TODO is this necessary?
         fixedPool = fixedPool.add(amount);
         require(externalToken.transferFrom(msg.sender, address(this), amount), "Rewards::topUpFixedPool - insufficient allowance");
     }
 
     function topUpProRataPool(uint256 amount) external {
-        assignRewards(); // TODO is this necessary?
         proRataPool = proRataPool.add(amount);
         require(erc20.transferFrom(msg.sender, address(this), amount), "Rewards::topUpProRataPool - insufficient allowance");
     }
@@ -128,6 +126,9 @@ contract Rewards is ICommitteeListener, Ownable {
     uint constant MAX_REWARD_BUCKET_ITERATIONS = 6;
 
     function assignRewards() public returns (uint256) {
+        // TODO we often do integer division for rate related calculation, which floors the result. Do we need to address this?
+        // TODO for an empty committee or a committee with 0 total stake the divided amounts will be locked in the contract FOREVER
+
         duration = now.sub(lastPayedAt);
 
         // Fee pool
@@ -152,7 +153,7 @@ contract Rewards is ICommitteeListener, Ownable {
 
             bucketsPayed++;
         }
-        assignAmountFixed(amount, TokenType.Orbs); // TODO for an empty committee or a committee with 0 total stake the amount will be subtracted from the bucket and locked in the contract FOREVER
+        assignAmountFixed(feePoolAmount, TokenType.Orbs);
 
         // Pro-rata pool
         amount = Math.min(proRataPoolMonthlyRate.mul(duration).div(30 days), proRataPool);
@@ -180,7 +181,6 @@ contract Rewards is ICommitteeListener, Ownable {
         if (remainder > 0 && currentCommittee.length > 0) {
             address addr = currentCommittee[now % currentCommittee.length].addr;
             addToBalance(addr, remainder, tokenType);
-            //            emit RewardAssigned(addr, roundingRemainder, externalTokenBalance[addr]);
         }
     }
 
@@ -209,7 +209,6 @@ contract Rewards is ICommitteeListener, Ownable {
             uint256 curAmount = amount.div(currentCommittee.length);
             address curAddr = currentCommittee[i].addr;
             addToBalance(curAddr, curAmount, tokenType);
-            //            emit RewardAssigned(curAddr, curAmount, externalTokenBalance[curAddr]);
             totalAssigned = totalAssigned.add(curAmount);
         }
 
@@ -253,7 +252,7 @@ contract Rewards is ICommitteeListener, Ownable {
         stakingContract.distributeRewards(totalAmount, to, amounts);
     }
 
-    function claimExternalTokenRewards() public returns (uint256) {
+    function withdrawExternalTokenRewards() public returns (uint256) {
         uint256 amount = externalTokenBalance[msg.sender];
         externalTokenBalance[msg.sender] = externalTokenBalance[msg.sender].sub(amount);
         require(externalToken.transfer(msg.sender, amount), "Rewards::claimExternalTokenRewards - insufficient funds");

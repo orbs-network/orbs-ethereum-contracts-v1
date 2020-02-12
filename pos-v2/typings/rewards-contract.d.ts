@@ -12,7 +12,7 @@ declare namespace Contracts {
         setProRataPoolMonthlyRate(rate: number|BN, params?: TransactionDetails): Promise<TransactionResponse>;
         topUpFixedPool(amount: number|BN, params?: TransactionDetails): Promise<TransactionResponse>;
         topUpProRataPool(amount: number|BN, params?: TransactionDetails): Promise<TransactionResponse>;
-        claimExternalTokenRewards(params?: TransactionDetails): Promise<TransactionResponse>;
+        withdrawExternalTokenRewards(params?: TransactionDetails): Promise<TransactionResponse>;
     }
 }
 
