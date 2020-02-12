@@ -11,6 +11,8 @@ declare namespace Chai
         unstakedEvent(data?: Partial<Contracts.UnstakedEvent>): void;
         subscriptionChangedEvent(data?: Partial<Contracts.SubscriptionChangedEvent>): void;
         paymentEvent(data?: Partial<Contracts.PaymentEvent>): void;
+        voteOutEvent(data?: Partial<Contracts.VoteOutEvent>): void;
+        votedOutOfCommitteeEvent(data?: Partial<Contracts.VotedOutOfCommitteeEvent>): void;
     }
 
     export interface Assertion

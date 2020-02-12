@@ -38,6 +38,15 @@ declare namespace Contracts {
         addr: string,
         newTotal: (number|BN)
     }
+
+    export interface VoteOutEvent {
+        voter: string,
+        against: string
+    }
+
+    export interface VotedOutOfCommitteeEvent {
+        addr: string
+    }
 }
 
 
