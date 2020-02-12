@@ -10,7 +10,7 @@ import "./ICommitteeListener.sol";
 contract Elections is IStakingListener, Ownable {
 	using SafeMath for uint256;
 
-	event ValidatorRegistered(address addr, bytes4 ip);
+	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
 	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
 
@@ -32,7 +32,7 @@ contract Elections is IStakingListener, Ownable {
 	mapping (address => uint256) uncappedStakes;
 	mapping (address => address) delegations;
 
-	uint currentCommitteeSize; // TODO may be redundant if readyValidators mapping is present
+	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
 	ICommitteeListener committeeListener;
 	address stakingContract;
@@ -49,7 +49,8 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, ICommitteeListener _committeeListener) public {
-		require(_maxTopologySize >= _maxCommitteeSize, "topology must be large enough to hold a full committee");
+		require(_maxCommitteeSize > 0, "maxCommitteeSize must be larger than 0");
+		require(_maxTopologySize > _maxCommitteeSize, "topology must be larger than a full committee");
 		require(_committeeListener != address(0), "committee listener should not be 0");
 		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
@@ -76,7 +77,7 @@ contract Elections is IStakingListener, Ownable {
 
 		registeredValidators[msg.sender].orbsAddress = _orbsAddress;
 		registeredValidators[msg.sender].ip = _ip;
-		emit ValidatorRegistered(msg.sender, _ip);
+		emit ValidatorRegistered(msg.sender, _ip, _orbsAddress);
 
 		_placeInTopology(msg.sender);
 	}
@@ -134,24 +135,25 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	// TODO what is the requirement? should an absolute minimum stake be enforced?
-	function holdsMinimumStake(address validator) private view returns (bool) {
+	function _holdsMinimumStake(address validator) private view returns (bool) {
 		return minimumStake <= ownStakes[validator] && // validator must hold the minimum required stake (own)
 		       minimumStake <= totalStakes[validator]; // validator must hold the minimum required stake (effective)
 	}
 
-	function isSelfDelegating(address validator) private view returns (bool) {
+	function _isSelfDelegating(address validator) private view returns (bool) {
 		return delegations[validator] == address(0) || delegations[validator] == validator;
 	}
 
 	function _satisfiesTopologyPrerequisites(address validator) private view returns (bool) {
 		return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
-			   isSelfDelegating(validator) &&
-		       holdsMinimumStake(validator);
+			   _isSelfDelegating(validator) &&
+		       _holdsMinimumStake(validator);
 	}
 
 	function _isQualifiedForTopologyByRank(address validator) private view returns (bool) {
-		return topology.length < maxTopologySize || // committee is not full
-				totalStakes[validator] > totalStakes[topology[topology.length-1]]; // validator has more stake the the bottom committee validator
+		// this assumes maxTopologySize > maxCommitteeSize, otherwise a non ready-for-committee validator may override one that is ready.
+		return topology.length < maxTopologySize || // topology is not full
+				totalStakes[validator] > totalStakes[topology[topology.length-1]]; // validator has more stake the the bottom topology validator
 	}
 
 	function _loadStakes(uint limit) private view returns (uint256[]) {
@@ -171,27 +173,10 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function _loadCommitteeStakes() private view returns (uint256[]) {
-		return _loadStakes(currentCommitteeSize);
+		return _loadStakes(committeeSize);
 	}
 
-	function _removeFromTopology(uint p) private {
-		assert(topology.length > 0);
-		assert(p < topology.length);
-
-		bool inCommittee = p < currentCommitteeSize;
-
-		for (;p < topology.length - 1; p++) {
-			topology[p] = topology[p + 1];
-		}
-		topology.length = topology.length - 1;
-
-		if (inCommittee) {
-			_onCommitteeChanged();
-		}
-		_onTopologyChanged();
-	}
-
-	function _onTopologyChanged() private {
+	function _notifyTopologyChanged() private {
 		assert(topology.length <= maxTopologySize);
 		address[] memory topologyOrbsAddresses = new address[](topology.length);
 		bytes4[] memory ips = new bytes4[](topology.length);
@@ -204,22 +189,11 @@ contract Elections is IStakingListener, Ownable {
 		emit TopologyChanged(topologyOrbsAddresses, ips);
 	}
 
-	function _onCommitteeChanged() private {
-		assert(topology.length <= maxTopologySize);
-
-		// Update the size of the committee. This assume a change of 1 member at most per _onCommitteeChange call
-		uint currentSize = currentCommitteeSize;
-		if (currentSize > 0 && (topology.length == currentSize - 1 || !readyValidators[topology[currentSize - 1]])) {
-			currentSize--;
-		} else if (topology.length > currentSize && readyValidators[topology[currentSize]] && currentSize < maxCommitteeSize){
-			currentSize++;
-		}
-		currentCommitteeSize = currentSize;
-
+	function _notifyCommitteeChanged() private {
 		uint256[] memory committeeStakes = _loadCommitteeStakes();
-		address[] memory committeeOrbsAddresses = new address[](currentSize);
-		address[] memory committeeAddresses = new address[](currentSize);
-		for (uint i = 0; i < currentSize; i++) {
+		address[] memory committeeOrbsAddresses = new address[](committeeStakes.length);
+		address[] memory committeeAddresses = new address[](committeeStakes.length);
+		for (uint i = 0; i < committeeStakes.length; i++) {
 			Validator storage val = registeredValidators[topology[i]];
 			committeeOrbsAddresses[i] = val.orbsAddress;
 			committeeAddresses[i] = topology[i];
@@ -228,31 +202,82 @@ contract Elections is IStakingListener, Ownable {
 		emit CommitteeChanged(committeeAddresses, committeeOrbsAddresses, committeeStakes);
 	}
 
+	function _refreshCommitteeSize() private returns (uint, uint) {
+		uint newSize = committeeSize;
+		uint prevSize = newSize;
+		while (newSize > 0 && (topology.length < newSize || !readyValidators[topology[newSize - 1]])) {
+			newSize--;
+		}
+		while (topology.length > newSize && readyValidators[topology[newSize]] && newSize < maxCommitteeSize){
+			newSize++;
+		}
+		committeeSize = newSize;
+		return (prevSize, newSize);
+	}
+
+	function _removeFromTopology(uint pos) private {
+		assert(topology.length > 0);
+		assert(p < topology.length);
+
+		for (uint p = pos; p < topology.length - 1; p++) {
+			topology[p] = topology[p + 1];
+		}
+
+		topology.length = topology.length - 1;
+		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
+
+		if (prevSize != currentSize || pos < currentSize) {
+			_notifyCommitteeChanged();
+		}
+
+		_notifyTopologyChanged();
+	}
+
+	function _appendToTopology(address validator) private {
+		uint pos = topology.length - 1; // current last
+
+		if (topology.length < maxTopologySize) { // extend topology
+			topology.length++;
+			pos++;
+		}
+
+		topology[pos] = validator;
+
+		pos = _repositionTopologyMember(pos);
+		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
+
+		if (prevSize != currentSize || pos < currentSize) {
+			_notifyCommitteeChanged();
+		}
+
+		_notifyTopologyChanged();
+	}
+
+	function _adjustPositionInTopology(uint pos) private {
+		uint newPos = _repositionTopologyMember(pos);
+		(uint prevSize, uint currentSize) = _refreshCommitteeSize();
+
+		if (prevSize != currentSize || pos < currentSize || newPos < currentSize) {
+			_notifyCommitteeChanged();
+		}
+	}
+
 	function _placeInTopology(address validator) private {
-		(uint p, bool inCurrentTopology) = _findInTopology(validator);
+		(uint pos, bool inTopology) = _findInTopology(validator);
 
-		if (!_satisfiesTopologyPrerequisites(validator)) {
-			if (inCurrentTopology) {
-				_removeFromTopology(p);
-			}
+		if (inTopology && !_satisfiesTopologyPrerequisites(validator)) {
+			_removeFromTopology(pos);
 			return;
 		}
 
-		if (!inCurrentTopology && !_isQualifiedForTopologyByRank(validator)) {
+		if (inTopology) {
+			_adjustPositionInTopology(pos);
 			return;
 		}
 
-		if (!inCurrentTopology) {
-			if (topology.length == maxTopologySize) {
-				p = topology.length - 1;
-				topology[p] = validator;
-			} else {
-				p = topology.push(validator) - 1;
-			}
-		}
-		_sortTopologyMember(p);
-		if (!inCurrentTopology) {
-			_onTopologyChanged();
+		if (_satisfiesTopologyPrerequisites(validator) && _isQualifiedForTopologyByRank(validator)) {
+			_appendToTopology(validator);
+			return;
 		}
 	}
 
@@ -266,11 +291,9 @@ contract Elections is IStakingListener, Ownable {
 		return v1Ready && !v2Ready || v1Ready == v2Ready && v1Stake > v2Stake ? int(1) : -1;
 	}
 
-	function _sortTopologyMember(uint memberPos) private {
+	function _repositionTopologyMember(uint memberPos) private returns (uint) {
         uint topologySize = topology.length;
 		assert(topologySize > memberPos);
-
-		uint origPos = memberPos;
 
 		while (memberPos > 0 && _compareValidators(memberPos, memberPos - 1) > 0) {
 			_replace(memberPos-1, memberPos);
@@ -282,9 +305,7 @@ contract Elections is IStakingListener, Ownable {
 			memberPos++;
 		}
 
-		if (origPos < currentCommitteeSize || memberPos < currentCommitteeSize || (currentCommitteeSize == 0 && maxCommitteeSize > 0 && topology.length > 0 && readyValidators[topology[0]])) { // TODO consider refactoring this check into onCommitteeChanged
-			_onCommitteeChanged();
-		}
+		return memberPos;
 	}
 
 	function _replace(uint p1, uint p2) private {
@@ -293,30 +314,10 @@ contract Elections is IStakingListener, Ownable {
 		topology[p2] = tempValidator;
 	}
 
-	function _append(address stakeOwner) private returns (uint, bool) {
-		(uint p, bool found) = _findInTopology(stakeOwner);
-
-		if (found) {
-			return (p, true);
-		}
-
-		if (topology.length == maxTopologySize) { // a full committee
-			bool qualifyToEnter = totalStakes[stakeOwner] > totalStakes[topology[topology.length-1]];
-			if (!qualifyToEnter) {
-				return (0, false);
-			}
-			p = topology.length - 1;
-			topology[p] = stakeOwner; // replace last member
-		} else {
-			p = topology.push(stakeOwner) - 1; // extend committee
-		}
-		return (p, true);
-	}
-
 	function _updateTotalStake(address addr, uint256 newTotal) private {
 		uncappedStakes[addr] = newTotal;
 		uint256 ownStake = 0;
-		if (isSelfDelegating(addr)) {
+		if (_isSelfDelegating(addr)) {
 			ownStake = ownStakes[addr];
 		}
 		uint256 capped = _capStake(newTotal, ownStake);

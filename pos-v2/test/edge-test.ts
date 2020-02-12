@@ -1,6 +1,7 @@
 import BN from "bn.js";
-import {DEFAULT_MINIMUM_STAKE, Driver, expectRejected, ZERO_ADDR} from "./driver";
+import {DEFAULT_MINIMUM_STAKE, DEFAULT_TOPOLOGY_SIZE, Driver, expectRejected, Participant, ZERO_ADDR} from "./driver";
 import chai from "chai";
+import * as _ from "lodash";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
@@ -255,5 +256,34 @@ contract('pos-v2-edge-cases', async () => {
         expect(r).to.have.a.committeeChangedEvent({
             addrs: []
         });
+    });
+
+    it('ignores ReadyForCommittee state when electing candidates', async () => {
+        const d = await Driver.new();
+        let r;
+
+        const topology: Participant[] = await Promise.all(_.range(DEFAULT_TOPOLOGY_SIZE, 0, -1).map(async i => {
+            const v = d.newParticipant();
+            await v.registerAsValidator();
+            await v.notifyReadyForCommittee();
+            r = await v.stake(DEFAULT_MINIMUM_STAKE*i);
+            return v;
+        }));
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: topology.map(v => v.orbsAddress)
+        });
+
+        const newValidator = d.newParticipant();
+        await newValidator.registerAsValidator();
+        r = await newValidator.stake(DEFAULT_MINIMUM_STAKE*2);
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: topology.slice(0, DEFAULT_TOPOLOGY_SIZE - 1).map(v => v.orbsAddress).concat(newValidator.orbsAddress)
+        });
+
+        const newValidator2 = d.newParticipant();
+        await newValidator2.registerAsValidator();
+        await newValidator2.notifyReadyForCommittee();
+        r = await newValidator2.stake(DEFAULT_MINIMUM_STAKE);
+        expect(r).to.not.have.a.topologyChangedEvent();
     })
 });

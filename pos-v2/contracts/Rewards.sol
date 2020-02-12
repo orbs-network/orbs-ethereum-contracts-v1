@@ -85,15 +85,15 @@ contract Rewards is ICommitteeListener, Ownable {
         require(erc20.transferFrom(msg.sender, address(this), amount), "Rewards::topUpProRataPool - insufficient allowance");
     }
 
-    function getOrbsBalance(address addr) public view returns (uint256) {
+    function getOrbsBalance(address addr) external view returns (uint256) {
         return orbsBalance[addr];
     }
 
-    function getExternalTokenBalance(address addr) public view returns (uint256) {
+    function getExternalTokenBalance(address addr) external view returns (uint256) {
         return externalTokenBalance[addr];
     }
 
-    function getLastPayedAt() public view returns (uint256) {
+    function getLastPayedAt() external view returns (uint256) {
         return lastPayedAt;
     }
 
@@ -238,7 +238,7 @@ contract Rewards is ICommitteeListener, Ownable {
         assert(amount == 0);
     }
 
-    function distributeOrbsTokenRewards(address[] to, uint256[] amounts) public {
+    function distributeOrbsTokenRewards(address[] to, uint256[] amounts) external {
         require(to.length == amounts.length, "expected to and amounts to be of same length");
 
         uint256 totalAmount = 0;
