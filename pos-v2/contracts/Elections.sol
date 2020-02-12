@@ -143,7 +143,7 @@ contract Elections is IStakingListener, Ownable {
 			emit VotedOutOfCommittee(addr);
 		}
 
-		emit VoteOut(msg.sender, addr);
+		emit VoteOut(sender, addr);
 	}
 
 	function distributedStake(address[] stakeOwners, uint256[] amounts) external onlyStakingContract {
