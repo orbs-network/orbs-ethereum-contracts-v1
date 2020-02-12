@@ -176,7 +176,7 @@ contract Elections is IStakingListener, Ownable {
 		_placeInTopology(delegatee);
 	}
 
-	function getMainAddrFromOrbsAddr(address orbsAddr) private returns (address) {
+	function getMainAddrFromOrbsAddr(address orbsAddr) private view returns (address) {
 		address sender = orbsAddressToMainAddress[orbsAddr];
 		require(sender != address(0), "unknown orbs address");
 		return sender;
