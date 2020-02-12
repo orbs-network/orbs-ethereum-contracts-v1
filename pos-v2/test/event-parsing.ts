@@ -25,3 +25,5 @@ export const paymentEvents = (txResult) => parseLogs(txResult, subscriptions, "P
 export const feeAddedToBucketEvents = (txResult) => parseLogs(txResult, rewards, "FeeAddedToBucket(uint256,uint256,uint256)");
 export const rewardAssignedEvents = (txResult) => parseLogs(txResult, rewards, "RewardAssigned(address,uint256,uint256)");
 export const topologyChangedEvents = (txResult) => parseLogs(txResult, elections, "TopologyChanged(address[],bytes4[])");
+export const voteOutEvents = (txResult) => parseLogs(txResult, elections, "VoteOut(address,address)");
+export const votedOutOfCommitteeEvents = (txResult) => parseLogs(txResult, elections, "VotedOutOfCommittee(address)");

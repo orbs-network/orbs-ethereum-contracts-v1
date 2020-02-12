@@ -185,20 +185,20 @@ contract('elections-high-level-flows', async () => {
   });
 
   it('votes out a committee member', async() => {
+      assert(DEFAULT_VOTE_OUT_THRESHOLD < 98); // so each committee member will hold a positive stake
+      assert(Math.floor(DEFAULT_VOTE_OUT_THRESHOLD / 2) >= 98 - DEFAULT_VOTE_OUT_THRESHOLD); // so the committee list will be ordered by stake
+
       const stakesPercentage = [
-          Math.floor(DEFAULT_VOTE_OUT_THRESHOLD/2),
-          Math.ceil(DEFAULT_VOTE_OUT_THRESHOLD/2),
-          95 - DEFAULT_VOTE_OUT_THRESHOLD,
-          1,
-          1,
-          1,
+          Math.ceil(DEFAULT_VOTE_OUT_THRESHOLD / 2),
+          Math.floor(DEFAULT_VOTE_OUT_THRESHOLD / 2),
+          98 - DEFAULT_VOTE_OUT_THRESHOLD,
           1,
           1
       ];
       const committeeSize = stakesPercentage.length;
       const thresholdCrossingIndex = 1;
 
-      const d = await Driver.new(committeeSize, 11);
+      const d = await Driver.new(committeeSize, committeeSize + 1);
 
       let r;
       const committee: Participant[] = [];
@@ -217,10 +217,21 @@ contract('elections-high-level-flows', async () => {
       const votedOutValidator = committee[committeeSize - 1];
       for (const v of committee.slice(0, thresholdCrossingIndex)) {
           const r = await d.elections.voteOut(votedOutValidator.address, {from: v.address});
+          expect(r).to.have.a.voteOutEvent({
+              voter: v.address,
+              against: votedOutValidator.address
+          });
           expect(r).to.not.have.a.committeeChangedEvent();
       }
 
       r = await d.elections.voteOut(votedOutValidator.address, {from: committee[thresholdCrossingIndex].address}); // Threshold is reached
+      expect(r).to.have.a.voteOutEvent({
+          voter: committee[thresholdCrossingIndex].address,
+          against: votedOutValidator.address
+      });
+      expect(r).to.have.a.votedOutOfCommitteeEvent({
+          addr: votedOutValidator.address
+      });
       expect(r).to.have.a.committeeChangedEvent({
           addrs: committee.filter(v => v != votedOutValidator).map(v => v.address)
       });
