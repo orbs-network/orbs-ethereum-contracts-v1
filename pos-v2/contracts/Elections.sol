@@ -13,7 +13,8 @@ contract Elections is IStakingListener, Ownable {
 	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
 	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
-	event VotedOutEvent(address votedOut);
+	event VoteOut(address voter, address against);
+	event VotedOutOfCommittee(address addr);
 
 	event Delegated(address from, address to);
 	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
@@ -125,9 +126,11 @@ contract Elections is IStakingListener, Ownable {
 			uint256 memberStake = totalStakes[member];
 
 			totalCommitteeStake = totalCommitteeStake.add(memberStake);
-			if (now.sub(voteOuts[member][addr]) < voteOutTimeoutSeconds) {
+			uint256 votedAt = voteOuts[member][addr];
+			if (votedAt != 0 && now.sub(votedAt) < voteOutTimeoutSeconds) {
 				totalVoteOutStake = totalVoteOutStake.add(memberStake);
 			}
+			// TODO - consider clearing up stale votes from the state (gas efficiency)
 		}
 
 		if (totalCommitteeStake > 0 && totalVoteOutStake.mul(100).div(totalCommitteeStake) >= voteOutPercentageThreshold) {
@@ -137,8 +140,10 @@ contract Elections is IStakingListener, Ownable {
 			readyValidators[addr] = false;
 			_placeInTopology(addr);
 
-			emit VotedOutEvent(addr);
+			emit VotedOutOfCommittee(addr);
 		}
+
+		emit VoteOut(msg.sender, addr);
 	}
 
 	function distributedStake(address[] stakeOwners, uint256[] amounts) external onlyStakingContract {

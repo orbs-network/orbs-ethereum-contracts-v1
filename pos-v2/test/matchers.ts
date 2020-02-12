@@ -8,7 +8,7 @@ import {
     subscriptionChangedEvents,
     paymentEvents,
     rewardAssignedEvents,
-    feeAddedToBucketEvents, unstakedEvents, topologyChangedEvents
+    feeAddedToBucketEvents, unstakedEvents, topologyChangedEvents, voteOutEvents, votedOutOfCommitteeEvents
 } from "./event-parsing";
 import * as _ from "lodash";
 
@@ -78,6 +78,8 @@ module.exports = function (chai) {
     chai.Assertion.overwriteMethod('feeAddedToBucketEvent', containEvent(feeAddedToBucketEvents));
     chai.Assertion.overwriteMethod('rewardAssignedEvent', containEvent(rewardAssignedEvents));
     chai.Assertion.overwriteMethod('topologyChangedEvent', containEvent(topologyChangedEvents));
+    chai.Assertion.overwriteMethod('voteOutEvent', containEvent(voteOutEvents));
+    chai.Assertion.overwriteMethod('votedOutOfCommitteeEvent', containEvent(votedOutOfCommitteeEvents));
 
     chai.Assertion.overwriteMethod('haveCommittee', containEvent(function(o) { return [o]}));
 };
