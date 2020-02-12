@@ -9,7 +9,7 @@ interface ISubscriptions {
     event SubscriberAdded(address subscriber);
 
     /*
-     *   Methods called by other Orbs contracts
+     *   Methods restricted to other Orbs contracts
      */
 
     /// @dev Called by: authorized subscriber (plan) contracts

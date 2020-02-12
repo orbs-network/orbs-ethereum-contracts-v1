@@ -67,12 +67,12 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
     }
 
     function setFixedPoolMonthlyRate(uint256 rate) external onlyRewardsGovernor {
-        assignRewards();
+        _assignRewards();
         fixedPoolMonthlyRate = rate;
     }
 
     function setProRataPoolMonthlyRate(uint256 rate) external onlyRewardsGovernor {
-        assignRewards();
+        _assignRewards();
         proRataPoolMonthlyRate = rate;
     }
 
@@ -258,7 +258,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         stakingContract.distributeRewards(totalAmount, to, amounts);
     }
 
-    function withdrawExternalTokenRewards() public returns (uint256) {
+    function withdrawExternalTokenRewards() external returns (uint256) {
         uint256 amount = externalTokenBalance[msg.sender];
         externalTokenBalance[msg.sender] = externalTokenBalance[msg.sender].sub(amount);
         require(externalToken.transfer(msg.sender, amount), "Rewards::claimExternalTokenRewards - insufficient funds");

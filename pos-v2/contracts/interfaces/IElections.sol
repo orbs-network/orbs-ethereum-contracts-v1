@@ -26,8 +26,9 @@ interface IElections {
 	function voteOut(address addr) external;
 
 	/*
-	 *   Methods called by other Orbs contracts
+	 *   Methods restricted to other Orbs contracts
 	 */
+	
 	/// @dev Called by: staking contract
 	/// Notifies a batch of stake updates
 	function distributedStake(address[] stakeOwners, uint256[] amounts) external /* onlyStakingContract */;
