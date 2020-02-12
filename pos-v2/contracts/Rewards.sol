@@ -129,7 +129,7 @@ contract Rewards is ICommitteeListener, Ownable {
         // TODO we often do integer division for rate related calculation, which floors the result. Do we need to address this?
         // TODO for an empty committee or a committee with 0 total stake the divided amounts will be locked in the contract FOREVER
 
-        duration = now.sub(lastPayedAt);
+        uint256 duration = now.sub(lastPayedAt);
 
         // Fee pool
         uint bucketsPayed = 0;
@@ -138,9 +138,9 @@ contract Rewards is ICommitteeListener, Ownable {
             uint256 bucketStart = _bucketTime(lastPayedAt);
             uint256 bucketEnd = bucketStart.add(bucketTimePeriod);
             uint256 payUntil = Math.min(bucketEnd, now);
-            uint256 duration = payUntil.sub(lastPayedAt);
+            uint256 bucketDuration = payUntil.sub(lastPayedAt);
             uint256 remainingBucketTime = bucketEnd.sub(lastPayedAt);
-            uint256 amount = feePoolBuckets[bucketStart] * duration / remainingBucketTime;
+            uint256 amount = feePoolBuckets[bucketStart] * bucketDuration / remainingBucketTime;
 
             feePoolAmount += amount;
             feePoolBuckets[bucketStart] = feePoolBuckets[bucketStart].sub(amount);

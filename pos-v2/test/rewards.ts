@@ -28,6 +28,7 @@ contract('rewards-level-flows', async () => {
     const d = await Driver.new();
 
     /* top up fixed pool */
+
     const g = d.rewardsGovernor;
 
     const fixedPoolRate = 10000000;
@@ -83,26 +84,26 @@ contract('rewards-level-flows', async () => {
     let r = await subs.createVC(payment, {from: appOwner.address});
     let startTime = await txTimestamp(r);
 
-    const feesAdded = feeAddedToBucketEvents(r);
+    const feeBuckets = feeAddedToBucketEvents(r);
 
     // all the payed rewards were added to a bucket
-    const totalAdded = feesAdded.reduce((t, l) => t.add(new BN(l.added)), new BN(0));
+    const totalAdded = feeBuckets.reduce((t, l) => t.add(new BN(l.added)), new BN(0));
     expect(totalAdded).to.be.bignumber.equal(new BN(payment));
 
     // the first bucket was added to with proportion to the remaining time
-    const secondsInFirstMonth = parseInt(feesAdded[1].bucketId) - startTime;
-    expect(parseInt(feesAdded[0].added)).to.equal(Math.floor(secondsInFirstMonth * vcRate / MONTH_IN_SECONDS));
+    const secondsInFirstMonth = parseInt(feeBuckets[1].bucketId) - startTime;
+    expect(parseInt(feeBuckets[0].added)).to.equal(Math.floor(secondsInFirstMonth * vcRate / MONTH_IN_SECONDS));
 
     // all middle buckets were added to by the monthly rate
-    const middleBuckets = feesAdded.filter((l, i) => i > 0 && i < feesAdded.length - 1);
-    expect(middleBuckets).to.have.length(feesAdded.length - 2);
+    const middleBuckets = feeBuckets.filter((l, i) => i > 0 && i < feeBuckets.length - 1);
+    expect(middleBuckets).to.have.length(feeBuckets.length - 2);
     middleBuckets.forEach(l => {
       expect(l.added).to.be.bignumber.equal(new BN(vcRate));
     });
 
     expect(await d.rewards.getLastPayedAt()).to.be.bignumber.equal(new BN(startTime));
 
-    // creating the VC has triggered reward assignment. we wish to ignore it, so we take initial balance
+    // creating the VC has triggered reward assignment. We wish to ignore it, so we take the initial balance
     // and subtract it afterwards
 
     const initialOrbsBalances:BN[] = [];
@@ -113,27 +114,47 @@ contract('rewards-level-flows', async () => {
     }
 
     await sleep(3000);
+    await new Promise((resolve, reject) => (web3 as any).currentProvider.send({method: "evm_increaseTime", params: [MONTH_IN_SECONDS*4]}, (err, res) => err ? reject(err) : resolve(res) ));
 
     r = await d.rewards.assignRewards();
     const endTime = await txTimestamp(r);
     const elapsedTime = endTime - startTime;
 
     const calcRewards = (rate: number, type:"fixed"|"prorata") => {
-      const remainderWinnerIdx = endTime % nValidators;
       const totalCommitteeStake = new BN(_.sumBy(validators, v => v.stake.toNumber()));
-
       const rewards = new BN(Math.floor(rate * elapsedTime / MONTH_IN_SECONDS));
       const rewardsArr = type == "fixed" ?
           validators.map(() => rewards.div(new BN(validators.length)))
           :
           validators.map(v => rewards.mul(v.stake).div(totalCommitteeStake));
       const remainder =  rewards.sub(new BN(_.sumBy(rewardsArr, r => r.toNumber())));
+      const remainderWinnerIdx = endTime % nValidators;
       rewardsArr[remainderWinnerIdx] = rewardsArr[remainderWinnerIdx].add(remainder);
       return rewardsArr;
     };
 
+    const calcFeeRewards = () => {
+      let rewards = 0;
+      for (const bucket of feeBuckets) {
+        const bucketStartTime = Math.max(parseInt(bucket.bucketId), startTime);
+        const bucketEndTime = bucketStartTime - (bucketStartTime % MONTH_IN_SECONDS) + MONTH_IN_SECONDS;
+        const bucketRemainingTime = bucketEndTime - bucketStartTime;
+        const bucketAmount = parseInt(bucket.added);
+        if (bucketStartTime < endTime) {
+          const payedDuration = Math.min(endTime, bucketEndTime) - bucketStartTime;
+          const amount = Math.floor(bucketAmount * payedDuration / bucketRemainingTime);
+          rewards += amount;
+        }
+      }
+      const rewardsArr = validators.map(() => Math.floor(rewards / validators.length));
+      const remainder = rewards - _.sum(rewardsArr);
+      const remainderWinnerIdx = endTime % nValidators;
+      rewardsArr[remainderWinnerIdx] = rewardsArr[remainderWinnerIdx] + remainder;
+      return rewardsArr.map(x => new BN(x));
+    };
+
     // Calculate expected rewards from VC fees
-    const expectedFeesRewardsArr = calcRewards(vcRate, "fixed");
+    const expectedFeesRewardsArr = calcFeeRewards();
 
     // Calculate expected rewards from pro-rata pool
     const expectedProRataPoolRewardsArr = calcRewards(proRataPoolRate, "prorata");
