@@ -1,11 +1,9 @@
 import BN from "bn.js";
 import {DEFAULT_MINIMUM_STAKE, DEFAULT_TOPOLOGY_SIZE, Driver, expectRejected, Participant, ZERO_ADDR} from "./driver";
-import chai from "chai";
+import {expect, use} from "chai";
 import * as _ from "lodash";
-chai.use(require('chai-bn')(BN));
-chai.use(require('./matchers'));
-
-const expect = chai.expect;
+use(require('chai-bn')(BN));
+use(require('./matchers'));
 
 contract('pos-v2-edge-cases', async () => {
     it('should remove a validator with insufficient stake from committee', async() => {

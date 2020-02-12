@@ -6,12 +6,12 @@ import { Contract } from 'web3-eth-contract';
 export const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
 import Web3 from "web3";
-type ElectionsContract = Contracts.ElectionsContract & Contract;
-type ERC20Contract = Contracts.ERC20Contract & Contract;
-type StakingContract = Contracts.StakingContract & Contract;
-type SubscriptionsContract = Contracts.SubscriptionsContract & Contract;
-type MonthlySubscriptionContract = Contracts.MonthlySubscriptionPlanContract & Contract;
-type RewardsContract = Contracts.RewardsContract & Contract;
+import { SubscriptionsContract } from "../typings/subscriptions-contract";
+import { ElectionsContract } from "../typings/elections-contract";
+import { ERC20Contract } from "../typings/erc20-contract";
+import { StakingContract } from "../typings/staking-contract";
+import { RewardsContract } from "../typings/rewards-contract";
+import { MonthlySubscriptionPlanContract } from "../typings/monthly-subscription-plan-contract";
 declare const web3: Web3;
 
 export const DEFAULT_MINIMUM_STAKE = 100;
@@ -62,7 +62,7 @@ export class Driver {
         return new Participant(this.accounts[0], this.accounts[0], this);
     }
 
-    async newSubscriber(tier: string, monthlyRate:number|BN): Promise<MonthlySubscriptionContract> {
+    async newSubscriber(tier: string, monthlyRate:number|BN): Promise<MonthlySubscriptionPlanContract> {
         const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.subscriptions.address, this.erc20.address, tier, monthlyRate);
         await this.subscriptions.addSubscriber(subscriber.address);
         return subscriber;
