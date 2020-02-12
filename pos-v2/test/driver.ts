@@ -1,17 +1,17 @@
 import BN from "bn.js";
 import chai from "chai";
 chai.use(require('chai-bn')(BN));
-const expect = chai.expect;
+import { Contract } from 'web3-eth-contract';
 
 export const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
 import Web3 from "web3";
-import ElectionsContract = Contracts.ElectionsContract;
-import ERC20Contract = Contracts.ERC20Contract;
-import StakingContract = Contracts.StakingContract;
-import SubscriptionsContract = Contracts.SubscriptionsContract;
-import MonthlySubscriptionContract = Contracts.MonthlySubscriptionPlanContract;
-import RewardsContract = Contracts.RewardsContract;
+type ElectionsContract = Contracts.ElectionsContract & Contract;
+type ERC20Contract = Contracts.ERC20Contract & Contract;
+type StakingContract = Contracts.StakingContract & Contract;
+type SubscriptionsContract = Contracts.SubscriptionsContract & Contract;
+type MonthlySubscriptionContract = Contracts.MonthlySubscriptionPlanContract & Contract;
+type RewardsContract = Contracts.RewardsContract & Contract;
 declare const web3: Web3;
 
 export const DEFAULT_MINIMUM_STAKE = 100;

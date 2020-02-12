@@ -26,7 +26,8 @@
     "truffle-hdwallet-provider": "^1.0.3",
     "truffle-typings": "^1.0.8",
     "ts-node": "^8.6.2",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.4",
+    "web3-eth-contract": "^1.2.6"
   },
   "devDependencies": {
     "ganache-cli": "6.2.3",
