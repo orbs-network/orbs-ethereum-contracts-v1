@@ -216,7 +216,7 @@ contract('elections-high-level-flows', async () => {
       // Part of the committee votes out, threshold is not yet reached
       const votedOutValidator = committee[committeeSize - 1];
       for (const v of committee.slice(0, thresholdCrossingIndex)) {
-          const r = await d.elections.voteOut(votedOutValidator.address, {from: v.address});
+          const r = await d.elections.voteOut(votedOutValidator.address, {from: v.orbsAddress});
           expect(r).to.have.a.voteOutEvent({
               voter: v.address,
               against: votedOutValidator.address
@@ -224,7 +224,7 @@ contract('elections-high-level-flows', async () => {
           expect(r).to.not.have.a.committeeChangedEvent();
       }
 
-      r = await d.elections.voteOut(votedOutValidator.address, {from: committee[thresholdCrossingIndex].address}); // Threshold is reached
+      r = await d.elections.voteOut(votedOutValidator.address, {from: committee[thresholdCrossingIndex].orbsAddress}); // Threshold is reached
       expect(r).to.have.a.voteOutEvent({
           voter: committee[thresholdCrossingIndex].address,
           against: votedOutValidator.address

@@ -34,6 +34,7 @@ contract Elections is IStakingListener, Ownable {
 	mapping (address => uint256) uncappedStakes;
 	mapping (address => address) delegations;
 	mapping (address => mapping (address => uint256)) voteOuts; // by => to => timestamp
+	mapping (address => address) orbsAddressToMainAddress;
 
 	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
@@ -85,14 +86,16 @@ contract Elections is IStakingListener, Ownable {
 
 		registeredValidators[msg.sender].orbsAddress = _orbsAddress;
 		registeredValidators[msg.sender].ip = _ip;
+		orbsAddressToMainAddress[_orbsAddress] = msg.sender;
 		emit ValidatorRegistered(msg.sender, _ip, _orbsAddress);
 
 		_placeInTopology(msg.sender);
 	}
 
 	function notifyReadyForCommittee() external {
-		readyValidators[msg.sender] = true; // TODO convert msg.sender (orbs-address) to validator address
-		_placeInTopology(msg.sender);
+		address sender = getMainAddrFromOrbsAddr(msg.sender);
+		readyValidators[sender] = true;
+		_placeInTopology(sender);
 	}
 
 	function delegate(address to) external {
@@ -113,10 +116,11 @@ contract Elections is IStakingListener, Ownable {
 	}
 
 	function voteOut(address addr) external {
+		address sender = getMainAddrFromOrbsAddr(msg.sender);
 		uint256 totalCommitteeStake = 0;
 		uint256 totalVoteOutStake = 0;
 
-		voteOuts[msg.sender][addr] = now;
+		voteOuts[sender][addr] = now;
 		for (uint i = 0; i < committeeSize; i++) {
 			address member = topology[i];
 			uint256 memberStake = totalStakes[member];
@@ -139,7 +143,7 @@ contract Elections is IStakingListener, Ownable {
 			emit VotedOutOfCommittee(addr);
 		}
 
-		emit VoteOut(msg.sender, addr);
+		emit VoteOut(sender, addr);
 	}
 
 	function distributedStake(address[] stakeOwners, uint256[] amounts) external onlyStakingContract {
@@ -170,6 +174,12 @@ contract Elections is IStakingListener, Ownable {
 		_updateTotalStake(delegatee, uncappedStakes[delegatee].sub(amount));
 
 		_placeInTopology(delegatee);
+	}
+
+	function getMainAddrFromOrbsAddr(address orbsAddr) private view returns (address) {
+		address sender = orbsAddressToMainAddress[orbsAddr];
+		require(sender != address(0), "unknown orbs address");
+		return sender;
 	}
 
 	// TODO what is the requirement? should an absolute minimum stake be enforced?
