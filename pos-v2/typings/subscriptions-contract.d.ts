@@ -20,8 +20,5 @@ export interface PaymentEvent {
 }
 
 export interface SubscriptionsContract extends ContractInstance, Contract {
-  addSubscriber(
-    address,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
+  addSubscriber(address,params?: TransactionDetails): Promise<TransactionResponse>;
 }

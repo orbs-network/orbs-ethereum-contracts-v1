@@ -16,12 +16,6 @@ export interface UnstakedEvent {
 }
 
 export interface StakingContract extends Contract {
-  stake(
-    amount: number | BN,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
-  unstake(
-    amount: number | BN,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
+  stake(amount: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
+  unstake(amount: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
 }

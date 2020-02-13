@@ -100,53 +100,21 @@ const containEvent = eventParser =>
   };
 
 module.exports = function(chai) {
-  chai.Assertion.overwriteMethod(
-    "delegatedEvent",
-    containEvent(delegatedEvents)
-  );
-  chai.Assertion.overwriteMethod(
-    "validatorRegisteredEvent",
-    containEvent(validatorRegisteredEvents)
-  );
-  chai.Assertion.overwriteMethod(
-    "committeeChangedEvent",
-    containEvent(committeeChangedEvents)
-  );
-  chai.Assertion.overwriteMethod(
-    "totalStakeChangedEvent",
-    containEvent(totalStakeChangedEvents)
-  );
+  chai.Assertion.overwriteMethod("delegatedEvent", containEvent(delegatedEvents));
+  chai.Assertion.overwriteMethod("validatorRegisteredEvent", containEvent(validatorRegisteredEvents));
+  chai.Assertion.overwriteMethod("committeeChangedEvent", containEvent(committeeChangedEvents));
+  chai.Assertion.overwriteMethod("totalStakeChangedEvent", containEvent(totalStakeChangedEvents));
   chai.Assertion.overwriteMethod("stakedEvent", containEvent(stakedEvents));
   chai.Assertion.overwriteMethod("unstakedEvent", containEvent(unstakedEvents));
-  chai.Assertion.overwriteMethod(
-    "subscriptionChangedEvent",
-    containEvent(subscriptionChangedEvents)
-  );
+  chai.Assertion.overwriteMethod("subscriptionChangedEvent", containEvent(subscriptionChangedEvents));
   chai.Assertion.overwriteMethod("paymentEvent", containEvent(paymentEvents));
-  chai.Assertion.overwriteMethod(
-    "feeAddedToBucketEvent",
-    containEvent(feeAddedToBucketEvents)
-  );
-  chai.Assertion.overwriteMethod(
-    "rewardAssignedEvent",
-    containEvent(rewardAssignedEvents)
-  );
-  chai.Assertion.overwriteMethod(
-    "topologyChangedEvent",
-    containEvent(topologyChangedEvents)
-  );
+  chai.Assertion.overwriteMethod("feeAddedToBucketEvent", containEvent(feeAddedToBucketEvents));
+  chai.Assertion.overwriteMethod("rewardAssignedEvent", containEvent(rewardAssignedEvents));
+  chai.Assertion.overwriteMethod("topologyChangedEvent", containEvent(topologyChangedEvents));
   chai.Assertion.overwriteMethod("voteOutEvent", containEvent(voteOutEvents));
-  chai.Assertion.overwriteMethod(
-    "votedOutOfCommitteeEvent",
-    containEvent(votedOutOfCommitteeEvents)
-  );
+  chai.Assertion.overwriteMethod("votedOutOfCommitteeEvent", containEvent(votedOutOfCommitteeEvents));
 
-  chai.Assertion.overwriteMethod(
-    "haveCommittee",
-    containEvent(function(o) {
-      return [o];
-    })
-  );
+  chai.Assertion.overwriteMethod("haveCommittee", containEvent(function(o) {return [o];}));
 };
 
 declare global {

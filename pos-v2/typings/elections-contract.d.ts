@@ -3,37 +3,14 @@ import TransactionDetails = Truffle.TransactionDetails;
 import TransactionResponse = Truffle.TransactionResponse;
 
 export interface ElectionsContract extends Contract {
-  registerValidator(
-    ip: string,
-    orbsAddrs: string,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
-  setStakingContract(
-    address: string,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
-  staked(
-    stakeOwner: string,
-    amount: number,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
-  unstaked(
-    stakeOwner: string,
-    amount: number,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
-  delegate(
-    to: string,
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
+  registerValidator( ip: string, orbsAddrs: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  setStakingContract( address: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  staked( stakeOwner: string, amount: number, params?: TransactionDetails): Promise<TransactionResponse>;
+  unstaked( stakeOwner: string, amount: number, params?: TransactionDetails): Promise<TransactionResponse>;
+  delegate( to: string, params?: TransactionDetails): Promise<TransactionResponse>;
   getTopology(): Promise<TransactionResponse>;
-  notifyReadyForCommittee(
-    params?: TransactionDetails
-  ): Promise<TransactionResponse>;
-  voteOut(
-    address: string,
-    param?: TransactionDetails
-  ): Promise<TransactionResponse>;
+  notifyReadyForCommittee( params?: TransactionDetails): Promise<TransactionResponse>;
+  voteOut( address: string, param?: TransactionDetails): Promise<TransactionResponse>;
 }
 
 export interface DelegatedEvent {

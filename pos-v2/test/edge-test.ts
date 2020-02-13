@@ -283,5 +283,21 @@ contract('pos-v2-edge-cases', async () => {
         await newValidator2.notifyReadyForCommittee();
         r = await newValidator2.stake(DEFAULT_MINIMUM_STAKE);
         expect(r).to.not.have.a.topologyChangedEvent();
+    });
+
+    it('is able to create multiple VCs from the same subscriber', async () => {
+        const d = await Driver.new();
+        const subs = await d.newSubscriber("tier", 1);
+
+        const owner = d.newParticipant();
+        const amount = 10;
+
+        await owner.assignAndApproveOrbs(amount, subs.address);
+        let r = await subs.createVC(amount, {from: owner.address});
+        expect(r).to.have.a.subscriptionChangedEvent();
+
+        await owner.assignAndApproveOrbs(amount, subs.address);
+        r = await subs.createVC(amount, {from: owner.address});
+        expect(r).to.have.a.subscriptionChangedEvent();
     })
 });
