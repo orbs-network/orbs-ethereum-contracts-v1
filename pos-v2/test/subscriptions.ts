@@ -2,7 +2,7 @@ import Web3 from "web3";
 declare const web3: Web3;
 
 import BN from "bn.js";
-import {Driver} from "./driver";
+import {Driver, expectRejected, ZERO_ADDR} from "./driver";
 import chai from "chai";
 import {subscriptionChangedEvents} from "./event-parsing";
 chai.use(require('chai-bn')(BN));
@@ -72,5 +72,34 @@ contract('subscriptions-high-level-flows', async () => {
 
     expect(await d.erc20.balanceOf(d.rewards.address)).is.bignumber.equal(firstPayment.add(secondPayment));
   });
+
+  it('registers subsciber only by owner', async () => {
+    const d = await Driver.new();
+    const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(d.subscriptions.address, d.erc20.address, 'tier', 1);
+
+    await expectRejected(d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsNonOwner}), "Non-owner should not be able to add a subscriber");
+    await d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsOwner});
+  });
+
+  it('should not add a subscriber with a zero address', async () => {
+    const d = await Driver.new();
+    await expectRejected(d.subscriptions.addSubscriber(ZERO_ADDR, {from: d.contractsOwner}), "Should not deploy a subscriber with a zero address");
+  });
+
+  it('is able to create multiple VCs from the same subscriber', async () => {
+    const d = await Driver.new();
+    const subs = await d.newSubscriber("tier", 1);
+
+    const owner = d.newParticipant();
+    const amount = 10;
+
+    await owner.assignAndApproveOrbs(amount, subs.address);
+    let r = await subs.createVC(amount, {from: owner.address});
+    expect(r).to.have.a.subscriptionChangedEvent();
+
+    await owner.assignAndApproveOrbs(amount, subs.address);
+    r = await subs.createVC(amount, {from: owner.address});
+    expect(r).to.have.a.subscriptionChangedEvent();
+  })
 
 });
