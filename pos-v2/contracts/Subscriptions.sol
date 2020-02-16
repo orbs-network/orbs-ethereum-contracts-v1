@@ -10,7 +10,7 @@ contract Subscriptions is ISubscriptions, Ownable{
 
     event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier);
     event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);
-
+    event VcConfigRecordChanged(uint256 vcid, string key, string value);
     event SubscriberAdded(address subscriber);
 
     struct VirtualChain {
@@ -34,6 +34,12 @@ contract Subscriptions is ISubscriptions, Ownable{
         nextVcid = 1000000;
         rewardsContract = _rewardsContract;
         erc20 = _erc20;
+    }
+
+    function setVcConfigRecord(uint256 vcid, string key, string value) external {
+        require(msg.sender == virtualChains[vcid].owner, "only vc owner can set a vc config record");
+
+        emit VcConfigRecordChanged(vcid, key, value);
     }
 
     function addSubscriber(address addr) external onlyOwner {

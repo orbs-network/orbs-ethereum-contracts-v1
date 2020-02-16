@@ -20,6 +20,9 @@ interface ISubscriptions {
     /// Extends the subscription of an existing VC.
     function extendSubscription(uint256 vcid, uint256 amount, address payer) external;
 
+    /// @dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.
+    function setVcConfigRecord(uint256 vcid, string key, string value) external;
+
     /*
      *   Owner methods
      */

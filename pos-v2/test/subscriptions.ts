@@ -27,7 +27,7 @@ contract('subscriptions-high-level-flows', async () => {
     let r = await subscriber.createVC(firstPayment, {from: appOwner.address});
 
     expect(r).to.have.subscriptionChangedEvent();
-    const firstSubsc = subscriptionChangedEvents(r).pop();
+    const firstSubsc = subscriptionChangedEvents(r).pop()!;
 
     const blockNumber = new BN(r.receipt.blockNumber);
     const blockTimestamp = new BN((await web3.eth.getBlock(blockNumber)).timestamp);
@@ -54,7 +54,7 @@ contract('subscriptions-high-level-flows', async () => {
     expect(r).to.have.paymentEvent({vcid, by: anotherPayer.address, amount: secondPayment, tier: "defaultTier", rate: monthlyRate});
 
     expect(r).to.have.subscriptionChangedEvent();
-    const secondSubsc = subscriptionChangedEvents(r).pop();
+    const secondSubsc = subscriptionChangedEvents(r).pop()!;
 
     const extendedDurationInSeconds = secondPayment.mul(secondsInMonth).div(monthlyRate);
     expectedExpiration = new BN(firstSubsc.expiresAt).add(extendedDurationInSeconds);
@@ -100,6 +100,51 @@ contract('subscriptions-high-level-flows', async () => {
     await owner.assignAndApproveOrbs(amount, subs.address);
     r = await subs.createVC(amount, {from: owner.address});
     expect(r).to.have.a.subscriptionChangedEvent();
-  })
+  });
+
+  it('sets,overrides and clears a vc config field by and only by the vc owner', async () => {
+    const d = await Driver.new();
+    const subs = await d.newSubscriber("tier", 1);
+
+    const owner = d.newParticipant();
+    const amount = 10;
+
+    await owner.assignAndApproveOrbs(amount, subs.address);
+    let r = await subs.createVC(amount, {from: owner.address});
+    expect(r).to.have.a.subscriptionChangedEvent();
+    const vcid = new BN(subscriptionChangedEvents(r)[0].vcid);
+
+    const key = 'key_' + Date.now().toString();
+
+    // set
+    const value = 'value_' + Date.now().toString();
+    r = await d.subscriptions.setVcConfigRecord(vcid, key, value, {from: owner.address});
+    expect(r).to.have.a.vcConfigRecordChangedEvent({
+      vcid,
+      key,
+      value
+    });
+
+    // override
+    const value2 = 'value2_' + Date.now().toString();
+    r = await d.subscriptions.setVcConfigRecord(vcid, key, value2, {from: owner.address});
+    expect(r).to.have.a.vcConfigRecordChangedEvent({
+      vcid,
+      key,
+      value: value2
+    });
+
+    // clear
+    r = await d.subscriptions.setVcConfigRecord(vcid, key, "", {from: owner.address});
+    expect(r).to.have.a.vcConfigRecordChangedEvent({
+      vcid,
+      key,
+      value: ""
+    });
+
+    // reject if set by non owner
+    const nonOwner = d.newParticipant();
+    await expectRejected(d.subscriptions.setVcConfigRecord(vcid, key, value, {from: nonOwner.address}));
+  });
 
 });

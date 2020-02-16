@@ -13,12 +13,12 @@ import {
   unstakedEvents,
   topologyChangedEvents,
   voteOutEvents,
-  votedOutOfCommitteeEvents
+  votedOutOfCommitteeEvents, vcConfigRecordChangedEvents
 } from "./event-parsing";
 import * as _ from "lodash";
 import {
   SubscriptionChangedEvent,
-  PaymentEvent
+  PaymentEvent, VcConfigRecordChangedEvent
 } from "../typings/subscriptions-contract";
 import {
   DelegatedEvent,
@@ -113,6 +113,7 @@ module.exports = function(chai) {
   chai.Assertion.overwriteMethod("topologyChangedEvent", containEvent(topologyChangedEvents));
   chai.Assertion.overwriteMethod("voteOutEvent", containEvent(voteOutEvents));
   chai.Assertion.overwriteMethod("votedOutOfCommitteeEvent", containEvent(votedOutOfCommitteeEvents));
+  chai.Assertion.overwriteMethod("vcConfigRecordChangedEvent", containEvent(vcConfigRecordChangedEvents));
 
   chai.Assertion.overwriteMethod("haveCommittee", containEvent(function(o) {return [o];}));
 };
@@ -129,7 +130,7 @@ declare global {
       unstakedEvent(data?: Partial<UnstakedEvent>): void;
       subscriptionChangedEvent(data?: Partial<SubscriptionChangedEvent>): void;
       paymentEvent(data?: Partial<PaymentEvent>): void;
-
+      vcConfigRecordChangedEvent(data?: Partial<VcConfigRecordChangedEvent>): void;
       voteOutEvent(data?: Partial<VoteOutEvent>): void;
       votedOutOfCommitteeEvent(data?: Partial<VotedOutOfCommitteeEvent>): void;
     }

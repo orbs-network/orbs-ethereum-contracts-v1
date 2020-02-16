@@ -4,6 +4,7 @@ import BN from "bn.js";
 import {Driver} from "./driver";
 import chai from "chai";
 import {feeAddedToBucketEvents} from "./event-parsing";
+import {evmIncreaseTime} from "./helpers";
 
 declare const web3: Web3;
 
@@ -114,7 +115,7 @@ contract('rewards-level-flows', async () => {
     }
 
     await sleep(3000);
-    await new Promise((resolve, reject) => (web3 as any).currentProvider.send({method: "evm_increaseTime", params: [MONTH_IN_SECONDS*4]}, (err, res) => err ? reject(err) : resolve(res) ));
+    await evmIncreaseTime(MONTH_IN_SECONDS*4);
 
     r = await d.rewards.assignRewards();
     const endTime = await txTimestamp(r);

@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import {SubscriptionChangedEvent} from "../typings/subscriptions-contract";
 declare const web3: Web3;
 
 const elections = artifacts.require("Elections");
@@ -20,10 +21,11 @@ export const stakedEvents = (txResult) => parseLogs(txResult, staking, "Staked(a
 export const unstakedEvents = (txResult) => parseLogs(txResult, staking, "Unstaked(address,uint256,uint256)");
 export const delegatedEvents = (txResult) => parseLogs(txResult, elections, "Delegated(address,address)");
 export const totalStakeChangedEvents = (txResult) => parseLogs(txResult, elections, "TotalStakeChanged(address,uint256)");
-export const subscriptionChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "SubscriptionChanged(uint256,uint256,uint256,string)");
+export const subscriptionChangedEvents = (txResult): SubscriptionChangedEvent[] => parseLogs(txResult, subscriptions, "SubscriptionChanged(uint256,uint256,uint256,string)");
 export const paymentEvents = (txResult) => parseLogs(txResult, subscriptions, "Payment(uint256,address,uint256,string,uint256)");
 export const feeAddedToBucketEvents = (txResult) => parseLogs(txResult, rewards, "FeeAddedToBucket(uint256,uint256,uint256)");
 export const rewardAssignedEvents = (txResult) => parseLogs(txResult, rewards, "RewardAssigned(address,uint256,uint256)");
 export const topologyChangedEvents = (txResult) => parseLogs(txResult, elections, "TopologyChanged(address[],bytes4[])");
 export const voteOutEvents = (txResult) => parseLogs(txResult, elections, "VoteOut(address,address)");
 export const votedOutOfCommitteeEvents = (txResult) => parseLogs(txResult, elections, "VotedOutOfCommittee(address)");
+export const vcConfigRecordChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcConfigRecordChanged(uint256,string,string)");

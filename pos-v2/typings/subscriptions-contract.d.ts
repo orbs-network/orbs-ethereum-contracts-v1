@@ -19,6 +19,13 @@ export interface PaymentEvent {
   rate: number | BN;
 }
 
+export interface VcConfigRecordChangedEvent {
+  vcid: number | BN;
+  key: string,
+  value: string
+}
+
 export interface SubscriptionsContract extends ContractInstance, Contract {
   addSubscriber(address,params?: TransactionDetails): Promise<TransactionResponse>;
+  setVcConfigRecord(vcid: number|BN, key: string, value: string, params?: TransactionDetails): Promise<TransactionResponse>;
 }
