@@ -12,6 +12,7 @@ import { ERC20Contract } from "../typings/erc20-contract";
 import { StakingContract } from "../typings/staking-contract";
 import { RewardsContract } from "../typings/rewards-contract";
 import { MonthlySubscriptionPlanContract } from "../typings/monthly-subscription-plan-contract";
+import {ContractRegistryContract} from "../typings/contract-registry-contract";
 declare const web3: Web3;
 
 export const DEFAULT_MINIMUM_STAKE = 100;
@@ -50,6 +51,10 @@ export class Driver {
         return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards);
     }
 
+    static async newContractRegistry(governorAddr: string): Promise<ContractRegistryContract> {
+        return artifacts.require('ContractRegistry').new(governorAddr);
+    }
+
     get contractsOwner() {
         return this.accounts[0];
     }
@@ -80,6 +85,7 @@ export class Driver {
         await delegator.stake(new BN(amount));
         return await delegator.delegate(delegatee);
     }
+
 }
 
 export class Participant {

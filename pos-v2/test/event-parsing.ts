@@ -6,6 +6,7 @@ const elections = artifacts.require("Elections");
 const staking = artifacts.require("StakingContract");
 const subscriptions = artifacts.require("Subscriptions");
 const rewards = artifacts.require("Rewards");
+const contractRegistry = artifacts.require("ContractRegistry");
 
 function parseLogs(txResult, contract, eventSignature) {
     const inputs = contract.abi.find(e => e.name == eventSignature.split('(')[0]).inputs;
@@ -29,3 +30,4 @@ export const topologyChangedEvents = (txResult) => parseLogs(txResult, elections
 export const voteOutEvents = (txResult) => parseLogs(txResult, elections, "VoteOut(address,address)");
 export const votedOutOfCommitteeEvents = (txResult) => parseLogs(txResult, elections, "VotedOutOfCommittee(address)");
 export const vcConfigRecordChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcConfigRecordChanged(uint256,string,string)");
+export const contractAddressUpdatedEvents = (txResult) => parseLogs(txResult, contractRegistry, "ContractAddressUpdated(string,address)");

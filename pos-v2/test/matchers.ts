@@ -13,7 +13,7 @@ import {
   unstakedEvents,
   topologyChangedEvents,
   voteOutEvents,
-  votedOutOfCommitteeEvents, vcConfigRecordChangedEvents
+  votedOutOfCommitteeEvents, vcConfigRecordChangedEvents, contractAddressUpdatedEvents
 } from "./event-parsing";
 import * as _ from "lodash";
 import {
@@ -30,6 +30,7 @@ import {
   VotedOutOfCommitteeEvent
 } from "../typings/elections-contract";
 import { StakedEvent, UnstakedEvent } from "../typings/staking-contract";
+import {ContractAddressUpdatedEvent} from "../typings/contract-registry-contract";
 
 export function isBNArrayEqual(a1: Array<any>, a2: Array<any>): boolean {
   return (
@@ -114,6 +115,7 @@ module.exports = function(chai) {
   chai.Assertion.overwriteMethod("voteOutEvent", containEvent(voteOutEvents));
   chai.Assertion.overwriteMethod("votedOutOfCommitteeEvent", containEvent(votedOutOfCommitteeEvents));
   chai.Assertion.overwriteMethod("vcConfigRecordChangedEvent", containEvent(vcConfigRecordChangedEvents));
+  chai.Assertion.overwriteMethod("contractAddressUpdatedEvent", containEvent(contractAddressUpdatedEvents));
 
   chai.Assertion.overwriteMethod("haveCommittee", containEvent(function(o) {return [o];}));
 };
@@ -133,6 +135,7 @@ declare global {
       vcConfigRecordChangedEvent(data?: Partial<VcConfigRecordChangedEvent>): void;
       voteOutEvent(data?: Partial<VoteOutEvent>): void;
       votedOutOfCommitteeEvent(data?: Partial<VotedOutOfCommitteeEvent>): void;
+      contractAddressUpdatedEvent(data?: Partial<ContractAddressUpdatedEvent>): void;
     }
 
     export interface Assertion {
