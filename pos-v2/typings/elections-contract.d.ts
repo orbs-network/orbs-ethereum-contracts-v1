@@ -9,7 +9,9 @@ export interface ElectionsContract extends Contract {
   delegate( to: string, params?: TransactionDetails): Promise<TransactionResponse>;
   getTopology(): Promise<TransactionResponse>;
   notifyReadyForCommittee( params?: TransactionDetails): Promise<TransactionResponse>;
-  voteOut( address: string, param?: TransactionDetails): Promise<TransactionResponse>;
+  voteOut(address: string, param?: TransactionDetails): Promise<TransactionResponse>;
+  setValidatorOrbsAddress(orbsAddress: string, param?: TransactionDetails): Promise<TransactionResponse>;
+  setValidatorIp(ip: string, param?: TransactionDetails): Promise<TransactionResponse>;
 }
 
 export interface DelegatedEvent {

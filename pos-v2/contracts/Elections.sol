@@ -88,6 +88,27 @@ contract Elections is IElections, IStakingListener, Ownable {
 		_placeInTopology(msg.sender);
 	}
 
+	function setValidatorIp(bytes4 ip) external {
+		require(registeredValidators[msg.sender].orbsAddress != address(0), "Validator is not registered");
+		registeredValidators[msg.sender].ip = ip;
+		(, bool isInTopology) = _findInTopology(msg.sender);
+		if (isInTopology) {
+			_notifyTopologyChanged();
+		}
+	}
+
+	function setValidatorOrbsAddress(address orbsAddress) external {
+		require(registeredValidators[msg.sender].orbsAddress != address(0), "Validator is not registered");
+		registeredValidators[msg.sender].orbsAddress = orbsAddress;
+		(uint pos, bool isInTopology) = _findInTopology(msg.sender);
+		if (isInTopology) {
+			_notifyTopologyChanged();
+			if (pos < committeeSize) {
+				_notifyCommitteeChanged();
+			}
+		}
+	}
+
 	function notifyReadyForCommittee() external {
 		address sender = getMainAddrFromOrbsAddr(msg.sender);
 		readyValidators[sender] = true;

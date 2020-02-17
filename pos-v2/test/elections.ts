@@ -572,5 +572,37 @@ contract('elections-high-level-flows', async () => {
         expect(r).to.not.have.a.topologyChangedEvent();
     });
 
+    it("updates validator metadata only for registered validators", async () => {
+        const d = await Driver.new();
+
+        const p = d.newParticipant();
+        await p.registerAsValidator();
+        let r = await p.stake(DEFAULT_MINIMUM_STAKE);
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [p.orbsAddress]
+        });
+
+        const newIp = "0x11223344";
+        r = await d.elections.setValidatorIp(newIp, {from: p.address});
+        expect(r).to.have.a.topologyChangedEvent({
+            ips: [newIp]
+        });
+
+        await p.notifyReadyForCommittee();
+
+        const newAddr = d.newParticipant().address;
+        r = await d.elections.setValidatorOrbsAddress(newAddr, {from: p.address});
+        expect(r).to.have.a.topologyChangedEvent({
+            ips: [newIp],
+            orbsAddrs: [newAddr]
+        });
+        expect(r).to.have.a.committeeChangedEvent({
+            orbsAddrs: [newAddr]
+        });
+
+        const nonRegistered = d.newParticipant();
+        await expectRejected(d.elections.setValidatorIp(newIp, {from: nonRegistered.address}));
+        await expectRejected(d.elections.setValidatorOrbsAddress(newAddr, {from: nonRegistered.address}));
+    })
 
 });
