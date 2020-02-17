@@ -8,6 +8,7 @@ import "./interfaces/IStakingListener.sol";
 import "./interfaces/ICommitteeListener.sol";
 import "./interfaces/IElections.sol";
 import "./interfaces/IContractRegistry.sol";
+import "./interfaces/IStakingContract.sol";
 
 contract Elections is IElections, IStakingListener, Ownable {
 	using SafeMath for uint256;
@@ -187,6 +188,10 @@ contract Elections is IElections, IStakingListener, Ownable {
 	}
 
 	function unstaked(address staker, uint256 amount) external onlyStakingContract {
+		return _unstaked(staker, amount);
+	}
+
+	function _unstaked(address staker, uint256 amount) private {
 		address delegatee = delegations[staker];
 		if (delegatee == address(0)) {
 			delegatee = staker;
@@ -195,6 +200,21 @@ contract Elections is IElections, IStakingListener, Ownable {
 		_updateTotalStake(delegatee, uncappedStakes[delegatee].sub(amount));
 
 		_placeInTopology(delegatee);
+	}
+
+	function refreshStakes(address[] addrs) external {
+		IStakingContract staking = IStakingContract(contractRegistry.get("staking"));
+
+		for (uint i = 0; i < addrs.length; i++) {
+			address staker = addrs[i];
+			uint256 newOwnStake = staking.getStakeBalanceOf(staker);
+			uint256 oldOwnStake = ownStakes[staker];
+			if (newOwnStake > oldOwnStake) {
+				_staked(staker, newOwnStake - oldOwnStake);
+			} else if (oldOwnStake > newOwnStake) {
+				_unstaked(staker, oldOwnStake - newOwnStake);
+			}
+		}
 	}
 
 	function getMainAddrFromOrbsAddr(address orbsAddr) private view returns (address) {

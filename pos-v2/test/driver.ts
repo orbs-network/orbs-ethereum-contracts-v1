@@ -44,7 +44,7 @@ export class Driver {
         const erc20 = await artifacts.require('TestingERC20').new();
         const rewards = await artifacts.require('Rewards').new(contractRegistry.address, erc20.address, externalToken.address, accounts[0]);
         const elections = await artifacts.require("Elections").new(contractRegistry.address, maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout);
-        const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, elections.address /* IStakingListener */, erc20.address /* _token */);
+        const staking = await Driver.newStakingContract(elections.address, erc20.address);
         const subscriptions = await artifacts.require('Subscriptions').new(contractRegistry.address, erc20.address);
 
         await contractRegistry.set("staking", staking.address);
@@ -57,6 +57,10 @@ export class Driver {
 
     static async newContractRegistry(governorAddr: string): Promise<ContractRegistryContract> {
         return artifacts.require('ContractRegistry').new(governorAddr);
+    }
+
+    static async newStakingContract(electionsAddr: string, erc20Addr: string): Promise<StakingContract> {
+        return artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, electionsAddr /* IStakingListener */, erc20Addr /* _token */);
     }
 
     get contractsOwner() {
@@ -107,9 +111,10 @@ export class Participant {
         this.elections = driver.elections;
     }
 
-    async stake(amount: number|BN) {
-        await this.assignAndApproveOrbs(amount, this.staking.address);
-        return this.staking.stake(amount, {from: this.address});
+    async stake(amount: number|BN, staking?: StakingContract) {
+        staking = staking || this.staking;
+        await this.assignAndApproveOrbs(amount, staking.address);
+        return staking.stake(amount, {from: this.address});
     }
 
     private async assignAndApprove(amount: number|BN, to: string, token: ERC20Contract) {

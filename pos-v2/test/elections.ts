@@ -18,7 +18,7 @@ chai.use(require('./matchers'));
 const expect = chai.expect;
 
 import {CommitteeProvider} from './committee-provider';
-import {evmIncreaseTime} from "./helpers";
+import {bn, evmIncreaseTime} from "./helpers";
 
 
 contract('elections-high-level-flows', async () => {
@@ -603,6 +603,46 @@ contract('elections-high-level-flows', async () => {
         const nonRegistered = d.newParticipant();
         await expectRejected(d.elections.setValidatorIp(newIp, {from: nonRegistered.address}));
         await expectRejected(d.elections.setValidatorOrbsAddress(newAddr, {from: nonRegistered.address}));
+    });
+
+    it("performs a batch refresh of stakes", async () => {
+        const d = await Driver.new();
+
+        const v1 = d.newParticipant();
+        await v1.registerAsValidator();
+        await v1.notifyReadyForCommittee();
+        await v1.stake(DEFAULT_MINIMUM_STAKE * 2);
+
+        const v2 = d.newParticipant();
+        await v2.registerAsValidator();
+        await v2.notifyReadyForCommittee();
+        await v2.stake(DEFAULT_MINIMUM_STAKE);
+
+        const delegator = d.newParticipant();
+        await delegator.stake(DEFAULT_MINIMUM_STAKE * 2);
+        let r = await delegator.delegate(v2);
+
+        expect(r).to.have.a.committeeChangedEvent({
+            orbsAddrs: [v2, v1].map(v => v.orbsAddress),
+            stakes: bn([DEFAULT_MINIMUM_STAKE * 3, DEFAULT_MINIMUM_STAKE * 2])
+        });
+
+        // Create a new staking contract and stake different amounts
+        const newStaking = await Driver.newStakingContract(d.elections.address, d.erc20.address);
+        await d.contractRegistry.set("staking", newStaking.address);
+
+        await v1.stake(DEFAULT_MINIMUM_STAKE*5, newStaking);
+        await v2.stake(DEFAULT_MINIMUM_STAKE*3, newStaking);
+        await delegator.stake(DEFAULT_MINIMUM_STAKE, newStaking);
+
+        // refresh the stakes
+        const anonymous = d.newParticipant();
+        r = await d.elections.refreshStakes([v1.address, v2.address, delegator.address],{from: anonymous.address});
+        expect(r).to.have.a.committeeChangedEvent({
+            orbsAddrs: [v1, v2].map(v => v.orbsAddress),
+            stakes: bn([DEFAULT_MINIMUM_STAKE*5, DEFAULT_MINIMUM_STAKE*4])
+        })
+
     })
 
 });

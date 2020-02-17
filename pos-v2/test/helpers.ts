@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import BN from "bn.js";
 
 declare const web3: Web3;
 
@@ -15,3 +16,10 @@ export const evmIncreaseTime = async (seconds: number) => new Promise(
             (err, res) => err ? reject(err) : resolve(res)
         )
 );
+
+export function bn(x: string|BN|number|Array<string|BN|number>) {
+    if (Array.isArray(x)) {
+        return x.map(n => bn(n))
+    }
+    return new BN(x);
+}

@@ -25,6 +25,9 @@ interface IElections {
 	/// @dev Called by a validator as part of the automatic vote-out flow
 	function voteOut(address addr) external;
 
+	/// @dev Refreshes the staking information (and the corresponding rank in committee and topology) for the given addresses.
+	function refreshStakes(address[] addrs) external;
+
 	/*
 	 *   Methods restricted to other Orbs contracts
 	 */
