@@ -7,9 +7,12 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./interfaces/IStakingListener.sol";
 import "./interfaces/ICommitteeListener.sol";
 import "./interfaces/IElections.sol";
+import "./interfaces/IContractRegistry.sol";
 
 contract Elections is IElections, IStakingListener, Ownable {
 	using SafeMath for uint256;
+
+	IContractRegistry contractRegistry;
 
 	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
@@ -39,9 +42,6 @@ contract Elections is IElections, IStakingListener, Ownable {
 
 	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
-	ICommitteeListener committeeListener;
-	address stakingContract;
-
 	uint minimumStake;
 	uint maxCommitteeSize;
 	uint maxTopologySize;
@@ -50,35 +50,30 @@ contract Elections is IElections, IStakingListener, Ownable {
 	uint256 voteOutTimeoutSeconds;
 
 	modifier onlyStakingContract() {
-		require(msg.sender == stakingContract, "caller is not the staking contract");
+		require(msg.sender == contractRegistry.get("staking"), "caller is not the staking contract");
 
 		_;
 	}
 
-	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds, ICommitteeListener _committeeListener) public {
+	constructor(IContractRegistry _contractRegistry, uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds) public {
 		require(_maxCommitteeSize > 0, "maxCommitteeSize must be larger than 0");
 		require(_maxTopologySize > _maxCommitteeSize, "topology must be larger than a full committee");
-		require(_committeeListener != address(0), "committee listener should not be 0");
 		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
 		require(_voteOutPercentageThreshold >= 0 && _voteOutPercentageThreshold <= 100, "voteOutPercentageThreshold must be between 0 and 100");
+		require(_contractRegistry != address(0), "contractRegistry must not be 0");
 
 		minimumStake = _minimumStake;
 		maxCommitteeSize = _maxCommitteeSize;
-		committeeListener = _committeeListener;
 		maxTopologySize = _maxTopologySize;
 	    maxDelegationRatio = _maxDelegationRatio;
 		voteOutPercentageThreshold = _voteOutPercentageThreshold;
 		voteOutTimeoutSeconds = _voteOutTimeoutSeconds;
+		contractRegistry = _contractRegistry;
 	}
 
 	function getTopology() external view returns (address[]) {
 		return topology;
-	}
-
-	function setStakingContract(address addr) external onlyOwner {
-		require(addr != address(0), "Got staking contract address 0");
-		stakingContract = addr;
 	}
 
 	function registerValidator(bytes4 _ip, address _orbsAddress) external  {
@@ -251,6 +246,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 			committeeOrbsAddresses[i] = val.orbsAddress;
 			committeeAddresses[i] = topology[i];
 		}
+		ICommitteeListener committeeListener = ICommitteeListener(contractRegistry.get("rewards"));
 		committeeListener.committeeChanged(committeeAddresses, committeeStakes);
 		emit CommitteeChanged(committeeAddresses, committeeOrbsAddresses, committeeStakes);
 	}

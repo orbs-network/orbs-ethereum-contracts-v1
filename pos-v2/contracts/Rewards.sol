@@ -7,9 +7,12 @@ import "openzeppelin-solidity/contracts/math/Math.sol";
 import "./interfaces/IStakingContract.sol";
 import "./interfaces/ICommitteeListener.sol";
 import "./interfaces/IRewards.sol";
+import "./interfaces/IContractRegistry.sol";
 
 contract Rewards is IRewards, ICommitteeListener, Ownable {
     using SafeMath for uint256;
+
+    IContractRegistry contractRegistry;
 
     event RewardAssigned(address assignee, uint256 amount, uint256 balance);
     event FeeAddedToBucket(uint256 bucketId, uint256 added, uint256 total);
@@ -27,10 +30,8 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
     mapping(address => uint256) orbsBalance;
     mapping(address => uint256) externalTokenBalance;
 
-    IStakingContract stakingContract;
     IERC20 erc20;
     IERC20 externalToken;
-    address committeeProvider;
     address rewardsGovernor;
 
     struct CommitteeMember {
@@ -45,7 +46,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
     CommitteeMember[] currentCommittee;
 
     modifier onlyCommitteeProvider() {
-        require(msg.sender == committeeProvider, "caller is not the committee provider");
+        require(msg.sender == contractRegistry.get("elections"), "caller is not the committee provider");
 
         _;
     }
@@ -56,14 +57,16 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         _;
     }
 
-    constructor(IERC20 _erc20, IERC20 _externalToken, address _rewardsGovernor) public {
+    constructor(IContractRegistry _contractRegistry, IERC20 _erc20, IERC20 _externalToken, address _rewardsGovernor) public {
         require(_erc20 != address(0), "erc20 must not be 0");
         require(_externalToken != address(0), "externalToken must not be 0");
+        require(_contractRegistry != address(0), "contractRegistry must not be 0");
 
         erc20 = _erc20;
         externalToken = _externalToken;
         lastPayedAt = now;
         rewardsGovernor = _rewardsGovernor;
+        contractRegistry = _contractRegistry;
     }
 
     function setFixedPoolMonthlyRate(uint256 rate) external onlyRewardsGovernor {
@@ -96,15 +99,6 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
 
     function getLastPayedAt() external view returns (uint256) {
         return lastPayedAt;
-    }
-
-    function setCommitteeProvider(address _committeeProvider) external onlyOwner {
-        committeeProvider = _committeeProvider;
-    }
-
-    function setStakingContract(IStakingContract _stakingContract) external onlyOwner {
-        require(_stakingContract != address(0), "staking contract must not be 0");
-        stakingContract = _stakingContract;
     }
 
     function committeeChanged(address[] addrs, uint256[] stakes) external onlyCommitteeProvider {
@@ -254,6 +248,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         require(totalAmount <= orbsBalance[msg.sender], "not enough balance for this distribution");
         orbsBalance[msg.sender] = orbsBalance[msg.sender].sub(totalAmount);
 
+        IStakingContract stakingContract = IStakingContract(contractRegistry.get("staking"));
         erc20.approve(stakingContract, totalAmount);
         stakingContract.distributeRewards(totalAmount, to, amounts);
     }

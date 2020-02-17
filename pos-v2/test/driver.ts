@@ -32,23 +32,27 @@ export class Driver {
         public externalToken: ERC20Contract,
         public staking: StakingContract,
         public subscriptions: SubscriptionsContract,
-        public rewards: RewardsContract
+        public rewards: RewardsContract,
+        public contractRegistry: ContractRegistryContract
     ) {}
 
     static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT) {
         const accounts = await web3.eth.getAccounts();
-        const erc20 = await artifacts.require('TestingERC20').new();
+        const contractRegistry = await artifacts.require("ContractRegistry").new(accounts[0]);
+
         const externalToken = await artifacts.require('TestingERC20').new();
-        const rewards = await artifacts.require('Rewards').new(erc20.address, externalToken.address, accounts[0]);
-        const subscriptions = await artifacts.require('Subscriptions').new(rewards.address, erc20.address);
-        const elections = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout, rewards.address /* committee listener */);
+        const erc20 = await artifacts.require('TestingERC20').new();
+        const rewards = await artifacts.require('Rewards').new(contractRegistry.address, erc20.address, externalToken.address, accounts[0]);
+        const elections = await artifacts.require("Elections").new(contractRegistry.address, maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout);
         const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, elections.address /* IStakingListener */, erc20.address /* _token */);
+        const subscriptions = await artifacts.require('Subscriptions').new(contractRegistry.address, erc20.address);
 
-        await rewards.setCommitteeProvider(elections.address);
-        await rewards.setStakingContract(staking.address);
-        await elections.setStakingContract(staking.address);
+        await contractRegistry.set("staking", staking.address);
+        await contractRegistry.set("rewards", rewards.address);
+        await contractRegistry.set("elections", elections.address);
+        await contractRegistry.set("subscriptions", subscriptions.address);
 
-        return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards);
+        return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, contractRegistry);
     }
 
     static async newContractRegistry(governorAddr: string): Promise<ContractRegistryContract> {
@@ -68,7 +72,7 @@ export class Driver {
     }
 
     async newSubscriber(tier: string, monthlyRate:number|BN): Promise<MonthlySubscriptionPlanContract> {
-        const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.subscriptions.address, this.erc20.address, tier, monthlyRate);
+        const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.contractRegistry.address, this.erc20.address, tier, monthlyRate);
         await this.subscriptions.addSubscriber(subscriber.address);
         return subscriber;
     }

@@ -28,7 +28,7 @@ interface IElections {
 	/*
 	 *   Methods restricted to other Orbs contracts
 	 */
-	
+
 	/// @dev Called by: staking contract
 	/// Notifies a batch of stake updates
 	function distributedStake(address[] stakeOwners, uint256[] amounts) external /* onlyStakingContract */;
@@ -40,12 +40,6 @@ interface IElections {
 	/// @dev Called by: staking contract
 	/// Notifies a decrease of stake
 	function unstaked(address staker, uint256 amount) external /* onlyStakingContract */;
-
-	/*
-	 *   Owner methods
-	 */
-
-	function setStakingContract(address addr) external /* onlyOwner */;
 
 	/*
 	 *   Test helpers

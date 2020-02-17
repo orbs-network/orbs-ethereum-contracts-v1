@@ -57,12 +57,4 @@ interface IRewards {
     /// @dev Assigns rewards and sets a new monthly rate for the pro-rata pool.
     function setProRataPoolMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;
 
-    /*
-     *   Owner methods
-     */
-
-    function setCommitteeProvider(address _committeeProvider) external /* onlyOwner */;
-
-    function setStakingContract(IStakingContract _stakingContract) external /* onlyOwner */;
-
 }
