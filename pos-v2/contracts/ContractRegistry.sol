@@ -20,11 +20,14 @@ contract ContractRegistry is IContractRegistry {
 	}
 
 	function set(string contractName, address addr) external onlyGovernor {
+		require(addr != address(0), "address must not be zero");
 		contracts[contractName] = addr;
 		emit ContractAddressUpdated(contractName, addr);
 	}
 
 	function get(string contractName) external view returns (address) {
-		return contracts[contractName];
+		address addr = contracts[contractName];
+		require(addr != address(0), "the contract name is not registered");
+		return addr;
 	}
 }
