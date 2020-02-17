@@ -57,15 +57,18 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         _;
     }
 
-    constructor(IContractRegistry _contractRegistry, IERC20 _erc20, IERC20 _externalToken, address _rewardsGovernor) public {
+    constructor(IERC20 _erc20, IERC20 _externalToken, address _rewardsGovernor) public {
         require(_erc20 != address(0), "erc20 must not be 0");
         require(_externalToken != address(0), "externalToken must not be 0");
-        require(_contractRegistry != address(0), "contractRegistry must not be 0");
 
         erc20 = _erc20;
         externalToken = _externalToken;
         lastPayedAt = now;
         rewardsGovernor = _rewardsGovernor;
+    }
+
+    function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
+        require(_contractRegistry != address(0), "contractRegistry must not be 0");
         contractRegistry = _contractRegistry;
     }
 

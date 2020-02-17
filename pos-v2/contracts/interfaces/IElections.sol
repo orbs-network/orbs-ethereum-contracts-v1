@@ -1,4 +1,5 @@
 pragma solidity 0.4.26;
+import "./IContractRegistry.sol";
 
 /// @title Elections contract interface
 interface IElections {
@@ -43,6 +44,12 @@ interface IElections {
 	/// @dev Called by: staking contract
 	/// Notifies a decrease of stake
 	function unstaked(address staker, uint256 amount) external /* onlyStakingContract */;
+
+	/*
+	 * Governance
+	 */
+	/// @dev Updates the address of the contract registry
+	function setContractRegistry(IContractRegistry _contractRegistry) external /* onlyOwner */;
 
 	/*
 	 *   Test helpers

@@ -75,7 +75,7 @@ contract('subscriptions-high-level-flows', async () => {
 
   it('registers subsciber only by owner', async () => {
     const d = await Driver.new();
-    const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(d.subscriptions.address, d.erc20.address, 'tier', 1);
+    const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(d.erc20.address, 'tier', 1);
 
     await expectRejected(d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsNonOwner}), "Non-owner should not be able to add a subscriber");
     await d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsOwner});

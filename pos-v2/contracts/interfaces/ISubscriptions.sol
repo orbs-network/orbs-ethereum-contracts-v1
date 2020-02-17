@@ -24,10 +24,13 @@ interface ISubscriptions {
     function setVcConfigRecord(uint256 vcid, string key, string value) external;
 
     /*
-     *   Owner methods
+     *   Governance methods
      */
 
     /// @dev Called by the owner to authorize a subscriber (plan)
     function addSubscriber(address addr) external /* onlyOwner */;
+
+    /// @dev Updates the address of the contract registry
+    function setContractRegistry(IContractRegistry _contractRegistry) external /* onlyOwner */;
 
 }

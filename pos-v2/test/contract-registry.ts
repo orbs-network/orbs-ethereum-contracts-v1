@@ -57,4 +57,22 @@ contract('contract-registry-high-level-flows', async () => {
 
   });
 
+  it('allows only the contract owner to update the address of the contract registry', async () => { // TODO - consider splitting and moving this
+    const d = await Driver.new();
+    const subscriber = await d.newSubscriber("tier", 1);
+
+    const newAddr = d.newParticipant().address;
+
+    const nonOwner = d.newParticipant();
+    await expectRejected(d.elections.setContractRegistry(newAddr, {from: nonOwner.address}));
+    await expectRejected(d.rewards.setContractRegistry(newAddr, {from: nonOwner.address}));
+    await expectRejected(d.subscriptions.setContractRegistry(newAddr, {from: nonOwner.address}));
+    await expectRejected(subscriber.setContractRegistry(newAddr, {from: nonOwner.address}));
+
+    await d.elections.setContractRegistry(newAddr);
+    await d.rewards.setContractRegistry(newAddr);
+    await d.subscriptions.setContractRegistry(newAddr);
+    await subscriber.setContractRegistry(newAddr);
+  });
+
 });

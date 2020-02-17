@@ -7,7 +7,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./Subscriptions.sol";
 import "./ContractRegistry.sol";
 
-contract MonthlySubscriptionPlan {
+contract MonthlySubscriptionPlan is Ownable {
 
     IContractRegistry contractRegistry;
 
@@ -16,13 +16,16 @@ contract MonthlySubscriptionPlan {
 
     IERC20 erc20;
 
-    constructor(IContractRegistry _contractRegistry, IERC20 _erc20, string _tier, uint256 _monthlyRate) public {
+    constructor(IERC20 _erc20, string _tier, uint256 _monthlyRate) public {
         require(bytes(_tier).length > 0, "must specify a valid tier label");
-        require(_contractRegistry != address(0), "contractRegistry must not be zero");
 
         tier = _tier;
         erc20 = _erc20;
         monthlyRate = _monthlyRate;
+    }
+
+    function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
+        require(_contractRegistry != address(0), "contractRegistry must not be 0");
         contractRegistry = _contractRegistry;
     }
 

@@ -13,4 +13,5 @@ export interface RewardsContract extends Contract {
   topUpFixedPool(amount: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
   topUpProRataPool(amount: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
   withdrawExternalTokenRewards( params?: TransactionDetails): Promise<TransactionResponse>;
+  setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
 }

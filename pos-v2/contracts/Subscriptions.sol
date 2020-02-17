@@ -31,11 +31,15 @@ contract Subscriptions is ISubscriptions, Ownable{
 
     IERC20 erc20;
 
-    constructor (IContractRegistry _contractRegistry, IERC20 _erc20) public {
-        require(_contractRegistry != address(0), "contractRegistry must not be 0");
+    constructor (IERC20 _erc20) public {
+        require(_erc20 != address(0), "erc20 must not be 0");
 
         nextVcid = 1000000;
         erc20 = _erc20;
+    }
+
+    function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
+        require(_contractRegistry != address(0), "contractRegistry must not be 0");
         contractRegistry = _contractRegistry;
     }
 

@@ -1,6 +1,7 @@
 pragma solidity 0.4.26;
 
 import "./IStakingContract.sol";
+import "./IContractRegistry.sol";
 
 /// @title Rewards contract interface
 interface IRewards {
@@ -56,5 +57,13 @@ interface IRewards {
 
     /// @dev Assigns rewards and sets a new monthly rate for the pro-rata pool.
     function setProRataPoolMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;
+
+    /*
+     * General governance
+     */
+
+    /// @dev Updates the address of the contract registry
+    function setContractRegistry(IContractRegistry _contractRegistry) external /* onlyOwner */;
+
 
 }

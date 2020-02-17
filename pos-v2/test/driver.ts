@@ -40,17 +40,21 @@ export class Driver {
         const accounts = await web3.eth.getAccounts();
         const contractRegistry = await artifacts.require("ContractRegistry").new(accounts[0]);
 
-        const externalToken = await artifacts.require('TestingERC20').new();
-        const erc20 = await artifacts.require('TestingERC20').new();
-        const rewards = await artifacts.require('Rewards').new(contractRegistry.address, erc20.address, externalToken.address, accounts[0]);
-        const elections = await artifacts.require("Elections").new(contractRegistry.address, maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout);
-        const staking = await Driver.newStakingContract(elections.address, erc20.address);
-        const subscriptions = await artifacts.require('Subscriptions').new(contractRegistry.address, erc20.address);
+        const externalToken: ERC20Contract = await artifacts.require('TestingERC20').new();
+        const erc20: ERC20Contract = await artifacts.require('TestingERC20').new();
+        const rewards: RewardsContract = await artifacts.require('Rewards').new(erc20.address, externalToken.address, accounts[0]);
+        const elections: ElectionsContract = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout);
+        const staking: StakingContract = await Driver.newStakingContract(elections.address, erc20.address);
+        const subscriptions: SubscriptionsContract = await artifacts.require('Subscriptions').new(erc20.address);
 
         await contractRegistry.set("staking", staking.address);
         await contractRegistry.set("rewards", rewards.address);
         await contractRegistry.set("elections", elections.address);
         await contractRegistry.set("subscriptions", subscriptions.address);
+
+        await elections.setContractRegistry(contractRegistry.address);
+        await rewards.setContractRegistry(contractRegistry.address);
+        await subscriptions.setContractRegistry(contractRegistry.address);
 
         return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, contractRegistry);
     }
@@ -76,7 +80,8 @@ export class Driver {
     }
 
     async newSubscriber(tier: string, monthlyRate:number|BN): Promise<MonthlySubscriptionPlanContract> {
-        const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(this.contractRegistry.address, this.erc20.address, tier, monthlyRate);
+        const subscriber: MonthlySubscriptionPlanContract = await artifacts.require('MonthlySubscriptionPlan').new(this.erc20.address, tier, monthlyRate);
+        await subscriber.setContractRegistry(this.contractRegistry.address);
         await this.subscriptions.addSubscriber(subscriber.address);
         return subscriber;
     }

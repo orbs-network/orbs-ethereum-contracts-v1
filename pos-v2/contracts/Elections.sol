@@ -56,13 +56,12 @@ contract Elections is IElections, IStakingListener, Ownable {
 		_;
 	}
 
-	constructor(IContractRegistry _contractRegistry, uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds) public {
+	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds) public {
 		require(_maxCommitteeSize > 0, "maxCommitteeSize must be larger than 0");
 		require(_maxTopologySize > _maxCommitteeSize, "topology must be larger than a full committee");
 		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
 		require(_voteOutPercentageThreshold >= 0 && _voteOutPercentageThreshold <= 100, "voteOutPercentageThreshold must be between 0 and 100");
-		require(_contractRegistry != address(0), "contractRegistry must not be 0");
 
 		minimumStake = _minimumStake;
 		maxCommitteeSize = _maxCommitteeSize;
@@ -70,6 +69,10 @@ contract Elections is IElections, IStakingListener, Ownable {
 	    maxDelegationRatio = _maxDelegationRatio;
 		voteOutPercentageThreshold = _voteOutPercentageThreshold;
 		voteOutTimeoutSeconds = _voteOutTimeoutSeconds;
+	}
+
+	function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
+		require(_contractRegistry != address(0), "contractRegistry must not be 0");
 		contractRegistry = _contractRegistry;
 	}
 

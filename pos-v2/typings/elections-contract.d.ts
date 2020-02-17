@@ -13,6 +13,7 @@ export interface ElectionsContract extends Contract {
   setValidatorOrbsAddress(orbsAddress: string, params?: TransactionDetails): Promise<TransactionResponse>;
   setValidatorIp(ip: string, params?: TransactionDetails): Promise<TransactionResponse>;
   refreshStakes(addrs: string[], params?: TransactionDetails): Promise<TransactionResponse>;
+  setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
 }
 
 export interface DelegatedEvent {
