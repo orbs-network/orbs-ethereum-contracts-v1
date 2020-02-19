@@ -212,8 +212,6 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
         bool isBanned = bannedValidators[addr];
         bool shouldBan = allStake > 0 && banningStake.mul(100).div(allStake) >= banningPercentageThreshold;
 
-        emit Debug(allStake, banningStake);
-
         if (isBanned != shouldBan) {
             bannedValidators[addr] = shouldBan;
             _placeInTopology(addr);
