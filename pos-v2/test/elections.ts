@@ -4,6 +4,7 @@ declare const web3: Web3;
 
 import BN from "bn.js";
 import {
+    DEFAULT_BANNING_THRESHOLD,
     DEFAULT_MINIMUM_STAKE, DEFAULT_TOPOLOGY_SIZE,
     DEFAULT_VOTE_OUT_THRESHOLD, DEFAULT_VOTE_OUT_TIMEOUT,
     Driver,
@@ -643,6 +644,140 @@ contract('elections-high-level-flows', async () => {
             stakes: bn([DEFAULT_MINIMUM_STAKE*5, DEFAULT_MINIMUM_STAKE*4])
         })
 
-    })
+    });
+
+    it("allows enough stake to ban and unban a member from topology", async () => {
+        assert(DEFAULT_BANNING_THRESHOLD < 98); // so each committee member will hold a positive stake
+        assert(Math.floor(DEFAULT_BANNING_THRESHOLD / 2) >= 98 - DEFAULT_BANNING_THRESHOLD); // so the committee list will be ordered by stake
+
+        const d = await Driver.new();
+
+        const stakesPercentage = [
+            Math.ceil(DEFAULT_BANNING_THRESHOLD / 2),
+            Math.floor(DEFAULT_BANNING_THRESHOLD / 2),
+            98 - DEFAULT_BANNING_THRESHOLD,
+            1,
+            1
+        ];
+        const thresholdCrossingIndex = 1;
+        const stakeHolders: Participant[] = [];
+        for (const p of stakesPercentage) {
+            const v = d.newParticipant();
+            await v.stake(DEFAULT_MINIMUM_STAKE * p);
+            stakeHolders.push(v);
+        }
+
+        const bannedValidator = stakeHolders[stakeHolders.length - 1];
+        let r = await bannedValidator.registerAsValidator();
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+
+        for (let i = 0; i < thresholdCrossingIndex; i++) {
+            const p = stakeHolders[i];
+            r = await d.elections.voteForBanning(bannedValidator.address, {from: p.address});
+            expect(r).to.have.a.banningVoteEvent({
+                voter: p.address,
+                against: bannedValidator.address
+            });
+            expect(r).to.not.have.a.topologyChangedEvent();
+        }
+
+        r = await d.elections.voteForBanning(bannedValidator.address, {from: stakeHolders[thresholdCrossingIndex].address}); // threshold is crossed
+        expect(r).to.have.a.banningVoteEvent({
+            voter: stakeHolders[thresholdCrossingIndex].address,
+            against: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: []
+        });
+
+        r = await d.elections.unvoteForBanning(bannedValidator.address, {from: stakeHolders[thresholdCrossingIndex].address}); // threshold is uncrossed
+        expect(r).to.have.a.banningUnvoteEvent({
+            voter: stakeHolders[thresholdCrossingIndex].address,
+            against: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        })
+
+    });
+
+    it("allows anyone to refresh a banning vote of another staker to reflect current stake", async () => {
+        assert(DEFAULT_BANNING_THRESHOLD < 98); // so each committee member will hold a positive stake
+        assert(Math.floor(DEFAULT_BANNING_THRESHOLD / 2) >= 98 - DEFAULT_BANNING_THRESHOLD); // so the committee list will be ordered by stake
+
+        const d = await Driver.new();
+
+        const stakesPercentage = [
+            DEFAULT_BANNING_THRESHOLD,
+            100 - DEFAULT_BANNING_THRESHOLD - 1,
+            1
+        ];
+
+        const stakeHolders: Participant[] = [];
+        for (const p of stakesPercentage) {
+            const v = d.newParticipant();
+            await v.stake(DEFAULT_MINIMUM_STAKE * p);
+            stakeHolders.push(v);
+        }
+
+        const bannedValidator = stakeHolders[stakeHolders.length - 1];
+        let r = await bannedValidator.registerAsValidator();
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+
+        r = await d.elections.voteForBanning(bannedValidator.address, {from: stakeHolders[0].address}); // threshold is crossed
+        expect(r).to.have.a.banningVoteEvent({
+            voter: stakeHolders[0].address,
+            against: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: []
+        });
+
+        r = await stakeHolders[0].unstake(DEFAULT_MINIMUM_STAKE); // threshold is now uncrossed, but banning mechanism is not yet aware
+        expect(r).to.not.have.a.topologyChangedEvent();
+
+        const anonymous = d.newParticipant();
+        r = await d.elections.refreshBanningVote(stakeHolders[0].address, bannedValidator.address, {from: anonymous.address}); // vote is refreshed to reflect lowered stake, validator should be unbanned
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+
+    });
+
+    it("does not cast a banning vote by refreshBanningVote", async () => {
+        assert(DEFAULT_BANNING_THRESHOLD < 98); // so each committee member will hold a positive stake
+        assert(Math.floor(DEFAULT_BANNING_THRESHOLD / 2) >= 98 - DEFAULT_BANNING_THRESHOLD); // so the committee list will be ordered by stake
+
+        const d = await Driver.new();
+
+        const stakesPercentage = [
+            DEFAULT_BANNING_THRESHOLD,
+            100 - DEFAULT_BANNING_THRESHOLD - 1,
+            1
+        ];
+
+        const stakeHolders: Participant[] = [];
+        for (const p of stakesPercentage) {
+            const v = d.newParticipant();
+            await v.stake(DEFAULT_MINIMUM_STAKE * p);
+            stakeHolders.push(v);
+        }
+
+        const bannedValidator = stakeHolders[stakeHolders.length - 1];
+        let r = await bannedValidator.registerAsValidator();
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+
+        const anonymous = d.newParticipant();
+
+        // vote was not cast initially, so refreshing it should not caused a ban
+        r = await d.elections.refreshBanningVote(stakeHolders[0].address, bannedValidator.address, {from: anonymous.address});
+        expect(r).to.not.have.a.topologyChangedEvent();
+    });
 
 });

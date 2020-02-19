@@ -29,6 +29,15 @@ interface IElections {
 	/// @dev Refreshes the staking information (and the corresponding rank in committee and topology) for the given addresses.
 	function refreshStakes(address[] addrs) external;
 
+	/// @dev casts a banning vote by the sender to the given address
+	function voteForBanning(address against) external;
+
+	/// @dev uncasts a banning vote by the sender to the given address
+	function unvoteForBanning(address against) external;
+
+	/// @dev refreshes a banning vote by the given voter to reflect stake changes that occured since the actual vote. Can be called by anyone.
+	function refreshBanningVote(address voter, address against) external;
+
 	/*
 	 *   Methods restricted to other Orbs contracts
 	 */

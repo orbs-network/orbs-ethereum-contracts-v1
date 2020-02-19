@@ -31,3 +31,5 @@ export const voteOutEvents = (txResult) => parseLogs(txResult, elections, "VoteO
 export const votedOutOfCommitteeEvents = (txResult) => parseLogs(txResult, elections, "VotedOutOfCommittee(address)");
 export const vcConfigRecordChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcConfigRecordChanged(uint256,string,string)");
 export const contractAddressUpdatedEvents = (txResult) => parseLogs(txResult, contractRegistry, "ContractAddressUpdated(string,address)");
+export const banningVoteEvents = (txResult) => parseLogs(txResult, elections, "BanningVote(address,address)");
+export const banningUnvoteEvents = (txResult) => parseLogs(txResult, elections, "BanningUnvote(address,address)");

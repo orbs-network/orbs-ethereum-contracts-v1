@@ -20,6 +20,7 @@ export const DEFAULT_COMMITTEE_SIZE = 2;
 export const DEFAULT_TOPOLOGY_SIZE = 3;
 export const DEFAULT_MAX_DELEGATION_RATIO = 10;
 export const DEFAULT_VOTE_OUT_THRESHOLD = 80;
+export const DEFAULT_BANNING_THRESHOLD = 80;
 export const DEFAULT_VOTE_OUT_TIMEOUT = 24*60*60;
 
 export class Driver {
@@ -36,14 +37,14 @@ export class Driver {
         public contractRegistry: ContractRegistryContract
     ) {}
 
-    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT) {
+    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT, banningThreshold=DEFAULT_BANNING_THRESHOLD) {
         const accounts = await web3.eth.getAccounts();
         const contractRegistry = await artifacts.require("ContractRegistry").new(accounts[0]);
 
         const externalToken: ERC20Contract = await artifacts.require('TestingERC20').new();
         const erc20: ERC20Contract = await artifacts.require('TestingERC20').new();
         const rewards: RewardsContract = await artifacts.require('Rewards').new(erc20.address, externalToken.address, accounts[0]);
-        const elections: ElectionsContract = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout);
+        const elections: ElectionsContract = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout, banningThreshold);
         const staking: StakingContract = await Driver.newStakingContract(elections.address, erc20.address);
         const subscriptions: SubscriptionsContract = await artifacts.require('Subscriptions').new(erc20.address);
 

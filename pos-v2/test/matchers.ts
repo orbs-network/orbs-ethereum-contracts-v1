@@ -13,7 +13,11 @@ import {
   unstakedEvents,
   topologyChangedEvents,
   voteOutEvents,
-  votedOutOfCommitteeEvents, vcConfigRecordChangedEvents, contractAddressUpdatedEvents
+  votedOutOfCommitteeEvents,
+  vcConfigRecordChangedEvents,
+  contractAddressUpdatedEvents,
+  banningVoteEvents,
+  banningUnvoteEvents
 } from "./event-parsing";
 import * as _ from "lodash";
 import {
@@ -27,7 +31,7 @@ import {
   ValidatorRegisteredEvent,
   TotalStakeChangedEvent,
   VoteOutEvent,
-  VotedOutOfCommitteeEvent
+  VotedOutOfCommitteeEvent, BanningVoteEvent, BanningUnvoteEvent
 } from "../typings/elections-contract";
 import { StakedEvent, UnstakedEvent } from "../typings/staking-contract";
 import {ContractAddressUpdatedEvent} from "../typings/contract-registry-contract";
@@ -114,6 +118,8 @@ module.exports = function(chai) {
   chai.Assertion.overwriteMethod("topologyChangedEvent", containEvent(topologyChangedEvents));
   chai.Assertion.overwriteMethod("voteOutEvent", containEvent(voteOutEvents));
   chai.Assertion.overwriteMethod("votedOutOfCommitteeEvent", containEvent(votedOutOfCommitteeEvents));
+  chai.Assertion.overwriteMethod("banningVoteEvent", containEvent(banningVoteEvents));
+  chai.Assertion.overwriteMethod("banningUnvoteEvent", containEvent(banningUnvoteEvents));
   chai.Assertion.overwriteMethod("vcConfigRecordChangedEvent", containEvent(vcConfigRecordChangedEvents));
   chai.Assertion.overwriteMethod("contractAddressUpdatedEvent", containEvent(contractAddressUpdatedEvents));
 
@@ -136,6 +142,8 @@ declare global {
       voteOutEvent(data?: Partial<VoteOutEvent>): void;
       votedOutOfCommitteeEvent(data?: Partial<VotedOutOfCommitteeEvent>): void;
       contractAddressUpdatedEvent(data?: Partial<ContractAddressUpdatedEvent>): void;
+      banningVoteEvent(data?: Partial<BanningVoteEvent>): void;
+      banningUnvoteEvent(data?: Partial<BanningUnvoteEvent>): void;
     }
 
     export interface Assertion {

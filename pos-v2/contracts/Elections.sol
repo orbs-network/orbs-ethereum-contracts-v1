@@ -20,7 +20,8 @@ contract Elections is IElections, IStakingListener, Ownable {
 	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
 	event VoteOut(address voter, address against);
 	event VotedOutOfCommittee(address addr);
-
+	event BanningVote(address voter, address against);
+	event BanningUnvote(address voter, address against);
 	event Delegated(address from, address to);
 	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
 
@@ -39,7 +40,11 @@ contract Elections is IElections, IStakingListener, Ownable {
 	mapping (address => uint256) uncappedStakes;
 	mapping (address => address) delegations;
 	mapping (address => mapping (address => uint256)) voteOuts; // by => to => timestamp
+	mapping (address => mapping (address => uint256)) banningVotes; // by => to => stake
+	mapping (address => uint256) totalBanningStake; // addr => total stake
 	mapping (address => address) orbsAddressToMainAddress;
+	mapping (address => bool) bannedValidators;
+	uint256 allStake;
 
 	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
@@ -49,6 +54,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 	uint maxDelegationRatio; // TODO consider using a hardcoded constant instead.
 	uint8 voteOutPercentageThreshold;
 	uint256 voteOutTimeoutSeconds;
+	uint256 banningPercentageThreshold;
 
 	modifier onlyStakingContract() {
 		require(msg.sender == contractRegistry.get("staking"), "caller is not the staking contract");
@@ -56,12 +62,13 @@ contract Elections is IElections, IStakingListener, Ownable {
 		_;
 	}
 
-	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds) public {
+	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds, uint256 _banningPercentageThreshold) public {
 		require(_maxCommitteeSize > 0, "maxCommitteeSize must be larger than 0");
 		require(_maxTopologySize > _maxCommitteeSize, "topology must be larger than a full committee");
 		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
 		require(_voteOutPercentageThreshold >= 0 && _voteOutPercentageThreshold <= 100, "voteOutPercentageThreshold must be between 0 and 100");
+		require(_banningPercentageThreshold >= 0 && _banningPercentageThreshold <= 100, "banningPercentageThreshold must be between 0 and 100");
 
 		minimumStake = _minimumStake;
 		maxCommitteeSize = _maxCommitteeSize;
@@ -69,6 +76,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 	    maxDelegationRatio = _maxDelegationRatio;
 		voteOutPercentageThreshold = _voteOutPercentageThreshold;
 		voteOutTimeoutSeconds = _voteOutTimeoutSeconds;
+		banningPercentageThreshold = _banningPercentageThreshold;
 	}
 
 	function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
@@ -167,6 +175,54 @@ contract Elections is IElections, IStakingListener, Ownable {
 		emit VoteOut(sender, addr);
 	}
 
+	function voteForBanning(address against) external {
+		_voteForBanning(msg.sender, against);
+		emit BanningVote(msg.sender, against);
+	}
+
+	function _voteForBanning(address voter, address against) private {
+		uint256 newStake = totalStakes[voter];
+		uint256 oldStake = banningVotes[voter][against];
+		if (newStake > oldStake) {
+			totalBanningStake[against] = totalBanningStake[against].add(newStake - oldStake);
+		} else {
+			totalBanningStake[against] = totalBanningStake[against].sub(oldStake - newStake);
+		}
+		banningVotes[voter][against] = newStake;
+		updateBanningStatus(against);
+	}
+
+	function unvoteForBanning(address addr) external {
+		uint256 oldStake = banningVotes[msg.sender][addr];
+		totalBanningStake[addr] = totalBanningStake[addr].sub(oldStake);
+		banningVotes[msg.sender][addr] = 0;
+		updateBanningStatus(addr);
+
+		emit BanningUnvote(msg.sender, addr);
+	}
+
+	function refreshBanningVote(address voter, address against) external {
+		if (banningVotes[voter][against] != 0) {
+			_voteForBanning(voter, against);
+		}
+	}
+
+	event Debug(uint256 allStake, uint256 banningStake);
+
+	function updateBanningStatus(address addr) private {
+		uint256 banningStake = totalBanningStake[addr];
+
+		bool isBanned = bannedValidators[addr];
+		bool shouldBan = allStake > 0 && banningStake.mul(100).div(allStake) >= banningPercentageThreshold;
+
+		emit Debug(allStake, banningStake);
+
+		if (isBanned != shouldBan) {
+			bannedValidators[addr] = shouldBan;
+			_placeInTopology(addr);
+		}
+	}
+
 	function distributedStake(address[] stakeOwners, uint256[] amounts) external onlyStakingContract {
 		require(stakeOwners.length == amounts.length);
 
@@ -185,6 +241,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 			delegatee = staker;
 		}
 		ownStakes[staker] = ownStakes[staker].add(amount);
+		allStake = allStake.add(amount);
 		_updateTotalStake(delegatee, uncappedStakes[delegatee].add(amount));
 
 		_placeInTopology(delegatee);
@@ -200,6 +257,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 			delegatee = staker;
 		}
 		ownStakes[staker] = ownStakes[staker].sub(amount);
+		allStake = allStake.sub(amount);
 		_updateTotalStake(delegatee, uncappedStakes[delegatee].sub(amount));
 
 		_placeInTopology(delegatee);
@@ -238,6 +296,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 
 	function _satisfiesTopologyPrerequisites(address validator) private view returns (bool) {
 		return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
+			   !bannedValidators[validator] &&
 			   _isSelfDelegating(validator) &&
 		       _holdsMinimumStake(validator);
 	}
