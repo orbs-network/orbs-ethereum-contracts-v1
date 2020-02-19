@@ -371,11 +371,8 @@ contract('elections-high-level-flows', async () => {
 
         await d.contractRegistry.set("staking", stakingAddr);
 
-        await expectRejected(d.elections.staked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
-        await expectRejected(d.elections.unstaked(d.accounts[0], 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
-
-        await d.elections.staked(d.accounts[0], 1, {from: stakingAddr});
-        await d.elections.unstaked(d.accounts[0], 1, {from: stakingAddr});
+        await expectRejected(d.elections.stakeChange(d.accounts[0], 1, true, 1, {from: nonStakingAddr}), "should not accept notifications from an address other than the staking contract");
+        await d.elections.stakeChange(d.accounts[0], 1, true, 1, {from: stakingAddr});
     });
 
     it('staking before or after delegating has the same effect', async () => {

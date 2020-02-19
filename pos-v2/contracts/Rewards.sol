@@ -1,8 +1,8 @@
-pragma solidity 0.4.26;
+pragma solidity 0.5.16;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/math/Math.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/math/Math.sol";
 
 import "./interfaces/IStakingContract.sol";
 import "./interfaces/ICommitteeListener.sol";
@@ -58,8 +58,8 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
     }
 
     constructor(IERC20 _erc20, IERC20 _externalToken, address _rewardsGovernor) public {
-        require(_erc20 != address(0), "erc20 must not be 0");
-        require(_externalToken != address(0), "externalToken must not be 0");
+        require(address(_erc20) != address(0), "erc20 must not be 0");
+        require(address(_externalToken) != address(0), "externalToken must not be 0");
 
         erc20 = _erc20;
         externalToken = _externalToken;
@@ -68,7 +68,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
     }
 
     function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
-        require(_contractRegistry != address(0), "contractRegistry must not be 0");
+        require(address(_contractRegistry) != address(0), "contractRegistry must not be 0");
         contractRegistry = _contractRegistry;
     }
 
@@ -104,7 +104,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         return lastPayedAt;
     }
 
-    function committeeChanged(address[] addrs, uint256[] stakes) external onlyCommitteeProvider {
+    function committeeChanged(address[] calldata addrs, uint256[] calldata stakes) external onlyCommitteeProvider {
         require(addrs.length == stakes.length, "expected addrs and stakes to be of same length");
 
         _assignRewards(); // We want the previous committee to take the rewards
@@ -158,7 +158,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         assignAmountFixed(feePoolAmount, TokenType.Orbs);
 
         // Pro-rata pool
-        amount = Math.min(proRataPoolMonthlyRate.mul(duration).div(30 days), proRataPool);
+        uint256 amount = Math.min(proRataPoolMonthlyRate.mul(duration).div(30 days), proRataPool);
         assignAmountProRata(amount, TokenType.Orbs);
         proRataPool = proRataPool.sub(amount);
 
@@ -241,7 +241,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         assert(_amount == 0);
     }
 
-    function distributeOrbsTokenRewards(address[] to, uint256[] amounts) external {
+    function distributeOrbsTokenRewards(address[] calldata to, uint256[] calldata amounts) external {
         require(to.length == amounts.length, "expected to and amounts to be of same length");
 
         uint256 totalAmount = 0;
@@ -252,7 +252,7 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
         orbsBalance[msg.sender] = orbsBalance[msg.sender].sub(totalAmount);
 
         IStakingContract stakingContract = IStakingContract(contractRegistry.get("staking"));
-        erc20.approve(stakingContract, totalAmount);
+        erc20.approve(address(stakingContract), totalAmount);
         stakingContract.distributeRewards(totalAmount, to, amounts);
     }
 

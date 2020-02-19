@@ -1,5 +1,5 @@
-pragma solidity 0.4.26;
+pragma solidity 0.5.16;
 
 interface ICommitteeListener {
-    function committeeChanged(address[] addrs, uint256[] stakes) external;
+    function committeeChanged(address[] calldata addrs, uint256[] calldata stakes) external;
 }

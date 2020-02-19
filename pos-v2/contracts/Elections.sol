@@ -1,16 +1,15 @@
-pragma solidity 0.4.26;
+pragma solidity 0.5.16;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/math/Math.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/math/Math.sol";
+import "@openzeppelin/contracts/ownership/Ownable.sol";
 
-import "./interfaces/IStakingListener.sol";
 import "./interfaces/ICommitteeListener.sol";
 import "./interfaces/IElections.sol";
 import "./interfaces/IContractRegistry.sol";
 import "./interfaces/IStakingContract.sol";
 
-contract Elections is IElections, IStakingListener, Ownable {
+contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	using SafeMath for uint256;
 
 	IContractRegistry contractRegistry;
@@ -72,11 +71,11 @@ contract Elections is IElections, IStakingListener, Ownable {
 	}
 
 	function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
-		require(_contractRegistry != address(0), "contractRegistry must not be 0");
+		require(_contractRegistry != IContractRegistry(0), "contractRegistry must not be 0");
 		contractRegistry = _contractRegistry;
 	}
 
-	function getTopology() external view returns (address[]) {
+	function getTopology() external view returns (address[] memory) {
 		return topology;
 	}
 
@@ -155,7 +154,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 		}
 
 		if (totalCommitteeStake > 0 && totalVoteOutStake.mul(100).div(totalCommitteeStake) >= voteOutPercentageThreshold) {
-			for (i = 0; i < committeeSize; i++) {
+			for (uint i = 0; i < committeeSize; i++) {
 				voteOuts[topology[i]][addr] = 0; // clear vote-outs
 			}
 			readyValidators[addr] = false;
@@ -167,45 +166,45 @@ contract Elections is IElections, IStakingListener, Ownable {
 		emit VoteOut(sender, addr);
 	}
 
-	function distributedStake(address[] stakeOwners, uint256[] amounts) external onlyStakingContract {
-		require(stakeOwners.length == amounts.length);
+	function stakeChangeBatch(address[] calldata _stakeOwners, uint256[] calldata _amounts, bool[] calldata _signs,
+		uint256[] calldata _updatedStakes) external onlyStakingContract {
+		require(_stakeOwners.length == _amounts.length, "_stakeOwners, _amounts - array length mismatch");
+		require(_stakeOwners.length == _signs.length, "_stakeOwners, _signs - array length mismatch");
+		require(_stakeOwners.length == _updatedStakes.length, "_stakeOwners, _updatedStakes - array length mismatch");
 
-		for (uint i = 0; i < stakeOwners.length; i++) {
-			_staked(stakeOwners[i], amounts[i]);
+		for (uint i = 0; i < _stakeOwners.length; i++) {
+			_stakeChange(_stakeOwners[i], _amounts[i], _signs[i], _updatedStakes[i]);
 		}
 	}
 
-	function staked(address staker, uint256 amount) external onlyStakingContract {
-		_staked(staker, amount);
+	function stakeChange(address _stakeOwner, uint256 _amount, bool _sign, uint256 _updatedStake) external onlyStakingContract {
+		_stakeChange(_stakeOwner, _amount, _sign, _updatedStake);
 	}
 
-	function _staked(address staker, uint256 amount) private {
-		address delegatee = delegations[staker];
+	function _stakeChange(address _stakeOwner, uint256 _amount, bool _sign, uint256 /* _updatedStake */) private {
+		address delegatee = delegations[_stakeOwner];
 		if (delegatee == address(0)) {
-			delegatee = staker;
+			delegatee = _stakeOwner;
 		}
-		ownStakes[staker] = ownStakes[staker].add(amount);
-		_updateTotalStake(delegatee, uncappedStakes[delegatee].add(amount));
+
+		uint256 newUncappedStake;
+		uint256 newOwnStake;
+		if (_sign) {
+			newOwnStake = ownStakes[_stakeOwner].add(_amount);
+			newUncappedStake = uncappedStakes[delegatee].add(_amount);
+		} else {
+			newOwnStake = ownStakes[_stakeOwner].sub(_amount);
+			newUncappedStake = uncappedStakes[delegatee].sub(_amount);
+		}
+		ownStakes[_stakeOwner] = newOwnStake;
+		_updateTotalStake(delegatee, newUncappedStake);
 
 		_placeInTopology(delegatee);
 	}
 
-	function unstaked(address staker, uint256 amount) external onlyStakingContract {
-		return _unstaked(staker, amount);
-	}
+	function stakeMigration(address _stakeOwner, uint256 _amount) external onlyStakingContract {}
 
-	function _unstaked(address staker, uint256 amount) private {
-		address delegatee = delegations[staker];
-		if (delegatee == address(0)) {
-			delegatee = staker;
-		}
-		ownStakes[staker] = ownStakes[staker].sub(amount);
-		_updateTotalStake(delegatee, uncappedStakes[delegatee].sub(amount));
-
-		_placeInTopology(delegatee);
-	}
-
-	function refreshStakes(address[] addrs) external {
+	function refreshStakes(address[] calldata addrs) external {
 		IStakingContract staking = IStakingContract(contractRegistry.get("staking"));
 
 		for (uint i = 0; i < addrs.length; i++) {
@@ -213,9 +212,9 @@ contract Elections is IElections, IStakingListener, Ownable {
 			uint256 newOwnStake = staking.getStakeBalanceOf(staker);
 			uint256 oldOwnStake = ownStakes[staker];
 			if (newOwnStake > oldOwnStake) {
-				_staked(staker, newOwnStake - oldOwnStake);
+				_stakeChange(staker, newOwnStake - oldOwnStake, true, newOwnStake);
 			} else if (oldOwnStake > newOwnStake) {
-				_unstaked(staker, oldOwnStake - newOwnStake);
+				_stakeChange(staker, oldOwnStake - newOwnStake, false, newOwnStake);
 			}
 		}
 	}
@@ -248,7 +247,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 				totalStakes[validator] > totalStakes[topology[topology.length-1]]; // validator has more stake the the bottom topology validator
 	}
 
-	function _loadStakes(uint limit) private view returns (uint256[]) {
+	function _loadStakes(uint limit) private view returns (uint256[] memory) {
 		assert(limit <= maxTopologySize);
 		if (limit > topology.length) {
 			limit = topology.length;
@@ -260,11 +259,11 @@ contract Elections is IElections, IStakingListener, Ownable {
 		return stakes;
 	}
 
-	function _loadTopologyStakes() private view returns (uint256[]) {
+	function _loadTopologyStakes() private view returns (uint256[] memory) {
 		return _loadStakes(maxTopologySize);
 	}
 
-	function _loadCommitteeStakes() private view returns (uint256[]) {
+	function _loadCommitteeStakes() private view returns (uint256[] memory) {
 		return _loadStakes(committeeSize);
 	}
 
@@ -310,7 +309,7 @@ contract Elections is IElections, IStakingListener, Ownable {
 
 	function _removeFromTopology(uint pos) private {
 		assert(topology.length > 0);
-		assert(p < topology.length);
+		assert(pos < topology.length);
 
 		for (uint p = pos; p < topology.length - 1; p++) {
 			topology[p] = topology[p + 1];

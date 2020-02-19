@@ -1,4 +1,4 @@
-pragma solidity 0.4.26;
+pragma solidity 0.5.16;
 
 import "./IStakingContract.sol";
 import "./IContractRegistry.sol";
@@ -22,7 +22,7 @@ interface IRewards {
     function getExternalTokenBalance(address addr) external view returns (uint256);
 
     /// @dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.
-    function distributeOrbsTokenRewards(address[] to, uint256[] amounts) external;
+    function distributeOrbsTokenRewards(address[] calldata to, uint256[] calldata amounts) external;
 
     /// @dev Transfer all of msg.sender's outstanding external rewards to their account
     function withdrawExternalTokenRewards() external returns (uint256);
@@ -46,7 +46,7 @@ interface IRewards {
 
     /// @dev Called by: elections contract (committee provider)
     /// Notifies a change in the committee
-    function committeeChanged(address[] addrs, uint256[] stakes) external /* onlyCommitteeProvider */;
+    function committeeChanged(address[] calldata addrs, uint256[] calldata stakes) external /* onlyCommitteeProvider */;
 
     /*
     *   Reward-governor methods

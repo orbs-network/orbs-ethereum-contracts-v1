@@ -64,7 +64,10 @@ export class Driver {
     }
 
     static async newStakingContract(electionsAddr: string, erc20Addr: string): Promise<StakingContract> {
-        return artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, "0x0000000000000000000000000000000000000001" /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, electionsAddr /* IStakingListener */, erc20Addr /* _token */);
+        const accounts = await web3.eth.getAccounts();
+        const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, accounts[0] /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, erc20Addr /* _token */);
+        await staking.setStakeChangeNotifier(electionsAddr, {from: accounts[0]});
+        return staking;
     }
 
     get contractsOwner() {
