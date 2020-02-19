@@ -17,11 +17,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@openzeppelin/contracts": "2.3.0",
     "bn.js": "^5.1.1",
     "chai": "^4.2.0",
     "chai-bn": "^0.2.0",
     "lodash": "^4.17.15",
-    "openzeppelin-solidity": "2.0.0",
     "truffle": "5.0.36",
     "truffle-hdwallet-provider": "^1.0.3",
     "truffle-typings": "^1.0.8",

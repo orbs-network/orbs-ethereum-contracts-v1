@@ -1,4 +1,4 @@
-pragma solidity 0.4.26;
+pragma solidity 0.5.16;
 
 import "./IRewards.sol";
 
@@ -14,14 +14,14 @@ interface ISubscriptions {
 
     /// @dev Called by: authorized subscriber (plan) contracts
     /// Creates a new VC
-    function createVC(string tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint);
+    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint);
 
     /// @dev Called by: authorized subscriber (plan) contracts
     /// Extends the subscription of an existing VC.
     function extendSubscription(uint256 vcid, uint256 amount, address payer) external;
 
     /// @dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.
-    function setVcConfigRecord(uint256 vcid, string key, string value) external;
+    function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external;
 
     /*
      *   Governance methods

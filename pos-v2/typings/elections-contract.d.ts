@@ -4,8 +4,8 @@ import TransactionResponse = Truffle.TransactionResponse;
 
 export interface ElectionsContract extends Contract {
   registerValidator( ip: string, orbsAddrs: string, params?: TransactionDetails): Promise<TransactionResponse>;
-  staked( stakeOwner: string, amount: number, params?: TransactionDetails): Promise<TransactionResponse>;
-  unstaked( stakeOwner: string, amount: number, params?: TransactionDetails): Promise<TransactionResponse>;
+  stakeChange(stakeOwner: string, amount: number, sign: boolean, updatedStake: number, params?: TransactionDetails): Promise<TransactionResponse>;
+  stakeChangeBatch(stakeOwners: string[], amounts: number[], signs: boolean[], updatedStakes: number[])
   delegate( to: string, params?: TransactionDetails): Promise<TransactionResponse>;
   getTopology(): Promise<TransactionResponse>;
   notifyReadyForCommittee( params?: TransactionDetails): Promise<TransactionResponse>;

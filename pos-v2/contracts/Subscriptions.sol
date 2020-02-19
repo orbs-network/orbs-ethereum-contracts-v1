@@ -1,7 +1,7 @@
-pragma solidity 0.4.26;
+pragma solidity 0.5.16;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "./interfaces/ISubscriptions.sol";
 import "./interfaces/IRewards.sol";
 import "./interfaces/IContractRegistry.sol";
@@ -32,18 +32,18 @@ contract Subscriptions is ISubscriptions, Ownable{
     IERC20 erc20;
 
     constructor (IERC20 _erc20) public {
-        require(_erc20 != address(0), "erc20 must not be 0");
+        require(address(_erc20) != address(0), "erc20 must not be 0");
 
         nextVcid = 1000000;
         erc20 = _erc20;
     }
 
     function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
-        require(_contractRegistry != address(0), "contractRegistry must not be 0");
+        require(address(_contractRegistry) != address(0), "contractRegistry must not be 0");
         contractRegistry = _contractRegistry;
     }
 
-    function setVcConfigRecord(uint256 vcid, string key, string value) external {
+    function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external {
         require(msg.sender == virtualChains[vcid].owner, "only vc owner can set a vc config record");
 
         emit VcConfigRecordChanged(vcid, key, value);
@@ -55,7 +55,7 @@ contract Subscriptions is ISubscriptions, Ownable{
         authorizedSubscribers[addr] = true;
     }
 
-    function createVC(string tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint) {
+    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint) {
         require(authorizedSubscribers[msg.sender], "must be an authorized subscriber");
 
         uint vcid = nextVcid++;
@@ -81,7 +81,7 @@ contract Subscriptions is ISubscriptions, Ownable{
         vc.expiresAt = vc.expiresAt.add(amount.mul(30 days).div(vc.rate));
 
         IRewards rewardsContract = IRewards(contractRegistry.get("rewards"));
-        require(erc20.transfer(rewardsContract, amount), "failed to transfer subscription fees");
+        require(erc20.transfer(address(rewardsContract), amount), "failed to transfer subscription fees");
         rewardsContract.fillFeeBuckets(amount, vc.rate);
 
         emit SubscriptionChanged(vcid, vc.genRef, vc.expiresAt, vc.tier);
