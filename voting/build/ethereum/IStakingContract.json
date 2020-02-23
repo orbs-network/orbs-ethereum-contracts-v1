@@ -1,0 +1,328 @@
+{
+  "contractName": "IStakingContract",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Staked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Unstaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdrew",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Restaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MigratedStake",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "stake",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "unstake",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "withdraw",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "restake",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_totalAmount",
+          "type": "uint256"
+        },
+        {
+          "name": "_stakeOwners",
+          "type": "address[]"
+        },
+        {
+          "name": "_amounts",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "distributeRewards",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_stakeOwner",
+          "type": "address"
+        }
+      ],
+      "name": "getStakeBalanceOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getTotalStakedTokens",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_stakeOwner",
+          "type": "address"
+        }
+      ],
+      "name": "getUnstakeStatus",
+      "outputs": [
+        {
+          "name": "cooldownAmount",
+          "type": "uint256"
+        },
+        {
+          "name": "cooldownEndTime",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_newStakingContract",
+          "type": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "migrateStakedTokens",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2020-02-03T15:43:57.913Z",
+  "devdoc": {
+    "methods": {
+      "distributeRewards(uint256,address[],uint256[])": {
+        "details": "Distributes staking rewards to a list of addresses by directly adding rewards to their stakes. This method assumes that the user has already approved at least the required amount using ERC20 approve. Since this is a convenience method, we aren't concerned about reaching block gas limit by using large lists. We assume that callers will be able to properly batch/paginate their requests.",
+        "params": {
+          "_amounts": "uint256[] The amounts of the rewards.",
+          "_stakeOwners": "address[] The addresses of the stake owners.",
+          "_totalAmount": "uint256 The total amount of rewards to distributes."
+        }
+      },
+      "getStakeBalanceOf(address)": {
+        "details": "Returns the stake of the specified stake owner (excluding unstaked tokens).",
+        "params": {
+          "_stakeOwner": "address The address to check."
+        },
+        "return": "uint256 The total stake."
+      },
+      "getTotalStakedTokens()": {
+        "details": "Returns the total amount staked tokens (excluding unstaked tokens).",
+        "return": "uint256 The total staked tokens of all stake owners."
+      },
+      "getUnstakeStatus(address)": {
+        "details": "Returns the time that the cooldown period ends (or ended) and the amount of tokens to be released.",
+        "params": {
+          "_stakeOwner": "address The address to check."
+        },
+        "return": "cooldownAmount uint256 The total tokens in cooldown.cooldownEndTime uint256 The time when the cooldown period ends (in seconds)."
+      },
+      "migrateStakedTokens(address,uint256)": {
+        "details": "Migrates the stake of msg.sender from this staking contract to a new approved staking contract.",
+        "params": {
+          "_amount": "uint256 The amount of tokens to migrate.",
+          "_newStakingContract": "IMigratableStakingContract The new staking contract which supports stake migration."
+        }
+      },
+      "restake()": {
+        "details": "Restakes unstaked ORBS tokens (in or after cooldown) for msg.sender."
+      },
+      "stake(uint256)": {
+        "details": "Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least the required amount using ERC20 approve.",
+        "params": {
+          "_amount": "uint256 The amount of tokens to stake."
+        }
+      },
+      "unstake(uint256)": {
+        "details": "Unstakes ORBS tokens from msg.sender. If successful, this will start the cooldown period, after which msg.sender would be able to withdraw all of his tokens.",
+        "params": {
+          "_amount": "uint256 The amount of tokens to unstake."
+        }
+      },
+      "withdraw()": {
+        "details": "Requests to withdraw all of staked ORBS tokens back to msg.sender. Stake owners can withdraw their ORBS tokens only after previously unstaking them and after the cooldown period has passed (unless the contract was requested to release all stakes)."
+      }
+    },
+    "title": "An interface for staking contracts."
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

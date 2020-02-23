@@ -191,6 +191,7 @@
       "type": "function"
     }
   ],
+  "metadata": "",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
@@ -200,8 +201,8 @@
     "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.2",
-  "updatedAt": "2019-03-25T00:37:37.789Z",
+  "schemaVersion": "3.0.11",
+  "updatedAt": "2020-02-03T09:57:46.557Z",
   "devdoc": {
     "methods": {
       "getOrbsAddress(address)": {

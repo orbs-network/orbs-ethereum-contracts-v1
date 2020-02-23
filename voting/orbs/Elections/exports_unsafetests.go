@@ -11,26 +11,28 @@ package elections_systemcontract
 import (
 	"fmt"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1"
+	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/env"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/ethereum"
 	"github.com/orbs-network/orbs-contract-sdk/go/sdk/v1/safemath/safeuint64"
 	"time"
 )
 
-var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
-	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
+var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getStakingEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
+	unsafetests_setTokenEthereumContractAddress, unsafetests_setStakingEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
 	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress, unsafetests_setValidatorsRegistryEthereumContractAddress,
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setCurrentElectedBlockNumber,
 	unsafetests_setCurrentElectionTimeNanos, unsafetests_setElectionMirrorPeriodInSeconds, unsafetests_setElectionVotePeriodInSeconds, unsafetests_setElectionPeriodInSeconds,
 	mirrorDelegationByTransfer, mirrorDelegation,
 	processVoting, isProcessingPeriod, hasProcessingStarted, processTrigger,
 	getElectionPeriod, getCurrentElectionBlockNumber, getNextElectionBlockNumber, getEffectiveElectionBlockNumber, getNumberOfElections,
-	getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 	getCurrentEthereumBlockNumber, getProcessingStartBlockNumber, isElectionOverdue, getMirroringEndBlockNumber,
 	getElectedValidatorsOrbsAddress, getElectedValidatorsEthereumAddress, getElectedValidatorsEthereumAddressByBlockNumber, getElectedValidatorsOrbsAddressByBlockHeight,
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
 	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 	getGuardianStake, getGuardianVotingWeight, getTotalStake, getValidatorStake, getValidatorVote, getExcellenceProgramGuardians,
-	switchToTimeBasedElections,
+	// time based
+	// switchToTimeBasedElections,
+	//getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -47,7 +49,12 @@ func unsafetests_setVariables(voteMirrorPeriod uint64, voteValidPeriod uint64, e
 
 func unsafetests_setElectedValidators(joinedAddresses []byte) {
 	index := getNumberOfElections()
+	if index == 0 {
+		index = 1
+	}
+	_setNumberOfElections(index)
 	_setElectedValidatorsOrbsAddressAtIndex(index, joinedAddresses)
+	_setElectedValidatorsBlockHeightAtIndex(index, env.GetBlockHeight()-1) // so that election is valid from this block
 }
 
 func unsafetests_setCurrentElectedBlockNumber(blockNumber uint64) {
@@ -56,6 +63,10 @@ func unsafetests_setCurrentElectedBlockNumber(blockNumber uint64) {
 
 func unsafetests_setTokenEthereumContractAddress(addr string) {
 	ETHEREUM_TOKEN_ADDR = addr
+}
+
+func unsafetests_setStakingEthereumContractAddress(addr string) {
+	ETHEREUM_STAKING_ADDR = addr
 }
 
 func unsafetests_setVotingEthereumContractAddress(addr string) {

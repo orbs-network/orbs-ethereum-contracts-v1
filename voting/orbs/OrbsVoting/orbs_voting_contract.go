@@ -279,6 +279,7 @@ func getNextElectionTimeInNanos() uint64 {
  * Connections to Ethereum contracts
  */
 var ETHEREUM_TOKEN_ADDR = "0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA"
+var ETHEREUM_STAKING_ADDR = "0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA" // TODO LOCKING replace with actual contract address
 var ETHEREUM_VOTING_ADDR = "0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d"
 var ETHEREUM_VALIDATORS_ADDR = "0x240fAa45557c61B6959162660E324Bb90984F00f"
 var ETHEREUM_VALIDATORS_REGISTRY_ADDR = "0x56A6895FD37f358c17cbb3F14A864ea5Fe871F0a"
@@ -290,6 +291,14 @@ func getTokenEthereumContractAddress() string {
 
 func getTokenAbi() string {
 	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]`
+}
+
+func getStakingEthereumContractAddress() string {
+	return ETHEREUM_STAKING_ADDR
+}
+
+func getStakingAbi() string {
+	return `[{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeOwner","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"totalStakedAmount","type":"uint256"}],"name":"Staked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeOwner","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"totalStakedAmount","type":"uint256"}],"name":"Unstaked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeOwner","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"totalStakedAmount","type":"uint256"}],"name":"Withdrew","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeOwner","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"totalStakedAmount","type":"uint256"}],"name":"Restaked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"stakeOwner","type":"address"},{"indexed":false,"name":"amount","type":"uint256"},{"indexed":false,"name":"totalStakedAmount","type":"uint256"}],"name":"MigratedStake","type":"event"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"}],"name":"stake","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"}],"name":"unstake","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"restake","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_totalAmount","type":"uint256"},{"name":"_stakeOwners","type":"address[]"},{"name":"_amounts","type":"uint256[]"}],"name":"distributeRewards","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_stakeOwner","type":"address"}],"name":"getStakeBalanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTotalStakedTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_stakeOwner","type":"address"}],"name":"getUnstakeStatus","outputs":[{"name":"cooldownAmount","type":"uint256"},{"name":"cooldownEndTime","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newStakingContract","type":"address"},{"name":"_amount","type":"uint256"}],"name":"migrateStakedTokens","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]`
 }
 
 func getGuardiansEthereumContractAddress() string {
@@ -332,21 +341,22 @@ func getValidatorsRegistryAbi() string {
 
 // +build unsafetests
 
-var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
-	unsafetests_setTokenEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
+var PUBLIC = sdk.Export(getTokenEthereumContractAddress, getStakingEthereumContractAddress, getGuardiansEthereumContractAddress, getVotingEthereumContractAddress, getValidatorsEthereumContractAddress, getValidatorsRegistryEthereumContractAddress,
+	unsafetests_setTokenEthereumContractAddress, unsafetests_setStakingEthereumContractAddress, unsafetests_setGuardiansEthereumContractAddress,
 	unsafetests_setVotingEthereumContractAddress, unsafetests_setValidatorsEthereumContractAddress, unsafetests_setValidatorsRegistryEthereumContractAddress,
 	unsafetests_setVariables, unsafetests_setElectedValidators, unsafetests_setCurrentElectedBlockNumber,
 	unsafetests_setCurrentElectionTimeNanos, unsafetests_setElectionMirrorPeriodInSeconds, unsafetests_setElectionVotePeriodInSeconds, unsafetests_setElectionPeriodInSeconds,
 	mirrorDelegationByTransfer, mirrorDelegation,
-	processVoting, isProcessingPeriod, hasProcessingStarted,
+	processVoting, isProcessingPeriod, hasProcessingStarted, processTrigger,
 	getElectionPeriod, getCurrentElectionBlockNumber, getNextElectionBlockNumber, getEffectiveElectionBlockNumber, getNumberOfElections,
-	getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 	getCurrentEthereumBlockNumber, getProcessingStartBlockNumber, isElectionOverdue, getMirroringEndBlockNumber,
 	getElectedValidatorsOrbsAddress, getElectedValidatorsEthereumAddress, getElectedValidatorsEthereumAddressByBlockNumber, getElectedValidatorsOrbsAddressByBlockHeight,
 	getElectedValidatorsOrbsAddressByIndex, getElectedValidatorsEthereumAddressByIndex, getElectedValidatorsBlockNumberByIndex, getElectedValidatorsBlockHeightByIndex,
 	getCumulativeParticipationReward, getCumulativeGuardianExcellenceReward, getCumulativeValidatorReward,
 	getGuardianStake, getGuardianVotingWeight, getTotalStake, getValidatorStake, getValidatorVote, getExcellenceProgramGuardians,
-	switchToTimeBasedElections,
+	// time based
+	// switchToTimeBasedElections,
+	//getElectionPeriodInNanos, getEffectiveElectionTimeInNanos, getCurrentElectionTimeInNanos, getNextElectionTimeInNanos,
 )
 var SYSTEM = sdk.Export(_init)
 
@@ -363,7 +373,12 @@ func unsafetests_setVariables(voteMirrorPeriod uint64, voteValidPeriod uint64, e
 
 func unsafetests_setElectedValidators(joinedAddresses []byte) {
 	index := getNumberOfElections()
+	if index == 0 {
+		index = 1
+	}
+	_setNumberOfElections(index)
 	_setElectedValidatorsOrbsAddressAtIndex(index, joinedAddresses)
+	_setElectedValidatorsBlockHeightAtIndex(index, env.GetBlockHeight()-1) // so that election is valid from this block
 }
 
 func unsafetests_setCurrentElectedBlockNumber(blockNumber uint64) {
@@ -372,6 +387,10 @@ func unsafetests_setCurrentElectedBlockNumber(blockNumber uint64) {
 
 func unsafetests_setTokenEthereumContractAddress(addr string) {
 	ETHEREUM_TOKEN_ADDR = addr
+}
+
+func unsafetests_setStakingEthereumContractAddress(addr string) {
+	ETHEREUM_STAKING_ADDR = addr
 }
 
 func unsafetests_setVotingEthereumContractAddress(addr string) {
@@ -406,222 +425,6 @@ func unsafetests_setElectionVotePeriodInSeconds(period uint64) {
 
 func unsafetests_setElectionPeriodInSeconds(period uint64) {
 	ELECTION_PERIOD_LENGTH_IN_NANOS = period * uint64(time.Second.Nanoseconds())
-}
-
-// Copyright 2019 the orbs-ethereum-contracts authors
-// This file is part of the orbs-ethereum-contracts library in the Orbs project.
-//
-// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
-// The above notice should be included in all copies or substantial portions of the software.
-
-func _firstElectionFixRewards() {
-	key := []byte("_fix_rewards_first_election_")
-	if state.ReadUint32(key) == 0 {
-		guardians := _getGuardians()
-		for guardian, _ := range guardians {
-			reward := getCumulativeGuardianExcellenceReward(guardian[:])
-			if reward != 0 {
-				state.Clear(_formatCumulativeGuardianExcellenceReward(guardian[:]))
-				fmt.Printf("elections %10d rewards fix: clear guardian %x, orig reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
-				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 2229)
-				_addCumulativeGuardianExcellenceReward(guardian[:], reward)
-				fmt.Printf("elections %10d rewards fix: guardian %x reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
-			}
-			reward = getCumulativeParticipationReward(guardian[:])
-			if reward != 0 {
-				state.Clear(_formatCumulativeParticipationReward(guardian[:]))
-				fmt.Printf("elections %10d rewards fix: clear guardian participant %x orig reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
-				reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 4179)
-				_addCumulativeParticipationReward(guardian[:], reward)
-				fmt.Printf("elections %10d rewards fix: guardian participant %x reward %d\n", getEffectiveElectionBlockNumber(), guardian, reward)
-			}
-
-		}
-
-		electionValidatorIntroduction := safeuint64.Div(safeuint64.Mul(ELECTION_VALIDATOR_INTRODUCTION_REWARD, 100), ANNUAL_TO_ELECTION_FACTOR_BLOCKBASED)
-		validators := _getValidators()
-		for _, validator := range validators {
-			reward := getCumulativeValidatorReward(validator[:])
-			if reward != 0 {
-				state.Clear(_formatCumulativeValidatorReward(validator[:]))
-				fmt.Printf("elections %10d rewards fix: clear validator %x orig reward %d\n", getEffectiveElectionBlockNumber(), validator, reward)
-				reward = safeuint64.Sub(reward, 8423)
-				if reward != 0 {
-					reward = safeuint64.Div(safeuint64.Mul(reward, 100), 11723)
-				}
-				reward = safeuint64.Add(reward, electionValidatorIntroduction)
-				_addCumulativeValidatorReward(validator[:], reward)
-				fmt.Printf("elections %10d rewards fix: validator %x reward %d\n", getEffectiveElectionBlockNumber(), validator, reward)
-			}
-		}
-		state.WriteUint32(key, 1)
-	} else {
-		panic(fmt.Sprintf("cannot fix first election rewards anymore"))
-	}
-}
-
-func _firstElectionFixRewardsDelegator(delegator []byte) {
-	key := []byte(fmt.Sprintf("_fix_rewards_first_election_%s", hex.EncodeToString(delegator)))
-	if state.ReadUint32(key) == 0 && getNumberOfElections() == 1 {
-		reward := getCumulativeParticipationReward(delegator)
-		if reward != 0 {
-			state.Clear(_formatCumulativeParticipationReward(delegator))
-			fmt.Printf("elections %10d rewards fix: clear participant %x original %d\n", getEffectiveElectionBlockNumber(), delegator, reward)
-			reward = safeuint64.Div(safeuint64.Mul(reward, 1000), 4179)
-			_addCumulativeParticipationReward(delegator[:], reward)
-			fmt.Printf("elections %10d rewards fix: participant %x reward %d\n", getEffectiveElectionBlockNumber(), delegator, reward)
-		}
-		state.WriteUint32(key, 1)
-	} else {
-		panic(fmt.Sprintf("cannot fix first election rewards anymore"))
-	}
-}
-
-// Copyright 2019 the orbs-network-go authors
-// This file is part of the orbs-ethereum-contracts library in the Orbs project.
-//
-// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
-// The above notice should be included in all copies or substantial portions of the software.
-
-/**
-
-These two function fix the state for rewards and delegation and can be called only once (and between election 7928900 and 7948900).
-
-Fixed a bug in the reward calculation contract that incorrectly counted a small number of delegations.
-This issue affected 29 participating addresses, to the total sum of 89,668 ORBS.
-
-_fixRewardsDrift7928900 : fixes the 20 delegators and 9 guardians rewards according to addresses
-_fixDelegatorState7928900 : remove the double delegation pointer from the delegators' list in state.
-
-*/
-
-var participantsFixDoubleDelegationReward = []struct {
-	address string
-	reward  int
-}{
-	{"63cad78066b28c58f29f58a4f55827b2c2259776", 1350},  // instead of 2178
-	{"aaa020747c3f27035a803a2a9b577e76ed5cdfc7", 441},   // instead of 693
-	{"e4f60ade67862d6604cc7464621bc7ac17e75841", 220},   // instead of 352
-	{"d5db86180abb0300334347a6a57bd318ffa7aebc", 860},   // instead of 1376
-	{"9e912ba1ce059ceca9499ec9ec703b12d32cb50c", 860},   // instead of 1376
-	{"606feb20c03a797a42390163dedd1d45297af73f", 680},   // instead of 973
-	{"5d8c4be81a1203821b464bd76f43967f724d5004", 66},    // instead of 60
-	{"a39fc2c9c437f2e56901ccc6bd18ee1100c82686", 902},   // instead of 1552
-	{"683148b5e726a0c07561895e39f394c2d1ebf092", 99},    // instead of 90
-	{"d7806c262ea5e3928d0970e2a0f19e931f9ed1af", 91751}, // instead of 83410
-	{"fa76362c7937b02018abd99c04333d3b62ff7f3d", 624},   // instead of 1092
-	{"9e2d2a783274c81337fec2e2897fee5ec614cca0", 539},   // instead of 490
-	{"e933cedb1d7772ab3ca6ca8c173cc6b6ad61bb5f", 140},   // instead of 217
-	{"0a91147313b82fdb20c853646e829b8d32a9fdb8", 1319},  // instead of 1879
-	{"f07df0a74967c53611f2bb619eec462527ddb5d3", 297},   // instead of 270
-	{"fddb0aa468c70be6440c46cfbdf099d2135e25a7", 2285},  // instead of 2287
-	{"960ac2fd49b2088cfbb385fed12adb4d78429928", 6772},  // instead of 11800
-	{"f061c6acc642676914aa7139abc89fbf97a06112", 20834}, // instead of 32198
-	{"aa1a4565f2d875995d85e8d52e7193c666e20c04", 647},   // instead of 961
-	{"8fd0a7b70aa896cf85b3034385f98af1d927d442", 4082},  // instead of 0
-}
-
-var guardiansFixDoubleDelegationReward = []struct {
-	address string
-	reward  int
-}{
-	{"f7ae622C77D0580f02Bcb2f92380d61e3F6e466c", 1399658}, // instead of 1403641
-	{"63AEf7616882F488BCa97361d1c24F05B4657ae5", 1250192}, // instead of 1250217
-	{"C82eC0F3c834d337c51c9375a1C0A65Ce7aaDaec", 865579},  // instead of 855152
-	{"9afc8EF233e2793B2b90Ca5d70cA2e7098013142", 522112},  // instead of 522649
-	{"8287928a809346dF4Cd53A096025a1136F7C4fF5", 340047},  // instead of 340157
-	{"F058cCFB2324310C33E8FD9a1ddA8E99C8bEdA59", 527823},  // instead of 528491
-	{"a3cBDD66267DAaA4B51Af6CD894c92054bb2F2c7", 21201},   // instead of 47243
-	{"cB6172196BbCf5b4cf9949D7f2e4Ee802EF2b81D", 94199},   // instead of 85826
-	{"1763F3DA9380E2df7FfDE1dC245801BB14F80669", 21887},   // instead of 15898
-}
-
-func _fixRewardsDrift7928900() {
-	key := []byte("_fixRewards7928900_")
-	if state.ReadUint32(key) == 0 {
-
-		for _, participant := range participantsFixDoubleDelegationReward {
-			addressBytes, err := hex.DecodeString(participant.address)
-			if err != nil {
-				panic(fmt.Errorf("cannot parse %s , err %s", participant.address, err))
-			}
-			wrongRewardValue := state.ReadUint64(_formatCumulativeParticipationReward(addressBytes))
-			state.WriteUint64(_formatCumulativeParticipationReward(addressBytes), uint64(participant.reward))
-			correctRewardValue := state.ReadUint64(_formatCumulativeParticipationReward(addressBytes))
-			fmt.Printf("elections fix rewards: Participant %s reward changed from %d to %d\n", participant.address, wrongRewardValue, correctRewardValue)
-		}
-
-		for _, guardian := range guardiansFixDoubleDelegationReward {
-			addressBytes, err := hex.DecodeString(guardian.address)
-			if err != nil {
-				panic(fmt.Errorf("cannot parse %s , err %s", guardian.address, err))
-			}
-			wrongRewardValue := state.ReadUint64(_formatCumulativeGuardianExcellenceReward(addressBytes))
-			state.WriteUint64(_formatCumulativeGuardianExcellenceReward(addressBytes), uint64(guardian.reward))
-			correctRewardValue := state.ReadUint64(_formatCumulativeGuardianExcellenceReward(addressBytes))
-			fmt.Printf("elections fix rewards: Guardian %s reward changed from %d to %d\n", guardian.address, wrongRewardValue, correctRewardValue)
-		}
-
-		state.WriteUint32(key, 1)
-	} else {
-		panic(fmt.Sprintf("cannot fix rewards anymore"))
-	}
-}
-
-var doubleDelegators = []string{
-	"aaa020747c3f27035a803a2a9b577e76ed5cdfc7",
-	"e933cedb1d7772ab3ca6ca8c173cc6b6ad61bb5f",
-	"d5db86180abb0300334347a6a57bd318ffa7aebc",
-	"9e912ba1ce059ceca9499ec9ec703b12d32cb50c",
-	"e4f60ade67862d6604cc7464621bc7ac17e75841",
-	"a39fc2c9c437f2e56901ccc6bd18ee1100c82686",
-	"aa1a4565f2d875995d85e8d52e7193c666e20c04",
-	"63cad78066b28c58f29f58a4f55827b2c2259776",
-	"fa76362c7937b02018abd99c04333d3b62ff7f3d",
-	"960ac2fd49b2088cfbb385fed12adb4d78429928",
-	"f061c6acc642676914aa7139abc89fbf97a06112",
-	"606feb20c03a797a42390163dedd1d45297af73f",
-	"0a91147313b82fdb20c853646e829b8d32a9fdb8",
-	"22afe11457c368ee1b0314477f0538bfb44843af",
-}
-
-func _fixDelegatorState7928900() {
-	key := []byte("_fixDelegatorState_7928900_")
-	if state.ReadUint32(key) == 0 {
-
-		doubleDelegatorMap := make(map[[20]byte]bool, len(doubleDelegators))
-		for _, delegator := range doubleDelegators {
-			addressBytes, err := hex.DecodeString(delegator)
-			if err != nil {
-				panic(fmt.Errorf("cannot parse %s, err %s", delegator, err))
-			}
-			doubleDelegatorMap[_addressSliceToArray(addressBytes)] = true
-		}
-
-		numOfDelegators := _getNumberOfDelegators()
-		newNumofDelegators := numOfDelegators
-
-		for i := 0; i < newNumofDelegators; i++ {
-			delegator := _getDelegatorAtIndex(i)
-			if doubleDelegatorMap[delegator] {
-				_setDelegatorAtIndex(i, state.ReadBytes(_formatDelegatorIterator(newNumofDelegators-1)))
-				fmt.Printf("elections fix delegators: Delegator pointer at %d is duplicate moving the pointer from %d instead\n", i, newNumofDelegators-1)
-				delete(doubleDelegatorMap, delegator)
-				newNumofDelegators--
-			}
-		}
-
-		fmt.Printf("elections fix delegators: Removing un-needed pointers from %d to %d\n", newNumofDelegators, numOfDelegators)
-		for i := newNumofDelegators; i < numOfDelegators; i++ {
-			state.Clear(_formatDelegatorIterator(newNumofDelegators))
-		}
-		_setNumberOfDelegators(newNumofDelegators)
-		fmt.Printf("elections fix delegators: New number of Delegations %d\n", _getNumberOfDelegators())
-
-		state.WriteUint32(key, 1)
-	} else {
-		panic(fmt.Sprintf("cannot fix delegate state for double delegations anymore"))
-	}
 }
 
 // Copyright 2019 the orbs-ethereum-contracts authors
@@ -817,6 +620,8 @@ func _initCurrentElection() {
 // helpers for avoiding reliance on strings throughout the system
 const CONTRACT_NAME = "_Elections"
 const METHOD_GET_ELECTED_VALIDATORS = "getElectedValidatorsOrbsAddress"
+const METHOD_GET_ELECTED_VALIDATORS_BY_BLOCK_HEIGHT = "getElectedValidatorsOrbsAddressByBlockHeight"
+const METHOD_PROCESS_TRIGGER = "processTrigger"
 
 // parameters
 var DELEGATION_NAME = "Delegate"
@@ -868,7 +673,7 @@ func mirrorDelegationByTransfer(hexEncodedEthTxHash string) {
 	eventBlockNumber, eventBlockTxIndex := ethereum.GetTransactionLog(getTokenEthereumContractAddress(), getTokenAbi(), hexEncodedEthTxHash, DELEGATION_BY_TRANSFER_NAME, e)
 
 	if DELEGATION_BY_TRANSFER_VALUE.Cmp(e.Value) != 0 {
-		panic(fmt.Errorf("mirrorDelegateByTransfer from %v to %v failed since %d is wrong delegation value", e.From, e.To, e.Value.Uint64()))
+		panic(fmt.Errorf("mirrorDelegateByTransfer from %x to %x failed since %d is wrong delegation value", e.From, e.To, e.Value.Uint64()))
 	}
 
 	_mirrorDelegateImpl(e.From[:], e.To[:], eventBlockNumber, eventBlockTxIndex, DELEGATION_BY_TRANSFER_NAME)
@@ -894,7 +699,7 @@ func mirrorDelegation(hexEncodedEthTxHash string) {
 
 func _mirrorDelegateImpl(delegator []byte, agent []byte, eventBlockNumber uint64, eventBlockTxIndex uint32, eventName string) {
 	if _isMirrorDelegationDataAfterElection(eventBlockNumber) {
-		panic(fmt.Errorf("delegate with medthod %s from %v to %v failed since it happened in block number %d which is after election date, resubmit next election",
+		panic(fmt.Errorf("delegate with medthod %s from %x to %x failed since it happened in block number %d which is after election date, resubmit next election",
 			eventName, delegator, agent, eventBlockNumber))
 	}
 	_mirrorDelegationData(delegator, agent, eventBlockNumber, eventBlockTxIndex, eventName)
@@ -918,15 +723,15 @@ func _mirrorDelegationData(delegator []byte, agent []byte, eventBlockNumber uint
 	stateMethod := state.ReadString(_formatDelegatorMethod(delegator))
 	stateBlockNumber := uint64(0)
 	if stateMethod == DELEGATION_NAME && eventName == DELEGATION_BY_TRANSFER_NAME {
-		panic(fmt.Errorf("delegate with method %s from %s to %s failed since already have delegation with method %s",
-			eventName, hex.EncodeToString(delegator), hex.EncodeToString(agent), stateMethod))
+		panic(fmt.Errorf("delegate with medthod %s from %x to %x failed since already have delegation with method %s",
+			eventName, delegator, agent, stateMethod))
 	} else if stateMethod == DELEGATION_BY_TRANSFER_NAME && eventName == DELEGATION_NAME {
 		stateBlockNumber = eventBlockNumber
 	} else if stateMethod == eventName {
 		stateBlockNumber = state.ReadUint64(_formatDelegatorBlockNumberKey(delegator))
 		stateBlockTxIndex := state.ReadUint32(_formatDelegatorBlockTxIndexKey(delegator))
 		if stateBlockNumber > eventBlockNumber || (stateBlockNumber == eventBlockNumber && stateBlockTxIndex >= eventBlockTxIndex) {
-			panic(fmt.Errorf("delegate from %v to %v with block-height %d and tx-index %d failed since current delegation is from block-height %d and tx-index %d",
+			panic(fmt.Errorf("delegate from %x to %x with block-height %d and tx-index %d failed since current delegation is from block-height %d and tx-index %d",
 				delegator, agent, eventBlockNumber, eventBlockTxIndex, stateBlockNumber, stateBlockTxIndex))
 		}
 	}
@@ -1075,6 +880,10 @@ func _calculateProcessCurrentElectionValues() {
 		_setProcessCurrentElection(electionBlockTime, electionBlockNumber, earliestValidVoteBlockNumber)
 		fmt.Printf("elections %10d: set %s election parameters: time is %d, block is %d, earliest valid vote block is %d\n", electionBlockNumber, label, electionBlockTime, electionBlockNumber, earliestValidVoteBlockNumber)
 	}
+}
+
+func processTrigger() {
+	fmt.Printf("elections : processTrigger called\n")
 }
 
 // Copyright 2019 the orbs-ethereum-contracts authors
@@ -1388,10 +1197,11 @@ func _collectOneValidatorDataFromEthereum(i int) {
 	var orbsAddress [20]byte
 	ethereum.CallMethodAtBlock(_getProcessCurrentElectionBlockNumber(), getValidatorsRegistryEthereumContractAddress(), getValidatorsRegistryAbi(), "getOrbsAddress", &orbsAddress, validator)
 	stake := _getStakeAtElection(validator)
+	lockedStake := _getLockedStakeAtElection(validator)
 
-	_setValidatorStake(validator[:], stake)
+	_setValidatorStake(validator[:], safeuint64.Add(stake, lockedStake))
 	_setValidatorOrbsAddress(validator[:], orbsAddress[:])
-	fmt.Printf("elections %10d: from ethereum validator %x, stake %d orbsAddress %x\n", _getProcessCurrentElectionBlockNumber(), validator, stake, orbsAddress)
+	fmt.Printf("elections %10d: from ethereum validator %x, unlocked-stake %d, locked-stake %d, orbsAddress %x\n", _getProcessCurrentElectionBlockNumber(), validator, stake, lockedStake, orbsAddress)
 }
 
 func _collectNextGuardiansDataFromEthereum() bool {
@@ -1410,6 +1220,7 @@ type Vote struct {
 func _collectOneGuardianDataFromEthereum(i int) {
 	guardian := _getGuardianAtIndex(i)
 	stake := uint64(0)
+	lockedStake := uint64(0)
 	candidates := [][20]byte{{}}
 
 	out := Vote{}
@@ -1417,15 +1228,16 @@ func _collectOneGuardianDataFromEthereum(i int) {
 	voteBlockNumber := out.BlockNumber.Uint64()
 	if voteBlockNumber != 0 && voteBlockNumber >= _getProcessCurrentElectionEarliestValidVoteBlockNumber() {
 		stake = _getStakeAtElection(guardian)
+		lockedStake = _getLockedStakeAtElection(guardian)
 		candidates = out.ValidatorsBytes20
 		voteBlockNumber = out.BlockNumber.Uint64()
-		fmt.Printf("elections %10d: from ethereum guardian %x voted at %d, stake %d\n", _getProcessCurrentElectionBlockNumber(), guardian, voteBlockNumber, stake)
+		fmt.Printf("elections %10d: from ethereum guardian %x voted at %d, unlocked-stake %d, locked-stake %d\n", _getProcessCurrentElectionBlockNumber(), guardian, voteBlockNumber, stake, lockedStake)
 	} else {
 		voteBlockNumber = uint64(0)
 		fmt.Printf("elections %10d: from ethereum guardian %x vote is too old, will ignore\n", _getProcessCurrentElectionBlockNumber(), guardian)
 	}
 
-	_setGuardianStake(guardian[:], stake)
+	_setGuardianStake(guardian[:], safeuint64.Add(stake, lockedStake))
 	_setGuardianVoteBlockNumber(guardian[:], voteBlockNumber)
 	_setCandidates(guardian[:], candidates)
 }
@@ -1441,19 +1253,27 @@ func _collectNextDelegatorStakeFromEthereum() bool {
 func _collectOneDelegatorStakeFromEthereum(i int) {
 	delegator := _getDelegatorAtIndex(i)
 	stake := uint64(0)
+	lockedStake := uint64(0)
 	if !_isGuardian(delegator) {
 		stake = _getStakeAtElection(delegator)
+		lockedStake = _getLockedStakeAtElection(delegator)
 	} else {
 		fmt.Printf("elections %10d: from ethereum delegator %x is actually a guardian, will ignore\n", _getProcessCurrentElectionBlockNumber(), delegator)
 	}
-	state.WriteUint64(_formatDelegatorStakeKey(delegator[:]), stake)
-	fmt.Printf("elections %10d: from ethereum delegator %x , stake %d\n", _getProcessCurrentElectionBlockNumber(), delegator, stake)
+	state.WriteUint64(_formatDelegatorStakeKey(delegator[:]), safeuint64.Add(stake, lockedStake))
+	fmt.Printf("elections %10d: from ethereum delegator %x , unlocked-stake %d, locked stake %d\n", _getProcessCurrentElectionBlockNumber(), delegator, stake, lockedStake)
 }
 
 func _getStakeAtElection(ethAddr [20]byte) uint64 {
 	stake := new(*big.Int)
 	ethereum.CallMethodAtBlock(_getProcessCurrentElectionBlockNumber(), getTokenEthereumContractAddress(), getTokenAbi(), "balanceOf", stake, ethAddr)
 	return ((*stake).Div(*stake, ETHEREUM_STAKE_FACTOR)).Uint64()
+}
+
+func _getLockedStakeAtElection(ethAddr [20]byte) uint64 {
+	lockedStake := new(*big.Int)
+	ethereum.CallMethodAtBlock(_getProcessCurrentElectionBlockNumber(), getStakingEthereumContractAddress(), getStakingAbi(), "getStakeBalanceOf", lockedStake, ethAddr)
+	return ((*lockedStake).Div(*lockedStake, ETHEREUM_STAKE_FACTOR)).Uint64()
 }
 
 func _calculateVotes() (candidateVotes map[[20]byte]uint64, totalVotes uint64, participants [][20]byte, participantStakes map[[20]byte]uint64, guardianAccumulatedStakes map[[20]byte]uint64) {
@@ -1489,7 +1309,7 @@ func _collectDelegatorsStake(guardians map[[20]byte]bool) (delegators [][20]byte
 	for i := 0; i < numOfDelegators; i++ {
 		delegator := _getDelegatorAtIndex(i)
 		if !guardians[delegator] {
-			if _, ok := delegatorStakes[delegator]; !ok { //
+			if _, ok := delegatorStakes[delegator]; !ok {
 				stake := state.ReadUint64(_formatDelegatorStakeKey(delegator[:]))
 				delegatorStakes[delegator] = stake
 				delegators = append(delegators, delegator)
@@ -1583,7 +1403,7 @@ func _processValidatorsSelection(candidateVotes map[[20]byte]uint64, totalVotes 
 		}
 	}
 	if len(winners) < MIN_ELECTED_VALIDATORS {
-		fmt.Printf("elections %10d: not enought validators left after vote using all validators %v\n", _getProcessCurrentElectionBlockNumber(), validators)
+		fmt.Printf("elections %10d: not enought validators left after vote using all validators %x\n", _getProcessCurrentElectionBlockNumber(), validators)
 		return validators
 	} else {
 		return winners
