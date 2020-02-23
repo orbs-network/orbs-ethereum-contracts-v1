@@ -6,6 +6,7 @@ const elections = artifacts.require("Elections");
 const staking = artifacts.require("StakingContract");
 const subscriptions = artifacts.require("Subscriptions");
 const rewards = artifacts.require("Rewards");
+const protocol = artifacts.require("Protocol");
 const contractRegistry = artifacts.require("ContractRegistry");
 
 function parseLogs(txResult, contract, eventSignature) {
@@ -22,7 +23,7 @@ export const stakedEvents = (txResult) => parseLogs(txResult, staking, "Staked(a
 export const unstakedEvents = (txResult) => parseLogs(txResult, staking, "Unstaked(address,uint256,uint256)");
 export const delegatedEvents = (txResult) => parseLogs(txResult, elections, "Delegated(address,address)");
 export const totalStakeChangedEvents = (txResult) => parseLogs(txResult, elections, "TotalStakeChanged(address,uint256)");
-export const subscriptionChangedEvents = (txResult): SubscriptionChangedEvent[] => parseLogs(txResult, subscriptions, "SubscriptionChanged(uint256,uint256,uint256,string)");
+export const subscriptionChangedEvents = (txResult): SubscriptionChangedEvent[] => parseLogs(txResult, subscriptions, "SubscriptionChanged(uint256,uint256,uint256,string,string)");
 export const paymentEvents = (txResult) => parseLogs(txResult, subscriptions, "Payment(uint256,address,uint256,string,uint256)");
 export const feeAddedToBucketEvents = (txResult) => parseLogs(txResult, rewards, "FeeAddedToBucket(uint256,uint256,uint256)");
 export const rewardAssignedEvents = (txResult) => parseLogs(txResult, rewards, "RewardAssigned(address,uint256,uint256)");
@@ -31,3 +32,4 @@ export const voteOutEvents = (txResult) => parseLogs(txResult, elections, "VoteO
 export const votedOutOfCommitteeEvents = (txResult) => parseLogs(txResult, elections, "VotedOutOfCommittee(address)");
 export const vcConfigRecordChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcConfigRecordChanged(uint256,string,string)");
 export const contractAddressUpdatedEvents = (txResult) => parseLogs(txResult, contractRegistry, "ContractAddressUpdated(string,address)");
+export const protocolChangedEvents = (txResult) => parseLogs(txResult, protocol, "ProtocolVersionChanged(string,uint256,uint256)");

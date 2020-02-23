@@ -82,7 +82,7 @@ contract('rewards-level-flows', async () => {
     await d.erc20.assign(appOwner.address, payment);
     await d.erc20.approve(subs.address, payment, {from: appOwner.address});
 
-    let r = await subs.createVC(payment, {from: appOwner.address});
+    let r = await subs.createVC(payment, "main", {from: appOwner.address});
     let startTime = await txTimestamp(r);
 
     const feeBuckets = feeAddedToBucketEvents(r);

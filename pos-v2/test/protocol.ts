@@ -1,0 +1,79 @@
+import Web3 from "web3";
+declare const web3: Web3;
+
+import BN from "bn.js";
+import {Driver, expectRejected, MAIN_DEPLOYMENT_SUBSET_NAME, ZERO_ADDR} from "./driver";
+import chai from "chai";
+import {subscriptionChangedEvents} from "./event-parsing";
+import {bn} from "./helpers";
+chai.use(require('chai-bn')(BN));
+chai.use(require('./matchers'));
+
+const expect = chai.expect;
+
+contract('protocol-contract', async () => {
+
+  it('schedules a protocol version upgrade for the main, canary deployment subsets', async () => {
+    const d = await Driver.new();
+
+    const curBlockNumber: number = await new Promise((resolve, reject) => web3.eth.getBlockNumber((err, blockNumber) => err ? reject(err): resolve(blockNumber)));
+    let r = await d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber + 100);
+    expect(r).to.have.a.protocolChangedEvent({
+      deploymentSubset: MAIN_DEPLOYMENT_SUBSET_NAME,
+      protocolVersion: bn(2),
+      asOfBlock: bn(curBlockNumber + 100)
+    });
+
+    r = await d.protocol.setProtocolVersion("canary", 2, 0);
+    expect(r).to.have.a.protocolChangedEvent({
+      deploymentSubset: "canary",
+      protocolVersion: bn(2),
+      asOfBlock: bn(0)
+    });
+
+    r = await d.protocol.setProtocolVersion("canary", 3, curBlockNumber + 100);
+    expect(r).to.have.a.protocolChangedEvent({
+      deploymentSubset: "canary",
+      protocolVersion: bn(3),
+      asOfBlock: bn(curBlockNumber + 100)
+    });
+  });
+
+  it('does not allow protocol upgrade to be scheduled before the latest upgrade schedule', async () => {
+    const d = await Driver.new();
+
+    const curBlockNumber: number = await new Promise((resolve, reject) => web3.eth.getBlockNumber((err, blockNumber) => err ? reject(err): resolve(blockNumber)));
+    let r = await d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber + 100);
+    expect(r).to.have.a.protocolChangedEvent({
+      deploymentSubset: MAIN_DEPLOYMENT_SUBSET_NAME,
+      protocolVersion: bn(2),
+      asOfBlock: bn(curBlockNumber + 100)
+    });
+
+    await expectRejected(d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 100));
+    await expectRejected(d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 99));
+  });
+
+  it('does not allow protocol upgrade to be scheduled in the past', async () => {
+    const d = await Driver.new();
+
+    const curBlockNumber: number = await new Promise((resolve, reject) => web3.eth.getBlockNumber((err, blockNumber) => err ? reject(err): resolve(blockNumber)));
+    await expectRejected(d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber));
+  });
+
+  it('does not allow protocol downgrade', async () => {
+    const d = await Driver.new();
+
+    const curBlockNumber: number = await new Promise((resolve, reject) => web3.eth.getBlockNumber((err, blockNumber) => err ? reject(err): resolve(blockNumber)));
+    let r = await d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 100);
+    expect(r).to.have.a.protocolChangedEvent({
+      deploymentSubset: MAIN_DEPLOYMENT_SUBSET_NAME,
+      protocolVersion: bn(3),
+      asOfBlock: bn(curBlockNumber + 100)
+    });
+
+    await expectRejected(d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 101));
+    await expectRejected(d.protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber + 102));
+  });
+
+});

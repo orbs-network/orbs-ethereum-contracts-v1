@@ -27,7 +27,6 @@ contract("subscriptions aggregation", async () => {
     const firstPayment = monthlyRate.mul(new BN(2));
 
     for (let i of new Array(numnberOfVChains)) {
-
       const subscriber = await d.newSubscriber("defaultTier", monthlyRate);
       // buy subscription for a new VC
       const appOwner = d.newParticipant();
@@ -36,7 +35,7 @@ contract("subscriptions aggregation", async () => {
         from: appOwner.address
       });
 
-      let r = await subscriber.createVC(firstPayment, {
+      let r = await subscriber.createVC(firstPayment, "main",  {
         from: appOwner.address
       });
       expect(r).to.have.subscriptionChangedEvent();

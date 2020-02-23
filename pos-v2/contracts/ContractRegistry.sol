@@ -10,7 +10,7 @@ contract ContractRegistry is IContractRegistry {
 	event ContractAddressUpdated(string contractName, address addr);
 
 	modifier onlyGovernor() {
-		require(msg.sender == governor, "caller is the registry governor");
+		require(msg.sender == governor, "caller is not the registry governor");
 
 		_;
 	}

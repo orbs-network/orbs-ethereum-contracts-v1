@@ -14,7 +14,7 @@ interface ISubscriptions {
 
     /// @dev Called by: authorized subscriber (plan) contracts
     /// Creates a new VC
-    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint);
+    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner, string calldata deploymentSubset) external returns (uint, uint);
 
     /// @dev Called by: authorized subscriber (plan) contracts
     /// Extends the subscription of an existing VC.

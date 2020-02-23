@@ -13,6 +13,7 @@ import { StakingContract } from "../typings/staking-contract";
 import { RewardsContract } from "../typings/rewards-contract";
 import { MonthlySubscriptionPlanContract } from "../typings/monthly-subscription-plan-contract";
 import {ContractRegistryContract} from "../typings/contract-registry-contract";
+import {ProtocolContract} from "../typings/protocol-contract";
 declare const web3: Web3;
 
 export const DEFAULT_MINIMUM_STAKE = 100;
@@ -21,6 +22,7 @@ export const DEFAULT_TOPOLOGY_SIZE = 3;
 export const DEFAULT_MAX_DELEGATION_RATIO = 10;
 export const DEFAULT_VOTE_OUT_THRESHOLD = 80;
 export const DEFAULT_VOTE_OUT_TIMEOUT = 24*60*60;
+export const MAIN_DEPLOYMENT_SUBSET_NAME = "main";
 
 export class Driver {
     private participants: Participant[] = [];
@@ -33,6 +35,7 @@ export class Driver {
         public staking: StakingContract,
         public subscriptions: SubscriptionsContract,
         public rewards: RewardsContract,
+        public protocol: ProtocolContract,
         public contractRegistry: ContractRegistryContract
     ) {}
 
@@ -46,17 +49,21 @@ export class Driver {
         const elections: ElectionsContract = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout);
         const staking: StakingContract = await Driver.newStakingContract(elections.address, erc20.address);
         const subscriptions: SubscriptionsContract = await artifacts.require('Subscriptions').new(erc20.address);
+        const protocol: ProtocolContract = await artifacts.require('Protocol').new(accounts[0]);
 
         await contractRegistry.set("staking", staking.address);
         await contractRegistry.set("rewards", rewards.address);
         await contractRegistry.set("elections", elections.address);
         await contractRegistry.set("subscriptions", subscriptions.address);
+        await contractRegistry.set("protocol", protocol.address);
 
         await elections.setContractRegistry(contractRegistry.address);
         await rewards.setContractRegistry(contractRegistry.address);
         await subscriptions.setContractRegistry(contractRegistry.address);
 
-        return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, contractRegistry);
+        await protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 1, 0);
+
+        return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, protocol, contractRegistry);
     }
 
     static async newContractRegistry(governorAddr: string): Promise<ContractRegistryContract> {
