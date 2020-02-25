@@ -1,19 +1,19 @@
-import { Contract } from "./contract";
-import TransactionDetails = Truffle.TransactionDetails;
-import TransactionResponse = Truffle.TransactionResponse;
+import {Contract} from "../eth";
+import {TransactionConfig, TransactionReceipt} from "web3-core";
+import * as BN from "bn.js";
 
 export interface ElectionsContract extends Contract {
-  registerValidator( ip: string, orbsAddrs: string, params?: TransactionDetails): Promise<TransactionResponse>;
-  stakeChange(stakeOwner: string, amount: number, sign: boolean, updatedStake: number, params?: TransactionDetails): Promise<TransactionResponse>;
+  registerValidator( ip: string, orbsAddrs: string, params?: TransactionConfig): Promise<TransactionReceipt>;
+  stakeChange(stakeOwner: string, amount: number, sign: boolean, updatedStake: number, params?: TransactionConfig): Promise<TransactionReceipt>;
   stakeChangeBatch(stakeOwners: string[], amounts: number[], signs: boolean[], updatedStakes: number[])
-  delegate( to: string, params?: TransactionDetails): Promise<TransactionResponse>;
-  getTopology(): Promise<TransactionResponse>;
-  notifyReadyForCommittee( params?: TransactionDetails): Promise<TransactionResponse>;
-  voteOut(address: string, params?: TransactionDetails): Promise<TransactionResponse>;
-  setValidatorOrbsAddress(orbsAddress: string, params?: TransactionDetails): Promise<TransactionResponse>;
-  setValidatorIp(ip: string, params?: TransactionDetails): Promise<TransactionResponse>;
-  refreshStakes(addrs: string[], params?: TransactionDetails): Promise<TransactionResponse>;
-  setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  delegate( to: string, params?: TransactionConfig): Promise<TransactionReceipt>;
+  getTopology(): Promise<TransactionReceipt>;
+  notifyReadyForCommittee( params?: TransactionConfig): Promise<TransactionReceipt>;
+  voteOut(address: string, params?: TransactionConfig): Promise<TransactionReceipt>;
+  setValidatorOrbsAddress(orbsAddress: string, params?: TransactionConfig): Promise<TransactionReceipt>;
+  setValidatorIp(ip: string, params?: TransactionConfig): Promise<TransactionReceipt>;
+  refreshStakes(addrs: string[], params?: TransactionConfig): Promise<TransactionReceipt>;
+  setContractRegistry(contractRegistry: string, params?: TransactionConfig): Promise<TransactionReceipt>;
 }
 
 export interface DelegatedEvent {

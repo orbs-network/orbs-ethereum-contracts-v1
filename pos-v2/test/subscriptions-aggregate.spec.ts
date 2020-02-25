@@ -1,3 +1,5 @@
+import 'mocha';
+
 import Web3 from "web3";
 declare const web3: Web3;
 
@@ -19,10 +21,10 @@ const expect = chai.expect;
 const rmDir = (path: string): Promise<void> =>
   new Promise(resolve => rimraf(path, () => resolve()));
 
-contract("subscriptions aggregation", async () => {
+describe("subscriptions aggregation", async () => {
   it("reads VCs from SubscriptionChanged events", async () => {
     const d = await Driver.new();
-    const numnberOfVChains = 45;
+    const numnberOfVChains = 5;
     const monthlyRate = new BN(1000);
     const firstPayment = monthlyRate.mul(new BN(2));
 
@@ -42,12 +44,12 @@ contract("subscriptions aggregation", async () => {
       expect(r).to.have.subscriptionChangedEvent();
     }
 
-    const events = await d.subscriptions.getPastEvents("SubscriptionChanged", {
+    const events = await d.subscriptions.web3Contract.getPastEvents("SubscriptionChanged", {
       fromBlock: 0,
       toBlock: "latest"
     });
     const vcs = events.map(event => event.returnValues.vcid);
-    expect(vcs.length).to.eql(45);
+    expect(vcs.length).to.eql(numnberOfVChains);
   });
 });
 

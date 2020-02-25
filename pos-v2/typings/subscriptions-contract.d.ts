@@ -1,8 +1,7 @@
-import { Contract } from "web3-eth-contract";
+import {Contract} from "../eth";
 
-import TransactionResponse = Truffle.TransactionResponse;
-import ContractInstance = Truffle.ContractInstance;
-import TransactionDetails = Truffle.TransactionDetails;
+import {TransactionConfig, TransactionReceipt} from "web3-core";
+import * as BN from "bn.js";
 
 export interface SubscriptionChangedEvent {
   vcid: number | BN;
@@ -25,8 +24,8 @@ export interface VcConfigRecordChangedEvent {
   value: string
 }
 
-export interface SubscriptionsContract extends ContractInstance, Contract {
-  addSubscriber(address,params?: TransactionDetails): Promise<TransactionResponse>;
-  setVcConfigRecord(vcid: number|BN, key: string, value: string, params?: TransactionDetails): Promise<TransactionResponse>;
-  setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
+export interface SubscriptionsContract extends Contract {
+  addSubscriber(address,params?: TransactionConfig): Promise<TransactionReceipt>;
+  setVcConfigRecord(vcid: number|BN, key: string, value: string, params?: TransactionConfig): Promise<TransactionReceipt>;
+  setContractRegistry(contractRegistry: string, params?: TransactionConfig): Promise<TransactionReceipt>;
 }

@@ -1,7 +1,6 @@
-import { Contract } from "./contract";
-
-import TransactionResponse = Truffle.TransactionResponse;
-import TransactionDetails = Truffle.TransactionDetails;
+import {Contract} from "../eth";
+import {TransactionConfig, TransactionReceipt} from "web3-core";
+import * as BN from "bn.js";
 
 export interface StakedEvent {
   stakeOwner: string;
@@ -16,6 +15,6 @@ export interface UnstakedEvent {
 }
 
 export interface StakingContract extends Contract {
-  stake(amount: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
-  unstake(amount: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
+  stake(amount: number | BN, params?: TransactionConfig): Promise<TransactionReceipt>;
+  unstake(amount: number | BN, params?: TransactionConfig): Promise<TransactionReceipt>;
 }
