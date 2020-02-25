@@ -7,8 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "truffle test",
-    "test-truffleless": "./node_modules/mocha/bin/mocha --full-trace -r ./tsinit.js ./test/*.spec.ts --timeout 20000",
+    "test": "npm run compile && mocha --exit --full-trace -r ./tsinit.js ./test/*.spec.ts --timeout 20000",
     "coverage": "solidity-coverage",
     "compile": "truffle compile",
     "migrate": "truffle migrate --reset",
@@ -38,12 +37,5 @@
     "web3": "1.2.6",
     "web3-core": "^1.2.6",
     "web3-eth-contract": "^1.2.6"
-  },
-  "mochaa": {
-    "diff": true,
-    "reporter": "spec",
-    "slow": 75,
-    "timeout": 90000,
-    "ui": "bdd"
   }
 }
