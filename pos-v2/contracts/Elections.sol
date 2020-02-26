@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "./interfaces/ICommitteeListener.sol";
 import "./interfaces/IElections.sol";
 import "./interfaces/IContractRegistry.sol";
-import "./interfaces/IStakingContract.sol";
+import "./IStakingContract.sol";
 
 contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	using SafeMath for uint256;
