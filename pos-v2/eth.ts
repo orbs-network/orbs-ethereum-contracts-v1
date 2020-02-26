@@ -6,29 +6,27 @@ const HDWalletProvider = require("truffle-hdwallet-provider");
 
 export const ETHEREUM_URL = process.env.ETHEREUM_URL || "http://localhost:7545";
 const ETHEREUM_MNEMONIC = process.env.ETHEREUM_MNEMONIC || "vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid";
-export const web3 = new Web3(new HDWalletProvider(
-    ETHEREUM_MNEMONIC,
-    ETHEREUM_URL,
-    0,
-    100
-    )
-);
+
+
+const refreshWeb3 = () => {
+    web3 = new Web3(new HDWalletProvider(
+        ETHEREUM_MNEMONIC,
+        ETHEREUM_URL,
+        0,
+        100,
+        false
+        )
+    );
+};
+
+export var web3;
+refreshWeb3();
 
 let syncP:any = Promise.resolve();
 function sync(f) {
     const p = syncP.then(f);
     syncP = p.catch(() => {});
     return p;
-}
-
-function clearNonceCache() {
-    const provider = web3.currentProvider;
-    const np = (provider as any).engine._providers.find(p => p.nonceCache != null);
-    if (np == null) {
-        console.log("WARNING: provider hack doesn't work, consider remove clearNonceCache");
-        return;
-    }
-    np.nonceCache = {};
 }
 
 export class Contract {
@@ -48,9 +46,13 @@ export class Contract {
         return this.web3Contract.options.address;
     }
 
+    private recreateWeb3Contract() {
+        refreshWeb3();
+        this.web3Contract = new web3.eth.Contract(this.abi, this.address);
+    }
+
     private async callContractMethod(method: string, methodAbi, args: any[]) {
         return sync(async () => {
-            clearNonceCache();
             const accounts = await web3.eth.getAccounts();
             let opts = {};
             if (args.length > 0 && JSON.stringify(args[args.length - 1])[0] == '{') {
@@ -58,11 +60,17 @@ export class Contract {
             }
             args = args.map(x => BN.isBN(x) ? x.toString() : Array.isArray(x) ? x.map(_x => BN.isBN(_x) ? _x.toString() : _x) : x);
             const action = methodAbi.stateMutability == "view" ? "call" : "send";
-            return this.web3Contract.methods[method](...args)[action]({
-                from: accounts[0],
-                gas: 6700000,
-                ...opts
-            });
+            try {
+                const ret = await this.web3Contract.methods[method](...args)[action]({
+                    from: accounts[0],
+                    gas: 6700000,
+                    ...opts
+                }); // if we return directly, it will not throw the exceptions but return a rejected promise
+                return ret;
+            } catch(e) {
+                this.recreateWeb3Contract();
+                throw e;
+            }
         });
     }
 
@@ -70,17 +78,23 @@ export class Contract {
 
 export async function deploy(contractName: string, args: any[], options?: any): Promise<any> {
     return sync(async () => {
-        clearNonceCache();
         const accounts = await web3.eth.getAccounts();
         const abi = compiledContracts[contractName].abi;
-        const web3contract = await (new web3.eth.Contract(abi).deploy({
-            data: compiledContracts[contractName].bytecode,
-            arguments: args || []
-        }).send({
-            from: accounts[0],
-            ...(options || {})
-        }));
-        return new Contract(abi, web3contract);
+
+        try {
+            const web3Contract = await (new web3.eth.Contract(abi).deploy({
+                data: compiledContracts[contractName].bytecode,
+                arguments: args || []
+            }).send({
+                from: accounts[0],
+                ...(options || {})
+            }));
+            return new Contract(abi, web3Contract);
+        } catch (e) {
+            refreshWeb3();
+            throw e;
+        }
+
     });
 }
 
