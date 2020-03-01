@@ -21,7 +21,7 @@ export const validatorRegisteredEvents = (txResult) => parseLogs(txResult, elect
 export const stakedEvents = (txResult) => parseLogs(txResult, staking, "Staked(address,uint256,uint256)");
 export const unstakedEvents = (txResult) => parseLogs(txResult, staking, "Unstaked(address,uint256,uint256)");
 export const delegatedEvents = (txResult) => parseLogs(txResult, elections, "Delegated(address,address)");
-export const totalStakeChangedEvents = (txResult) => parseLogs(txResult, elections, "TotalStakeChanged(address,uint256)");
+export const stakeChangedEvents = (txResult) => parseLogs(txResult, elections, "StakeChanged(address,uint256,uint256,uint256,uint256)");
 export const subscriptionChangedEvents = (txResult): SubscriptionChangedEvent[] => parseLogs(txResult, subscriptions, "SubscriptionChanged(uint256,uint256,uint256,string)");
 export const paymentEvents = (txResult) => parseLogs(txResult, subscriptions, "Payment(uint256,address,uint256,string,uint256)");
 export const feeAddedToBucketEvents = (txResult) => parseLogs(txResult, rewards, "FeeAddedToBucket(uint256,uint256,uint256)");
@@ -31,5 +31,4 @@ export const voteOutEvents = (txResult) => parseLogs(txResult, elections, "VoteO
 export const votedOutOfCommitteeEvents = (txResult) => parseLogs(txResult, elections, "VotedOutOfCommittee(address)");
 export const vcConfigRecordChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcConfigRecordChanged(uint256,string,string)");
 export const contractAddressUpdatedEvents = (txResult) => parseLogs(txResult, contractRegistry, "ContractAddressUpdated(string,address)");
-export const banningVoteEvents = (txResult) => parseLogs(txResult, elections, "BanningVote(address,address)");
-export const banningUnvoteEvents = (txResult) => parseLogs(txResult, elections, "BanningUnvote(address,address)");
+export const banningVoteEvents = (txResult) => parseLogs(txResult, elections, "BanningVote(address,address[])");

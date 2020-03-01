@@ -32,13 +32,7 @@ interface IElections /* is IStakeChangeNotifier */ {
 	function refreshStakes(address[] calldata addrs) external;
 
 	/// @dev casts a banning vote by the sender to the given address
-	function voteForBanning(address against) external;
-
-	/// @dev uncasts a banning vote by the sender to the given address
-	function unvoteForBanning(address against) external;
-
-	/// @dev refreshes a banning vote by the given voter to reflect stake changes that occured since the actual vote. Can be called by anyone.
-	function refreshBanningVote(address voter, address against) external;
+	function setBanningVotes(address[] calldata addrs) external;
 
 	/*
 	 *   Methods restricted to other Orbs contracts
