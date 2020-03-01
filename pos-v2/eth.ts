@@ -22,13 +22,6 @@ const refreshWeb3 = () => {
 export var web3;
 refreshWeb3();
 
-let syncP:any = Promise.resolve();
-function sync(f) {
-    const p = syncP.then(f);
-    syncP = p.catch(() => {});
-    return p;
-}
-
 export class Contract {
 
     constructor(private abi, public web3Contract: Web3Contract) {
@@ -52,49 +45,44 @@ export class Contract {
     }
 
     private async callContractMethod(method: string, methodAbi, args: any[]) {
-        return sync(async () => {
-            const accounts = await web3.eth.getAccounts();
-            let opts = {};
-            if (args.length > 0 && JSON.stringify(args[args.length - 1])[0] == '{') {
-                opts = args.pop();
-            }
-            args = args.map(x => BN.isBN(x) ? x.toString() : Array.isArray(x) ? x.map(_x => BN.isBN(_x) ? _x.toString() : _x) : x);
-            const action = methodAbi.stateMutability == "view" ? "call" : "send";
-            try {
-                const ret = await this.web3Contract.methods[method](...args)[action]({
-                    from: accounts[0],
-                    gas: 6700000,
-                    ...opts
-                }); // if we return directly, it will not throw the exceptions but return a rejected promise
-                return ret;
-            } catch(e) {
-                this.recreateWeb3Contract();
-                throw e;
-            }
-        });
+        const accounts = await web3.eth.getAccounts();
+        let opts = {};
+        if (args.length > 0 && JSON.stringify(args[args.length - 1])[0] == '{') {
+            opts = args.pop();
+        }
+        args = args.map(x => BN.isBN(x) ? x.toString() : Array.isArray(x) ? x.map(_x => BN.isBN(_x) ? _x.toString() : _x) : x);
+        const action = methodAbi.stateMutability == "view" ? "call" : "send";
+        try {
+            const ret = await this.web3Contract.methods[method](...args)[action]({
+                from: accounts[0],
+                gas: 6700000,
+                ...opts
+            }); // if we return directly, it will not throw the exceptions but return a rejected promise
+            return ret;
+        } catch(e) {
+            this.recreateWeb3Contract();
+            throw e;
+        }
     }
 
 }
 
 export async function deploy(contractName: string, args: any[], options?: any): Promise<any> {
-    return sync(async () => {
-        const accounts = await web3.eth.getAccounts();
-        const abi = compiledContracts[contractName].abi;
+    const accounts = await web3.eth.getAccounts();
+    const abi = compiledContracts[contractName].abi;
 
-        try {
-            const web3Contract = await (new web3.eth.Contract(abi).deploy({
-                data: compiledContracts[contractName].bytecode,
-                arguments: args || []
-            }).send({
-                from: accounts[0],
-                ...(options || {})
-            }));
-            return new Contract(abi, web3Contract);
-        } catch (e) {
-            refreshWeb3();
-            throw e;
-        }
-
-    });
+    try {
+        const web3Contract = await (new web3.eth.Contract(abi).deploy({
+            data: compiledContracts[contractName].bytecode,
+            arguments: args || []
+        }).send({
+            from: accounts[0],
+            ...(options || {})
+        }));
+        return new Contract(abi, web3Contract);
+    } catch (e) {
+        refreshWeb3();
+        throw e;
+    }
 }
 
