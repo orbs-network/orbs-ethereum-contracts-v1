@@ -23,6 +23,9 @@ interface ISubscriptions {
     /// @dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.
     function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external;
 
+    /// @dev Transfers VC ownership to a new owner (can only be called by the current owner)
+    function setVcOwner(uint256 vcid, address owner) external /* onlyVcOwner */;
+
     /*
      *   Governance methods
      */
