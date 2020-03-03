@@ -5,6 +5,7 @@ import BN from "bn.js";
 import {Driver, expectRejected, ZERO_ADDR} from "./driver";
 import chai from "chai";
 import {subscriptionChangedEvents} from "./event-parsing";
+import {bn} from "./helpers";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
@@ -146,5 +147,48 @@ contract('subscriptions-high-level-flows', async () => {
     const nonOwner = d.newParticipant();
     await expectRejected(d.subscriptions.setVcConfigRecord(vcid, key, value, {from: nonOwner.address}));
   });
+
+  it('allows VC owner to transfer ownership', async () => {
+    const d = await Driver.new();
+    const subs = await d.newSubscriber("tier", 1);
+
+    const owner = d.newParticipant();
+    const amount = 10;
+
+    await owner.assignAndApproveOrbs(amount, subs.address);
+    let r = await subs.createVC(amount, {from: owner.address});
+    expect(r).to.have.a.subscriptionChangedEvent();
+
+    await owner.assignAndApproveOrbs(amount, subs.address);
+    r = await subs.createVC(amount, {from: owner.address});
+    expect(r).to.have.a.subscriptionChangedEvent();
+    const vcid = bn(subscriptionChangedEvents(r)[0].vcid);
+    expect(r).to.have.a.vcOwnerChangedEvent({
+      vcid,
+      owner: owner.address
+    });
+
+    const newOwner = d.newParticipant();
+
+    const nonOwner = d.newParticipant();
+    await expectRejected(d.subscriptions.setVcOwner(vcid, newOwner.address, {from: nonOwner.address}));
+
+    r = await d.subscriptions.setVcOwner(vcid, newOwner.address, {from: owner.address});
+    expect(r).to.have.a.vcOwnerChangedEvent({
+      vcid,
+      owner: newOwner.address
+    });
+
+    await expectRejected(d.subscriptions.setVcOwner(vcid, owner.address, {from: owner.address}));
+
+    r = await d.subscriptions.setVcOwner(vcid, owner.address, {from: newOwner.address});
+    expect(r).to.have.a.vcOwnerChangedEvent({
+      vcid,
+      owner: owner.address
+    });
+
+  });
+
+
 
 });

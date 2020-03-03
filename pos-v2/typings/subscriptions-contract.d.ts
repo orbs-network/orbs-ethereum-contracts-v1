@@ -25,8 +25,14 @@ export interface VcConfigRecordChangedEvent {
   value: string
 }
 
+export interface VcOwnerChangedEvent {
+  vcid: number | BN;
+  owner: string;
+}
+
 export interface SubscriptionsContract extends ContractInstance, Contract {
   addSubscriber(address,params?: TransactionDetails): Promise<TransactionResponse>;
   setVcConfigRecord(vcid: number|BN, key: string, value: string, params?: TransactionDetails): Promise<TransactionResponse>;
   setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  setVcOwner(vcid: number|BN, owner: string, params?: TransactionDetails): Promise<TransactionResponse>;
 }

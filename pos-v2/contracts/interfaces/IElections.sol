@@ -31,6 +31,9 @@ interface IElections /* is IStakeChangeNotifier */ {
 	/// @dev Refreshes the staking information (and the corresponding rank in committee and topology) for the given addresses.
 	function refreshStakes(address[] calldata addrs) external;
 
+	/// @dev Transfers VC ownership to a new owner (can only be called by the current owner)
+	function setVcOwner(uint256 vcid, address owner) external /* onlyVcOwner */;
+
 	/*
 	 *   Methods restricted to other Orbs contracts
 	 */
