@@ -23,6 +23,8 @@ contract Subscriptions is ISubscriptions, Ownable{
         uint expiresAt;
         uint genRef;
         address owner;
+
+        mapping (string => string) configRecords;
     }
 
     mapping (address => bool) authorizedSubscribers;
@@ -46,8 +48,12 @@ contract Subscriptions is ISubscriptions, Ownable{
 
     function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external {
         require(msg.sender == virtualChains[vcid].owner, "only vc owner can set a vc config record");
-
+        virtualChains[vcid].configRecords[key] = value;
         emit VcConfigRecordChanged(vcid, key, value);
+    }
+
+    function getVcConfigRecord(uint256 vcid, string calldata key) external view returns (string memory) {
+        return virtualChains[vcid].configRecords[key];
     }
 
     function addSubscriber(address addr) external onlyOwner {

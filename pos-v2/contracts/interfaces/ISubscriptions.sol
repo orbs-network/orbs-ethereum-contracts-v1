@@ -21,7 +21,10 @@ interface ISubscriptions {
     function extendSubscription(uint256 vcid, uint256 amount, address payer) external;
 
     /// @dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.
-    function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external;
+    function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external /* onlyVcOwner */;
+
+    /// @dev returns the value of a VC config record
+    function getVcConfigRecord(uint256 vcid, string calldata key) external view returns (string memory);
 
     /// @dev Transfers VC ownership to a new owner (can only be called by the current owner)
     function setVcOwner(uint256 vcid, address owner) external /* onlyVcOwner */;
