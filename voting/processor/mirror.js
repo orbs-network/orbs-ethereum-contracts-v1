@@ -185,6 +185,11 @@ async function main() {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE\n`);
     }
 
+    if (await orbs.isProcessingPeriod()) {
+        console.log('\x1b[36m%s\x1b[0m', `Orbs is now waiting for the election process to run, cannot mirror at this time, please try again later!!\n`);
+        return;
+    }
+
     let startTime = Date.now();
     if (fullHistory) {
         startBlock = 7450000;
@@ -209,5 +214,9 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-    slack.sendSlack(`Warning: mirror failed with message '${JSON.stringify(e.message)}', check Jenkins!`).then(console.error(e));
+        slack.sendSlack(`Mirror ended with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
+            console.error(e);
+            process.exit(-4);
+        }
+    );
 });

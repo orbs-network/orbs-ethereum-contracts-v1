@@ -8,13 +8,14 @@
 BigInt.prototype.toJSON = function() { return this.toString(); };
 
 const orbsUrl = process.env.ORBS_URL;
-const orbsVchain = process.env.ORBS_VCHAINID;
+const orbsVChain = process.env.ORBS_VCHAINID;
 const orbsVotingContractName = process.env.ORBS_VOTING_CONTRACT_NAME;
+const maxErrors = 10;
 
 let verbose = false;
-let maxNumberOfProcess = 10000;
-let batchSize = 10;
-let maxPendings = 25;
+let batchSize = 20;
+let maxBatches = 120;
+let batchIntervalSeconds = 1;
 
 const slack = require('./src/slack');
 const _ = require('lodash');
@@ -24,31 +25,37 @@ function validateInput() {
         verbose = true;
     }
 
-    if (process.env.MAXIMUM_NUMBER_OF_TRIES) {
-        maxNumberOfProcess = parseInt(process.env.MAXIMUM_NUMBER_OF_TRIES);
-    }
-    if (!maxNumberOfProcess || maxNumberOfProcess === 0 || maxNumberOfProcess === "0") {
-        maxNumberOfProcess = -1;
-    }
-
     if (process.env.BATCH_SIZE) {
         batchSize = parseInt(process.env.BATCH_SIZE);
     }
 
-    if (process.env.MAX_PENDING) {
-        maxPendings = parseInt(process.env.MAX_PENDING);
+    if (process.env.MAX_BATCHES) {
+        maxBatches = parseInt(process.env.MAX_BATCHES);
+    }
+
+    if (process.env.BATCH_INTERVAL) {
+        batchIntervalSeconds = parseInt(process.env.BATCH_INTERVAL);
     }
 }
 
 let numErrors = 0;
-const maxErrors = 10;
 let numPendings = 0;
+let totalTxSent = 0;
+let processStartTime = 0;
 
-async function processResults(orbs, results) {
+function sleep(s) {
+    return new Promise(resolve => {
+        setTimeout(resolve, s*1000)
+    })
+}
+
+function processResultsAndCheckForDone(orbs, results) {
+    let foundDone = false;
     for (let i = 0; i < results.length; i++) {
         switch (results[i]) {
             case orbs.ProcessDone:
-                return orbs.ProcessDone;
+                foundDone = true;
+                break;
             case orbs.ProcessError:
                 numErrors++;
                 break;
@@ -57,61 +64,47 @@ async function processResults(orbs, results) {
                 break;
         }
     }
-    if (numErrors >= maxErrors) {
-        await slack.sendSlack('Warning: Process has finished because too many error responses for gamma calls, check Validators Network!');
-        const msg = `too many errors quitting`;
-        console.log('\x1b[31m%s\x1b[0m', `${msg} ...\n`);
-        throw new Error(msg)
-    }
-    if (numPendings >= maxPendings) {
-        await slack.sendSlack('Warning: Process has finished because too many pending responses for gamma calls, check Validators Network!');
-        const msg = `too many pendings quitting`;
-        console.log('\x1b[31m%s\x1b[0m', `${msg} ...\n`);
-        throw new Error(msg)
-    }
-    return orbs.ProcessContinue;
+    return foundDone;
 }
 
 async function processCall(orbs) {
+    processStartTime = Date.now();
     if (verbose) {
         console.log('\x1b[34m%s\x1b[0m', `\nStarted Processing...`);
     }
 
-    let isDone = false;
-    let numberOfCalls = 0;
-    do {
+    for (let j = 0;j < maxBatches;j++) {
         let start = Date.now();
         if (verbose) {
-            console.log('\x1b[36m%s\x1b[0m', `send batch of ${batchSize} calls... `);
+            console.log('\x1b[36m%s\x1b[0m', `send batch number ${j+1} of ${batchSize} calls out of ${maxBatches} batches ... `);
         }
         let txs = [];
         for (let i = 0; i < batchSize; i++) {
             txs.push(orbs.processVote());
         }
+        totalTxSent += batchSize;
+
         let results = await Promise.all(txs);
-        numberOfCalls += batchSize;
 
         if (verbose) {
             console.log('\x1b[36m%s\x1b[0m', `checking state of process... (took ${(Date.now() - start) / 1000.0} seconds)`);
         }
 
-        if (await processResults(orbs, results) !== orbs.ProcessContinue) {
-            isDone = true;
+        if (processResultsAndCheckForDone(orbs, results)) {
             break;
         }
 
-        if (maxNumberOfProcess !== -1 && maxNumberOfProcess <= numberOfCalls) {
-            console.log('\x1b[31m%s\x1b[0m', `note processing votes: did not finish after ${numberOfCalls} tries.`);
-            break;
+        if (numErrors >= maxErrors) {
+            throw new Error(`Error: Process has exited because too many error responses (${numErrors}) for txs, check Validators Network!`)
         }
-    } while (await orbs.isProcessingPeriod());
 
-    if (isDone) {
-        await sendSuccessSlack(orbs);
+        await sleep(batchIntervalSeconds); // slow down
     }
 
-    if (verbose) {
-        console.log(`Processing was called ${numberOfCalls} times.`);
+    if (await orbs.isProcessingPeriod()) {
+        throw new Error(`Warning: Process has exited after ${totalTxSent} txs, election has not ended! The total number of pending txs was ${numPendings}!`)
+    } else {
+        await sendSuccessSlack(orbs);
     }
 }
 
@@ -156,7 +149,13 @@ async function sendSuccessSlack(orbs) {
             minValidatorAddress = electedNow[i];
         }
     }
-    text += `Total Validators stake: ${totalValidatorStake.toLocaleString()}\nValidator(Ethereum Address) \`${minValidatorAddress.address}\` has minimum stake: ${minValidatorStake.toLocaleString()}`;
+    text += `Total Validators stake: ${totalValidatorStake.toLocaleString()}\nValidator(Ethereum Address) \`${minValidatorAddress.address}\` has minimum stake: ${minValidatorStake.toLocaleString()}\n`;
+
+    text += `Statistics:\n`;
+    text += `  Total Run time: ${(Date.now() - processStartTime) / 1000.0} seconds\n`;
+    text += `  Total Number of Transactions: ${totalTxSent}\n`;
+    text += `  Total Number of Tx Results as Pending: ${numPendings}\n`;
+    text += `  Total Number of Tx Results as Errors: ${numErrors}\n`;
 
     console.log('\x1b[33m%s\x1b[0m', text);
     await slack.sendSlack(text);
@@ -167,14 +166,13 @@ async function main() {
     if (verbose) {
         console.log('\x1b[35m%s\x1b[0m', `VERBOSE MODE`);
     }
-    const orbs = await require('./src/orbs')(orbsUrl, orbsVchain, orbsVotingContractName);
+    const orbs = await require('./src/orbs')(orbsUrl, orbsVChain, orbsVotingContractName);
 
     if (await orbs.isProcessingPeriod()) {
         await processCall(orbs);
     } else {
         let currentBlockNumber = await orbs.getCurrentBlockNumber();
-        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block.
- Processing is not needed please try again later!!\n`);
+        console.log('\x1b[36m%s\x1b[0m', `\n\nCurrent block number: ${currentBlockNumber} is before process vote starting block.\nProcessing is not needed please try again later!!\n`);
     }
 }
 
@@ -182,7 +180,7 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-    slack.sendSlack(`Warning: process failed with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
+        slack.sendSlack(`Process ended with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
             console.error(e);
             process.exit(-4);
         }
