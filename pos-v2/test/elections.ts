@@ -643,7 +643,7 @@ contract('elections-high-level-flows', async () => {
 
     });
 
-    it.only("allows enough stake to ban and unban a member from topology", async () => {
+    it("allows enough stake to ban and unban a member from topology", async () => {
         assert(DEFAULT_BANNING_THRESHOLD < 98); // so each committee member will hold a positive stake
         assert(Math.floor(DEFAULT_BANNING_THRESHOLD / 2) >= 98 - DEFAULT_BANNING_THRESHOLD); // so the committee list will be ordered by stake
 
