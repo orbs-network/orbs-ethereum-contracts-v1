@@ -153,14 +153,10 @@ contract('subscriptions-high-level-flows', async () => {
     const subs = await d.newSubscriber("tier", 1);
 
     const owner = d.newParticipant();
-    const amount = 10;
 
+    const amount = 10;
     await owner.assignAndApproveOrbs(amount, subs.address);
     let r = await subs.createVC(amount, {from: owner.address});
-    expect(r).to.have.a.subscriptionChangedEvent();
-
-    await owner.assignAndApproveOrbs(amount, subs.address);
-    r = await subs.createVC(amount, {from: owner.address});
     expect(r).to.have.a.subscriptionChangedEvent();
     const vcid = bn(subscriptionChangedEvents(r)[0].vcid);
     expect(r).to.have.a.vcOwnerChangedEvent({
