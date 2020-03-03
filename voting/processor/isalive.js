@@ -34,31 +34,23 @@ async function main() {
         console.error(e);
         currentBlockNumberByEthereum = 0;
     }
+
+    console.log('\x1b[35m%s\x1b[0m', `Current block from Orbs: ${currentBlockNumberByOrbs}\nCurrent block from Ethereum: ${currentBlockNumberByEthereum}`);
+
     if (currentBlockNumberByOrbs === 0 || currentBlockNumberByEthereum === 0 || (currentBlockNumberByOrbs + 200) < currentBlockNumberByEthereum || (currentBlockNumberByEthereum + 200) < currentBlockNumberByOrbs) {
-        let message = `Warning: Current block number reading from Orbs: ${currentBlockNumberByOrbs} is too far away from current block reading from Ethereum : ${currentBlockNumberByEthereum}.
- Orbs and Ethereum are out of Sync.\n`;
-        console.log('\x1b[31m%s\x1b[0m', message);
-        await slack.sendSlack(message);
-        process.exit(-3)
+        throw new Error(`Warning: Current block number reading from Orbs: ${currentBlockNumberByOrbs} is too far away from current block reading from Ethereum : ${currentBlockNumberByEthereum}. Orbs and Ethereum are out of Sync.`);
     }
 
     if (await orbs.isElectionsOverDue()) {
-        let message = `Warning: Elections is overdue. Something is wrong with elections, it seems stuck.\n`;
-        console.log('\x1b[31m%s\x1b[0m', message);
-        await slack.sendSlack(message);
-        process.exit(-2)
+        throw new Error( `Warning: Elections is overdue. Something is wrong with elections, it seems stuck.`);
     }
-
-    console.log('\x1b[35m%s\x1b[0m', `Current block from Orbs: ${currentBlockNumberByOrbs}
-current block from Ethereum  ${currentBlockNumberByEthereum}`);
-
 }
 
 main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\nAll Good Done!!");
     }).catch(e => {
-        slack.sendSlack(`Warning: isalive failed with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
+        slack.sendSlack(`IsAlive ended with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
             console.error(e);
             process.exit(-4);
         });

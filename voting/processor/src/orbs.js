@@ -68,7 +68,7 @@ class Orbs {
             if (response.executionResult === "SUCCESS") {
                 return Number(Orbs.getRawValue(response)) === 1 ? this.ProcessDone : this.ProcessContinue;
             } else {
-                return this.ProcessDone;
+                return Orbs.getRawValue(response).startsWith('mirror period of election') ? this.ProcessDone : this.ProcessError;
             }
         } else if (response.requestStatus === "IN_PROCESS" && response.executionResult === "NOT_EXECUTED" && response.transactionStatus === "PENDING") {
             return this.ProcessPending;
