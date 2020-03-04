@@ -686,6 +686,7 @@ contract('elections-high-level-flows', async () => {
                 against: [bannedValidator.address]
             });
             expect(r).to.not.have.a.topologyChangedEvent();
+            expect(r).to.not.have.a.bannedEvent();
         }
 
         // -------------- BANNING VOTES CAST BY VALIDATORS ---------------
@@ -699,6 +700,8 @@ contract('elections-high-level-flows', async () => {
                 against: [bannedValidator.address]
             });
             expect(r).to.not.have.a.topologyChangedEvent();
+            expect(r).to.not.have.a.bannedEvent();
+            expect(r).to.not.have.a.unbannedEvent();
         }
 
         // pass the threshold - banning 1 validator
@@ -706,6 +709,9 @@ contract('elections-high-level-flows', async () => {
         expect(r).to.have.a.banningVoteEvent({
             voter: delegatees[thresholdCrossingIndex].address,
             against: [bannedValidator.address]
+        });
+        expect(r).to.have.a.bannedEvent({
+            validator: bannedValidator.address
         });
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: []
@@ -715,13 +721,17 @@ contract('elections-high-level-flows', async () => {
 
         const tempStake = await d.staking.getStakeBalanceOf(delegators[thresholdCrossingIndex].address);
         r = await d.staking.unstake(tempStake, {from: delegators[thresholdCrossingIndex].address}); // threshold is un-crossed
-        // TODO find the right "unbanning" event to check here
+        expect(r).to.have.a.unbannedEvent({
+            validator: bannedValidator.address
+        });
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: [bannedValidator.orbsAddress]
         });
 
         r = await d.staking.restake({from: delegators[thresholdCrossingIndex].address}); // threshold is crossed again
-        // TODO find the right "rebanning" event to check here
+        expect(r).to.have.a.bannedEvent({
+            validator: bannedValidator.address
+        });
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: []
         });
@@ -733,6 +743,8 @@ contract('elections-high-level-flows', async () => {
         const dilutingStake = DEFAULT_MINIMUM_STAKE * DEFAULT_BANNING_THRESHOLD * 200;
         r = await dilutingParticipant.stake(dilutingStake);
         expect(r).to.not.have.a.topologyChangedEvent(); // because we need a trigger to detect the change
+        expect(r).to.not.have.a.bannedEvent();
+        expect(r).to.not.have.a.unbannedEvent();
 
         let currentTotalStake = await d.elections.getTotalGovernanceStake();
         expect(currentTotalStake.toNumber()).to.equal(originalTotalStake.add(new BN(dilutingStake)).toNumber());
@@ -740,7 +752,9 @@ contract('elections-high-level-flows', async () => {
         expect(await d.elections.getBanningVotes(delegatees[0].address)).to.deep.equal([bannedValidator.address]);
 
         r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[0].address});
-        // TODO find the right "unbanning" event to check here
+        expect(r).to.have.a.unbannedEvent({
+            validator: bannedValidator.address
+        });
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: [bannedValidator.orbsAddress]
         });
@@ -751,15 +765,51 @@ contract('elections-high-level-flows', async () => {
         expect(currentTotalStake.toNumber()).to.equal(originalTotalStake.toNumber());
 
         r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[0].address});
-        // TODO find the right "rebanning" event to check here
+        expect(r).to.have.a.bannedEvent({
+            validator: bannedValidator.address
+        });
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: []
         });
 
-        // TODO -------------- UNBAN THEN BAN BY DELEGATION - VALIDATOR --------------
+        // -------------- UNBAN THEN BAN BY DELEGATION - VALIDATOR --------------
+        const tipValidator = delegatees[thresholdCrossingIndex];
 
-        // TODO -------------- UNBAN THEN BAN BY DELEGATION - DELEGATOR --------------
+        const other = d.newParticipant();
+        r = await d.elections.delegate(other.address, {from: tipValidator.address}); // delegates to someone else
+        expect(r).to.have.a.unbannedEvent({
+            validator: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
 
+        r = await d.elections.delegate(tipValidator.address, {from: tipValidator.address}); // self delegation
+        expect(r).to.have.a.bannedEvent({
+            validator: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: []
+        });
+
+        // -------------- UNBAN THEN BAN BY DELEGATION - DELEGATOR --------------
+        const tipDelegator = delegators[thresholdCrossingIndex];
+
+        r = await d.elections.delegate(other.address, {from: tipDelegator.address}); // delegates to someone else
+        expect(r).to.have.a.unbannedEvent({
+            validator: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+
+        r = await d.elections.delegate(tipValidator.address, {from: tipDelegator.address}); // self delegation
+        expect(r).to.have.a.bannedEvent({
+            validator: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: []
+        });
 
         // -------------- BANNING VOTES REVOKED BY VALIDATOR ---------------
 

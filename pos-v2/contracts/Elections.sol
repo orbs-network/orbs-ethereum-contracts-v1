@@ -22,6 +22,8 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	event BanningVote(address voter, address[] against);
 	event Delegated(address from, address to);
 	event StakeChanged(address addr, uint256 ownStake, uint256 uncappedStake, uint256 governanceStake, uint256 committeeStake); // TODO - do we need this?
+	event Banned(address validator);
+	event Unbanned(address validator);
 
 	event Debug(string,uint256);
 
@@ -133,15 +135,27 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
             prevDelegatee = msg.sender;
         }
 
+		uint256 oldGESPrevDelegatee = getGovernanceEffectiveStake(prevDelegatee);
+		uint256 oldGESNewDelegatee = getGovernanceEffectiveStake(to);
+
 		bool becameNotSelfDelegated = prevDelegatee == msg.sender && to != msg.sender;
 		bool becameSelfDelegated = prevDelegatee != msg.sender && to == msg.sender;
 
-		delegations[msg.sender] = to;
+		delegations[msg.sender] = to; // change delegation!!
 
 		uint256 stake = ownStakes[msg.sender];
         _updateUncappedStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake), becameSelfDelegated, becameNotSelfDelegated);
         _placeInTopology(prevDelegatee); // TODO may emit superfluous event
 		_updateUncappedStake(to, uncappedStakes[to].add(stake), false, false);
+
+		uint256 newGESPrevDelegatee = getGovernanceEffectiveStake(prevDelegatee);
+		uint256 newGESNewDelegatee = getGovernanceEffectiveStake(to);
+		_updateBanningStake(prevDelegatee, oldGESPrevDelegatee, newGESPrevDelegatee);
+		_updateBanningStake(to, oldGESNewDelegatee, newGESNewDelegatee);
+
+		emit Debug("oldGESPrevDelegatee", oldGESPrevDelegatee);
+		emit Debug("newGESPrevDelegatee", newGESPrevDelegatee);
+
 		_placeInTopology(to);
 
 		emit Delegated(msg.sender, to);
@@ -186,8 +200,13 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	function getTotalGovernanceStake() external view returns (uint256) {
 		return totalGovernanceStake;
 	}
+
 	function getBanningVotes(address addrs) external view returns (address[] memory) {
 		return banningVotes[addrs];
+	}
+
+	function getTotalBanningStake(address addrs) external view returns (uint256) {
+		return totalBanningStake[addrs];
 	}
 
 	function _updateBanningStake(address voter, uint256 oldGES, uint256 newGES) private {
@@ -244,6 +263,12 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
         if (isBanned != shouldBan) {
             bannedValidators[addr] = shouldBan;
             _placeInTopology(addr);
+
+			if (shouldBan) {
+				emit Banned(addr);
+			} else {
+				emit Unbanned(addr);
+			}
         }
     }
 
@@ -258,6 +283,13 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		}
 	}
 
+	function getDelegation(address delegator) external view returns (address) {
+		if (_isSelfDelegating(delegator)) {
+			return delegator;
+		}
+		return delegations[delegator];
+	}
+
 	function stakeChange(address _stakeOwner, uint256 _amount, bool _sign, uint256 _updatedStake) external onlyStakingContract {
 		_stakeChange(_stakeOwner, _amount, _sign, _updatedStake);
 	}
@@ -268,8 +300,9 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			delegatee = _stakeOwner;
 		}
 
-		uint256 oldGES = getGovernanceEffectiveStake(delegatee);
-		emit Debug("Old getGovernanceEffectiveStake", oldGES);
+		uint256 oldGESOwner = getGovernanceEffectiveStake(_stakeOwner);
+		uint256 oldGESDelegatee = getGovernanceEffectiveStake(delegatee);
+
 		uint256 newUncappedStake;
 		uint256 newOwnStake;
 		if (_sign) {
@@ -282,9 +315,11 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		ownStakes[_stakeOwner] = newOwnStake;
 		_updateUncappedStake(delegatee, newUncappedStake, false, false); // TODO separate updating of totalGovernanceStake
 
-		uint256 newGES = getGovernanceEffectiveStake(delegatee);
-		emit Debug("New getGovernanceEffectiveStake", newGES);
-		_updateBanningStake(delegatee, oldGES, newGES); // reapply this guys votes - take care that totalGovernanceStake is already be updated when this is called
+		uint256 newGESOwner = getGovernanceEffectiveStake(_stakeOwner);
+		uint256 newGESDelegatee = getGovernanceEffectiveStake(delegatee);
+
+		_updateBanningStake(_stakeOwner, oldGESOwner, newGESOwner); // totalGovernanceStake must be updated by now
+		_updateBanningStake(delegatee, oldGESDelegatee, newGESDelegatee); // totalGovernanceStake must be updated by now
 
 		_placeInTopology(delegatee);
 	}
@@ -535,12 +570,10 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		return ownStake.mul(maxRatio); // never overflows
 	}
 
-	function getGovernanceEffectiveStake(address v) private  returns (uint256) {
+	function getGovernanceEffectiveStake(address v) public view returns (uint256) {
 		if (!_isSelfDelegating(v)) {
-			emit Debug("is not self delegating", 0);
 			return 0;
 		}
-		emit Debug("is self delegating", uncappedStakes[v]);
 		return uncappedStakes[v];
 	}
 
