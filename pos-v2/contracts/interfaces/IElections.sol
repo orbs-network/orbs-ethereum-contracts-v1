@@ -8,9 +8,10 @@ interface IElections /* is IStakeChangeNotifier */ {
 	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
 	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
-	event VotedOutEvent(address votedOut);
-	event Delegated(address from, address to);
-	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
+	event ValidatorWasVotedUnready(address votedOut);
+
+	event votedUnready(address voter, address votedOut);
+	event Delegattion(address delegator, address to, uint256 stake);
 
 	/*
 	 *   External methods
@@ -26,7 +27,7 @@ interface IElections /* is IStakeChangeNotifier */ {
 	function delegate(address to) external;
 
 	/// @dev Called by a validator as part of the automatic vote-out flow
-	function voteOut(address addr) external;
+	function voteUnready(address addr) external;
 
 	/// @dev Refreshes the staking information (and the corresponding rank in committee and topology) for the given addresses.
 	function refreshStakes(address[] calldata addrs) external;
@@ -59,4 +60,7 @@ interface IElections /* is IStakeChangeNotifier */ {
 	 */
 
 	function getTopology() external view returns (address[] memory);
+
+	function getElectedValidators() external view returns (address[] memory);
+
 }

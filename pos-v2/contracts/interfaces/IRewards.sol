@@ -6,7 +6,19 @@ import "./IContractRegistry.sol";
 /// @title Rewards contract interface
 interface IRewards {
     event RewardAssigned(address assignee, uint256 amount, uint256 balance);
-    event FeeAddedToBucket(uint256 bucketId, uint256 added, uint256 total);
+    
+    event StakingRewardsDistributed(address sender, address[] to, uint256[] amounts);
+    event BootstrapRewardWithdrawn(address sender, uint256 amount);
+    event FeesBalanceWithdrawn(address sender, uint256 amount);
+
+    event StakingRewardMonthlyRateSet(uint256 rate);
+    event BootstrapMonthlyRateSet(uint256 rate);
+ 
+    event StakingPoolAdded(uint256 amount);
+    event BootstrapPoolAdded(uint256 amount);
+    event FeeAdded(uint256 amount, uint256 from_bucket, uint256 from_bucket, uint256 to_bucket); // why do we need an event per bucket?
+
+    event ContractRegistryChanged(IContractRegistry _contractRegistry);
 
     /*
      *   External methods
@@ -15,30 +27,38 @@ interface IRewards {
     /// @dev Calculates and assigns validator rewards for the time period since the last reward calculation
     function assignRewards() external returns (uint256);
 
-    /// @return Returns the currently unclaimed orbs token reward balance of the given address.
-    function getOrbsBalance(address addr) external view returns (uint256);
+    /// @return Returns the currently unclaimed staking reward balance (in ORBS) of the given address.
+    function getStakingRewardBalance(address addr) external view returns (uint256);
 
-    /// @return Returns the currently unclaimed external token reward balance of the given address.
-    function getExternalTokenBalance(address addr) external view returns (uint256);
+    /// @return Returns the currently unclaimed fees balance (in ORBS) of the given address.
+    function getFeesBalance(address addr) external view returns (uint256);
 
-    /// @dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.
-    function distributeOrbsTokenRewards(address[] calldata to, uint256[] calldata amounts) external;
+    /// @return Returns the currently unclaimed bootstrap reward balance (in DAI / alternative token) of the given address.
+    function getBootstrapRewardBalance(address addr) external view returns (uint256);
 
-    /// @dev Transfer all of msg.sender's outstanding external rewards to their account
-    function withdrawExternalTokenRewards() external returns (uint256);
+    /// @dev Distributes msg.sender's staking reward to a list of addresses transferring directly into the staking contract.
+    function distributeStakingReward(address[] calldata to, uint256[] calldata amounts) external;
+
+    /// @dev Transfer all of msg.sender's outstanding bootstrap reward to their account
+    function withdrawBootstrapReward() external;
+
+    /// @dev Transfer all of msg.sender's outstanding fees to their account
+    function withdrawFeesBalance() external;
 
     /// @return The timestamp of the last reward allocation.
-    function getLastPayedAt() external view returns (uint256);
+    function getLastRewardAllocation() external view returns (uint256);
 
+    /// May be removed in an approve only arch
     /// @dev Transfers the given amount of external tokens form the sender to this contract an update the pool.
-    function topUpFixedPool(uint256 amount) external;
+    function topUpBootstrapPool(uint256 amount) external;  
 
+    /// May be removed in an approve only arch
     /// @dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.
-    function topUpProRataPool(uint256 amount) external;
+    function topUpStakingRewardsPool(uint256 amount) external;
 
     /// @dev Called by: subscriptions contract
     /// Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)
-    function fillFeeBuckets(uint256 amount, uint256 monthlyRate) external;
+    function fillFeeBuckets(uint256 amount, uint256 monthlyRate, uint256 first_bucket) external; //consider replace month with ThirtyDay
 
     /*
      *   Methods restricted to other Orbs contracts
@@ -53,10 +73,10 @@ interface IRewards {
     */
 
     /// @dev Assigns rewards and sets a new monthly rate for the fixed pool.
-    function setFixedPoolMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;
+    function setBootstrapMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;
 
     /// @dev Assigns rewards and sets a new monthly rate for the pro-rata pool.
-    function setProRataPoolMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;
+    function setStakingRewardMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;
 
     /*
      * General governance
@@ -64,6 +84,5 @@ interface IRewards {
 
     /// @dev Updates the address of the contract registry
     function setContractRegistry(IContractRegistry _contractRegistry) external /* onlyOwner */;
-
 
 }
