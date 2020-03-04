@@ -4,9 +4,13 @@ import "./IRewards.sol";
 
 /// @title Subscriptions contract interface
 interface ISubscriptions {
-    event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier);
-    event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);
+    
+    event NewVCCreated(uint256 indexed vcid, uint256 genRef, string tier);
+    event SubscriptionPayed(uint256 indexed vcid, address by, uint256 amount, uint256 rate, uint256 indexed expiresAt, string tier);
+    event VCOwnershipTransferred(uint256 indexed vcid, address indexed previousOwner, address indexed newOwner);
+
     event SubscriberAdded(address subscriber);
+    event ContractRegistryChanged(IContractRegistry _contractRegistry);
 
     /*
      *   Methods restricted to other Orbs contracts
@@ -22,6 +26,10 @@ interface ISubscriptions {
 
     /// @dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.
     function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external;
+
+    /// @dev called by VC owner to transfer the ownership of the VC to a new owner. Emits a VCOwnershipTransferred event.
+    function transferVCOwnership(uint256 indexed vcid, address newOwner) public;
+
 
     /*
      *   Governance methods
