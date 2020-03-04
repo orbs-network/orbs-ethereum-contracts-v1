@@ -5,18 +5,19 @@ import "./IContractRegistry.sol";
 
 /// @title Rewards contract interface
 interface IRewards {
-    event RewardAssigned(address assignee, uint256 amount, uint256 balance);
+    event StakingRewardAssigned(address[] assignee, uint256[] amount, uint256[] balance);
+    event FeesAndBootstrapRewardAssigned(address[] assignee, uint256 fees_amount, uint256 bootstrap_amount);
     
-    event StakingRewardsDistributed(address sender, address[] to, uint256[] amounts);
-    event BootstrapRewardWithdrawn(address sender, uint256 amount);
-    event FeesBalanceWithdrawn(address sender, uint256 amount);
+    event StakingRewardsDistributed(address indexed sender, address[] to, uint256[] amounts);
+    event BootstrapRewardWithdrawn(address indexed sender, uint256 amount);
+    event FeesBalanceWithdrawn(address indexed sender, uint256 amount);
 
     event StakingRewardMonthlyRateSet(uint256 rate);
     event BootstrapMonthlyRateSet(uint256 rate);
  
     event StakingPoolAdded(uint256 amount);
     event BootstrapPoolAdded(uint256 amount);
-    event FeeAdded(uint256 amount, uint256 from_bucket, uint256 from_bucket, uint256 to_bucket); // why do we need an event per bucket?
+    event FeeAdded(uint256 amount, uint256 from_bucket, uint256 to_bucket); // why do we need an event per bucket?
 
     event ContractRegistryChanged(IContractRegistry _contractRegistry);
 
