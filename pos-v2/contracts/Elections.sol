@@ -27,6 +27,8 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 
 	event Debug(string,uint256);
 
+    uint256 constant BANNING_LOCK_TIMEOUT = 1 weeks;
+
 	address[] topology;
 
 	struct Validator {
@@ -47,7 +49,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	mapping (address => address[]) banningVotes; // by => to[]]
 	mapping (address => uint256) totalBanningStake; // addr => total stake
 	mapping (address => address) orbsAddressToMainAddress;
-	mapping (address => bool) bannedValidators;
+	mapping (address => uint256) bannedValidators; // addr => timestamp
 
 	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
@@ -257,20 +259,26 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
     }
 
     function updateBanningStatus(address addr) private {
+        uint256 banningTimestamp = bannedValidators[addr];
+        bool isBanned = banningTimestamp != 0;
+
+        if (isBanned && now.sub(banningTimestamp) >= BANNING_LOCK_TIMEOUT) { // no unbanning after 7 days
+            return;
+        }
+
         uint256 banningStake = totalBanningStake[addr];
 
-        bool isBanned = bannedValidators[addr];
         bool shouldBan = totalGovernanceStake > 0 && banningStake.mul(100).div(totalGovernanceStake) >= banningPercentageThreshold;
 
         if (isBanned != shouldBan) {
-            bannedValidators[addr] = shouldBan;
-            _placeInTopology(addr);
-
 			if (shouldBan) {
+                bannedValidators[addr] = now;
 				emit Banned(addr);
 			} else {
+                bannedValidators[addr] = 0;
 				emit Unbanned(addr);
 			}
+            _placeInTopology(addr);
         }
     }
 
@@ -360,8 +368,9 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function _satisfiesTopologyPrerequisites(address validator) private view returns (bool) {
-		return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
-			   !bannedValidators[validator] &&
+		bool isBanned = bannedValidators[validator] != 0;
+        return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
+			   !isBanned &&
 			   _isSelfDelegating(validator) &&
 		       _holdsMinimumStake(validator);
 	}

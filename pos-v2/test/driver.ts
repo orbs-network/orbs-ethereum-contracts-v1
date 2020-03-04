@@ -22,6 +22,7 @@ export const DEFAULT_MAX_DELEGATION_RATIO = 10;
 export const DEFAULT_VOTE_OUT_THRESHOLD = 80;
 export const DEFAULT_BANNING_THRESHOLD = 80;
 export const DEFAULT_VOTE_OUT_TIMEOUT = 24*60*60;
+export const BANNING_LOCK_TIMEOUT = 7*24*60*60;
 
 export class Driver {
     private participants: Participant[] = [];

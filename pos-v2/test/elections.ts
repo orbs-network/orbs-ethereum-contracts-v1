@@ -7,6 +7,7 @@ import {
     DEFAULT_BANNING_THRESHOLD, DEFAULT_COMMITTEE_SIZE,
     DEFAULT_MINIMUM_STAKE, DEFAULT_TOPOLOGY_SIZE,
     DEFAULT_VOTE_OUT_THRESHOLD, DEFAULT_VOTE_OUT_TIMEOUT,
+    BANNING_LOCK_TIMEOUT,
     Driver,
     expectRejected,
     Participant,
@@ -33,8 +34,8 @@ contract('elections-high-level-flows', async () => {
 
         const r = await d1.delegate(d2);
         expect(r).to.have.a.delegatedEvent({
-          from: d1.address,
-          to: d2.address
+            from: d1.address,
+            to: d2.address
         });
     });
 
@@ -56,27 +57,27 @@ contract('elections-high-level-flows', async () => {
 
         r = await validatorStaked100.registerAsValidator();
         expect(r).to.have.a.validatorRegisteredEvent({
-          addr: validatorStaked100.address,
-          ip: validatorStaked100.ip
+            addr: validatorStaked100.address,
+            ip: validatorStaked100.ip
         });
         expect(r).to.have.a.topologyChangedEvent({
-          orbsAddrs: [validatorStaked100.orbsAddress],
-          ips: [validatorStaked100.ip]
+            orbsAddrs: [validatorStaked100.orbsAddress],
+            ips: [validatorStaked100.ip]
         });
         expect(r).to.not.have.a.committeeChangedEvent();
 
         r = await validatorStaked100.notifyReadyForCommittee();
         expect(r).to.have.a.committeeChangedEvent({
-          addrs: [validatorStaked100.address],
-          orbsAddrs: [validatorStaked100.orbsAddress],
-          stakes: [stake100],
+            addrs: [validatorStaked100.address],
+            orbsAddrs: [validatorStaked100.orbsAddress],
+            stakes: [stake100],
         });
 
         const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
         expect(committeeFromAdapter).to.haveCommittee({
-          addrs: [validatorStaked100.address.toLowerCase()],
-          orbsAddrs: [validatorStaked100.orbsAddress.toLowerCase()],
-          stakes: [stake100],
+            addrs: [validatorStaked100.address.toLowerCase()],
+            orbsAddrs: [validatorStaked100.orbsAddress.toLowerCase()],
+            stakes: [stake100],
         });
 
         const validatorStaked200 = d.newParticipant();
@@ -85,20 +86,20 @@ contract('elections-high-level-flows', async () => {
 
         r = await validatorStaked200.registerAsValidator();
         expect(r).to.have.a.validatorRegisteredEvent({
-          addr: validatorStaked200.address,
-          ip: validatorStaked200.ip,
+            addr: validatorStaked200.address,
+            ip: validatorStaked200.ip,
         });
         expect(r).to.have.a.topologyChangedEvent({
-          orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
-          ips: [validatorStaked100.ip, validatorStaked200.ip]
+            orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
+            ips: [validatorStaked100.ip, validatorStaked200.ip]
         });
         expect(r).to.not.have.a.committeeChangedEvent();
 
         r = await validatorStaked200.notifyReadyForCommittee();
         expect(r).to.have.a.committeeChangedEvent({
-          addrs: [validatorStaked200.address, validatorStaked100.address],
-          orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
-          stakes: [stake200, stake100]
+            addrs: [validatorStaked200.address, validatorStaked100.address],
+            orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress],
+            stakes: [stake200, stake100]
         });
 
         // A third validator registers high ranked
@@ -109,35 +110,35 @@ contract('elections-high-level-flows', async () => {
 
         r = await validatorStaked300.registerAsValidator();
         expect(r).to.have.a.validatorRegisteredEvent({
-          addr: validatorStaked300.address,
-          ip: validatorStaked300.ip
+            addr: validatorStaked300.address,
+            ip: validatorStaked300.ip
         });
         expect(r).to.have.a.topologyChangedEvent({
-          orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress, validatorStaked300.orbsAddress],
-          ips: [validatorStaked200.ip, validatorStaked100.ip, validatorStaked300.ip]
+            orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked100.orbsAddress, validatorStaked300.orbsAddress],
+            ips: [validatorStaked200.ip, validatorStaked100.ip, validatorStaked300.ip]
         });
         expect(r).to.not.have.a.committeeChangedEvent();
 
         r = await validatorStaked300.notifyReadyForCommittee();
         expect(r).to.have.a.committeeChangedEvent({
-          addrs: [validatorStaked300.address, validatorStaked200.address],
-          orbsAddrs: [validatorStaked300.orbsAddress, validatorStaked200.orbsAddress],
-          stakes: [stake300, stake200]
+            addrs: [validatorStaked300.address, validatorStaked200.address],
+            orbsAddrs: [validatorStaked300.orbsAddress, validatorStaked200.orbsAddress],
+            stakes: [stake300, stake200]
         });
 
         r = await d.delegateMoreStake(stake300, validatorStaked200);
         expect(r).to.have.a.committeeChangedEvent({
-          addrs: [validatorStaked200.address, validatorStaked300.address],
-          orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked300.orbsAddress],
-          stakes: [stake200.add(stake300), stake300]
+            addrs: [validatorStaked200.address, validatorStaked300.address],
+            orbsAddrs: [validatorStaked200.orbsAddress, validatorStaked300.orbsAddress],
+            stakes: [stake200.add(stake300), stake300]
         });
         expect(r).to.not.have.a.topologyChangedEvent();
 
         r = await d.delegateMoreStake(stake500, validatorStaked100);
         expect(r).to.have.a.committeeChangedEvent({
-          addrs: [validatorStaked100.address, validatorStaked200.address],
-          orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
-          stakes: [stake100.add(stake500), stake500]
+            addrs: [validatorStaked100.address, validatorStaked200.address],
+            orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
+            stakes: [stake100.add(stake500), stake500]
         });
         expect(r).to.not.have.a.topologyChangedEvent();
 
@@ -148,8 +149,8 @@ contract('elections-high-level-flows', async () => {
         expect(r).to.have.a.stakedEvent();
         r = await inTopologyValidator.registerAsValidator();
         expect(r).to.have.a.topologyChangedEvent({
-          orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress, validatorStaked300.orbsAddress, inTopologyValidator.orbsAddress],
-          ips: [validatorStaked100.ip, validatorStaked200.ip, validatorStaked300.ip, inTopologyValidator.ip],
+            orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress, validatorStaked300.orbsAddress, inTopologyValidator.orbsAddress],
+            ips: [validatorStaked100.ip, validatorStaked200.ip, validatorStaked300.ip, inTopologyValidator.ip],
         });
         expect(r).to.not.have.a.committeeChangedEvent();
 
@@ -181,15 +182,15 @@ contract('elections-high-level-flows', async () => {
         await validator.notifyReadyForCommittee();
         r = await validator.stake(stake1000); // now top of committee
         expect(r).to.have.a.committeeChangedEvent({
-          addrs: [validator.address, validatorStaked100.address],
-          orbsAddrs: [validator.orbsAddress, validatorStaked100.orbsAddress],
-          stakes: [stake1000, stake100.add(stake500)]
+            addrs: [validator.address, validatorStaked100.address],
+            orbsAddrs: [validator.orbsAddress, validatorStaked100.orbsAddress],
+            stakes: [stake1000, stake100.add(stake500)]
         });
         r = await validator.unstake(501); // now out of committee but still in topology
         expect(r).to.have.a.committeeChangedEvent({
-          addrs: [validatorStaked100.address, validatorStaked200.address],
-          orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
-          stakes: [stake100.add(stake500), stake500]
+            addrs: [validatorStaked100.address, validatorStaked200.address],
+            orbsAddrs: [validatorStaked100.orbsAddress, validatorStaked200.orbsAddress],
+            stakes: [stake100.add(stake500), stake500]
         });
         expect(r).to.not.have.a.topologyChangedEvent();
     });
@@ -199,11 +200,11 @@ contract('elections-high-level-flows', async () => {
         assert(Math.floor(DEFAULT_VOTE_OUT_THRESHOLD / 2) >= 98 - DEFAULT_VOTE_OUT_THRESHOLD); // so the committee list will be ordered by stake
 
         const stakesPercentage = [
-          Math.ceil(DEFAULT_VOTE_OUT_THRESHOLD / 2),
-          Math.floor(DEFAULT_VOTE_OUT_THRESHOLD / 2),
-          98 - DEFAULT_VOTE_OUT_THRESHOLD,
-          1,
-          1
+            Math.ceil(DEFAULT_VOTE_OUT_THRESHOLD / 2),
+            Math.floor(DEFAULT_VOTE_OUT_THRESHOLD / 2),
+            98 - DEFAULT_VOTE_OUT_THRESHOLD,
+            1,
+            1
         ];
         const committeeSize = stakesPercentage.length;
         const thresholdCrossingIndex = 1;
@@ -286,7 +287,7 @@ contract('elections-high-level-flows', async () => {
         });
 
         // ...*.* TiMe wArP *.*.....
-        evmIncreaseTime(DEFAULT_VOTE_OUT_TIMEOUT);
+        await evmIncreaseTime(DEFAULT_VOTE_OUT_TIMEOUT);
 
         r = await d.elections.voteOut(committee[1].address, {from: committee[1].orbsAddress}); // this should have crossed the vote-out threshold, but the previous vote had timed out
         expect(r).to.have.a.voteOutEvent({
@@ -310,7 +311,7 @@ contract('elections-high-level-flows', async () => {
         });
     });
 
-    it('should remove a validator with insufficient stake from committee', async() => {
+    it('should remove a validator with insufficient stake from committee', async () => {
         const MIN_STAKE = new BN(100);
         const d = await Driver.new(10, 15, MIN_STAKE);
 
@@ -337,7 +338,7 @@ contract('elections-high-level-flows', async () => {
         })
     });
 
-    it('does not elect without registration', async() => {
+    it('does not elect without registration', async () => {
         const d = await Driver.new();
 
         const V1_STAKE = 100;
@@ -347,7 +348,7 @@ contract('elections-high-level-flows', async () => {
         expect(r).to.not.have.a.committeeChangedEvent();
     });
 
-    it('a validator should not be able to register twice', async() => {
+    it('a validator should not be able to register twice', async () => {
         const d = await Driver.new();
 
         // Validator registers
@@ -362,7 +363,7 @@ contract('elections-high-level-flows', async () => {
         });
 
         // The first validator attempts to register again - should not emit events
-        await expectRejected(d.elections.registerValidator(v.ip, v.orbsAddress,{from: v.address}));
+        await expectRejected(d.elections.registerValidator(v.ip, v.orbsAddress, {from: v.address}));
     });
 
     it('should only accept stake notifications from the staking contract', async () => {
@@ -509,7 +510,7 @@ contract('elections-high-level-flows', async () => {
         })
     });
 
-    it('ensures a non-ready validator cannot join the committee even when owning enough stake', async() => {
+    it('ensures a non-ready validator cannot join the committee even when owning enough stake', async () => {
         const d = await Driver.new();
         const v = d.newParticipant();
         await v.registerAsValidator();
@@ -550,7 +551,7 @@ contract('elections-high-level-flows', async () => {
             const v = d.newParticipant();
             await v.registerAsValidator();
             await v.notifyReadyForCommittee();
-            r = await v.stake(DEFAULT_MINIMUM_STAKE*i);
+            r = await v.stake(DEFAULT_MINIMUM_STAKE * i);
             return v;
         }));
         expect(r).to.have.a.topologyChangedEvent({
@@ -559,7 +560,7 @@ contract('elections-high-level-flows', async () => {
 
         const newValidator = d.newParticipant();
         await newValidator.registerAsValidator();
-        r = await newValidator.stake(DEFAULT_MINIMUM_STAKE*2);
+        r = await newValidator.stake(DEFAULT_MINIMUM_STAKE * 2);
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: topology.slice(0, DEFAULT_TOPOLOGY_SIZE - 1).map(v => v.orbsAddress).concat(newValidator.orbsAddress)
         });
@@ -630,16 +631,16 @@ contract('elections-high-level-flows', async () => {
         const newStaking = await Driver.newStakingContract(d.elections.address, d.erc20.address);
         await d.contractRegistry.set("staking", newStaking.address);
 
-        await v1.stake(DEFAULT_MINIMUM_STAKE*5, newStaking);
-        await v2.stake(DEFAULT_MINIMUM_STAKE*3, newStaking);
+        await v1.stake(DEFAULT_MINIMUM_STAKE * 5, newStaking);
+        await v2.stake(DEFAULT_MINIMUM_STAKE * 3, newStaking);
         await delegator.stake(DEFAULT_MINIMUM_STAKE, newStaking);
 
         // refresh the stakes
         const anonymous = d.newParticipant();
-        r = await d.elections.refreshStakes([v1.address, v2.address, delegator.address],{from: anonymous.address});
+        r = await d.elections.refreshStakes([v1.address, v2.address, delegator.address], {from: anonymous.address});
         expect(r).to.have.a.committeeChangedEvent({
             orbsAddrs: [v1, v2].map(v => v.orbsAddress),
-            stakes: bn([DEFAULT_MINIMUM_STAKE*5, DEFAULT_MINIMUM_STAKE*4])
+            stakes: bn([DEFAULT_MINIMUM_STAKE * 5, DEFAULT_MINIMUM_STAKE * 4])
         })
 
     });
@@ -647,18 +648,18 @@ contract('elections-high-level-flows', async () => {
     it("allows voting only to 3 at a time", async () => {
         const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
 
-        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await setupValidatorBanningScenario(d);
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await banningScenario_setupDelegatorsAndValidators(d);
 
         // -------------- VOTE FOR 3 VALIDATORS AT MOST ---------------
         await expectRejected(d.elections.setBanningVotes(delegatees.slice(0, 4).map(v => v.address), {from: delegators[0].address}));
         await d.elections.setBanningVotes(delegatees.slice(0, 3).map(v => v.address), {from: delegators[0].address});
     });
 
-    it("allows enough stake to ban and unban a member from topology", async () => {
+    it("does not count delegators voting - because they don't have effective governance stake", async () => {
         const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
 
         let r;
-        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await setupValidatorBanningScenario(d);
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await banningScenario_setupDelegatorsAndValidators(d);
 
         // -------------- BANNING VOTES CAST BY DELEGATORS - NO GOV STAKE, NO EFFECT ---------------
         for (const delegator of delegators) {
@@ -670,10 +671,16 @@ contract('elections-high-level-flows', async () => {
             expect(r).to.not.have.a.topologyChangedEvent();
             expect(r).to.not.have.a.bannedEvent();
         }
+    });
 
-        // -------------- BANNING VOTES CAST BY VALIDATORS ---------------
+    it("bans a validator only when accumulated votes stake reaches the threshold", async () => {
+        const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
 
-        // remain under threshold
+        let r;
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await banningScenario_setupDelegatorsAndValidators(d);
+
+        // -------------- CAST VOTES UNDER THE THRESHOLD ---------------
+
         for (let i = 0; i < thresholdCrossingIndex; i++) {
             const p = delegatees[i];
             r = await d.elections.setBanningVotes([bannedValidator.address], {from: p.address});
@@ -686,7 +693,8 @@ contract('elections-high-level-flows', async () => {
             expect(r).to.not.have.a.unbannedEvent();
         }
 
-        // pass the threshold - banning 1 validator
+        // -------------- ONE MORE VOTE TO REACH BANNING THRESHOLD ---------------
+
         r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[thresholdCrossingIndex].address}); // threshold is crossed
         expect(r).to.have.a.banningVoteEvent({
             voter: delegatees[thresholdCrossingIndex].address,
@@ -698,6 +706,94 @@ contract('elections-high-level-flows', async () => {
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: []
         });
+    });
+
+    it("can revoke a vote and unban a validator as a result", async () => {
+        const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
+
+        let r;
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await banningScenario_setupDelegatorsAndValidators(d);
+        await banningScenario_voteUntilThresholdReached(d, thresholdCrossingIndex, delegatees, bannedValidator);
+
+        // -------------- BANNING VOTES REVOKED BY VALIDATOR ---------------
+
+        r = await d.elections.setBanningVotes([], {from: delegatees[thresholdCrossingIndex].address}); // threshold is again uncrossed
+        expect(r).to.have.a.banningVoteEvent({
+            voter: delegatees[thresholdCrossingIndex].address,
+            against: []
+        });
+        expect(r).to.have.a.unbannedEvent({
+            validator: bannedValidator.address
+        });
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+    });
+
+    it("banning does not responds to changes in staking, delegating or voting after locking (one week)", async () => {
+        const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
+
+        let r;
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await banningScenario_setupDelegatorsAndValidators(d);
+        await banningScenario_voteUntilThresholdReached(d, thresholdCrossingIndex, delegatees, bannedValidator);
+
+        // ...*.* TiMe wArP *.*.....
+        evmIncreaseTime(BANNING_LOCK_TIMEOUT);
+
+        // -----------------------------------------------------------------------------------
+        // -------------- AFTER BANNING LOCKED - TRY TO UNBAN AND ALWAYS FAIL: ---------------
+        // -----------------------------------------------------------------------------------
+
+        // -------------- BANNING VOTES REVOKED BY VALIDATOR ---------------
+
+        r = await d.elections.setBanningVotes([], {from: delegatees[thresholdCrossingIndex].address}); // threshold is again uncrossed
+        expect(r).to.not.have.a.unbannedEvent();
+        expect(r).to.not.have.a.topologyChangedEvent();
+
+        // -------------- DELEGATOR UNSTAKES ---------------
+
+        const tempStake = await d.staking.getStakeBalanceOf(delegators[thresholdCrossingIndex].address);
+        r = await d.staking.unstake(tempStake, {from: delegators[thresholdCrossingIndex].address}); // threshold is un-crossed
+        expect(r).to.not.have.a.unbannedEvent();
+        expect(r).to.not.have.a.topologyChangedEvent();
+
+        // -------------- NEW PARTICIPANT STAKES TO DILUTE BANNING VOTES ---------------
+
+        const dilutingParticipant = d.newParticipant();
+        const dilutingStake = DEFAULT_MINIMUM_STAKE * DEFAULT_BANNING_THRESHOLD * 200;
+        await dilutingParticipant.stake(dilutingStake);
+        expect(r).to.not.have.a.unbannedEvent(); // because we need a trigger to detect the change
+        expect(r).to.not.have.a.topologyChangedEvent();
+
+        // trigger - repeat an existing vote:
+        const existingVotes = await d.elections.getBanningVotes(delegatees[0].address);
+        r = await d.elections.setBanningVotes(existingVotes, {from: delegatees[0].address});
+
+        expect(r).to.not.have.a.unbannedEvent();
+        expect(r).to.not.have.a.topologyChangedEvent();
+
+        // -------------- ATTEMPT UNBAN BY DELEGATION - VALIDATOR --------------
+        const tipValidator = delegatees[thresholdCrossingIndex];
+
+        const other = d.newParticipant();
+        r = await d.elections.delegate(other.address, {from: tipValidator.address}); // delegates to someone else
+        expect(r).to.not.have.a.unbannedEvent();
+        expect(r).to.not.have.a.topologyChangedEvent();
+
+        // -------------- ATTEMPT UNBAN BY DELEGATION - DELEGATOR --------------
+        const tipDelegator = delegators[thresholdCrossingIndex];
+
+        r = await d.elections.delegate(other.address, {from: tipDelegator.address}); // delegates to someone else
+        expect(r).to.not.have.a.unbannedEvent();
+        expect(r).to.not.have.a.topologyChangedEvent();
+    });
+
+    it("banning responds to changes in staking and delegating before locking", async () => {
+        const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
+
+        let r;
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await banningScenario_setupDelegatorsAndValidators(d);
+        await banningScenario_voteUntilThresholdReached(d, thresholdCrossingIndex, delegatees, bannedValidator);
 
         // -------------- DELEGATOR UNSTAKES AND RESTAKES TO REVOKE BANNING AND REINSTATE BAN ---------------
 
@@ -728,12 +824,10 @@ contract('elections-high-level-flows', async () => {
         expect(r).to.not.have.a.bannedEvent();
         expect(r).to.not.have.a.unbannedEvent();
 
-        let currentTotalStake = await d.elections.getTotalGovernanceStake();
-        expect(currentTotalStake.toNumber()).to.equal(originalTotalStake.add(new BN(dilutingStake)).toNumber());
+        // trigger - repeat an existing vote:
+        const existingVotes = await d.elections.getBanningVotes(delegatees[0].address);
+        r = await d.elections.setBanningVotes(existingVotes, {from: delegatees[0].address});
 
-        expect(await d.elections.getBanningVotes(delegatees[0].address)).to.deep.equal([bannedValidator.address]);
-
-        r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[0].address});
         expect(r).to.have.a.unbannedEvent({
             validator: bannedValidator.address
         });
@@ -742,11 +836,13 @@ contract('elections-high-level-flows', async () => {
         });
 
         r = await d.staking.unstake(dilutingStake, {from: dilutingParticipant.address}); // threshold is again crossed
+        expect(r).to.not.have.a.topologyChangedEvent(); // because we need a trigger to detect the change
+        expect(r).to.not.have.a.bannedEvent();
+        expect(r).to.not.have.a.unbannedEvent();
 
-        currentTotalStake = await d.elections.getTotalGovernanceStake();
-        expect(currentTotalStake.toNumber()).to.equal(originalTotalStake.toNumber());
+        // trigger - repeat an existing vote:
+        r = await d.elections.setBanningVotes(existingVotes, {from: delegatees[0].address});
 
-        r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[0].address});
         expect(r).to.have.a.bannedEvent({
             validator: bannedValidator.address
         });
@@ -792,18 +888,6 @@ contract('elections-high-level-flows', async () => {
         expect(r).to.have.a.topologyChangedEvent({
             orbsAddrs: []
         });
-
-        // -------------- BANNING VOTES REVOKED BY VALIDATOR ---------------
-
-        r = await d.elections.setBanningVotes([], {from: delegatees[thresholdCrossingIndex].address}); // threshold is again uncrossed
-        expect(r).to.have.a.banningVoteEvent({
-            voter: delegatees[thresholdCrossingIndex].address,
-            against: []
-        });
-        expect(r).to.have.a.topologyChangedEvent({
-            orbsAddrs: [bannedValidator.orbsAddress]
-        });
-
     });
     //
     // it("allows anyone to refresh a banning vote of another staker to reflect current stake", async () => {
@@ -885,7 +969,7 @@ contract('elections-high-level-flows', async () => {
 
 });
 
-async function setupValidatorBanningScenario(d) {
+async function banningScenario_setupDelegatorsAndValidators(driver) {
     assert(DEFAULT_BANNING_THRESHOLD < 98); // so each committee member will hold a positive stake
     assert(Math.floor(DEFAULT_BANNING_THRESHOLD / 2) >= 98 - DEFAULT_BANNING_THRESHOLD); // so the committee list will be ordered by stake
 
@@ -903,9 +987,9 @@ async function setupValidatorBanningScenario(d) {
     const delegators: Participant[] = [];
     for (const p of stakesPercentage) {
         // stake holders will not have own stake, only delegated - to test the use of governance stake
-        const delegator = d.newParticipant();
+        const delegator = driver.newParticipant();
         await delegator.stake(DEFAULT_MINIMUM_STAKE * p);
-        const v = d.newParticipant();
+        const v = driver.newParticipant();
         await delegator.delegate(v);
         delegatees.push(v);
         delegators.push(delegator);
@@ -917,4 +1001,22 @@ async function setupValidatorBanningScenario(d) {
         orbsAddrs: [bannedValidator.orbsAddress]
     });
     return {thresholdCrossingIndex, delegatees, delegators, bannedValidator};
+}
+
+async function banningScenario_voteUntilThresholdReached(driver, thresholdCrossingIndex, delegatees, bannedValidator) {
+    let r;
+    for (let i = 0; i <= thresholdCrossingIndex; i++) {
+        const p = delegatees[i];
+        r = await driver.elections.setBanningVotes([bannedValidator.address], {from: p.address});
+    }
+    expect(r).to.have.a.banningVoteEvent({
+        voter: delegatees[thresholdCrossingIndex].address,
+        against: [bannedValidator.address]
+    });
+    expect(r).to.have.a.bannedEvent({
+        validator: bannedValidator.address
+    });
+    expect(r).to.have.a.topologyChangedEvent({
+        orbsAddrs: []
+    });
 }
