@@ -13,9 +13,10 @@ contract Subscriptions is ISubscriptions, Ownable{
 
     event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier);
     event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);
+    event VcCreated(uint256 vcid, address owner);
     event VcConfigRecordChanged(uint256 vcid, string key, string value);
     event SubscriberAdded(address subscriber);
-    event VcOwnerChanged(uint256 vcid, address owner);
+    event VcOwnerChanged(uint256 vcid, address previousOwner, address newOwner);
 
     struct VirtualChain {
         string tier;
@@ -69,7 +70,7 @@ contract Subscriptions is ISubscriptions, Ownable{
         });
         virtualChains[vcid] = vc;
 
-        emit VcOwnerChanged(vcid, owner);
+        emit VcCreated(vcid, owner);
 
         _extendSubscription(vcid, amount, owner);
         return (vcid, vc.genRef);
@@ -83,7 +84,7 @@ contract Subscriptions is ISubscriptions, Ownable{
         require(msg.sender == virtualChains[vcid].owner, "only the vc owner can transfer ownership");
 
         virtualChains[vcid].owner = owner;
-        emit VcOwnerChanged(vcid, owner);
+        emit VcOwnerChanged(vcid, msg.sender, owner);
     }
 
     function _extendSubscription(uint256 vcid, uint256 amount, address payer) private {

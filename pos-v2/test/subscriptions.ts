@@ -159,7 +159,7 @@ contract('subscriptions-high-level-flows', async () => {
     let r = await subs.createVC(amount, {from: owner.address});
     expect(r).to.have.a.subscriptionChangedEvent();
     const vcid = bn(subscriptionChangedEvents(r)[0].vcid);
-    expect(r).to.have.a.vcOwnerChangedEvent({
+    expect(r).to.have.a.vcCreatedEvent({
       vcid,
       owner: owner.address
     });
@@ -172,7 +172,8 @@ contract('subscriptions-high-level-flows', async () => {
     r = await d.subscriptions.setVcOwner(vcid, newOwner.address, {from: owner.address});
     expect(r).to.have.a.vcOwnerChangedEvent({
       vcid,
-      owner: newOwner.address
+      previousOwner: owner.address,
+      newOwner: newOwner.address
     });
 
     await expectRejected(d.subscriptions.setVcOwner(vcid, owner.address, {from: owner.address}));
@@ -180,7 +181,8 @@ contract('subscriptions-high-level-flows', async () => {
     r = await d.subscriptions.setVcOwner(vcid, owner.address, {from: newOwner.address});
     expect(r).to.have.a.vcOwnerChangedEvent({
       vcid,
-      owner: owner.address
+      previousOwner: newOwner.address,
+      newOwner: owner.address
     });
 
   });
