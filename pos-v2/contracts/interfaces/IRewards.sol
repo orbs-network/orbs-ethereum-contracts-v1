@@ -21,6 +21,7 @@ interface IRewards {
 
     event ContractRegistryChanged(IContractRegistry _contractRegistry);
 
+
     /*
      *   External methods
      */
