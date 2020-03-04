@@ -644,41 +644,23 @@ contract('elections-high-level-flows', async () => {
 
     });
 
-    it("allows enough stake to ban and unban a member from topology", async () => {
-        assert(DEFAULT_BANNING_THRESHOLD < 98); // so each committee member will hold a positive stake
-        assert(Math.floor(DEFAULT_BANNING_THRESHOLD / 2) >= 98 - DEFAULT_BANNING_THRESHOLD); // so the committee list will be ordered by stake
-
+    it("allows voting only to 3 at a time", async () => {
         const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
 
-        // -------------- SETUP ---------------
-        const stakesPercentage = [
-            Math.ceil(DEFAULT_BANNING_THRESHOLD / 2),
-            Math.floor(DEFAULT_BANNING_THRESHOLD / 2),
-            98 - DEFAULT_BANNING_THRESHOLD,
-            1,
-            1
-        ];
-        const thresholdCrossingIndex = 1;
-        const delegatees: Participant[] = [];
-        const delegators: Participant[] = [];
-        for (const p of stakesPercentage) {
-            // stake holders will not have own stake, only delegated - to test the use of governance stake
-            const delegator = d.newParticipant();
-            await delegator.stake(DEFAULT_MINIMUM_STAKE * p);
-            const v = d.newParticipant();
-            await delegator.delegate(v);
-            delegatees.push(v);
-            delegators.push(delegator);
-        }
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await setupValidatorBanningScenario(d);
 
-        const bannedValidator = delegatees[delegatees.length - 1];
-        let r = await bannedValidator.registerAsValidator();
-        expect(r).to.have.a.topologyChangedEvent({
-            orbsAddrs: [bannedValidator.orbsAddress]
-        });
+        // -------------- VOTE FOR 3 VALIDATORS AT MOST ---------------
+        await expectRejected(d.elections.setBanningVotes(delegatees.slice(0, 4).map(v => v.address), {from: delegators[0].address}));
+        await d.elections.setBanningVotes(delegatees.slice(0, 3).map(v => v.address), {from: delegators[0].address});
+    });
+
+    it("allows enough stake to ban and unban a member from topology", async () => {
+        const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
+
+        let r;
+        let {thresholdCrossingIndex, delegatees, delegators, bannedValidator} = await setupValidatorBanningScenario(d);
 
         // -------------- BANNING VOTES CAST BY DELEGATORS - NO GOV STAKE, NO EFFECT ---------------
-
         for (const delegator of delegators) {
             r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegator.address});
             expect(r).to.have.a.banningVoteEvent({
@@ -902,3 +884,37 @@ contract('elections-high-level-flows', async () => {
     // });
 
 });
+
+async function setupValidatorBanningScenario(d) {
+    assert(DEFAULT_BANNING_THRESHOLD < 98); // so each committee member will hold a positive stake
+    assert(Math.floor(DEFAULT_BANNING_THRESHOLD / 2) >= 98 - DEFAULT_BANNING_THRESHOLD); // so the committee list will be ordered by stake
+
+
+    // -------------- SETUP ---------------
+    const stakesPercentage = [
+        Math.ceil(DEFAULT_BANNING_THRESHOLD / 2),
+        Math.floor(DEFAULT_BANNING_THRESHOLD / 2),
+        98 - DEFAULT_BANNING_THRESHOLD,
+        1,
+        1
+    ];
+    const thresholdCrossingIndex = 1;
+    const delegatees: Participant[] = [];
+    const delegators: Participant[] = [];
+    for (const p of stakesPercentage) {
+        // stake holders will not have own stake, only delegated - to test the use of governance stake
+        const delegator = d.newParticipant();
+        await delegator.stake(DEFAULT_MINIMUM_STAKE * p);
+        const v = d.newParticipant();
+        await delegator.delegate(v);
+        delegatees.push(v);
+        delegators.push(delegator);
+    }
+
+    const bannedValidator = delegatees[delegatees.length - 1];
+    let r = await bannedValidator.registerAsValidator();
+    expect(r).to.have.a.topologyChangedEvent({
+        orbsAddrs: [bannedValidator.orbsAddress]
+    });
+    return {thresholdCrossingIndex, delegatees, delegators, bannedValidator};
+}
