@@ -16,6 +16,8 @@ export interface ElectionsContract extends Contract {
   setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
   setBanningVotes(address: string[], params?: TransactionDetails): Promise<TransactionResponse>;
   refreshBanningVote(voter: string, against: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  getBanningVotes(address: string): Promise<string[]>;
+  getTotalGovernanceStake(): Promise<BN>;
 }
 
 export interface DelegatedEvent {

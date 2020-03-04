@@ -20,6 +20,7 @@ const expect = chai.expect;
 
 import {CommitteeProvider} from './committee-provider';
 import {bn, evmIncreaseTime} from "./helpers";
+import { electionsDebugEvents } from "./event-parsing";
 
 
 contract('elections-high-level-flows', async () => {
@@ -649,6 +650,7 @@ contract('elections-high-level-flows', async () => {
 
         const d = await Driver.new(DEFAULT_COMMITTEE_SIZE, DEFAULT_TOPOLOGY_SIZE, 0);
 
+        // -------------- SETUP ---------------
         const stakesPercentage = [
             Math.ceil(DEFAULT_BANNING_THRESHOLD / 2),
             Math.floor(DEFAULT_BANNING_THRESHOLD / 2),
@@ -675,7 +677,8 @@ contract('elections-high-level-flows', async () => {
             orbsAddrs: [bannedValidator.orbsAddress]
         });
 
-        // Delegators don't have governance stake, banning should not take place
+        // -------------- BANNING VOTES CAST BY DELEGATORS - NO GOV STAKE, NO EFFECT ---------------
+
         for (const delegator of delegators) {
             r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegator.address});
             expect(r).to.have.a.banningVoteEvent({
@@ -685,6 +688,9 @@ contract('elections-high-level-flows', async () => {
             expect(r).to.not.have.a.topologyChangedEvent();
         }
 
+        // -------------- BANNING VOTES CAST BY VALIDATORS ---------------
+
+        // remain under threshold
         for (let i = 0; i < thresholdCrossingIndex; i++) {
             const p = delegatees[i];
             r = await d.elections.setBanningVotes([bannedValidator.address], {from: p.address});
@@ -695,6 +701,7 @@ contract('elections-high-level-flows', async () => {
             expect(r).to.not.have.a.topologyChangedEvent();
         }
 
+        // pass the threshold - banning 1 validator
         r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[thresholdCrossingIndex].address}); // threshold is crossed
         expect(r).to.have.a.banningVoteEvent({
             voter: delegatees[thresholdCrossingIndex].address,
@@ -704,7 +711,59 @@ contract('elections-high-level-flows', async () => {
             orbsAddrs: []
         });
 
-        r = await d.elections.setBanningVotes([], {from: delegatees[thresholdCrossingIndex].address}); // threshold is uncrossed
+        // -------------- DELEGATOR UNSTAKES AND RESTAKES TO REVOKE BANNING AND REINSTATE BAN ---------------
+
+        const tempStake = await d.staking.getStakeBalanceOf(delegators[thresholdCrossingIndex].address);
+        r = await d.staking.unstake(tempStake, {from: delegators[thresholdCrossingIndex].address}); // threshold is un-crossed
+        // TODO find the right "unbanning" event to check here
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+
+        r = await d.staking.restake({from: delegators[thresholdCrossingIndex].address}); // threshold is crossed again
+        // TODO find the right "rebanning" event to check here
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: []
+        });
+
+        // -------------- NEW PARTICIPANT STAKES TO DILUTE BANNING VOTES, THEN UNSTAKES ---------------
+
+        const originalTotalStake = await d.elections.getTotalGovernanceStake();
+        const dilutingParticipant = d.newParticipant();
+        const dilutingStake = DEFAULT_MINIMUM_STAKE * DEFAULT_BANNING_THRESHOLD * 200;
+        r = await dilutingParticipant.stake(dilutingStake);
+        expect(r).to.not.have.a.topologyChangedEvent(); // because we need a trigger to detect the change
+
+        let currentTotalStake = await d.elections.getTotalGovernanceStake();
+        expect(currentTotalStake.toNumber()).to.equal(originalTotalStake.add(new BN(dilutingStake)).toNumber());
+
+        expect(await d.elections.getBanningVotes(delegatees[0].address)).to.deep.equal([bannedValidator.address]);
+
+        r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[0].address});
+        // TODO find the right "unbanning" event to check here
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: [bannedValidator.orbsAddress]
+        });
+
+        r = await d.staking.unstake(dilutingStake, {from: dilutingParticipant.address}); // threshold is again crossed
+
+        currentTotalStake = await d.elections.getTotalGovernanceStake();
+        expect(currentTotalStake.toNumber()).to.equal(originalTotalStake.toNumber());
+
+        r = await d.elections.setBanningVotes([bannedValidator.address], {from: delegatees[0].address});
+        // TODO find the right "rebanning" event to check here
+        expect(r).to.have.a.topologyChangedEvent({
+            orbsAddrs: []
+        });
+
+        // TODO -------------- UNBAN THEN BAN BY DELEGATION - VALIDATOR --------------
+
+        // TODO -------------- UNBAN THEN BAN BY DELEGATION - DELEGATOR --------------
+
+
+        // -------------- BANNING VOTES REVOKED BY VALIDATOR ---------------
+
+        r = await d.elections.setBanningVotes([], {from: delegatees[thresholdCrossingIndex].address}); // threshold is again uncrossed
         expect(r).to.have.a.banningVoteEvent({
             voter: delegatees[thresholdCrossingIndex].address,
             against: []
