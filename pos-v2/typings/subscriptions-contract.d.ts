@@ -27,6 +27,12 @@ export interface VcConfigRecordChangedEvent {
 
 export interface VcOwnerChangedEvent {
   vcid: number | BN;
+  previousOwner: string;
+  newOwner: string;
+}
+
+export interface VcCreatedEvent {
+  vcid: number | BN;
   owner: string;
 }
 
