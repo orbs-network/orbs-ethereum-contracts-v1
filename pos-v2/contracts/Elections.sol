@@ -193,7 +193,9 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function setBanningVotes(address[] calldata addrs) external {
-		_setBanningVotes(msg.sender, addrs);
+		require(addrs.length <= 3, "up to 3 concurrent votes are supported");
+
+        _setBanningVotes(msg.sender, addrs);
 		emit BanningVote(msg.sender, addrs);
 	}
 
