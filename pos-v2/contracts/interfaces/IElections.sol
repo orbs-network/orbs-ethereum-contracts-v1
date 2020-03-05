@@ -8,9 +8,13 @@ interface IElections /* is IStakeChangeNotifier */ {
 	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
 	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
-	event VotedOutEvent(address votedOut);
+	event VoteOut(address voter, address against);
+	event VotedOutOfCommittee(address addr);
+	event BanningVote(address voter, address[] against);
 	event Delegated(address from, address to);
-	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
+	event StakeChanged(address addr, uint256 ownStake, uint256 uncappedStake, uint256 governanceStake, uint256 committeeStake, uint256 totalGovernanceStake);
+	event Banned(address validator);
+	event Unbanned(address validator);
 
 	/*
 	 *   External methods
@@ -30,6 +34,9 @@ interface IElections /* is IStakeChangeNotifier */ {
 
 	/// @dev Refreshes the staking information (and the corresponding rank in committee and topology) for the given addresses.
 	function refreshStakes(address[] calldata addrs) external;
+
+	/// @dev casts a banning vote by the sender to the given address
+	function setBanningVotes(address[] calldata addrs) external;
 
 	/*
 	 *   Methods restricted to other Orbs contracts

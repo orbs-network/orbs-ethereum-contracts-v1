@@ -14,6 +14,13 @@ export interface ElectionsContract extends Contract {
   setValidatorIp(ip: string, params?: TransactionDetails): Promise<TransactionResponse>;
   refreshStakes(addrs: string[], params?: TransactionDetails): Promise<TransactionResponse>;
   setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  setBanningVotes(address: string[], params?: TransactionDetails): Promise<TransactionResponse>;
+  refreshBanningVote(voter: string, against: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  getBanningVotes(address: string): Promise<string[]>;
+  getAccumulatedStakesForBanning(address: string): Promise<BN>;
+  getTotalGovernanceStake(): Promise<BN>;
+  getGovernanceEffectiveStake(address: string): Promise<BN>;
+  getDelegation(address: string): Promise<string>;
 }
 
 export interface DelegatedEvent {
@@ -37,9 +44,12 @@ export interface ValidatorRegisteredEvent {
   ip: string;
 }
 
-export interface TotalStakeChangedEvent {
+export interface StakeChangeEvent {
   addr: string;
-  newTotal: number | BN;
+  ownStake: number | BN;
+  uncappedStake: number | BN;
+  governanceStake: number | BN;
+  committeeStake: number | BN;
 }
 
 export interface VoteOutEvent {
@@ -49,4 +59,17 @@ export interface VoteOutEvent {
 
 export interface VotedOutOfCommitteeEvent {
   addr: string;
+}
+
+export interface BanningVoteEvent {
+  voter: string;
+  against: string[];
+}
+
+export interface BannedEvent {
+  validator: string;
+}
+
+export interface UnbannedEvent {
+  validator: string;
 }
