@@ -95,7 +95,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		orbsAddressToMainAddress[_orbsAddress] = msg.sender;
 		emit ValidatorRegistered(msg.sender, _ip, _orbsAddress);
 
-		_placeInTopology(msg.sender);
+		_rankValidator(msg.sender);
 	}
 
 	function setValidatorIp(bytes4 ip) external {
@@ -122,7 +122,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	function notifyReadyForCommittee() external {
 		address sender = getMainAddrFromOrbsAddr(msg.sender);
 		readyValidators[sender] = true;
-		_placeInTopology(sender);
+		_rankValidator(sender);
 	}
 
 	function delegate(address to) external {
@@ -137,14 +137,12 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		delegations[msg.sender] = to; // change delegation!!
 
 		uint256 stake = ownStakes[msg.sender];
-        _setDelegatedStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake), prevGovStakePrevDelegatee);
-		_setDelegatedStake(to, uncappedStakes[to].add(stake), prevGovStakeNewDelegatee);
 
-		_checkBanningVotesBy(prevDelegatee, prevGovStakePrevDelegatee);
-		_checkBanningVotesBy(to, prevGovStakeNewDelegatee);
+        _applyDelegatedStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake), prevGovStakePrevDelegatee);
+		_applyDelegatedStakeToBanningBy(prevDelegatee, prevGovStakePrevDelegatee);
 
-        _placeInTopology(prevDelegatee); // TODO may emit superfluous event
-		_placeInTopology(to);
+		_applyDelegatedStake(to, uncappedStakes[to].add(stake), prevGovStakeNewDelegatee);
+		_applyDelegatedStakeToBanningBy(to, prevGovStakeNewDelegatee);
 
 		emit Delegated(msg.sender, to);
 	}
@@ -174,7 +172,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 				voteOuts[topology[i]][addr] = 0; // clear vote-outs
 			}
 			readyValidators[addr] = false;
-			_placeInTopology(addr);
+			_rankValidator(addr);
 
 			emit VotedOutOfCommittee(addr);
 		}
@@ -204,7 +202,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		return accumulatedStakesForBanning[addrs];
 	}
 
-	function _checkBanningVotesBy(address voter, uint256 previousStake) private {
+	function _applyDelegatedStakeToBanningBy(address voter, uint256 previousStake) private {
 		address[] memory votes = banningVotes[voter];
 		uint256 currentStake = getGovernanceEffectiveStake(voter);
 
@@ -272,7 +270,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
                 bannedValidators[addr] = 0;
 				emit Unbanned(addr);
 			}
-            _placeInTopology(addr);
+            _rankValidator(addr);
         }
     }
 
@@ -318,12 +316,10 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		}
 		ownStakes[_stakeOwner] = newOwnStake;
 
-		_setDelegatedStake(delegatee, newUncappedStake, prevGovStakeDelegatee);
+		_applyDelegatedStake(delegatee, newUncappedStake, prevGovStakeDelegatee);
 
-		_checkBanningVotesBy(_stakeOwner, prevGovStakeOwner); // totalGovernanceStake must be updated by now
-		_checkBanningVotesBy(delegatee, prevGovStakeDelegatee); // totalGovernanceStake must be updated by now
-
-		_placeInTopology(delegatee);
+		_applyDelegatedStakeToBanningBy(_stakeOwner, prevGovStakeOwner); // totalGovernanceStake must be updated by now
+		_applyDelegatedStakeToBanningBy(delegatee, prevGovStakeDelegatee); // totalGovernanceStake must be updated by now
 	}
 
 	function stakeMigration(address _stakeOwner, uint256 _amount) external onlyStakingContract {}
@@ -480,7 +476,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		}
 	}
 
-	function _placeInTopology(address validator) private {
+	function _rankValidator(address validator) private {
 		(uint pos, bool inTopology) = _findInTopology(validator);
 
 		if (inTopology && !_satisfiesTopologyPrerequisites(validator)) {
@@ -532,13 +528,15 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		topology[p2] = tempValidator;
 	}
 
-	function _setDelegatedStake(address addr, uint256 accStake, uint256 prevGovStake) private {
-		uncappedStakes[addr] = accStake;
+	function _applyDelegatedStake(address addr, uint256 newStake, uint256 prevGovStake) private {
+		uncappedStakes[addr] = newStake;
 
 		uint256 currentGovStake = getGovernanceEffectiveStake(addr);
 		totalGovernanceStake = totalGovernanceStake.sub(prevGovStake).add(currentGovStake);
 
-		emit StakeChanged(addr, ownStakes[addr], accStake, getGovernanceEffectiveStake(addr), getCommitteeEffectiveStake(addr), totalGovernanceStake);
+		emit StakeChanged(addr, ownStakes[addr], newStake, getGovernanceEffectiveStake(addr), getCommitteeEffectiveStake(addr), totalGovernanceStake);
+
+		_rankValidator(addr);
 	}
 
 	function _findInTopology(address v) private view returns (uint, bool) {
