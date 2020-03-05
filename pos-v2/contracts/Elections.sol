@@ -14,17 +14,6 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 
 	IContractRegistry contractRegistry;
 
-	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
-	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
-	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
-	event VoteOut(address voter, address against);
-	event VotedOutOfCommittee(address addr);
-	event BanningVote(address voter, address[] against);
-	event Delegated(address from, address to);
-	event StakeChanged(address addr, uint256 ownStake, uint256 uncappedStake, uint256 governanceStake, uint256 committeeStake, uint256 totalGovernanceStake);
-	event Banned(address validator);
-	event Unbanned(address validator);
-
 	event Debug(string,uint256);
 
     uint256 constant BANNING_LOCK_TIMEOUT = 1 weeks;

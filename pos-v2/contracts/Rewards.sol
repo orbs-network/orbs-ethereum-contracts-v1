@@ -14,9 +14,6 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
 
     IContractRegistry contractRegistry;
 
-    event RewardAssigned(address assignee, uint256 amount, uint256 balance);
-    event FeeAddedToBucket(uint256 bucketId, uint256 added, uint256 total);
-
     uint256 constant bucketTimePeriod = 30 days;
 
     mapping(uint256 => uint256) feePoolBuckets;
