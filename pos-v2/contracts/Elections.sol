@@ -21,7 +21,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	event VotedOutOfCommittee(address addr);
 	event BanningVote(address voter, address[] against);
 	event Delegated(address from, address to);
-	event StakeChanged(address addr, uint256 ownStake, uint256 uncappedStake, uint256 governanceStake, uint256 committeeStake); // TODO - do we need this?
+	event StakeChanged(address addr, uint256 ownStake, uint256 uncappedStake, uint256 governanceStake, uint256 committeeStake, uint256 totalGovernanceStake);
 	event Banned(address validator);
 	event Unbanned(address validator);
 
@@ -32,6 +32,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	address[] topology;
 
 	struct Validator {
+		bool registered;
 		bytes4 ip;
 		address orbsAddress;
 	}
@@ -47,7 +48,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	mapping (address => address) delegations;
 	mapping (address => mapping (address => uint256)) voteOuts; // by => to => timestamp
 	mapping (address => address[]) banningVotes; // by => to[]]
-	mapping (address => uint256) totalBanningStake; // addr => total stake
+	mapping (address => uint256) accumulatedStakesForBanning; // addr => total stake
 	mapping (address => address) orbsAddressToMainAddress;
 	mapping (address => uint256) bannedValidators; // addr => timestamp
 
@@ -93,11 +94,15 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function registerValidator(bytes4 _ip, address _orbsAddress) external  {
-		require(registeredValidators[msg.sender].orbsAddress == address(0), "Validator is already registered");
+		require(registeredValidators[msg.sender].registered == false, "Validator is already registered");
 		require(_orbsAddress != address(0), "orbs address must be non zero");
 
-		registeredValidators[msg.sender].orbsAddress = _orbsAddress;
-		registeredValidators[msg.sender].ip = _ip;
+		registeredValidators[msg.sender] =  Validator({
+			registered: true,
+			orbsAddress: _orbsAddress,
+			ip: _ip
+		});
+
 		orbsAddressToMainAddress[_orbsAddress] = msg.sender;
 		emit ValidatorRegistered(msg.sender, _ip, _orbsAddress);
 
@@ -105,7 +110,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function setValidatorIp(bytes4 ip) external {
-		require(registeredValidators[msg.sender].orbsAddress != address(0), "Validator is not registered");
+		require(registeredValidators[msg.sender].registered, "Validator is not registered");
 		registeredValidators[msg.sender].ip = ip;
 		(, bool isInTopology) = _findInTopology(msg.sender);
 		if (isInTopology) {
@@ -114,7 +119,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function setValidatorOrbsAddress(address orbsAddress) external {
-		require(registeredValidators[msg.sender].orbsAddress != address(0), "Validator is not registered");
+		require(registeredValidators[msg.sender].registered, "Validator is not registered");
 		registeredValidators[msg.sender].orbsAddress = orbsAddress;
 		(uint pos, bool isInTopology) = _findInTopology(msg.sender);
 		if (isInTopology) {
@@ -137,27 +142,19 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
             prevDelegatee = msg.sender;
         }
 
-		uint256 oldGESPrevDelegatee = getGovernanceEffectiveStake(prevDelegatee);
-		uint256 oldGESNewDelegatee = getGovernanceEffectiveStake(to);
-
-		bool becameNotSelfDelegated = prevDelegatee == msg.sender && to != msg.sender;
-		bool becameSelfDelegated = prevDelegatee != msg.sender && to == msg.sender;
+		uint256 prevGovStakePrevDelegatee = getGovernanceEffectiveStake(prevDelegatee);
+		uint256 prevGovStakeNewDelegatee = getGovernanceEffectiveStake(to);
 
 		delegations[msg.sender] = to; // change delegation!!
 
 		uint256 stake = ownStakes[msg.sender];
-        _updateUncappedStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake), becameSelfDelegated, becameNotSelfDelegated);
+        _setDelegatedStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake), prevGovStakePrevDelegatee);
+		_setDelegatedStake(to, uncappedStakes[to].add(stake), prevGovStakeNewDelegatee);
+
+		_checkBanningVotesBy(prevDelegatee, prevGovStakePrevDelegatee);
+		_checkBanningVotesBy(to, prevGovStakeNewDelegatee);
+
         _placeInTopology(prevDelegatee); // TODO may emit superfluous event
-		_updateUncappedStake(to, uncappedStakes[to].add(stake), false, false);
-
-		uint256 newGESPrevDelegatee = getGovernanceEffectiveStake(prevDelegatee);
-		uint256 newGESNewDelegatee = getGovernanceEffectiveStake(to);
-		_updateBanningStake(prevDelegatee, oldGESPrevDelegatee, newGESPrevDelegatee);
-		_updateBanningStake(to, oldGESNewDelegatee, newGESNewDelegatee);
-
-		emit Debug("oldGESPrevDelegatee", oldGESPrevDelegatee);
-		emit Debug("newGESPrevDelegatee", newGESPrevDelegatee);
-
 		_placeInTopology(to);
 
 		emit Delegated(msg.sender, to);
@@ -181,6 +178,8 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			// TODO - consider clearing up stale votes from the state (gas efficiency)
 		}
 
+		emit VoteOut(sender, addr);
+
 		if (totalCommitteeStake > 0 && totalVoteOutStake.mul(100).div(totalCommitteeStake) >= voteOutPercentageThreshold) {
 			for (uint i = 0; i < committeeSize; i++) {
 				voteOuts[topology[i]][addr] = 0; // clear vote-outs
@@ -191,14 +190,17 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			emit VotedOutOfCommittee(addr);
 		}
 
-		emit VoteOut(sender, addr);
 	}
 
-	function setBanningVotes(address[] calldata addrs) external {
-		require(addrs.length <= 3, "up to 3 concurrent votes are supported");
-
-        _setBanningVotes(msg.sender, addrs);
-		emit BanningVote(msg.sender, addrs);
+	function setBanningVotes(address[] calldata validators) external {
+		require(validators.length <= 3, "up to 3 concurrent votes are supported");
+		for (uint i = 0; i < validators.length; i++) {
+			require(validators[i] != address(0), "all votes must non zero addresses");
+			// TODO - uncomment?
+			//require(registeredValidators[validators[i]].registered, "all votes must be of registered validators");
+		}
+        _setBanningVotes(msg.sender, validators);
+		emit BanningVote(msg.sender, validators);
 	}
 
 	function getTotalGovernanceStake() external view returns (uint256) {
@@ -209,41 +211,44 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		return banningVotes[addrs];
 	}
 
-	function getTotalBanningStake(address addrs) external view returns (uint256) {
-		return totalBanningStake[addrs];
+	function getAccumulatedStakesForBanning(address addrs) external view returns (uint256) {
+		return accumulatedStakesForBanning[addrs];
 	}
 
-	function _updateBanningStake(address voter, uint256 oldGES, uint256 newGES) private {
-		address[] memory banned = banningVotes[voter];
+	function _checkBanningVotesBy(address voter, uint256 previousStake) private {
+		address[] memory votes = banningVotes[voter];
+		uint256 currentStake = getGovernanceEffectiveStake(voter);
 
-		for (uint i = 0; i < banned.length; i++) {
-			address bannedAddr = banned[i];
-			totalBanningStake[bannedAddr] = totalBanningStake[bannedAddr].sub(oldGES).add(newGES);
-			updateBanningStatus(bannedAddr);
+		for (uint i = 0; i < votes.length; i++) {
+			address validator = votes[i];
+			accumulatedStakesForBanning[validator] = accumulatedStakesForBanning[validator].
+				sub(previousStake).
+				add(currentStake);
+			_applyBanningVotesFor(validator);
 		}
 	}
 
-    function _setBanningVotes(address voter, address[] memory addrs) private {
+    function _setBanningVotes(address voter, address[] memory validators) private {
 		address[] memory prevAddrs = banningVotes[voter];
-		banningVotes[voter] = addrs;
+		banningVotes[voter] = validators;
 
 		for (uint i = 0; i < prevAddrs.length; i++) {
 			address addr = prevAddrs[i];
 			bool isRemoved = true;
-			for (uint j = 0; j < addrs.length; j++) {
-				if (addr == addrs[j]) {
+			for (uint j = 0; j < validators.length; j++) {
+				if (addr == validators[j]) {
 					isRemoved = false;
 					break;
 				}
 			}
 			if (isRemoved) {
-				totalBanningStake[addr] = totalBanningStake[addr].sub(getGovernanceEffectiveStake(msg.sender));
-				updateBanningStatus(addr);
+				accumulatedStakesForBanning[addr] = accumulatedStakesForBanning[addr].sub(getGovernanceEffectiveStake(msg.sender));
+				_applyBanningVotesFor(addr);
 			}
 		}
 
-		for (uint i = 0; i < addrs.length; i++) {
-			address addr = addrs[i];
+		for (uint i = 0; i < validators.length; i++) {
+			address addr = validators[i];
 			bool isAdded = true;
 			for (uint j = 0; j < prevAddrs.length; j++) {
 				if (prevAddrs[j] == addr) {
@@ -252,13 +257,13 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 				}
 			}
 			if (isAdded) {
-				totalBanningStake[addr] = totalBanningStake[addr].add(getGovernanceEffectiveStake(msg.sender));
+				accumulatedStakesForBanning[addr] = accumulatedStakesForBanning[addr].add(getGovernanceEffectiveStake(msg.sender));
 			}
-			updateBanningStatus(addr); // recheck also for existing
+			_applyBanningVotesFor(addr); // recheck also if not new
 		}
     }
 
-    function updateBanningStatus(address addr) private {
+    function _applyBanningVotesFor(address addr) private {
         uint256 banningTimestamp = bannedValidators[addr];
         bool isBanned = banningTimestamp != 0;
 
@@ -266,7 +271,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
             return;
         }
 
-        uint256 banningStake = totalBanningStake[addr];
+        uint256 banningStake = accumulatedStakesForBanning[addr];
 
         bool shouldBan = totalGovernanceStake > 0 && banningStake.mul(100).div(totalGovernanceStake) >= banningPercentageThreshold;
 
@@ -310,8 +315,8 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			delegatee = _stakeOwner;
 		}
 
-		uint256 oldGESOwner = getGovernanceEffectiveStake(_stakeOwner);
-		uint256 oldGESDelegatee = getGovernanceEffectiveStake(delegatee);
+		uint256 prevGovStakeOwner = getGovernanceEffectiveStake(_stakeOwner);
+		uint256 prevGovStakeDelegatee = getGovernanceEffectiveStake(delegatee);
 
 		uint256 newUncappedStake;
 		uint256 newOwnStake;
@@ -323,13 +328,11 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			newUncappedStake = uncappedStakes[delegatee].sub(_amount);
 		}
 		ownStakes[_stakeOwner] = newOwnStake;
-		_updateUncappedStake(delegatee, newUncappedStake, false, false); // TODO separate updating of totalGovernanceStake
 
-		uint256 newGESOwner = getGovernanceEffectiveStake(_stakeOwner);
-		uint256 newGESDelegatee = getGovernanceEffectiveStake(delegatee);
+		_setDelegatedStake(delegatee, newUncappedStake, prevGovStakeDelegatee);
 
-		_updateBanningStake(_stakeOwner, oldGESOwner, newGESOwner); // totalGovernanceStake must be updated by now
-		_updateBanningStake(delegatee, oldGESDelegatee, newGESDelegatee); // totalGovernanceStake must be updated by now
+		_checkBanningVotesBy(_stakeOwner, prevGovStakeOwner); // totalGovernanceStake must be updated by now
+		_checkBanningVotesBy(delegatee, prevGovStakeDelegatee); // totalGovernanceStake must be updated by now
 
 		_placeInTopology(delegatee);
 	}
@@ -540,21 +543,13 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		topology[p2] = tempValidator;
 	}
 
-	function _updateUncappedStake(address addr, uint256 stake, bool becameSelfDelegated, bool becameNotSelfDelegated) private {
-		uint256 oldStake = uncappedStakes[addr];
-		uncappedStakes[addr] = stake;
+	function _setDelegatedStake(address addr, uint256 accStake, uint256 prevGovStake) private {
+		uncappedStakes[addr] = accStake;
 
-		uint256 total = totalGovernanceStake;
-		if (becameNotSelfDelegated) {
-			total = total.sub(oldStake);
-		} else if (becameSelfDelegated) {
-			total = total.add(stake);
-		} else if (_isSelfDelegating(addr)) {
-			total = total.add(stake).sub(oldStake);
-		}
-		totalGovernanceStake = total;
+		uint256 currentGovStake = getGovernanceEffectiveStake(addr);
+		totalGovernanceStake = totalGovernanceStake.sub(prevGovStake).add(currentGovStake);
 
-		emit StakeChanged(addr, ownStakes[addr], stake, getGovernanceEffectiveStake(addr), getCommitteeEffectiveStake(addr));
+		emit StakeChanged(addr, ownStakes[addr], accStake, getGovernanceEffectiveStake(addr), getCommitteeEffectiveStake(addr), totalGovernanceStake);
 	}
 
 	function _findInTopology(address v) private view returns (uint, bool) {
