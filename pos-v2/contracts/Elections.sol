@@ -134,17 +134,16 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		uint256 prevGovStakePrevDelegatee = getGovernanceEffectiveStake(prevDelegatee);
 		uint256 prevGovStakeNewDelegatee = getGovernanceEffectiveStake(to);
 
-		delegations[msg.sender] = to; // change delegation!!
+		delegations[msg.sender] = to; // delegation!
+		emit Delegated(msg.sender, to);
 
 		uint256 stake = ownStakes[msg.sender];
 
         _applyDelegatedStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake), prevGovStakePrevDelegatee);
-		_applyDelegatedStakeToBanningBy(prevDelegatee, prevGovStakePrevDelegatee);
-
 		_applyDelegatedStake(to, uncappedStakes[to].add(stake), prevGovStakeNewDelegatee);
-		_applyDelegatedStakeToBanningBy(to, prevGovStakeNewDelegatee);
 
-		emit Delegated(msg.sender, to);
+		_applyStakesToBanningBy(prevDelegatee, prevGovStakePrevDelegatee);
+		_applyStakesToBanningBy(to, prevGovStakeNewDelegatee);
 	}
 
 	function voteOut(address addr) external {
@@ -202,7 +201,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		return accumulatedStakesForBanning[addrs];
 	}
 
-	function _applyDelegatedStakeToBanningBy(address voter, uint256 previousStake) private {
+	function _applyStakesToBanningBy(address voter, uint256 previousStake) private {
 		address[] memory votes = banningVotes[voter];
 		uint256 currentStake = getGovernanceEffectiveStake(voter);
 
@@ -318,8 +317,8 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 
 		_applyDelegatedStake(delegatee, newUncappedStake, prevGovStakeDelegatee);
 
-		_applyDelegatedStakeToBanningBy(_stakeOwner, prevGovStakeOwner); // totalGovernanceStake must be updated by now
-		_applyDelegatedStakeToBanningBy(delegatee, prevGovStakeDelegatee); // totalGovernanceStake must be updated by now
+		_applyStakesToBanningBy(_stakeOwner, prevGovStakeOwner); // totalGovernanceStake must be updated by now
+		_applyStakesToBanningBy(delegatee, prevGovStakeDelegatee); // totalGovernanceStake must be updated by now
 	}
 
 	function stakeMigration(address _stakeOwner, uint256 _amount) external onlyStakingContract {}
