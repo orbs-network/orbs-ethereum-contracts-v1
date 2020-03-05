@@ -17,4 +17,6 @@ export interface UnstakedEvent {
 export interface StakingContract extends Contract {
   stake(amount: number | BN, params?: TransactionConfig): Promise<TransactionReceipt>;
   unstake(amount: number | BN, params?: TransactionConfig): Promise<TransactionReceipt>;
+  restake(params?: TransactionConfig): Promise<TransactionReceipt>;
+  getStakeBalanceOf(stakeOwner: string, params?: TransactionConfig): Promise<BN>; // view
 }

@@ -2,9 +2,8 @@ pragma solidity 0.5.16;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-import "./interfaces/IStakeChangeNotifier.sol";
-import "./interfaces/IMigratableStakingContract.sol";
-import "./interfaces/IStakingContract.sol";
+import "./IStakingContract.sol";
+import "./IStakeChangeNotifier.sol";
 
 /// @title Orbs staking smart contract.
 contract StakingContract is IStakingContract, IMigratableStakingContract {
@@ -262,9 +261,8 @@ contract StakingContract is IStakingContract, IMigratableStakingContract {
 
         emit Withdrew(stakeOwner, res.withdrawnAmount, res.stakedAmount);
 
-        // Trigger state change notifications only in case we're releasing all stakes, thus changing the staking
-        // amounts.
-        if (!releasingAllStakes) {
+        // Trigger staking state change notifications only if the staking amount was changed.
+        if (res.stakedAmountDiff == 0) {
             return;
         }
 
@@ -553,6 +551,7 @@ contract StakingContract is IStakingContract, IMigratableStakingContract {
         Stake storage stakeData = stakes[_stakeOwner];
         res.stakedAmount = stakeData.amount;
         res.withdrawnAmount = stakeData.cooldownAmount;
+        res.stakedAmountDiff = 0;
 
         if (!releasingAllStakes) {
             require(res.withdrawnAmount > 0, "StakingContract::withdraw - no unstaked tokens");

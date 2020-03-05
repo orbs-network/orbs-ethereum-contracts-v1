@@ -18,7 +18,9 @@ export const DEFAULT_COMMITTEE_SIZE = 2;
 export const DEFAULT_TOPOLOGY_SIZE = 3;
 export const DEFAULT_MAX_DELEGATION_RATIO = 10;
 export const DEFAULT_VOTE_OUT_THRESHOLD = 80;
+export const DEFAULT_BANNING_THRESHOLD = 80;
 export const DEFAULT_VOTE_OUT_TIMEOUT = 24*60*60;
+export const BANNING_LOCK_TIMEOUT = 7*24*60*60;
 
 export class Driver {
     private participants: Participant[] = [];
@@ -34,14 +36,14 @@ export class Driver {
         public contractRegistry: ContractRegistryContract,
     ) {}
 
-    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT) {
+    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT, banningThreshold=DEFAULT_BANNING_THRESHOLD) {
         const accounts = await web3.eth.getAccounts();
 
         const contractRegistry: ContractRegistryContract = await deploy( 'ContractRegistry',[accounts[0]]);
         const externalToken: ERC20Contract = await deploy( 'TestingERC20', []);
         const erc20: ERC20Contract = await deploy( 'TestingERC20', []);
         const rewards: RewardsContract = await deploy( 'Rewards', [erc20.address, externalToken.address, accounts[0]]);
-        const elections: ElectionsContract = await deploy( "Elections", [maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout]);
+        const elections: ElectionsContract = await deploy( "Elections", [maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout, banningThreshold]);
         const staking: StakingContract = await Driver.newStakingContract(elections.address, erc20.address);
         const subscriptions: SubscriptionsContract = await deploy( 'Subscriptions', [erc20.address] );
 

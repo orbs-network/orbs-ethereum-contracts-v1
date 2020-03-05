@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 
-import "./interfaces/IStakingContract.sol";
+import "./IStakingContract.sol";
 import "./interfaces/ICommitteeListener.sol";
 import "./interfaces/IRewards.sol";
 import "./interfaces/IContractRegistry.sol";
@@ -13,9 +13,6 @@ contract Rewards is IRewards, ICommitteeListener, Ownable {
     using SafeMath for uint256;
 
     IContractRegistry contractRegistry;
-
-    event RewardAssigned(address assignee, uint256 amount, uint256 balance);
-    event FeeAddedToBucket(uint256 bucketId, uint256 added, uint256 total);
 
     uint256 constant bucketTimePeriod = 30 days;
 
