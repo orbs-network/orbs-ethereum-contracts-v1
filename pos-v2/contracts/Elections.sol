@@ -14,18 +14,14 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 
 	IContractRegistry contractRegistry;
 
-	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
-	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
-	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
-	event VoteOut(address voter, address against);
-	event VotedOutOfCommittee(address addr);
+	event Debug(string,uint256);
 
-	event Delegated(address from, address to);
-	event TotalStakeChanged(address addr, uint256 newTotal); // TODO - do we need this?
+    uint256 constant BANNING_LOCK_TIMEOUT = 1 weeks;
 
 	address[] topology;
 
 	struct Validator {
+		bool registered;
 		bytes4 ip;
 		address orbsAddress;
 	}
@@ -33,12 +29,17 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	// TODO consider using structs instead of multiple mappings
 	mapping (address => Validator) registeredValidators;
 	mapping (address => bool) readyValidators; // TODO if out-of-topology validators cannot be be ready-for-committee, this mapping can be replaced by a single uint
+
 	mapping (address => uint256) ownStakes;
-	mapping (address => uint256) totalStakes;
 	mapping (address => uint256) uncappedStakes;
+	uint256 totalGovernanceStake;
+
 	mapping (address => address) delegations;
 	mapping (address => mapping (address => uint256)) voteOuts; // by => to => timestamp
+	mapping (address => address[]) banningVotes; // by => to[]]
+	mapping (address => uint256) accumulatedStakesForBanning; // addr => total stake
 	mapping (address => address) orbsAddressToMainAddress;
+	mapping (address => uint256) bannedValidators; // addr => timestamp
 
 	uint committeeSize; // TODO may be redundant if readyValidators mapping is present
 
@@ -48,6 +49,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	uint maxDelegationRatio; // TODO consider using a hardcoded constant instead.
 	uint8 voteOutPercentageThreshold;
 	uint256 voteOutTimeoutSeconds;
+	uint256 banningPercentageThreshold;
 
 	modifier onlyStakingContract() {
 		require(msg.sender == contractRegistry.get("staking"), "caller is not the staking contract");
@@ -55,12 +57,12 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		_;
 	}
 
-	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds) public {
+	constructor(uint _maxCommitteeSize, uint _maxTopologySize, uint _minimumStake /* TODO remove, feature not needed */, uint8 _maxDelegationRatio, uint8 _voteOutPercentageThreshold, uint256 _voteOutTimeoutSeconds, uint256 _banningPercentageThreshold) public {
 		require(_maxCommitteeSize > 0, "maxCommitteeSize must be larger than 0");
 		require(_maxTopologySize > _maxCommitteeSize, "topology must be larger than a full committee");
-		require(_minimumStake > 0, "minimum stake for committee must be non-zero");
 		require(_maxDelegationRatio >= 1, "max delegation ration must be at least 1");
 		require(_voteOutPercentageThreshold >= 0 && _voteOutPercentageThreshold <= 100, "voteOutPercentageThreshold must be between 0 and 100");
+		require(_banningPercentageThreshold >= 0 && _banningPercentageThreshold <= 100, "banningPercentageThreshold must be between 0 and 100");
 
 		minimumStake = _minimumStake;
 		maxCommitteeSize = _maxCommitteeSize;
@@ -68,6 +70,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	    maxDelegationRatio = _maxDelegationRatio;
 		voteOutPercentageThreshold = _voteOutPercentageThreshold;
 		voteOutTimeoutSeconds = _voteOutTimeoutSeconds;
+		banningPercentageThreshold = _banningPercentageThreshold;
 	}
 
 	function setContractRegistry(IContractRegistry _contractRegistry) external onlyOwner {
@@ -80,19 +83,23 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function registerValidator(bytes4 _ip, address _orbsAddress) external  {
-		require(registeredValidators[msg.sender].orbsAddress == address(0), "Validator is already registered");
+		require(registeredValidators[msg.sender].registered == false, "Validator is already registered");
 		require(_orbsAddress != address(0), "orbs address must be non zero");
 
-		registeredValidators[msg.sender].orbsAddress = _orbsAddress;
-		registeredValidators[msg.sender].ip = _ip;
+		registeredValidators[msg.sender] =  Validator({
+			registered: true,
+			orbsAddress: _orbsAddress,
+			ip: _ip
+		});
+
 		orbsAddressToMainAddress[_orbsAddress] = msg.sender;
 		emit ValidatorRegistered(msg.sender, _ip, _orbsAddress);
 
-		_placeInTopology(msg.sender);
+		_rankValidator(msg.sender);
 	}
 
 	function setValidatorIp(bytes4 ip) external {
-		require(registeredValidators[msg.sender].orbsAddress != address(0), "Validator is not registered");
+		require(registeredValidators[msg.sender].registered, "Validator is not registered");
 		registeredValidators[msg.sender].ip = ip;
 		(, bool isInTopology) = _findInTopology(msg.sender);
 		if (isInTopology) {
@@ -101,7 +108,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function setValidatorOrbsAddress(address orbsAddress) external {
-		require(registeredValidators[msg.sender].orbsAddress != address(0), "Validator is not registered");
+		require(registeredValidators[msg.sender].registered, "Validator is not registered");
 		registeredValidators[msg.sender].orbsAddress = orbsAddress;
 		(uint pos, bool isInTopology) = _findInTopology(msg.sender);
 		if (isInTopology) {
@@ -115,7 +122,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	function notifyReadyForCommittee() external {
 		address sender = getMainAddrFromOrbsAddr(msg.sender);
 		readyValidators[sender] = true;
-		_placeInTopology(sender);
+		_rankValidator(sender);
 	}
 
 	function delegate(address to) external {
@@ -124,15 +131,19 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
             prevDelegatee = msg.sender;
         }
 
-		uint256 stake = ownStakes[msg.sender];
-        _updateTotalStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake));
-        _placeInTopology(prevDelegatee); // TODO may emit superfluous event
-		_updateTotalStake(to, uncappedStakes[to].add(stake));
-		_placeInTopology(to);
+		uint256 prevGovStakePrevDelegatee = getGovernanceEffectiveStake(prevDelegatee);
+		uint256 prevGovStakeNewDelegatee = getGovernanceEffectiveStake(to);
 
-		delegations[msg.sender] = to;
-
+		delegations[msg.sender] = to; // delegation!
 		emit Delegated(msg.sender, to);
+
+		uint256 stake = ownStakes[msg.sender];
+
+        _applyDelegatedStake(prevDelegatee, uncappedStakes[prevDelegatee].sub(stake), prevGovStakePrevDelegatee);
+		_applyDelegatedStake(to, uncappedStakes[to].add(stake), prevGovStakeNewDelegatee);
+
+		_applyStakesToBanningBy(prevDelegatee, prevGovStakePrevDelegatee);
+		_applyStakesToBanningBy(to, prevGovStakeNewDelegatee);
 	}
 
 	function voteOut(address addr) external {
@@ -143,7 +154,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		voteOuts[sender][addr] = now;
 		for (uint i = 0; i < committeeSize; i++) {
 			address member = topology[i];
-			uint256 memberStake = totalStakes[member];
+			uint256 memberStake = getCommitteeEffectiveStake(member);
 
 			totalCommitteeStake = totalCommitteeStake.add(memberStake);
 			uint256 votedAt = voteOuts[member][addr];
@@ -153,20 +164,116 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			// TODO - consider clearing up stale votes from the state (gas efficiency)
 		}
 
+		emit VoteOut(sender, addr);
+
 		if (totalCommitteeStake > 0 && totalVoteOutStake.mul(100).div(totalCommitteeStake) >= voteOutPercentageThreshold) {
 			for (uint i = 0; i < committeeSize; i++) {
 				voteOuts[topology[i]][addr] = 0; // clear vote-outs
 			}
 			readyValidators[addr] = false;
-			_placeInTopology(addr);
+			_rankValidator(addr);
 
 			emit VotedOutOfCommittee(addr);
 		}
 
-		emit VoteOut(sender, addr);
 	}
 
-	function stakeChangeBatch(address[] calldata _stakeOwners, uint256[] calldata _amounts, bool[] calldata _signs,
+	function setBanningVotes(address[] calldata validators) external {
+		require(validators.length <= 3, "up to 3 concurrent votes are supported");
+		for (uint i = 0; i < validators.length; i++) {
+			require(validators[i] != address(0), "all votes must non zero addresses");
+			// TODO - uncomment?
+			//require(registeredValidators[validators[i]].registered, "all votes must be of registered validators");
+		}
+        _setBanningVotes(msg.sender, validators);
+		emit BanningVote(msg.sender, validators);
+	}
+
+	function getTotalGovernanceStake() external view returns (uint256) {
+		return totalGovernanceStake;
+	}
+
+	function getBanningVotes(address addrs) external view returns (address[] memory) {
+		return banningVotes[addrs];
+	}
+
+	function getAccumulatedStakesForBanning(address addrs) external view returns (uint256) {
+		return accumulatedStakesForBanning[addrs];
+	}
+
+	function _applyStakesToBanningBy(address voter, uint256 previousStake) private {
+		address[] memory votes = banningVotes[voter];
+		uint256 currentStake = getGovernanceEffectiveStake(voter);
+
+		for (uint i = 0; i < votes.length; i++) {
+			address validator = votes[i];
+			accumulatedStakesForBanning[validator] = accumulatedStakesForBanning[validator].
+				sub(previousStake).
+				add(currentStake);
+			_applyBanningVotesFor(validator);
+		}
+	}
+
+    function _setBanningVotes(address voter, address[] memory validators) private {
+		address[] memory prevAddrs = banningVotes[voter];
+		banningVotes[voter] = validators;
+
+		for (uint i = 0; i < prevAddrs.length; i++) {
+			address addr = prevAddrs[i];
+			bool isRemoved = true;
+			for (uint j = 0; j < validators.length; j++) {
+				if (addr == validators[j]) {
+					isRemoved = false;
+					break;
+				}
+			}
+			if (isRemoved) {
+				accumulatedStakesForBanning[addr] = accumulatedStakesForBanning[addr].sub(getGovernanceEffectiveStake(msg.sender));
+				_applyBanningVotesFor(addr);
+			}
+		}
+
+		for (uint i = 0; i < validators.length; i++) {
+			address addr = validators[i];
+			bool isAdded = true;
+			for (uint j = 0; j < prevAddrs.length; j++) {
+				if (prevAddrs[j] == addr) {
+					isAdded = false;
+					break;
+				}
+			}
+			if (isAdded) {
+				accumulatedStakesForBanning[addr] = accumulatedStakesForBanning[addr].add(getGovernanceEffectiveStake(msg.sender));
+			}
+			_applyBanningVotesFor(addr); // recheck also if not new
+		}
+    }
+
+    function _applyBanningVotesFor(address addr) private {
+        uint256 banningTimestamp = bannedValidators[addr];
+        bool isBanned = banningTimestamp != 0;
+
+        if (isBanned && now.sub(banningTimestamp) >= BANNING_LOCK_TIMEOUT) { // no unbanning after 7 days
+            return;
+        }
+
+        uint256 banningStake = accumulatedStakesForBanning[addr];
+
+        bool shouldBan = totalGovernanceStake > 0 && banningStake.mul(100).div(totalGovernanceStake) >= banningPercentageThreshold;
+
+        if (isBanned != shouldBan) {
+			if (shouldBan) {
+                bannedValidators[addr] = now;
+				emit Banned(addr);
+			} else {
+                bannedValidators[addr] = 0;
+				emit Unbanned(addr);
+			}
+            _rankValidator(addr);
+        }
+    }
+
+    function stakeChangeBatch(address[] calldata _stakeOwners, uint256[] calldata _amounts, bool[] calldata _signs,
 		uint256[] calldata _updatedStakes) external onlyStakingContract {
 		require(_stakeOwners.length == _amounts.length, "_stakeOwners, _amounts - array length mismatch");
 		require(_stakeOwners.length == _signs.length, "_stakeOwners, _signs - array length mismatch");
@@ -175,6 +282,13 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		for (uint i = 0; i < _stakeOwners.length; i++) {
 			_stakeChange(_stakeOwners[i], _amounts[i], _signs[i], _updatedStakes[i]);
 		}
+	}
+
+	function getDelegation(address delegator) external view returns (address) {
+		if (_isSelfDelegating(delegator)) {
+			return delegator;
+		}
+		return delegations[delegator];
 	}
 
 	function stakeChange(address _stakeOwner, uint256 _amount, bool _sign, uint256 _updatedStake) external onlyStakingContract {
@@ -187,6 +301,9 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			delegatee = _stakeOwner;
 		}
 
+		uint256 prevGovStakeOwner = getGovernanceEffectiveStake(_stakeOwner);
+		uint256 prevGovStakeDelegatee = getGovernanceEffectiveStake(delegatee);
+
 		uint256 newUncappedStake;
 		uint256 newOwnStake;
 		if (_sign) {
@@ -197,9 +314,11 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 			newUncappedStake = uncappedStakes[delegatee].sub(_amount);
 		}
 		ownStakes[_stakeOwner] = newOwnStake;
-		_updateTotalStake(delegatee, newUncappedStake);
 
-		_placeInTopology(delegatee);
+		_applyDelegatedStake(delegatee, newUncappedStake, prevGovStakeDelegatee);
+
+		_applyStakesToBanningBy(_stakeOwner, prevGovStakeOwner); // totalGovernanceStake must be updated by now
+		_applyStakesToBanningBy(delegatee, prevGovStakeDelegatee); // totalGovernanceStake must be updated by now
 	}
 
 	function stakeMigration(address _stakeOwner, uint256 _amount) external onlyStakingContract {}
@@ -228,7 +347,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	// TODO what is the requirement? should an absolute minimum stake be enforced?
 	function _holdsMinimumStake(address validator) private view returns (bool) {
 		return minimumStake <= ownStakes[validator] && // validator must hold the minimum required stake (own)
-		       minimumStake <= totalStakes[validator]; // validator must hold the minimum required stake (effective)
+		       minimumStake <= getCommitteeEffectiveStake(validator); // validator must hold the minimum required stake (effective)
 	}
 
 	function _isSelfDelegating(address validator) private view returns (bool) {
@@ -236,7 +355,9 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	}
 
 	function _satisfiesTopologyPrerequisites(address validator) private view returns (bool) {
-		return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
+		bool isBanned = bannedValidators[validator] != 0;
+        return registeredValidators[validator].orbsAddress != address(0) &&    // validator must be registered
+			   !isBanned &&
 			   _isSelfDelegating(validator) &&
 		       _holdsMinimumStake(validator);
 	}
@@ -244,7 +365,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	function _isQualifiedForTopologyByRank(address validator) private view returns (bool) {
 		// this assumes maxTopologySize > maxCommitteeSize, otherwise a non ready-for-committee validator may override one that is ready.
 		return topology.length < maxTopologySize || // topology is not full
-				totalStakes[validator] > totalStakes[topology[topology.length-1]]; // validator has more stake the the bottom topology validator
+				getCommitteeEffectiveStake(validator) > getCommitteeEffectiveStake(topology[topology.length-1]); // validator has more stake the the bottom topology validator
 	}
 
 	function _loadStakes(uint limit) private view returns (uint256[] memory) {
@@ -254,7 +375,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		}
 		uint256[] memory stakes = new uint256[](limit);
 		for (uint i=0; i < limit && i < topology.length; i++) {
-			stakes[i] = totalStakes[topology[i]];
+			stakes[i] = getCommitteeEffectiveStake(topology[i]);
 		}
 		return stakes;
 	}
@@ -354,7 +475,7 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		}
 	}
 
-	function _placeInTopology(address validator) private {
+	function _rankValidator(address validator) private {
 		(uint pos, bool inTopology) = _findInTopology(validator);
 
 		if (inTopology && !_satisfiesTopologyPrerequisites(validator)) {
@@ -376,10 +497,10 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 	function _compareValidators(uint v1pos, uint v2pos) private view returns (int) {
 		address v1 = topology[v1pos];
 		bool v1Ready = readyValidators[v1];
-		uint256 v1Stake = totalStakes[v1];
+		uint256 v1Stake = getCommitteeEffectiveStake(v1);
 		address v2 = topology[v2pos];
 		bool v2Ready = readyValidators[v2];
-		uint256 v2Stake = totalStakes[v2];
+		uint256 v2Stake = getCommitteeEffectiveStake(v2);
 		return v1Ready && !v2Ready || v1Ready == v2Ready && v1Stake > v2Stake ? int(1) : -1;
 	}
 
@@ -406,26 +527,15 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		topology[p2] = tempValidator;
 	}
 
-	function _updateTotalStake(address addr, uint256 newTotal) private {
-		uncappedStakes[addr] = newTotal;
-		uint256 ownStake = 0;
-		if (_isSelfDelegating(addr)) {
-			ownStake = ownStakes[addr];
-		}
-		uint256 capped = _capStake(newTotal, ownStake);
-		totalStakes[addr] = capped;
-		emit TotalStakeChanged(addr, capped);
-	}
+	function _applyDelegatedStake(address addr, uint256 newStake, uint256 prevGovStake) private {
+		uncappedStakes[addr] = newStake;
 
-	function _capStake(uint256 uncapped, uint256 own) view private returns (uint256){
-		if (own == 0) {
-			return 0;
-		}
-		uint256 maxRatio = maxDelegationRatio;
-		if (uncapped.div(own) < maxRatio) {
-			return uncapped;
-		}
-		return own.mul(maxRatio); // never overflows
+		uint256 currentGovStake = getGovernanceEffectiveStake(addr);
+		totalGovernanceStake = totalGovernanceStake.sub(prevGovStake).add(currentGovStake);
+
+		emit StakeChanged(addr, ownStakes[addr], newStake, getGovernanceEffectiveStake(addr), getCommitteeEffectiveStake(addr), totalGovernanceStake);
+
+		_rankValidator(addr);
 	}
 
 	function _findInTopology(address v) private view returns (uint, bool) {
@@ -438,5 +548,25 @@ contract Elections is IElections, IStakeChangeNotifier, Ownable {
 		return (0, false);
 	}
 
+	function getCommitteeEffectiveStake(address v) private view returns (uint256) {
+		uint256 ownStake = ownStakes[v];
+		if (!_isSelfDelegating(v) || ownStake == 0) {
+			return 0;
+		}
+
+		uint256 uncappedStake = uncappedStakes[v];
+		uint256 maxRatio = maxDelegationRatio;
+		if (uncappedStake.div(ownStake) < maxRatio) {
+			return uncappedStake;
+		}
+		return ownStake.mul(maxRatio); // never overflows
+	}
+
+	function getGovernanceEffectiveStake(address v) public view returns (uint256) {
+		if (!_isSelfDelegating(v)) {
+			return 0;
+		}
+		return uncappedStakes[v];
+	}
 
 }

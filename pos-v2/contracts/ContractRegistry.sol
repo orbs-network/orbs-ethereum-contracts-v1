@@ -7,8 +7,6 @@ contract ContractRegistry is IContractRegistry {
 
 	mapping (string => address) contracts;
 
-	event ContractAddressUpdated(string contractName, address addr);
-
 	modifier onlyGovernor() {
 		require(msg.sender == governor, "caller is the registry governor");
 
@@ -16,6 +14,7 @@ contract ContractRegistry is IContractRegistry {
 	}
 
 	constructor(address _governor) public {
+		require(_governor != address(0), "governor address must not be zero");
 		governor = _governor;
 	}
 

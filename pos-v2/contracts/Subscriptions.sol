@@ -11,13 +11,6 @@ contract Subscriptions is ISubscriptions, Ownable{
 
     IContractRegistry contractRegistry;
 
-    event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier);
-    event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);
-    event VcCreated(uint256 vcid, address owner);
-    event VcConfigRecordChanged(uint256 vcid, string key, string value);
-    event SubscriberAdded(address subscriber);
-    event VcOwnerChanged(uint256 vcid, address previousOwner, address newOwner);
-
     struct VirtualChain {
         string tier;
         uint256 rate;
