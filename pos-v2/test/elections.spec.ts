@@ -1,3 +1,5 @@
+import 'mocha';
+
 import * as _ from "lodash";
 import Web3 from "web3";
 declare const web3: Web3;
@@ -18,13 +20,14 @@ chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
 const expect = chai.expect;
+const assert = chai.assert;
 
 import {CommitteeProvider} from './committee-provider';
 import {bn, evmIncreaseTime} from "./helpers";
-import { electionsDebugEvents } from "./event-parsing";
+import {ETHEREUM_URL} from "../eth";
 
 
-contract('elections-high-level-flows', async () => {
+describe('elections-high-level-flows', async () => {
 
     it('handle delegation requests', async () => {
         const d = await Driver.new();
@@ -47,10 +50,9 @@ contract('elections-high-level-flows', async () => {
         const stake1000 = new BN(1000);
 
         const d = await Driver.new(2, 4, stake100);
-        const committeeProvider = new CommitteeProvider((web3.currentProvider as any).host, d.elections.address);
+        const committeeProvider = new CommitteeProvider(ETHEREUM_URL, d.elections.address);
 
         // First validator registers
-
         const validatorStaked100 = d.newParticipant();
         let r = await validatorStaked100.stake(stake100);
         expect(r).to.have.a.stakedEvent();
@@ -73,7 +75,7 @@ contract('elections-high-level-flows', async () => {
             stakes: [stake100],
         });
 
-        const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.receipt.blockNumber);
+        const committeeFromAdapter = await committeeProvider.getCommitteeAsOf(r.blockNumber);
         expect(committeeFromAdapter).to.haveCommittee({
             addrs: [validatorStaked100.address.toLowerCase()],
             orbsAddrs: [validatorStaked100.orbsAddress.toLowerCase()],
@@ -262,7 +264,7 @@ contract('elections-high-level-flows', async () => {
     });
 
     it('discards stale votes', async () => {
-        assert(DEFAULT_VOTE_OUT_THRESHOLD > 50); // so one out of two equal committe members does not cross the threshold
+        assert(DEFAULT_VOTE_OUT_THRESHOLD > 50); // so one out of two equal committee members does not cross the threshold
 
         const committeeSize = 2;
         const d = await Driver.new(committeeSize, committeeSize + 1);

@@ -1,9 +1,9 @@
-import TransactionDetails = Truffle.TransactionDetails;
-import TransactionResponse = Truffle.TransactionResponse;
-import { Contract } from "./contract";
+import {TransactionConfig, TransactionReceipt} from "web3-core";
+import {Contract} from "../eth";
+import * as BN from "bn.js";
 
 export interface ERC20Contract extends Contract {
-  assign( to: string, amount: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
-  approve(address: string, firstPayment: number | BN,params?: TransactionDetails): Promise<TransactionResponse>;
-  balanceOf(address: string, params?: TransactionDetails): Promise<string>;
+  assign( to: string, amount: number | BN, params?: TransactionConfig): Promise<TransactionReceipt>;
+  approve(address: string, firstPayment: number | BN,params?: TransactionConfig): Promise<TransactionReceipt>;
+  balanceOf(address: string, params?: TransactionConfig): Promise<string>;
 }

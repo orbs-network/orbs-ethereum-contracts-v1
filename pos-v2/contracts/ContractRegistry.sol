@@ -14,6 +14,7 @@ contract ContractRegistry is IContractRegistry {
 	}
 
 	constructor(address _governor) public {
+		require(_governor != address(0), "governor address must not be zero");
 		governor = _governor;
 	}
 

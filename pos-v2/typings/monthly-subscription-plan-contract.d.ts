@@ -1,9 +1,9 @@
-import TransactionDetails = Truffle.TransactionDetails;
-import TransactionResponse = Truffle.TransactionResponse;
-import { Contract } from "./contract";
+import {TransactionConfig, TransactionReceipt} from "web3-core";
+import {Contract} from "../eth";
+import * as BN from "bn.js";
 
 export interface MonthlySubscriptionPlanContract extends Contract {
-  createVC(payment: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
-  extendSubscription(vcid: number | BN,payment: number | BN, params?: TransactionDetails): Promise<TransactionResponse>;
-  setContractRegistry(contractRegistry: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  createVC(payment: number | BN, params?: TransactionConfig): Promise<TransactionReceipt>;
+  extendSubscription(vcid: number | BN,payment: number | BN, params?: TransactionConfig): Promise<TransactionReceipt>;
+  setContractRegistry(contractRegistry: string, params?: TransactionConfig): Promise<TransactionReceipt>;
 }
