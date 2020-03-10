@@ -14,8 +14,8 @@ export interface ElectionsContract extends Contract {
   setValidatorIp(ip: string, params?: TransactionConfig): Promise<TransactionReceipt>;
   refreshStakes(addrs: string[], params?: TransactionConfig): Promise<TransactionReceipt>;
   setContractRegistry(contractRegistry: string, params?: TransactionConfig): Promise<TransactionReceipt>;
-  setBanningVotes(address: string[], params?: TransactionDetails): Promise<TransactionResponse>;
-  refreshBanningVote(voter: string, against: string, params?: TransactionDetails): Promise<TransactionResponse>;
+  setBanningVotes(address: string[], params?: TransactionConfig): Promise<TransactionReceipt>;
+  refreshBanningVote(voter: string, against: string, params?: TransactionConfig): Promise<TransactionReceipt>;
   getBanningVotes(address: string): Promise<string[]>;
   getAccumulatedStakesForBanning(address: string): Promise<BN>;
   getTotalGovernanceStake(): Promise<BN>;
