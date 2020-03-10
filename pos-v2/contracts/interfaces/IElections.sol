@@ -7,7 +7,7 @@ import "../IStakeChangeNotifier.sol";
 interface IElections /* is IStakeChangeNotifier */ {
 	event ValidatorRegistered(address addr, bytes4 ip, address orbsAddr);
 	event CommitteeChanged(address[] addrs, address[] orbsAddrs, uint256[] stakes);
-	event TopologyChanged(address[] orbsAddrs, bytes4[] ips);
+	event TopologyChanged(address[] orbsAddrs, bytes4[] ips, uint256 minStake);
 	event ValidatorWasVotedUnready(address votedOut);
 
 	event votedUnready(address voter, address votedOut);
