@@ -1,2 +1,3 @@
 transpiled
 build
+!./release/build
