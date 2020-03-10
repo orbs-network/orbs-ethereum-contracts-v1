@@ -1,0 +1,1 @@
+{"version":3,"file":"committee-provider.d.ts","sourceRoot":"","sources":["../../test/committee-provider.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,qBAAqB,EAAE,MAAM,+BAA+B,CAAC;AAItE,qBAAa,iBAAiB;IAEd,OAAO,CAAC,gBAAgB;IACxB,OAAO,CAAC,kBAAkB;gBADlB,gBAAgB,KAAA,EAChB,kBAAkB,KAAA;IAEhC,gBAAgB,CAAC,WAAW,KAAA,GAAG,OAAO,CAAC,qBAAqB,CAAC;CAUtE"}

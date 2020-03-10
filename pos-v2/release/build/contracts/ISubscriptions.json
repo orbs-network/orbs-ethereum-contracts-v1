@@ -1,0 +1,2217 @@
+{
+  "contractName": "ISubscriptions",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "vcid",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "by",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "tier",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "Payment",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        }
+      ],
+      "name": "SubscriberAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "vcid",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "genRef",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "expiresAt",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "tier",
+          "type": "string"
+        }
+      ],
+      "name": "SubscriptionChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "vcid",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "value",
+          "type": "string"
+        }
+      ],
+      "name": "VcConfigRecordChanged",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "tier",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "createVC",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "vcid",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "payer",
+          "type": "address"
+        }
+      ],
+      "name": "extendSubscription",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "vcid",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "value",
+          "type": "string"
+        }
+      ],
+      "name": "setVcConfigRecord",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "addSubscriber",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "contract IContractRegistry",
+          "name": "_contractRegistry",
+          "type": "address"
+        }
+      ],
+      "name": "setContractRegistry",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"vcid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"by\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"tier\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"}],\"name\":\"Payment\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"subscriber\",\"type\":\"address\"}],\"name\":\"SubscriberAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"vcid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"genRef\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"expiresAt\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"tier\",\"type\":\"string\"}],\"name\":\"SubscriptionChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"vcid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"value\",\"type\":\"string\"}],\"name\":\"VcConfigRecordChanged\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"addSubscriber\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"tier\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"createVC\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"vcid\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"payer\",\"type\":\"address\"}],\"name\":\"extendSubscription\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"contract IContractRegistry\",\"name\":\"_contractRegistry\",\"type\":\"address\"}],\"name\":\"setContractRegistry\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"vcid\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"key\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"value\",\"type\":\"string\"}],\"name\":\"setVcConfigRecord\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addSubscriber(address)\":{\"details\":\"Called by the owner to authorize a subscriber (plan)\"},\"createVC(string,uint256,uint256,address)\":{\"details\":\"Called by: authorized subscriber (plan) contracts Creates a new VC\"},\"extendSubscription(uint256,uint256,address)\":{\"details\":\"Called by: authorized subscriber (plan) contracts Extends the subscription of an existing VC.\"},\"setContractRegistry(address)\":{\"details\":\"Updates the address of the contract registry\"},\"setVcConfigRecord(uint256,string,string)\":{\"details\":\"called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.\"}},\"title\":\"Subscriptions contract interface\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/ISubscriptions.sol\":\"ISubscriptions\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol\":{\"keccak256\":\"0x287b1627883cb23828b02b14621cdb50804ca2b7ff4217437f44cd19d1bcdfa7\",\"urls\":[\"bzz-raw://206b9e4f3df0cb04b70be5b7a00d9e72edb0080a68aaed542a1985f6cf2b7cd1\",\"dweb:/ipfs/QmdKE76EErfCDTw5kyYACs7WtCRjdSKgjaxD88Kj51aTPQ\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol\":{\"keccak256\":\"0xa603872af63779e8cfac9af347fbc8b0f9be94b4e4db674f5f0ad73532268f9c\",\"urls\":[\"bzz-raw://9b012d573651413b9d2bf7a023f6b3a84d726cb8bf7a18dc47f9dff83f54115b\",\"dweb:/ipfs/QmWuF98LKpKv88Y1kyXBxRMJgEVs5VTG6ohNGJPaMtKCtH\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol\":{\"keccak256\":\"0x6af72993f6951883689d3e90e92861e4de1779810f9e0ace7212f12af251255c\",\"urls\":[\"bzz-raw://772374609c24adfc2e1e6ca8157e4d9b9b730636ddef7c91353492f0b15738c6\",\"dweb:/ipfs/QmTAZvGKEy4CaA8jQG4LkXDiBeL5CbyWMg6ypTVXCm1ipM\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol\":{\"keccak256\":\"0x9001326e5e4c459d4c3457f6b6829f20f7d933bc37c347d01aa06a21a42824f6\",\"urls\":[\"bzz-raw://a3177b660d4d48255d5a84b4870678a8d8a97b0c3b132a216cb0cceb8afc561a\",\"dweb:/ipfs/QmRKarVQbPECt2kWrpGgwmfTNoC92w4jmcmPXvfoYyiwz5\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/ISubscriptions.sol\":{\"keccak256\":\"0xe5668546b8e68ae8125253cada9bc23c39c85ca62891d87441f4126c415566d6\",\"urls\":[\"bzz-raw://1f047bb2a04456e1c83b52d7b12bbdde52e5fe7c061e86e27a54342536356b28\",\"dweb:/ipfs/QmerVF4RTbWbNEAy5wjchK5JGyHWaBiRQfwA84ovq8mE3d\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.16;\n\nimport \"./IRewards.sol\";\n\n/// @title Subscriptions contract interface\ninterface ISubscriptions {\n    event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier);\n    event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);\n    event VcConfigRecordChanged(uint256 vcid, string key, string value);\n    event SubscriberAdded(address subscriber);\n\n    /*\n     *   Methods restricted to other Orbs contracts\n     */\n\n    /// @dev Called by: authorized subscriber (plan) contracts\n    /// Creates a new VC\n    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint);\n\n    /// @dev Called by: authorized subscriber (plan) contracts\n    /// Extends the subscription of an existing VC.\n    function extendSubscription(uint256 vcid, uint256 amount, address payer) external;\n\n    /// @dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.\n    function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external;\n\n    /*\n     *   Governance methods\n     */\n\n    /// @dev Called by the owner to authorize a subscriber (plan)\n    function addSubscriber(address addr) external /* onlyOwner */;\n\n    /// @dev Updates the address of the contract registry\n    function setContractRegistry(IContractRegistry _contractRegistry) external /* onlyOwner */;\n\n}\n",
+  "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/ISubscriptions.sol",
+  "ast": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/ISubscriptions.sol",
+    "exportedSymbols": {
+      "ISubscriptions": [
+        5977
+      ]
+    },
+    "id": 5978,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5898,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:14"
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
+        "file": "./IRewards.sol",
+        "id": 5899,
+        "nodeType": "ImportDirective",
+        "scope": 5978,
+        "sourceUnit": 5897,
+        "src": "25:24:14",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title Subscriptions contract interface",
+        "fullyImplemented": false,
+        "id": 5977,
+        "linearizedBaseContracts": [
+          5977
+        ],
+        "name": "ISubscriptions",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5909,
+            "name": "SubscriptionChanged",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5908,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5901,
+                  "indexed": false,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "152:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5900,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "152:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5903,
+                  "indexed": false,
+                  "name": "genRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "166:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5902,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "166:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5905,
+                  "indexed": false,
+                  "name": "expiresAt",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "182:17:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5904,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "182:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5907,
+                  "indexed": false,
+                  "name": "tier",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "201:11:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5906,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "201:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "151:62:14"
+            },
+            "src": "126:88:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5921,
+            "name": "Payment",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5920,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5911,
+                  "indexed": false,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "233:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5910,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "233:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5913,
+                  "indexed": false,
+                  "name": "by",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "247:10:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5912,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "247:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5915,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "259:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5914,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "259:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5917,
+                  "indexed": false,
+                  "name": "tier",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "275:11:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5916,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "275:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5919,
+                  "indexed": false,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "288:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5918,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "288:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "232:69:14"
+            },
+            "src": "219:83:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5929,
+            "name": "VcConfigRecordChanged",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5928,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5923,
+                  "indexed": false,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5929,
+                  "src": "335:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5922,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "335:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5925,
+                  "indexed": false,
+                  "name": "key",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5929,
+                  "src": "349:10:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5924,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "349:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5927,
+                  "indexed": false,
+                  "name": "value",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5929,
+                  "src": "361:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5926,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "361:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "334:40:14"
+            },
+            "src": "307:68:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5933,
+            "name": "SubscriberAdded",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5932,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5931,
+                  "indexed": false,
+                  "name": "subscriber",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5933,
+                  "src": "402:18:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5930,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "402:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "401:20:14"
+            },
+            "src": "380:42:14"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Creates a new VC",
+            "id": 5948,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "createVC",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5942,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5935,
+                  "name": "tier",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "602:20:14",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5934,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "602:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5937,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "624:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5936,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "624:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5939,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "638:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5938,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "638:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5941,
+                  "name": "owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "654:13:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5940,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "654:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "601:67:14"
+            },
+            "returnParameters": {
+              "id": 5947,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5944,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "687:4:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5943,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "687:4:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5946,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "693:4:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5945,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "693:4:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "686:12:14"
+            },
+            "scope": 5977,
+            "src": "584:115:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Extends the subscription of an existing VC.",
+            "id": 5957,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "extendSubscription",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5955,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5950,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "848:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5949,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "848:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5952,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "862:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5951,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "862:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5954,
+                  "name": "payer",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "878:13:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5953,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "878:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "847:45:14"
+            },
+            "returnParameters": {
+              "id": 5956,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "901:0:14"
+            },
+            "scope": 5977,
+            "src": "820:82:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.",
+            "id": 5966,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setVcConfigRecord",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5964,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5959,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5966,
+                  "src": "1031:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5958,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1031:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5961,
+                  "name": "key",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5966,
+                  "src": "1045:19:14",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5960,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1045:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5963,
+                  "name": "value",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5966,
+                  "src": "1066:21:14",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5962,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1066:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1030:58:14"
+            },
+            "returnParameters": {
+              "id": 5965,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1097:0:14"
+            },
+            "scope": 5977,
+            "src": "1004:94:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by the owner to authorize a subscriber (plan)",
+            "id": 5971,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addSubscriber",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5969,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5968,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5971,
+                  "src": "1237:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5967,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1237:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1236:14:14"
+            },
+            "returnParameters": {
+              "id": 5970,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1275:0:14"
+            },
+            "scope": 5977,
+            "src": "1214:62:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Updates the address of the contract registry",
+            "id": 5976,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setContractRegistry",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5974,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5973,
+                  "name": "_contractRegistry",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5976,
+                  "src": "1369:35:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                    "typeString": "contract IContractRegistry"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5972,
+                    "name": "IContractRegistry",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5643,
+                    "src": "1369:17:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                      "typeString": "contract IContractRegistry"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1368:37:14"
+            },
+            "returnParameters": {
+              "id": 5975,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1430:0:14"
+            },
+            "scope": 5977,
+            "src": "1340:91:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5978,
+        "src": "95:1339:14"
+      }
+    ],
+    "src": "0:1435:14"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/ISubscriptions.sol",
+    "exportedSymbols": {
+      "ISubscriptions": [
+        5977
+      ]
+    },
+    "id": 5978,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5898,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:14"
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
+        "file": "./IRewards.sol",
+        "id": 5899,
+        "nodeType": "ImportDirective",
+        "scope": 5978,
+        "sourceUnit": 5897,
+        "src": "25:24:14",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title Subscriptions contract interface",
+        "fullyImplemented": false,
+        "id": 5977,
+        "linearizedBaseContracts": [
+          5977
+        ],
+        "name": "ISubscriptions",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5909,
+            "name": "SubscriptionChanged",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5908,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5901,
+                  "indexed": false,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "152:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5900,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "152:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5903,
+                  "indexed": false,
+                  "name": "genRef",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "166:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5902,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "166:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5905,
+                  "indexed": false,
+                  "name": "expiresAt",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "182:17:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5904,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "182:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5907,
+                  "indexed": false,
+                  "name": "tier",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5909,
+                  "src": "201:11:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5906,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "201:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "151:62:14"
+            },
+            "src": "126:88:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5921,
+            "name": "Payment",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5920,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5911,
+                  "indexed": false,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "233:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5910,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "233:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5913,
+                  "indexed": false,
+                  "name": "by",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "247:10:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5912,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "247:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5915,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "259:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5914,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "259:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5917,
+                  "indexed": false,
+                  "name": "tier",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "275:11:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5916,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "275:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5919,
+                  "indexed": false,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5921,
+                  "src": "288:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5918,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "288:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "232:69:14"
+            },
+            "src": "219:83:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5929,
+            "name": "VcConfigRecordChanged",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5928,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5923,
+                  "indexed": false,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5929,
+                  "src": "335:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5922,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "335:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5925,
+                  "indexed": false,
+                  "name": "key",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5929,
+                  "src": "349:10:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5924,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "349:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5927,
+                  "indexed": false,
+                  "name": "value",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5929,
+                  "src": "361:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5926,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "361:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "334:40:14"
+            },
+            "src": "307:68:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5933,
+            "name": "SubscriberAdded",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5932,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5931,
+                  "indexed": false,
+                  "name": "subscriber",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5933,
+                  "src": "402:18:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5930,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "402:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "401:20:14"
+            },
+            "src": "380:42:14"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Creates a new VC",
+            "id": 5948,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "createVC",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5942,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5935,
+                  "name": "tier",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "602:20:14",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5934,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "602:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5937,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "624:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5936,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "624:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5939,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "638:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5938,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "638:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5941,
+                  "name": "owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "654:13:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5940,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "654:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "601:67:14"
+            },
+            "returnParameters": {
+              "id": 5947,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5944,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "687:4:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5943,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "687:4:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5946,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5948,
+                  "src": "693:4:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5945,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "693:4:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "686:12:14"
+            },
+            "scope": 5977,
+            "src": "584:115:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Extends the subscription of an existing VC.",
+            "id": 5957,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "extendSubscription",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5955,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5950,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "848:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5949,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "848:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5952,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "862:14:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5951,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "862:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5954,
+                  "name": "payer",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5957,
+                  "src": "878:13:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5953,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "878:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "847:45:14"
+            },
+            "returnParameters": {
+              "id": 5956,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "901:0:14"
+            },
+            "scope": 5977,
+            "src": "820:82:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.",
+            "id": 5966,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setVcConfigRecord",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5964,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5959,
+                  "name": "vcid",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5966,
+                  "src": "1031:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5958,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1031:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5961,
+                  "name": "key",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5966,
+                  "src": "1045:19:14",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5960,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1045:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5963,
+                  "name": "value",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5966,
+                  "src": "1066:21:14",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 5962,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1066:6:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1030:58:14"
+            },
+            "returnParameters": {
+              "id": 5965,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1097:0:14"
+            },
+            "scope": 5977,
+            "src": "1004:94:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by the owner to authorize a subscriber (plan)",
+            "id": 5971,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addSubscriber",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5969,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5968,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5971,
+                  "src": "1237:12:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5967,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1237:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1236:14:14"
+            },
+            "returnParameters": {
+              "id": 5970,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1275:0:14"
+            },
+            "scope": 5977,
+            "src": "1214:62:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Updates the address of the contract registry",
+            "id": 5976,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setContractRegistry",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5974,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5973,
+                  "name": "_contractRegistry",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5976,
+                  "src": "1369:35:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                    "typeString": "contract IContractRegistry"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5972,
+                    "name": "IContractRegistry",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5643,
+                    "src": "1369:17:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                      "typeString": "contract IContractRegistry"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1368:37:14"
+            },
+            "returnParameters": {
+              "id": 5975,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1430:0:14"
+            },
+            "scope": 5977,
+            "src": "1340:91:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5978,
+        "src": "95:1339:14"
+      }
+    ],
+    "src": "0:1435:14"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.23",
+  "updatedAt": "2020-03-10T11:14:57.968Z",
+  "devdoc": {
+    "methods": {
+      "addSubscriber(address)": {
+        "details": "Called by the owner to authorize a subscriber (plan)"
+      },
+      "createVC(string,uint256,uint256,address)": {
+        "details": "Called by: authorized subscriber (plan) contracts Creates a new VC"
+      },
+      "extendSubscription(uint256,uint256,address)": {
+        "details": "Called by: authorized subscriber (plan) contracts Extends the subscription of an existing VC."
+      },
+      "setContractRegistry(address)": {
+        "details": "Updates the address of the contract registry"
+      },
+      "setVcConfigRecord(uint256,string,string)": {
+        "details": "called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event."
+      }
+    },
+    "title": "Subscriptions contract interface"
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
