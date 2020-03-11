@@ -1,11 +1,9 @@
 import BN from "bn.js";
 import chai from "chai";
 chai.use(require('chai-bn')(BN));
-import { Contract } from 'web3-eth-contract';
 
 export const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
 
-import Web3 from "web3";
 import { SubscriptionsContract } from "../typings/subscriptions-contract";
 import { ElectionsContract } from "../typings/elections-contract";
 import { ERC20Contract } from "../typings/erc20-contract";
@@ -13,15 +11,17 @@ import { StakingContract } from "../typings/staking-contract";
 import { RewardsContract } from "../typings/rewards-contract";
 import { MonthlySubscriptionPlanContract } from "../typings/monthly-subscription-plan-contract";
 import {ContractRegistryContract} from "../typings/contract-registry-contract";
+import {deploy, web3} from "../eth";
 import {ProtocolContract} from "../typings/protocol-contract";
-declare const web3: Web3;
 
 export const DEFAULT_MINIMUM_STAKE = 100;
 export const DEFAULT_COMMITTEE_SIZE = 2;
 export const DEFAULT_TOPOLOGY_SIZE = 3;
 export const DEFAULT_MAX_DELEGATION_RATIO = 10;
 export const DEFAULT_VOTE_OUT_THRESHOLD = 80;
+export const DEFAULT_BANNING_THRESHOLD = 80;
 export const DEFAULT_VOTE_OUT_TIMEOUT = 24*60*60;
+export const BANNING_LOCK_TIMEOUT = 7*24*60*60;
 export const MAIN_DEPLOYMENT_SUBSET_NAME = "main";
 
 export class Driver {
@@ -36,20 +36,20 @@ export class Driver {
         public subscriptions: SubscriptionsContract,
         public rewards: RewardsContract,
         public protocol: ProtocolContract,
-        public contractRegistry: ContractRegistryContract
+        public contractRegistry: ContractRegistryContract,
     ) {}
 
-    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT) {
+    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT, banningThreshold=DEFAULT_BANNING_THRESHOLD): Promise<Driver> {
         const accounts = await web3.eth.getAccounts();
-        const contractRegistry = await artifacts.require("ContractRegistry").new(accounts[0]);
 
-        const externalToken: ERC20Contract = await artifacts.require('TestingERC20').new();
-        const erc20: ERC20Contract = await artifacts.require('TestingERC20').new();
-        const rewards: RewardsContract = await artifacts.require('Rewards').new(erc20.address, externalToken.address, accounts[0]);
-        const elections: ElectionsContract = await artifacts.require("Elections").new(maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout);
+        const contractRegistry: ContractRegistryContract = await deploy( 'ContractRegistry',[accounts[0]]);
+        const externalToken: ERC20Contract = await deploy( 'TestingERC20', []);
+        const erc20: ERC20Contract = await deploy( 'TestingERC20', []);
+        const rewards: RewardsContract = await deploy( 'Rewards', [erc20.address, externalToken.address, accounts[0]]);
+        const elections: ElectionsContract = await deploy( "Elections", [maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout, banningThreshold]);
         const staking: StakingContract = await Driver.newStakingContract(elections.address, erc20.address);
-        const subscriptions: SubscriptionsContract = await artifacts.require('Subscriptions').new(erc20.address);
-        const protocol: ProtocolContract = await artifacts.require('Protocol').new(accounts[0]);
+        const subscriptions: SubscriptionsContract = await deploy( 'Subscriptions', [erc20.address] );
+        const protocol: ProtocolContract = await deploy('Protocol', [ accounts[0] ]);
 
         await contractRegistry.set("staking", staking.address);
         await contractRegistry.set("rewards", rewards.address);
@@ -67,12 +67,13 @@ export class Driver {
     }
 
     static async newContractRegistry(governorAddr: string): Promise<ContractRegistryContract> {
-        return artifacts.require('ContractRegistry').new(governorAddr);
+        const accounts = await web3.eth.getAccounts();
+        return await deploy( 'ContractRegistry', [governorAddr],{from: accounts[0]});
     }
 
     static async newStakingContract(electionsAddr: string, erc20Addr: string): Promise<StakingContract> {
         const accounts = await web3.eth.getAccounts();
-        const staking = await artifacts.require("StakingContract").new(1 /* _cooldownPeriodInSec */, accounts[0] /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, erc20Addr /* _token */);
+        const staking = await deploy( "StakingContract", [1 /* _cooldownPeriodInSec */, accounts[0] /* _migrationManager */, "0x0000000000000000000000000000000000000001" /* _emergencyManager */, erc20Addr /* _token */]);
         await staking.setStakeChangeNotifier(electionsAddr, {from: accounts[0]});
         return staking;
     }
@@ -90,7 +91,7 @@ export class Driver {
     }
 
     async newSubscriber(tier: string, monthlyRate:number|BN): Promise<MonthlySubscriptionPlanContract> {
-        const subscriber: MonthlySubscriptionPlanContract = await artifacts.require('MonthlySubscriptionPlan').new(this.erc20.address, tier, monthlyRate);
+        const subscriber: MonthlySubscriptionPlanContract = await deploy( 'MonthlySubscriptionPlan', [this.erc20.address, tier, monthlyRate]);
         await subscriber.setContractRegistry(this.contractRegistry.address);
         await this.subscriptions.addSubscriber(subscriber.address);
         return subscriber;

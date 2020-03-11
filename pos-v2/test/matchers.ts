@@ -4,7 +4,7 @@ import {
   committeeChangedEvents,
   delegatedEvents,
   stakedEvents,
-  totalStakeChangedEvents,
+  stakeChangedEvents,
   validatorRegisteredEvents,
   subscriptionChangedEvents,
   paymentEvents,
@@ -13,22 +13,32 @@ import {
   unstakedEvents,
   topologyChangedEvents,
   voteOutEvents,
-  votedOutOfCommitteeEvents, vcConfigRecordChangedEvents, contractAddressUpdatedEvents,
-    protocolChangedEvents
+  votedOutOfCommitteeEvents,
+  vcConfigRecordChangedEvents,
+  contractAddressUpdatedEvents,
+  protocolChangedEvents,
+  banningVoteEvents,
+  electionsBanned,
+  electionsUnbanned,
+  vcOwnerChangedEvents,
+  vcCreatedEvents
 } from "./event-parsing";
 import * as _ from "lodash";
 import {
   SubscriptionChangedEvent,
-  PaymentEvent, VcConfigRecordChangedEvent
+  PaymentEvent, VcConfigRecordChangedEvent, VcOwnerChangedEvent, VcCreatedEvent
 } from "../typings/subscriptions-contract";
 import {
   DelegatedEvent,
   CommitteeChangedEvent,
   TopologyChangedEvent,
   ValidatorRegisteredEvent,
-  TotalStakeChangedEvent,
+  StakeChangeEvent,
   VoteOutEvent,
-  VotedOutOfCommitteeEvent
+  VotedOutOfCommitteeEvent,
+  BanningVoteEvent,
+  BannedEvent,
+  UnbannedEvent
 } from "../typings/elections-contract";
 import { StakedEvent, UnstakedEvent } from "../typings/staking-contract";
 import {ContractAddressUpdatedEvent} from "../typings/contract-registry-contract";
@@ -106,7 +116,7 @@ module.exports = function(chai) {
   chai.Assertion.overwriteMethod("delegatedEvent", containEvent(delegatedEvents));
   chai.Assertion.overwriteMethod("validatorRegisteredEvent", containEvent(validatorRegisteredEvents));
   chai.Assertion.overwriteMethod("committeeChangedEvent", containEvent(committeeChangedEvents));
-  chai.Assertion.overwriteMethod("totalStakeChangedEvent", containEvent(totalStakeChangedEvents));
+  chai.Assertion.overwriteMethod("stakeChangedEvent", containEvent(stakeChangedEvents));
   chai.Assertion.overwriteMethod("stakedEvent", containEvent(stakedEvents));
   chai.Assertion.overwriteMethod("unstakedEvent", containEvent(unstakedEvents));
   chai.Assertion.overwriteMethod("subscriptionChangedEvent", containEvent(subscriptionChangedEvents));
@@ -116,7 +126,12 @@ module.exports = function(chai) {
   chai.Assertion.overwriteMethod("topologyChangedEvent", containEvent(topologyChangedEvents));
   chai.Assertion.overwriteMethod("voteOutEvent", containEvent(voteOutEvents));
   chai.Assertion.overwriteMethod("votedOutOfCommitteeEvent", containEvent(votedOutOfCommitteeEvents));
+  chai.Assertion.overwriteMethod("banningVoteEvent", containEvent(banningVoteEvents));
+  chai.Assertion.overwriteMethod("bannedEvent", containEvent(electionsBanned));
+  chai.Assertion.overwriteMethod("unbannedEvent", containEvent(electionsUnbanned));
   chai.Assertion.overwriteMethod("vcConfigRecordChangedEvent", containEvent(vcConfigRecordChangedEvents));
+  chai.Assertion.overwriteMethod("vcOwnerChangedEvent", containEvent(vcOwnerChangedEvents));
+  chai.Assertion.overwriteMethod("vcCreatedEvent", containEvent(vcCreatedEvents));
   chai.Assertion.overwriteMethod("contractAddressUpdatedEvent", containEvent(contractAddressUpdatedEvents));
   chai.Assertion.overwriteMethod("protocolChangedEvent", containEvent(protocolChangedEvents));
 
@@ -130,15 +145,20 @@ declare global {
       committeeChangedEvent(data?: Partial<CommitteeChangedEvent>): void;
       topologyChangedEvent(data?: Partial<TopologyChangedEvent>): void;
       validatorRegisteredEvent(data?: Partial<ValidatorRegisteredEvent>): void;
-      totalStakeChangedEvent(data?: Partial<TotalStakeChangedEvent>): void;
+      stakeChangedEvent(data?: Partial<StakeChangeEvent>): void;
       stakedEvent(data?: Partial<StakedEvent>): void;
       unstakedEvent(data?: Partial<UnstakedEvent>): void;
       subscriptionChangedEvent(data?: Partial<SubscriptionChangedEvent>): void;
       paymentEvent(data?: Partial<PaymentEvent>): void;
       vcConfigRecordChangedEvent(data?: Partial<VcConfigRecordChangedEvent>): void;
+      vcCreatedEvent(data?: Partial<VcCreatedEvent>): void;
+      vcOwnerChangedEvent(data?: Partial<VcOwnerChangedEvent>): void;
       voteOutEvent(data?: Partial<VoteOutEvent>): void;
       votedOutOfCommitteeEvent(data?: Partial<VotedOutOfCommitteeEvent>): void;
       contractAddressUpdatedEvent(data?: Partial<ContractAddressUpdatedEvent>): void;
+      banningVoteEvent(data?: Partial<BanningVoteEvent>): void;
+      bannedEvent(data?: Partial<BannedEvent>): void;
+      unbannedEvent(data?: Partial<UnbannedEvent>): void;
       protocolChangedEvent(data?: Partial<ProtocolChangedEvent>): void;
     }
 

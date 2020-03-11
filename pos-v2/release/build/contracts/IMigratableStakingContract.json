@@ -1,0 +1,668 @@
+{
+  "contractName": "IMigratableStakingContract",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "AcceptedMigration",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getToken",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_stakeOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "acceptMigration",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"stakeOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalStakedAmount\",\"type\":\"uint256\"}],\"name\":\"AcceptedMigration\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakeOwner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"acceptMigration\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getToken\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"acceptMigration(address,uint256)\":{\"details\":\"Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least the required amount using ERC20 approve.\",\"params\":{\"_amount\":\"uint256 The number of tokens to stake.\",\"_stakeOwner\":\"address The specified stake owner.\"}},\"getToken()\":{\"details\":\"Returns the address of the underlying staked token.\",\"return\":\"IERC20 The address of the token.\"}},\"title\":\"An interface for staking contracts which support stake migration.\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol\":\"IMigratableStakingContract\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol\":{\"keccak256\":\"0x287b1627883cb23828b02b14621cdb50804ca2b7ff4217437f44cd19d1bcdfa7\",\"urls\":[\"bzz-raw://206b9e4f3df0cb04b70be5b7a00d9e72edb0080a68aaed542a1985f6cf2b7cd1\",\"dweb:/ipfs/QmdKE76EErfCDTw5kyYACs7WtCRjdSKgjaxD88Kj51aTPQ\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.16;\n\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\n\n/// @title An interface for staking contracts which support stake migration.\ninterface IMigratableStakingContract {\n    /// @dev Returns the address of the underlying staked token.\n    /// @return IERC20 The address of the token.\n    function getToken() external view returns (IERC20);\n\n    /// @dev Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least\n    /// the required amount using ERC20 approve.\n    /// @param _stakeOwner address The specified stake owner.\n    /// @param _amount uint256 The number of tokens to stake.\n    function acceptMigration(address _stakeOwner, uint256 _amount) external;\n\n    event AcceptedMigration(address indexed stakeOwner, uint256 amount, uint256 totalStakedAmount);\n}\n",
+  "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol",
+  "ast": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol",
+    "exportedSymbols": {
+      "IMigratableStakingContract": [
+        2440
+      ]
+    },
+    "id": 2441,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2418,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:2"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "id": 2419,
+        "nodeType": "ImportDirective",
+        "scope": 2441,
+        "sourceUnit": 7169,
+        "src": "25:56:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title An interface for staking contracts which support stake migration.",
+        "fullyImplemented": false,
+        "id": 2440,
+        "linearizedBaseContracts": [
+          2440
+        ],
+        "name": "IMigratableStakingContract",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Returns the address of the underlying staked token.\n @return IERC20 The address of the token.",
+            "id": 2424,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getToken",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2420,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "334:2:2"
+            },
+            "returnParameters": {
+              "id": 2423,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2422,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2424,
+                  "src": "360:6:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$7168",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 2421,
+                    "name": "IERC20",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 7168,
+                    "src": "360:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$7168",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "359:8:2"
+            },
+            "scope": 2440,
+            "src": "317:51:2",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least\n the required amount using ERC20 approve.\n @param _stakeOwner address The specified stake owner.\n @param _amount uint256 The number of tokens to stake.",
+            "id": 2431,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "acceptMigration",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2429,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2426,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2431,
+                  "src": "693:19:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2425,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "693:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2428,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2431,
+                  "src": "714:15:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2427,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "714:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "692:38:2"
+            },
+            "returnParameters": {
+              "id": 2430,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "739:0:2"
+            },
+            "scope": 2440,
+            "src": "668:72:2",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2439,
+            "name": "AcceptedMigration",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2438,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2433,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2439,
+                  "src": "770:26:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2432,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "770:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2435,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2439,
+                  "src": "798:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2434,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "798:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2437,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2439,
+                  "src": "814:25:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2436,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "814:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "769:71:2"
+            },
+            "src": "746:95:2"
+          }
+        ],
+        "scope": 2441,
+        "src": "160:683:2"
+      }
+    ],
+    "src": "0:844:2"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol",
+    "exportedSymbols": {
+      "IMigratableStakingContract": [
+        2440
+      ]
+    },
+    "id": 2441,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2418,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:2"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "id": 2419,
+        "nodeType": "ImportDirective",
+        "scope": 2441,
+        "sourceUnit": 7169,
+        "src": "25:56:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title An interface for staking contracts which support stake migration.",
+        "fullyImplemented": false,
+        "id": 2440,
+        "linearizedBaseContracts": [
+          2440
+        ],
+        "name": "IMigratableStakingContract",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Returns the address of the underlying staked token.\n @return IERC20 The address of the token.",
+            "id": 2424,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getToken",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2420,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "334:2:2"
+            },
+            "returnParameters": {
+              "id": 2423,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2422,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2424,
+                  "src": "360:6:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$7168",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 2421,
+                    "name": "IERC20",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 7168,
+                    "src": "360:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$7168",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "359:8:2"
+            },
+            "scope": 2440,
+            "src": "317:51:2",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least\n the required amount using ERC20 approve.\n @param _stakeOwner address The specified stake owner.\n @param _amount uint256 The number of tokens to stake.",
+            "id": 2431,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "acceptMigration",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2429,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2426,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2431,
+                  "src": "693:19:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2425,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "693:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2428,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2431,
+                  "src": "714:15:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2427,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "714:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "692:38:2"
+            },
+            "returnParameters": {
+              "id": 2430,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "739:0:2"
+            },
+            "scope": 2440,
+            "src": "668:72:2",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2439,
+            "name": "AcceptedMigration",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2438,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2433,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2439,
+                  "src": "770:26:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2432,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "770:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2435,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2439,
+                  "src": "798:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2434,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "798:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2437,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2439,
+                  "src": "814:25:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2436,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "814:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "769:71:2"
+            },
+            "src": "746:95:2"
+          }
+        ],
+        "scope": 2441,
+        "src": "160:683:2"
+      }
+    ],
+    "src": "0:844:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.23",
+  "updatedAt": "2020-03-11T14:45:21.550Z",
+  "devdoc": {
+    "methods": {
+      "acceptMigration(address,uint256)": {
+        "details": "Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least the required amount using ERC20 approve.",
+        "params": {
+          "_amount": "uint256 The number of tokens to stake.",
+          "_stakeOwner": "address The specified stake owner."
+        }
+      },
+      "getToken()": {
+        "details": "Returns the address of the underlying staked token.",
+        "return": "IERC20 The address of the token."
+      }
+    },
+    "title": "An interface for staking contracts which support stake migration."
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

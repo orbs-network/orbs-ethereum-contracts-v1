@@ -1,0 +1,24 @@
+import { SubscriptionChangedEvent } from "../typings/subscriptions-contract";
+export declare const committeeChangedEvents: (txResult: any) => any;
+export declare const validatorRegisteredEvents: (txResult: any) => any;
+export declare const stakedEvents: (txResult: any) => any;
+export declare const unstakedEvents: (txResult: any) => any;
+export declare const delegatedEvents: (txResult: any) => any;
+export declare const stakeChangedEvents: (txResult: any) => any;
+export declare const subscriptionChangedEvents: (txResult: any) => SubscriptionChangedEvent[];
+export declare const paymentEvents: (txResult: any) => any;
+export declare const feeAddedToBucketEvents: (txResult: any) => any;
+export declare const rewardAssignedEvents: (txResult: any) => any;
+export declare const topologyChangedEvents: (txResult: any) => any;
+export declare const voteOutEvents: (txResult: any) => any;
+export declare const votedOutOfCommitteeEvents: (txResult: any) => any;
+export declare const vcConfigRecordChangedEvents: (txResult: any) => any;
+export declare const vcOwnerChangedEvents: (txResult: any) => any;
+export declare const vcCreatedEvents: (txResult: any) => any;
+export declare const contractAddressUpdatedEvents: (txResult: any) => any;
+export declare const protocolChangedEvents: (txResult: any) => any;
+export declare const banningVoteEvents: (txResult: any) => any;
+export declare const electionsBanned: (txResult: any) => any;
+export declare const electionsUnbanned: (txResult: any) => any;
+export declare const electionsDebugEvents: (txResult: any) => any;
+//# sourceMappingURL=event-parsing.d.ts.map

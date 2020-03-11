@@ -1,17 +1,19 @@
-import Web3 from "web3";
-declare const web3: Web3;
+import 'mocha';
+
 
 import BN from "bn.js";
-import {Driver, expectRejected, MAIN_DEPLOYMENT_SUBSET_NAME, ZERO_ADDR} from "./driver";
+import {Driver, MAIN_DEPLOYMENT_SUBSET_NAME, expectRejected} from "./driver";
 import chai from "chai";
-import {subscriptionChangedEvents} from "./event-parsing";
-import {bn} from "./helpers";
+import {web3} from "../eth";
+
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
 const expect = chai.expect;
 
-contract('protocol-contract', async () => {
+import {bn} from "./helpers";
+
+describe('protocol-contract', async () => {
 
   it('schedules a protocol version upgrade for the main, canary deployment subsets', async () => {
     const d = await Driver.new();

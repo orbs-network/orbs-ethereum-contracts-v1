@@ -1,0 +1,986 @@
+{
+  "contractName": "IStakeChangeNotifier",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_stakeOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_sign",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_updatedStake",
+          "type": "uint256"
+        }
+      ],
+      "name": "stakeChange",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "_stakeOwners",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amounts",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "bool[]",
+          "name": "_signs",
+          "type": "bool[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_updatedStakes",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "stakeChangeBatch",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_stakeOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "stakeMigration",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakeOwner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_sign\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"_updatedStake\",\"type\":\"uint256\"}],\"name\":\"stakeChange\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_stakeOwners\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"_amounts\",\"type\":\"uint256[]\"},{\"internalType\":\"bool[]\",\"name\":\"_signs\",\"type\":\"bool[]\"},{\"internalType\":\"uint256[]\",\"name\":\"_updatedStakes\",\"type\":\"uint256[]\"}],\"name\":\"stakeChangeBatch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakeOwner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"stakeMigration\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"stakeChange(address,uint256,bool,uint256)\":{\"details\":\"Notifies of stake change event.\",\"params\":{\"_amount\":\"uint256 The difference in the total staked amount.\",\"_sign\":\"bool The sign of the added (true) or subtracted (false) amount.\",\"_stakeOwner\":\"address The address of the subject stake owner.\",\"_updatedStake\":\"uint256 The updated total staked amount.\"}},\"stakeChangeBatch(address[],uint256[],bool[],uint256[])\":{\"details\":\"Notifies of multiple stake change events.\",\"params\":{\"_amounts\":\"uint256[] The differences in total staked amounts.\",\"_signs\":\"bool[] The signs of the added (true) or subtracted (false) amounts.\",\"_stakeOwners\":\"address[] The addresses of subject stake owners.\",\"_updatedStakes\":\"uint256[] The updated total staked amounts.\"}},\"stakeMigration(address,uint256)\":{\"details\":\"Notifies of stake migration event.\",\"params\":{\"_amount\":\"uint256 The migrated amount.\",\"_stakeOwner\":\"address The address of the subject stake owner.\"}}},\"title\":\"An interface for notifying of stake change events (e.g., stake, unstake, partial unstake, restate, etc.).\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakeChangeNotifier.sol\":\"IStakeChangeNotifier\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakeChangeNotifier.sol\":{\"keccak256\":\"0x8c5ea4ca9a4ddbca8191edb749915f0bbb470fe3a26c0c66e857c4e520bba62f\",\"urls\":[\"bzz-raw://d80a852aaa8362638c2941058af42df684730191abb1c358b87ba7fec825b68b\",\"dweb:/ipfs/QmP2t6ZKNoGVLacmPrw2KHZMCzoBydgiLPCZrweqL7dyBw\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.16;\n\n/// @title An interface for notifying of stake change events (e.g., stake, unstake, partial unstake, restate, etc.).\ninterface IStakeChangeNotifier {\n    /// @dev Notifies of stake change event.\n    /// @param _stakeOwner address The address of the subject stake owner.\n    /// @param _amount uint256 The difference in the total staked amount.\n    /// @param _sign bool The sign of the added (true) or subtracted (false) amount.\n    /// @param _updatedStake uint256 The updated total staked amount.\n    function stakeChange(address _stakeOwner, uint256 _amount, bool _sign, uint256 _updatedStake) external;\n\n    /// @dev Notifies of multiple stake change events.\n    /// @param _stakeOwners address[] The addresses of subject stake owners.\n    /// @param _amounts uint256[] The differences in total staked amounts.\n    /// @param _signs bool[] The signs of the added (true) or subtracted (false) amounts.\n    /// @param _updatedStakes uint256[] The updated total staked amounts.\n    function stakeChangeBatch(address[] calldata _stakeOwners, uint256[] calldata _amounts, bool[] calldata _signs,\n        uint256[] calldata _updatedStakes) external;\n\n    /// @dev Notifies of stake migration event.\n    /// @param _stakeOwner address The address of the subject stake owner.\n    /// @param _amount uint256 The migrated amount.\n    function stakeMigration(address _stakeOwner, uint256 _amount) external;\n}\n",
+  "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakeChangeNotifier.sol",
+  "ast": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakeChangeNotifier.sol",
+    "exportedSymbols": {
+      "IStakeChangeNotifier": [
+        2476
+      ]
+    },
+    "id": 2477,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2442,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:3"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title An interface for notifying of stake change events (e.g., stake, unstake, partial unstake, restate, etc.).",
+        "fullyImplemented": false,
+        "id": 2476,
+        "linearizedBaseContracts": [
+          2476
+        ],
+        "name": "IStakeChangeNotifier",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Notifies of stake change event.\n @param _stakeOwner address The address of the subject stake owner.\n @param _amount uint256 The difference in the total staked amount.\n @param _sign bool The sign of the added (true) or subtracted (false) amount.\n @param _updatedStake uint256 The updated total staked amount.",
+            "id": 2453,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stakeChange",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2451,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2444,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "549:19:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2443,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "549:7:3",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2446,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "570:15:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2445,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "570:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2448,
+                  "name": "_sign",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "587:10:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 2447,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "587:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2450,
+                  "name": "_updatedStake",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "599:21:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2449,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "599:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "548:73:3"
+            },
+            "returnParameters": {
+              "id": 2452,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "630:0:3"
+            },
+            "scope": 2476,
+            "src": "528:103:3",
+            "stateMutability": "nonpayable",
+            "superFunction": 6027,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Notifies of multiple stake change events.\n @param _stakeOwners address[] The addresses of subject stake owners.\n @param _amounts uint256[] The differences in total staked amounts.\n @param _signs bool[] The signs of the added (true) or subtracted (false) amounts.\n @param _updatedStakes uint256[] The updated total staked amounts.",
+            "id": 2468,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stakeChangeBatch",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2466,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2456,
+                  "name": "_stakeOwners",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1034:31:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2454,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1034:7:3",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 2455,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1034:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2459,
+                  "name": "_amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1067:27:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2457,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1067:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 2458,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1067:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2462,
+                  "name": "_signs",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1096:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bool_$dyn_calldata_ptr",
+                    "typeString": "bool[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2460,
+                      "name": "bool",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1096:4:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "id": 2461,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1096:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bool_$dyn_storage_ptr",
+                      "typeString": "bool[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2465,
+                  "name": "_updatedStakes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1128:33:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2463,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1128:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 2464,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1128:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1033:129:3"
+            },
+            "returnParameters": {
+              "id": 2467,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1171:0:3"
+            },
+            "scope": 2476,
+            "src": "1008:164:3",
+            "stateMutability": "nonpayable",
+            "superFunction": 6016,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Notifies of stake migration event.\n @param _stakeOwner address The address of the subject stake owner.\n @param _amount uint256 The migrated amount.",
+            "id": 2475,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stakeMigration",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2473,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2470,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2475,
+                  "src": "1377:19:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2469,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1377:7:3",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2472,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2475,
+                  "src": "1398:15:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2471,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1398:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1376:38:3"
+            },
+            "returnParameters": {
+              "id": 2474,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1423:0:3"
+            },
+            "scope": 2476,
+            "src": "1353:71:3",
+            "stateMutability": "nonpayable",
+            "superFunction": 6034,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2477,
+        "src": "142:1284:3"
+      }
+    ],
+    "src": "0:1427:3"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakeChangeNotifier.sol",
+    "exportedSymbols": {
+      "IStakeChangeNotifier": [
+        2476
+      ]
+    },
+    "id": 2477,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2442,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:3"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title An interface for notifying of stake change events (e.g., stake, unstake, partial unstake, restate, etc.).",
+        "fullyImplemented": false,
+        "id": 2476,
+        "linearizedBaseContracts": [
+          2476
+        ],
+        "name": "IStakeChangeNotifier",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Notifies of stake change event.\n @param _stakeOwner address The address of the subject stake owner.\n @param _amount uint256 The difference in the total staked amount.\n @param _sign bool The sign of the added (true) or subtracted (false) amount.\n @param _updatedStake uint256 The updated total staked amount.",
+            "id": 2453,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stakeChange",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2451,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2444,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "549:19:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2443,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "549:7:3",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2446,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "570:15:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2445,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "570:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2448,
+                  "name": "_sign",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "587:10:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 2447,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "587:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2450,
+                  "name": "_updatedStake",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2453,
+                  "src": "599:21:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2449,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "599:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "548:73:3"
+            },
+            "returnParameters": {
+              "id": 2452,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "630:0:3"
+            },
+            "scope": 2476,
+            "src": "528:103:3",
+            "stateMutability": "nonpayable",
+            "superFunction": 6027,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Notifies of multiple stake change events.\n @param _stakeOwners address[] The addresses of subject stake owners.\n @param _amounts uint256[] The differences in total staked amounts.\n @param _signs bool[] The signs of the added (true) or subtracted (false) amounts.\n @param _updatedStakes uint256[] The updated total staked amounts.",
+            "id": 2468,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stakeChangeBatch",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2466,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2456,
+                  "name": "_stakeOwners",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1034:31:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2454,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1034:7:3",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 2455,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1034:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2459,
+                  "name": "_amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1067:27:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2457,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1067:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 2458,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1067:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2462,
+                  "name": "_signs",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1096:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bool_$dyn_calldata_ptr",
+                    "typeString": "bool[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2460,
+                      "name": "bool",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1096:4:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "id": 2461,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1096:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bool_$dyn_storage_ptr",
+                      "typeString": "bool[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2465,
+                  "name": "_updatedStakes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2468,
+                  "src": "1128:33:3",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2463,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1128:7:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 2464,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1128:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1033:129:3"
+            },
+            "returnParameters": {
+              "id": 2467,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1171:0:3"
+            },
+            "scope": 2476,
+            "src": "1008:164:3",
+            "stateMutability": "nonpayable",
+            "superFunction": 6016,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Notifies of stake migration event.\n @param _stakeOwner address The address of the subject stake owner.\n @param _amount uint256 The migrated amount.",
+            "id": 2475,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stakeMigration",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2473,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2470,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2475,
+                  "src": "1377:19:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2469,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1377:7:3",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2472,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2475,
+                  "src": "1398:15:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2471,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1398:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1376:38:3"
+            },
+            "returnParameters": {
+              "id": 2474,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1423:0:3"
+            },
+            "scope": 2476,
+            "src": "1353:71:3",
+            "stateMutability": "nonpayable",
+            "superFunction": 6034,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2477,
+        "src": "142:1284:3"
+      }
+    ],
+    "src": "0:1427:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.23",
+  "updatedAt": "2020-03-11T14:45:21.553Z",
+  "devdoc": {
+    "methods": {
+      "stakeChange(address,uint256,bool,uint256)": {
+        "details": "Notifies of stake change event.",
+        "params": {
+          "_amount": "uint256 The difference in the total staked amount.",
+          "_sign": "bool The sign of the added (true) or subtracted (false) amount.",
+          "_stakeOwner": "address The address of the subject stake owner.",
+          "_updatedStake": "uint256 The updated total staked amount."
+        }
+      },
+      "stakeChangeBatch(address[],uint256[],bool[],uint256[])": {
+        "details": "Notifies of multiple stake change events.",
+        "params": {
+          "_amounts": "uint256[] The differences in total staked amounts.",
+          "_signs": "bool[] The signs of the added (true) or subtracted (false) amounts.",
+          "_stakeOwners": "address[] The addresses of subject stake owners.",
+          "_updatedStakes": "uint256[] The updated total staked amounts."
+        }
+      },
+      "stakeMigration(address,uint256)": {
+        "details": "Notifies of stake migration event.",
+        "params": {
+          "_amount": "uint256 The migrated amount.",
+          "_stakeOwner": "address The address of the subject stake owner."
+        }
+      }
+    },
+    "title": "An interface for notifying of stake change events (e.g., stake, unstake, partial unstake, restate, etc.)."
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

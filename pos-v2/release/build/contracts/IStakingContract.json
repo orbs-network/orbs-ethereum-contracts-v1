@@ -1,0 +1,2660 @@
+{
+  "contractName": "IStakingContract",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MigratedStake",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Restaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Staked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Unstaked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakeOwner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdrew",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "stake",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "unstake",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "withdraw",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "restake",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_totalAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "_stakeOwners",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amounts",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "distributeRewards",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_stakeOwner",
+          "type": "address"
+        }
+      ],
+      "name": "getStakeBalanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getTotalStakedTokens",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_stakeOwner",
+          "type": "address"
+        }
+      ],
+      "name": "getUnstakeStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "cooldownAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cooldownEndTime",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "contract IMigratableStakingContract",
+          "name": "_newStakingContract",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "migrateStakedTokens",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"stakeOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalStakedAmount\",\"type\":\"uint256\"}],\"name\":\"MigratedStake\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"stakeOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalStakedAmount\",\"type\":\"uint256\"}],\"name\":\"Restaked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"stakeOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalStakedAmount\",\"type\":\"uint256\"}],\"name\":\"Staked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"stakeOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalStakedAmount\",\"type\":\"uint256\"}],\"name\":\"Unstaked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"stakeOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalStakedAmount\",\"type\":\"uint256\"}],\"name\":\"Withdrew\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"_stakeOwners\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"_amounts\",\"type\":\"uint256[]\"}],\"name\":\"distributeRewards\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakeOwner\",\"type\":\"address\"}],\"name\":\"getStakeBalanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getTotalStakedTokens\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakeOwner\",\"type\":\"address\"}],\"name\":\"getUnstakeStatus\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"cooldownAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"cooldownEndTime\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"contract IMigratableStakingContract\",\"name\":\"_newStakingContract\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"migrateStakedTokens\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"restake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"stake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"unstake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"withdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"distributeRewards(uint256,address[],uint256[])\":{\"details\":\"Distributes staking rewards to a list of addresses by directly adding rewards to their stakes. This method assumes that the user has already approved at least the required amount using ERC20 approve. Since this is a convenience method, we aren't concerned about reaching block gas limit by using large lists. We assume that callers will be able to properly batch/paginate their requests.\",\"params\":{\"_amounts\":\"uint256[] The amounts of the rewards.\",\"_stakeOwners\":\"address[] The addresses of the stake owners.\",\"_totalAmount\":\"uint256 The total amount of rewards to distributes.\"}},\"getStakeBalanceOf(address)\":{\"details\":\"Returns the stake of the specified stake owner (excluding unstaked tokens).\",\"params\":{\"_stakeOwner\":\"address The address to check.\"},\"return\":\"uint256 The total stake.\"},\"getTotalStakedTokens()\":{\"details\":\"Returns the total amount staked tokens (excluding unstaked tokens).\",\"return\":\"uint256 The total staked tokens of all stake owners.\"},\"getUnstakeStatus(address)\":{\"details\":\"Returns the time that the cooldown period ends (or ended) and the amount of tokens to be released.\",\"params\":{\"_stakeOwner\":\"address The address to check.\"},\"return\":\"cooldownAmount uint256 The total tokens in cooldown.cooldownEndTime uint256 The time when the cooldown period ends (in seconds).\"},\"migrateStakedTokens(address,uint256)\":{\"details\":\"Migrates the stake of msg.sender from this staking contract to a new approved staking contract.\",\"params\":{\"_amount\":\"uint256 The amount of tokens to migrate.\",\"_newStakingContract\":\"IMigratableStakingContract The new staking contract which supports stake migration.\"}},\"restake()\":{\"details\":\"Restakes unstaked ORBS tokens (in or after cooldown) for msg.sender.\"},\"stake(uint256)\":{\"details\":\"Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least the required amount using ERC20 approve.\",\"params\":{\"_amount\":\"uint256 The amount of tokens to stake.\"}},\"unstake(uint256)\":{\"details\":\"Unstakes ORBS tokens from msg.sender. If successful, this will start the cooldown period, after which msg.sender would be able to withdraw all of his tokens.\",\"params\":{\"_amount\":\"uint256 The amount of tokens to unstake.\"}},\"withdraw()\":{\"details\":\"Requests to withdraw all of staked ORBS tokens back to msg.sender. Stake owners can withdraw their ORBS tokens only after previously unstaking them and after the cooldown period has passed (unless the contract was requested to release all stakes).\"}},\"title\":\"An interface for staking contracts.\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol\":\"IStakingContract\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol\":{\"keccak256\":\"0x287b1627883cb23828b02b14621cdb50804ca2b7ff4217437f44cd19d1bcdfa7\",\"urls\":[\"bzz-raw://206b9e4f3df0cb04b70be5b7a00d9e72edb0080a68aaed542a1985f6cf2b7cd1\",\"dweb:/ipfs/QmdKE76EErfCDTw5kyYACs7WtCRjdSKgjaxD88Kj51aTPQ\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol\":{\"keccak256\":\"0xa603872af63779e8cfac9af347fbc8b0f9be94b4e4db674f5f0ad73532268f9c\",\"urls\":[\"bzz-raw://9b012d573651413b9d2bf7a023f6b3a84d726cb8bf7a18dc47f9dff83f54115b\",\"dweb:/ipfs/QmWuF98LKpKv88Y1kyXBxRMJgEVs5VTG6ohNGJPaMtKCtH\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.16;\n\nimport \"./IMigratableStakingContract.sol\";\n\n/// @title An interface for staking contracts.\ninterface IStakingContract {\n    /// @dev Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least\n    /// the required amount using ERC20 approve.\n    /// @param _amount uint256 The amount of tokens to stake.\n    function stake(uint256 _amount) external;\n\n    /// @dev Unstakes ORBS tokens from msg.sender. If successful, this will start the cooldown period, after which\n    /// msg.sender would be able to withdraw all of his tokens.\n    /// @param _amount uint256 The amount of tokens to unstake.\n    function unstake(uint256 _amount) external;\n\n    /// @dev Requests to withdraw all of staked ORBS tokens back to msg.sender. Stake owners can withdraw their ORBS\n    /// tokens only after previously unstaking them and after the cooldown period has passed (unless the contract was\n    /// requested to release all stakes).\n    function withdraw() external;\n\n    /// @dev Restakes unstaked ORBS tokens (in or after cooldown) for msg.sender.\n    function restake() external;\n\n    /// @dev Distributes staking rewards to a list of addresses by directly adding rewards to their stakes. This method\n    /// assumes that the user has already approved at least the required amount using ERC20 approve. Since this is a\n    /// convenience method, we aren't concerned about reaching block gas limit by using large lists. We assume that\n    /// callers will be able to properly batch/paginate their requests.\n    /// @param _totalAmount uint256 The total amount of rewards to distributes.\n    /// @param _stakeOwners address[] The addresses of the stake owners.\n    /// @param _amounts uint256[] The amounts of the rewards.\n    function distributeRewards(uint256 _totalAmount, address[] calldata _stakeOwners, uint256[] calldata _amounts) external;\n\n    /// @dev Returns the stake of the specified stake owner (excluding unstaked tokens).\n    /// @param _stakeOwner address The address to check.\n    /// @return uint256 The total stake.\n    function getStakeBalanceOf(address _stakeOwner) external view returns (uint256);\n\n    /// @dev Returns the total amount staked tokens (excluding unstaked tokens).\n    /// @return uint256 The total staked tokens of all stake owners.\n    function getTotalStakedTokens() external view returns (uint256);\n\n    /// @dev Returns the time that the cooldown period ends (or ended) and the amount of tokens to be released.\n    /// @param _stakeOwner address The address to check.\n    /// @return cooldownAmount uint256 The total tokens in cooldown.\n    /// @return cooldownEndTime uint256 The time when the cooldown period ends (in seconds).\n    function getUnstakeStatus(address _stakeOwner) external view returns (uint256 cooldownAmount,\n        uint256 cooldownEndTime);\n\n    /// @dev Migrates the stake of msg.sender from this staking contract to a new approved staking contract.\n    /// @param _newStakingContract IMigratableStakingContract The new staking contract which supports stake migration.\n    /// @param _amount uint256 The amount of tokens to migrate.\n    function migrateStakedTokens(IMigratableStakingContract _newStakingContract, uint256 _amount) external;\n\n    event Staked(address indexed stakeOwner, uint256 amount, uint256 totalStakedAmount);\n    event Unstaked(address indexed stakeOwner, uint256 amount, uint256 totalStakedAmount);\n    event Withdrew(address indexed stakeOwner, uint256 amount, uint256 totalStakedAmount);\n    event Restaked(address indexed stakeOwner, uint256 amount, uint256 totalStakedAmount);\n    event MigratedStake(address indexed stakeOwner, uint256 amount, uint256 totalStakedAmount);\n}\n",
+  "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
+  "ast": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
+    "exportedSymbols": {
+      "IStakingContract": [
+        2575
+      ]
+    },
+    "id": 2576,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2478,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol",
+        "file": "./IMigratableStakingContract.sol",
+        "id": 2479,
+        "nodeType": "ImportDirective",
+        "scope": 2576,
+        "sourceUnit": 2441,
+        "src": "25:42:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title An interface for staking contracts.",
+        "fullyImplemented": false,
+        "id": 2575,
+        "linearizedBaseContracts": [
+          2575
+        ],
+        "name": "IStakingContract",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least\n the required amount using ERC20 approve.\n @param _amount uint256 The amount of tokens to stake.",
+            "id": 2484,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stake",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2482,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2481,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2484,
+                  "src": "396:15:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2480,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "396:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "395:17:4"
+            },
+            "returnParameters": {
+              "id": 2483,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "421:0:4"
+            },
+            "scope": 2575,
+            "src": "381:41:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Unstakes ORBS tokens from msg.sender. If successful, this will start the cooldown period, after which\n msg.sender would be able to withdraw all of his tokens.\n @param _amount uint256 The amount of tokens to unstake.",
+            "id": 2489,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "unstake",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2487,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2486,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2489,
+                  "src": "688:15:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2485,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "688:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "687:17:4"
+            },
+            "returnParameters": {
+              "id": 2488,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "713:0:4"
+            },
+            "scope": 2575,
+            "src": "671:43:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Requests to withdraw all of staked ORBS tokens back to msg.sender. Stake owners can withdraw their ORBS\n tokens only after previously unstaking them and after the cooldown period has passed (unless the contract was\n requested to release all stakes).",
+            "id": 2492,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdraw",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2490,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1014:2:4"
+            },
+            "returnParameters": {
+              "id": 2491,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1025:0:4"
+            },
+            "scope": 2575,
+            "src": "997:29:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Restakes unstaked ORBS tokens (in or after cooldown) for msg.sender.",
+            "id": 2495,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "restake",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2493,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1130:2:4"
+            },
+            "returnParameters": {
+              "id": 2494,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1141:0:4"
+            },
+            "scope": 2575,
+            "src": "1114:28:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Distributes staking rewards to a list of addresses by directly adding rewards to their stakes. This method\n assumes that the user has already approved at least the required amount using ERC20 approve. Since this is a\n convenience method, we aren't concerned about reaching block gas limit by using large lists. We assume that\n callers will be able to properly batch/paginate their requests.\n @param _totalAmount uint256 The total amount of rewards to distributes.\n @param _stakeOwners address[] The addresses of the stake owners.\n @param _amounts uint256[] The amounts of the rewards.",
+            "id": 2506,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "distributeRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2504,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2497,
+                  "name": "_totalAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2506,
+                  "src": "1815:20:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2496,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1815:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2500,
+                  "name": "_stakeOwners",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2506,
+                  "src": "1837:31:4",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2498,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1837:7:4",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 2499,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1837:9:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2503,
+                  "name": "_amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2506,
+                  "src": "1870:27:4",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2501,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1870:7:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 2502,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1870:9:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1814:84:4"
+            },
+            "returnParameters": {
+              "id": 2505,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1907:0:4"
+            },
+            "scope": 2575,
+            "src": "1788:120:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns the stake of the specified stake owner (excluding unstaked tokens).\n @param _stakeOwner address The address to check.\n @return uint256 The total stake.",
+            "id": 2513,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getStakeBalanceOf",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2509,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2508,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2513,
+                  "src": "2128:19:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2507,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2128:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2127:21:4"
+            },
+            "returnParameters": {
+              "id": 2512,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2511,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2513,
+                  "src": "2172:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2510,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2172:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2171:9:4"
+            },
+            "scope": 2575,
+            "src": "2101:80:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns the total amount staked tokens (excluding unstaked tokens).\n @return uint256 The total staked tokens of all stake owners.",
+            "id": 2518,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTotalStakedTokens",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2514,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2366:2:4"
+            },
+            "returnParameters": {
+              "id": 2517,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2516,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2518,
+                  "src": "2392:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2515,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2392:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2391:9:4"
+            },
+            "scope": 2575,
+            "src": "2337:64:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns the time that the cooldown period ends (or ended) and the amount of tokens to be released.\n @param _stakeOwner address The address to check.\n @return cooldownAmount uint256 The total tokens in cooldown.\n @return cooldownEndTime uint256 The time when the cooldown period ends (in seconds).",
+            "id": 2527,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getUnstakeStatus",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2521,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2520,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2527,
+                  "src": "2764:19:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2519,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2764:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2763:21:4"
+            },
+            "returnParameters": {
+              "id": 2526,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2523,
+                  "name": "cooldownAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2527,
+                  "src": "2808:22:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2522,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2808:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2525,
+                  "name": "cooldownEndTime",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2527,
+                  "src": "2840:23:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2524,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2840:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2807:57:4"
+            },
+            "scope": 2575,
+            "src": "2738:127:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Migrates the stake of msg.sender from this staking contract to a new approved staking contract.\n @param _newStakingContract IMigratableStakingContract The new staking contract which supports stake migration.\n @param _amount uint256 The amount of tokens to migrate.",
+            "id": 2534,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "migrateStakedTokens",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2532,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2529,
+                  "name": "_newStakingContract",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2534,
+                  "src": "3192:46:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IMigratableStakingContract_$2440",
+                    "typeString": "contract IMigratableStakingContract"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 2528,
+                    "name": "IMigratableStakingContract",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 2440,
+                    "src": "3192:26:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IMigratableStakingContract_$2440",
+                      "typeString": "contract IMigratableStakingContract"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2531,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2534,
+                  "src": "3240:15:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2530,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3240:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3191:65:4"
+            },
+            "returnParameters": {
+              "id": 2533,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "3265:0:4"
+            },
+            "scope": 2575,
+            "src": "3163:103:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2542,
+            "name": "Staked",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2541,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2536,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2542,
+                  "src": "3285:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2535,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3285:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2538,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2542,
+                  "src": "3313:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2537,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3313:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2540,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2542,
+                  "src": "3329:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2539,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3329:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3284:71:4"
+            },
+            "src": "3272:84:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2550,
+            "name": "Unstaked",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2549,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2544,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2550,
+                  "src": "3376:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2543,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3376:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2546,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2550,
+                  "src": "3404:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2545,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3404:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2548,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2550,
+                  "src": "3420:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2547,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3420:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3375:71:4"
+            },
+            "src": "3361:86:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2558,
+            "name": "Withdrew",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2557,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2552,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2558,
+                  "src": "3467:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2551,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3467:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2554,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2558,
+                  "src": "3495:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2553,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3495:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2556,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2558,
+                  "src": "3511:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2555,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3511:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3466:71:4"
+            },
+            "src": "3452:86:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2566,
+            "name": "Restaked",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2565,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2560,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2566,
+                  "src": "3558:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2559,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3558:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2562,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2566,
+                  "src": "3586:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2561,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3586:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2564,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2566,
+                  "src": "3602:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2563,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3602:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3557:71:4"
+            },
+            "src": "3543:86:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2574,
+            "name": "MigratedStake",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2573,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2568,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2574,
+                  "src": "3654:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2567,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3654:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2570,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2574,
+                  "src": "3682:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2569,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3682:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2572,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2574,
+                  "src": "3698:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2571,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3698:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3653:71:4"
+            },
+            "src": "3634:91:4"
+          }
+        ],
+        "scope": 2576,
+        "src": "116:3611:4"
+      }
+    ],
+    "src": "0:3728:4"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
+    "exportedSymbols": {
+      "IStakingContract": [
+        2575
+      ]
+    },
+    "id": 2576,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2478,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:4"
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol",
+        "file": "./IMigratableStakingContract.sol",
+        "id": 2479,
+        "nodeType": "ImportDirective",
+        "scope": 2576,
+        "sourceUnit": 2441,
+        "src": "25:42:4",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title An interface for staking contracts.",
+        "fullyImplemented": false,
+        "id": 2575,
+        "linearizedBaseContracts": [
+          2575
+        ],
+        "name": "IStakingContract",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least\n the required amount using ERC20 approve.\n @param _amount uint256 The amount of tokens to stake.",
+            "id": 2484,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stake",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2482,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2481,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2484,
+                  "src": "396:15:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2480,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "396:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "395:17:4"
+            },
+            "returnParameters": {
+              "id": 2483,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "421:0:4"
+            },
+            "scope": 2575,
+            "src": "381:41:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Unstakes ORBS tokens from msg.sender. If successful, this will start the cooldown period, after which\n msg.sender would be able to withdraw all of his tokens.\n @param _amount uint256 The amount of tokens to unstake.",
+            "id": 2489,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "unstake",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2487,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2486,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2489,
+                  "src": "688:15:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2485,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "688:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "687:17:4"
+            },
+            "returnParameters": {
+              "id": 2488,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "713:0:4"
+            },
+            "scope": 2575,
+            "src": "671:43:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Requests to withdraw all of staked ORBS tokens back to msg.sender. Stake owners can withdraw their ORBS\n tokens only after previously unstaking them and after the cooldown period has passed (unless the contract was\n requested to release all stakes).",
+            "id": 2492,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdraw",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2490,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1014:2:4"
+            },
+            "returnParameters": {
+              "id": 2491,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1025:0:4"
+            },
+            "scope": 2575,
+            "src": "997:29:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Restakes unstaked ORBS tokens (in or after cooldown) for msg.sender.",
+            "id": 2495,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "restake",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2493,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1130:2:4"
+            },
+            "returnParameters": {
+              "id": 2494,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1141:0:4"
+            },
+            "scope": 2575,
+            "src": "1114:28:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Distributes staking rewards to a list of addresses by directly adding rewards to their stakes. This method\n assumes that the user has already approved at least the required amount using ERC20 approve. Since this is a\n convenience method, we aren't concerned about reaching block gas limit by using large lists. We assume that\n callers will be able to properly batch/paginate their requests.\n @param _totalAmount uint256 The total amount of rewards to distributes.\n @param _stakeOwners address[] The addresses of the stake owners.\n @param _amounts uint256[] The amounts of the rewards.",
+            "id": 2506,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "distributeRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2504,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2497,
+                  "name": "_totalAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2506,
+                  "src": "1815:20:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2496,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1815:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2500,
+                  "name": "_stakeOwners",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2506,
+                  "src": "1837:31:4",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2498,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1837:7:4",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 2499,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1837:9:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2503,
+                  "name": "_amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2506,
+                  "src": "1870:27:4",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 2501,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1870:7:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 2502,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1870:9:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1814:84:4"
+            },
+            "returnParameters": {
+              "id": 2505,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1907:0:4"
+            },
+            "scope": 2575,
+            "src": "1788:120:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns the stake of the specified stake owner (excluding unstaked tokens).\n @param _stakeOwner address The address to check.\n @return uint256 The total stake.",
+            "id": 2513,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getStakeBalanceOf",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2509,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2508,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2513,
+                  "src": "2128:19:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2507,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2128:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2127:21:4"
+            },
+            "returnParameters": {
+              "id": 2512,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2511,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2513,
+                  "src": "2172:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2510,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2172:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2171:9:4"
+            },
+            "scope": 2575,
+            "src": "2101:80:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns the total amount staked tokens (excluding unstaked tokens).\n @return uint256 The total staked tokens of all stake owners.",
+            "id": 2518,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getTotalStakedTokens",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2514,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2366:2:4"
+            },
+            "returnParameters": {
+              "id": 2517,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2516,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2518,
+                  "src": "2392:7:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2515,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2392:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2391:9:4"
+            },
+            "scope": 2575,
+            "src": "2337:64:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Returns the time that the cooldown period ends (or ended) and the amount of tokens to be released.\n @param _stakeOwner address The address to check.\n @return cooldownAmount uint256 The total tokens in cooldown.\n @return cooldownEndTime uint256 The time when the cooldown period ends (in seconds).",
+            "id": 2527,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getUnstakeStatus",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2521,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2520,
+                  "name": "_stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2527,
+                  "src": "2764:19:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2519,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2764:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2763:21:4"
+            },
+            "returnParameters": {
+              "id": 2526,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2523,
+                  "name": "cooldownAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2527,
+                  "src": "2808:22:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2522,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2808:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2525,
+                  "name": "cooldownEndTime",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2527,
+                  "src": "2840:23:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2524,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2840:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2807:57:4"
+            },
+            "scope": 2575,
+            "src": "2738:127:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Migrates the stake of msg.sender from this staking contract to a new approved staking contract.\n @param _newStakingContract IMigratableStakingContract The new staking contract which supports stake migration.\n @param _amount uint256 The amount of tokens to migrate.",
+            "id": 2534,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "migrateStakedTokens",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2532,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2529,
+                  "name": "_newStakingContract",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2534,
+                  "src": "3192:46:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IMigratableStakingContract_$2440",
+                    "typeString": "contract IMigratableStakingContract"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 2528,
+                    "name": "IMigratableStakingContract",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 2440,
+                    "src": "3192:26:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IMigratableStakingContract_$2440",
+                      "typeString": "contract IMigratableStakingContract"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2531,
+                  "name": "_amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2534,
+                  "src": "3240:15:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2530,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3240:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3191:65:4"
+            },
+            "returnParameters": {
+              "id": 2533,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "3265:0:4"
+            },
+            "scope": 2575,
+            "src": "3163:103:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2542,
+            "name": "Staked",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2541,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2536,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2542,
+                  "src": "3285:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2535,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3285:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2538,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2542,
+                  "src": "3313:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2537,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3313:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2540,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2542,
+                  "src": "3329:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2539,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3329:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3284:71:4"
+            },
+            "src": "3272:84:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2550,
+            "name": "Unstaked",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2549,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2544,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2550,
+                  "src": "3376:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2543,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3376:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2546,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2550,
+                  "src": "3404:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2545,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3404:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2548,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2550,
+                  "src": "3420:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2547,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3420:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3375:71:4"
+            },
+            "src": "3361:86:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2558,
+            "name": "Withdrew",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2557,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2552,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2558,
+                  "src": "3467:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2551,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3467:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2554,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2558,
+                  "src": "3495:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2553,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3495:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2556,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2558,
+                  "src": "3511:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2555,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3511:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3466:71:4"
+            },
+            "src": "3452:86:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2566,
+            "name": "Restaked",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2565,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2560,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2566,
+                  "src": "3558:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2559,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3558:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2562,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2566,
+                  "src": "3586:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2561,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3586:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2564,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2566,
+                  "src": "3602:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2563,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3602:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3557:71:4"
+            },
+            "src": "3543:86:4"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 2574,
+            "name": "MigratedStake",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 2573,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2568,
+                  "indexed": true,
+                  "name": "stakeOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2574,
+                  "src": "3654:26:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2567,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3654:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2570,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2574,
+                  "src": "3682:14:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2569,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3682:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2572,
+                  "indexed": false,
+                  "name": "totalStakedAmount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2574,
+                  "src": "3698:25:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2571,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3698:7:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3653:71:4"
+            },
+            "src": "3634:91:4"
+          }
+        ],
+        "scope": 2576,
+        "src": "116:3611:4"
+      }
+    ],
+    "src": "0:3728:4"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.23",
+  "updatedAt": "2020-03-11T14:45:21.554Z",
+  "devdoc": {
+    "methods": {
+      "distributeRewards(uint256,address[],uint256[])": {
+        "details": "Distributes staking rewards to a list of addresses by directly adding rewards to their stakes. This method assumes that the user has already approved at least the required amount using ERC20 approve. Since this is a convenience method, we aren't concerned about reaching block gas limit by using large lists. We assume that callers will be able to properly batch/paginate their requests.",
+        "params": {
+          "_amounts": "uint256[] The amounts of the rewards.",
+          "_stakeOwners": "address[] The addresses of the stake owners.",
+          "_totalAmount": "uint256 The total amount of rewards to distributes."
+        }
+      },
+      "getStakeBalanceOf(address)": {
+        "details": "Returns the stake of the specified stake owner (excluding unstaked tokens).",
+        "params": {
+          "_stakeOwner": "address The address to check."
+        },
+        "return": "uint256 The total stake."
+      },
+      "getTotalStakedTokens()": {
+        "details": "Returns the total amount staked tokens (excluding unstaked tokens).",
+        "return": "uint256 The total staked tokens of all stake owners."
+      },
+      "getUnstakeStatus(address)": {
+        "details": "Returns the time that the cooldown period ends (or ended) and the amount of tokens to be released.",
+        "params": {
+          "_stakeOwner": "address The address to check."
+        },
+        "return": "cooldownAmount uint256 The total tokens in cooldown.cooldownEndTime uint256 The time when the cooldown period ends (in seconds)."
+      },
+      "migrateStakedTokens(address,uint256)": {
+        "details": "Migrates the stake of msg.sender from this staking contract to a new approved staking contract.",
+        "params": {
+          "_amount": "uint256 The amount of tokens to migrate.",
+          "_newStakingContract": "IMigratableStakingContract The new staking contract which supports stake migration."
+        }
+      },
+      "restake()": {
+        "details": "Restakes unstaked ORBS tokens (in or after cooldown) for msg.sender."
+      },
+      "stake(uint256)": {
+        "details": "Stakes ORBS tokens on behalf of msg.sender. This method assumes that the user has already approved at least the required amount using ERC20 approve.",
+        "params": {
+          "_amount": "uint256 The amount of tokens to stake."
+        }
+      },
+      "unstake(uint256)": {
+        "details": "Unstakes ORBS tokens from msg.sender. If successful, this will start the cooldown period, after which msg.sender would be able to withdraw all of his tokens.",
+        "params": {
+          "_amount": "uint256 The amount of tokens to unstake."
+        }
+      },
+      "withdraw()": {
+        "details": "Requests to withdraw all of staked ORBS tokens back to msg.sender. Stake owners can withdraw their ORBS tokens only after previously unstaking them and after the cooldown period has passed (unless the contract was requested to release all stakes)."
+      }
+    },
+    "title": "An interface for staking contracts."
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

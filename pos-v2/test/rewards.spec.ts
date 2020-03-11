@@ -1,3 +1,5 @@
+import 'mocha';
+
 import * as _ from "lodash";
 import Web3 from "web3";
 import BN from "bn.js";
@@ -5,16 +7,16 @@ import {Driver} from "./driver";
 import chai from "chai";
 import {feeAddedToBucketEvents} from "./event-parsing";
 import {evmIncreaseTime} from "./helpers";
-
-declare const web3: Web3;
+import {web3} from "../eth";
+import {TransactionReceipt} from "web3-core";
 
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
 const MONTH_IN_SECONDS = 30*24*60*60;
 
-async function txTimestamp(r): Promise<number> {
-  return (await web3.eth.getBlock(r.receipt.blockNumber)).timestamp as number;
+async function txTimestamp(r: TransactionReceipt): Promise<number> { // TODO move
+  return (await web3.eth.getBlock(r.blockNumber)).timestamp as number;
 }
 
 const expect = chai.expect;
@@ -23,7 +25,7 @@ async function sleep(ms): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-contract('rewards-level-flows', async () => {
+describe('rewards-level-flows', async () => {
 
   it('should distribute fees to validators in committee', async () => {
     const d = await Driver.new();

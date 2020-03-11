@@ -1,16 +1,17 @@
-import Web3 from "web3";
-declare const web3: Web3;
+import 'mocha';
 
 import BN from "bn.js";
 import {Driver, expectRejected, ZERO_ADDR} from "./driver";
 import chai from "chai";
 import {subscriptionChangedEvents} from "./event-parsing";
+import {web3} from "../eth";
+import {bn} from "./helpers";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
 const expect = chai.expect;
 
-contract('subscriptions-high-level-flows', async () => {
+describe('subscriptions-high-level-flows', async () => {
 
   it('registers and pays for a VC', async () => {
     const d = await Driver.new();
@@ -29,7 +30,7 @@ contract('subscriptions-high-level-flows', async () => {
     expect(r).to.have.subscriptionChangedEvent();
     const firstSubsc = subscriptionChangedEvents(r).pop()!;
 
-    const blockNumber = new BN(r.receipt.blockNumber);
+    const blockNumber = new BN(r.blockNumber);
     const blockTimestamp = new BN((await web3.eth.getBlock(blockNumber)).timestamp);
     const expectedGenRef = blockNumber.add(new BN('300'));
     const secondsInMonth = new BN(30 * 24 * 60 * 60);
@@ -75,7 +76,7 @@ contract('subscriptions-high-level-flows', async () => {
 
   it('registers subsciber only by owner', async () => {
     const d = await Driver.new();
-    const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(d.erc20.address, 'tier', 1);
+    const subscriber = await d.newSubscriber('tier', 1);
 
     await expectRejected(d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsNonOwner}), "Non-owner should not be able to add a subscriber");
     await d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsOwner});
@@ -102,7 +103,7 @@ contract('subscriptions-high-level-flows', async () => {
     expect(r).to.have.a.subscriptionChangedEvent();
   });
 
-  it('sets,overrides and clears a vc config field by and only by the vc owner', async () => {
+  it('sets, overrides, gets and clears a vc config field by and only by the vc owner', async () => {
     const d = await Driver.new();
     const subs = await d.newSubscriber("tier", 1);
 
@@ -125,6 +126,11 @@ contract('subscriptions-high-level-flows', async () => {
       value
     });
 
+    // get
+    const nonOwner = d.newParticipant();
+    let v = await d.subscriptions.getVcConfigRecord(vcid, key, {from: nonOwner.address});
+    expect(v).to.equal(value);
+
     // override
     const value2 = 'value2_' + Date.now().toString();
     r = await d.subscriptions.setVcConfigRecord(vcid, key, value2, {from: owner.address});
@@ -134,6 +140,10 @@ contract('subscriptions-high-level-flows', async () => {
       value: value2
     });
 
+    // get again
+    v = await d.subscriptions.getVcConfigRecord(vcid, key, {from: nonOwner.address});
+    expect(v).to.equal(value2);
+
     // clear
     r = await d.subscriptions.setVcConfigRecord(vcid, key, "", {from: owner.address});
     expect(r).to.have.a.vcConfigRecordChangedEvent({
@@ -142,9 +152,53 @@ contract('subscriptions-high-level-flows', async () => {
       value: ""
     });
 
+    // get again
+    v = await d.subscriptions.getVcConfigRecord(vcid, key, {from: nonOwner.address});
+    expect(v).to.equal("");
+
     // reject if set by non owner
-    const nonOwner = d.newParticipant();
     await expectRejected(d.subscriptions.setVcConfigRecord(vcid, key, value, {from: nonOwner.address}));
   });
+
+  it('allows VC owner to transfer ownership', async () => {
+    const d = await Driver.new();
+    const subs = await d.newSubscriber("tier", 1);
+
+    const owner = d.newParticipant();
+
+    const amount = 10;
+    await owner.assignAndApproveOrbs(amount, subs.address);
+    let r = await subs.createVC(amount, "main", {from: owner.address});
+    expect(r).to.have.a.subscriptionChangedEvent();
+    const vcid = bn(subscriptionChangedEvents(r)[0].vcid);
+    expect(r).to.have.a.vcCreatedEvent({
+      vcid,
+      owner: owner.address
+    });
+
+    const newOwner = d.newParticipant();
+
+    const nonOwner = d.newParticipant();
+    await expectRejected(d.subscriptions.setVcOwner(vcid, newOwner.address, {from: nonOwner.address}));
+
+    r = await d.subscriptions.setVcOwner(vcid, newOwner.address, {from: owner.address});
+    expect(r).to.have.a.vcOwnerChangedEvent({
+      vcid,
+      previousOwner: owner.address,
+      newOwner: newOwner.address
+    });
+
+    await expectRejected(d.subscriptions.setVcOwner(vcid, owner.address, {from: owner.address}));
+
+    r = await d.subscriptions.setVcOwner(vcid, owner.address, {from: newOwner.address});
+    expect(r).to.have.a.vcOwnerChangedEvent({
+      vcid,
+      previousOwner: newOwner.address,
+      newOwner: owner.address
+    });
+
+  });
+
+
 
 });

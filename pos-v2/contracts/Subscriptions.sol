@@ -12,11 +12,6 @@ contract Subscriptions is ISubscriptions, Ownable{
 
     IContractRegistry contractRegistry;
 
-    event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier, string deploymentSubset);
-    event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);
-    event VcConfigRecordChanged(uint256 vcid, string key, string value);
-    event SubscriberAdded(address subscriber);
-
     struct VirtualChain {
         string tier;
         uint256 rate;
@@ -24,6 +19,8 @@ contract Subscriptions is ISubscriptions, Ownable{
         uint genRef;
         address owner;
         string deploymentSubset;
+
+        mapping (string => string) configRecords;
     }
 
     mapping (address => bool) authorizedSubscribers;
@@ -47,8 +44,12 @@ contract Subscriptions is ISubscriptions, Ownable{
 
     function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external {
         require(msg.sender == virtualChains[vcid].owner, "only vc owner can set a vc config record");
-
+        virtualChains[vcid].configRecords[key] = value;
         emit VcConfigRecordChanged(vcid, key, value);
+    }
+
+    function getVcConfigRecord(uint256 vcid, string calldata key) external view returns (string memory) {
+        return virtualChains[vcid].configRecords[key];
     }
 
     function addSubscriber(address addr) external onlyOwner {
@@ -72,12 +73,21 @@ contract Subscriptions is ISubscriptions, Ownable{
         });
         virtualChains[vcid] = vc;
 
+        emit VcCreated(vcid, owner);
+
         _extendSubscription(vcid, amount, owner);
         return (vcid, vc.genRef);
     }
 
     function extendSubscription(uint256 vcid, uint256 amount, address payer) external {
         _extendSubscription(vcid, amount, payer);
+    }
+
+    function setVcOwner(uint256 vcid, address owner) external {
+        require(msg.sender == virtualChains[vcid].owner, "only the vc owner can transfer ownership");
+
+        virtualChains[vcid].owner = owner;
+        emit VcOwnerChanged(vcid, msg.sender, owner);
     }
 
     function _extendSubscription(uint256 vcid, uint256 amount, address payer) private {

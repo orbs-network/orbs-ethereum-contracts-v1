@@ -1,6 +1,6 @@
 pragma solidity 0.5.16;
 
-import "./IStakingContract.sol";
+import "../IStakingContract.sol";
 import "./IContractRegistry.sol";
 
 /// @title Rewards contract interface

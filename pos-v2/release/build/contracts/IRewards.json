@@ -1,0 +1,2608 @@
+{
+  "contractName": "IRewards",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "bucketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "added",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "total",
+          "type": "uint256"
+        }
+      ],
+      "name": "FeeAddedToBucket",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "assignee",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "balance",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardAssigned",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "assignRewards",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "getOrbsBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "getExternalTokenBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "to",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "amounts",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "distributeOrbsTokenRewards",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "withdrawExternalTokenRewards",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getLastPayedAt",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "topUpFixedPool",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "topUpProRataPool",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "monthlyRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "fillFeeBuckets",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "addrs",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "stakes",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "committeeChanged",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "setFixedPoolMonthlyRate",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "setProRataPoolMonthlyRate",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "contract IContractRegistry",
+          "name": "_contractRegistry",
+          "type": "address"
+        }
+      ],
+      "name": "setContractRegistry",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"bucketId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"added\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"total\",\"type\":\"uint256\"}],\"name\":\"FeeAddedToBucket\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"assignee\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"RewardAssigned\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[],\"name\":\"assignRewards\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"addrs\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"stakes\",\"type\":\"uint256[]\"}],\"name\":\"committeeChanged\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"to\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"name\":\"distributeOrbsTokenRewards\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"monthlyRate\",\"type\":\"uint256\"}],\"name\":\"fillFeeBuckets\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getExternalTokenBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getLastPayedAt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getOrbsBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"contract IContractRegistry\",\"name\":\"_contractRegistry\",\"type\":\"address\"}],\"name\":\"setContractRegistry\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"}],\"name\":\"setFixedPoolMonthlyRate\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"}],\"name\":\"setProRataPoolMonthlyRate\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"topUpFixedPool\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"topUpProRataPool\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"withdrawExternalTokenRewards\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"assignRewards()\":{\"details\":\"Calculates and assigns validator rewards for the time period since the last reward calculation\"},\"committeeChanged(address[],uint256[])\":{\"details\":\"Called by: elections contract (committee provider) Notifies a change in the committee\"},\"distributeOrbsTokenRewards(address[],uint256[])\":{\"details\":\"Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.\"},\"fillFeeBuckets(uint256,uint256)\":{\"details\":\"Called by: subscriptions contract Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)\"},\"getExternalTokenBalance(address)\":{\"return\":\"Returns the currently unclaimed external token reward balance of the given address.\"},\"getLastPayedAt()\":{\"return\":\"The timestamp of the last reward allocation.\"},\"getOrbsBalance(address)\":{\"return\":\"Returns the currently unclaimed orbs token reward balance of the given address.\"},\"setContractRegistry(address)\":{\"details\":\"Updates the address of the contract registry\"},\"setFixedPoolMonthlyRate(uint256)\":{\"details\":\"Assigns rewards and sets a new monthly rate for the fixed pool.\"},\"setProRataPoolMonthlyRate(uint256)\":{\"details\":\"Assigns rewards and sets a new monthly rate for the pro-rata pool.\"},\"topUpFixedPool(uint256)\":{\"details\":\"Transfers the given amount of external tokens form the sender to this contract an update the pool.\"},\"topUpProRataPool(uint256)\":{\"details\":\"Transfers the given amount of orbs tokens form the sender to this contract an update the pool.\"},\"withdrawExternalTokenRewards()\":{\"details\":\"Transfer all of msg.sender's outstanding external rewards to their account\"}},\"title\":\"Rewards contract interface\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol\":\"IRewards\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IMigratableStakingContract.sol\":{\"keccak256\":\"0x287b1627883cb23828b02b14621cdb50804ca2b7ff4217437f44cd19d1bcdfa7\",\"urls\":[\"bzz-raw://206b9e4f3df0cb04b70be5b7a00d9e72edb0080a68aaed542a1985f6cf2b7cd1\",\"dweb:/ipfs/QmdKE76EErfCDTw5kyYACs7WtCRjdSKgjaxD88Kj51aTPQ\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol\":{\"keccak256\":\"0xa603872af63779e8cfac9af347fbc8b0f9be94b4e4db674f5f0ad73532268f9c\",\"urls\":[\"bzz-raw://9b012d573651413b9d2bf7a023f6b3a84d726cb8bf7a18dc47f9dff83f54115b\",\"dweb:/ipfs/QmWuF98LKpKv88Y1kyXBxRMJgEVs5VTG6ohNGJPaMtKCtH\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol\":{\"keccak256\":\"0x6af72993f6951883689d3e90e92861e4de1779810f9e0ace7212f12af251255c\",\"urls\":[\"bzz-raw://772374609c24adfc2e1e6ca8157e4d9b9b730636ddef7c91353492f0b15738c6\",\"dweb:/ipfs/QmTAZvGKEy4CaA8jQG4LkXDiBeL5CbyWMg6ypTVXCm1ipM\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol\":{\"keccak256\":\"0x9001326e5e4c459d4c3457f6b6829f20f7d933bc37c347d01aa06a21a42824f6\",\"urls\":[\"bzz-raw://a3177b660d4d48255d5a84b4870678a8d8a97b0c3b132a216cb0cceb8afc561a\",\"dweb:/ipfs/QmRKarVQbPECt2kWrpGgwmfTNoC92w4jmcmPXvfoYyiwz5\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.5.16;\n\nimport \"../IStakingContract.sol\";\nimport \"./IContractRegistry.sol\";\n\n/// @title Rewards contract interface\ninterface IRewards {\n    event RewardAssigned(address assignee, uint256 amount, uint256 balance);\n    event FeeAddedToBucket(uint256 bucketId, uint256 added, uint256 total);\n\n    /*\n     *   External methods\n     */\n\n    /// @dev Calculates and assigns validator rewards for the time period since the last reward calculation\n    function assignRewards() external returns (uint256);\n\n    /// @return Returns the currently unclaimed orbs token reward balance of the given address.\n    function getOrbsBalance(address addr) external view returns (uint256);\n\n    /// @return Returns the currently unclaimed external token reward balance of the given address.\n    function getExternalTokenBalance(address addr) external view returns (uint256);\n\n    /// @dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.\n    function distributeOrbsTokenRewards(address[] calldata to, uint256[] calldata amounts) external;\n\n    /// @dev Transfer all of msg.sender's outstanding external rewards to their account\n    function withdrawExternalTokenRewards() external returns (uint256);\n\n    /// @return The timestamp of the last reward allocation.\n    function getLastPayedAt() external view returns (uint256);\n\n    /// @dev Transfers the given amount of external tokens form the sender to this contract an update the pool.\n    function topUpFixedPool(uint256 amount) external;\n\n    /// @dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.\n    function topUpProRataPool(uint256 amount) external;\n\n    /// @dev Called by: subscriptions contract\n    /// Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)\n    function fillFeeBuckets(uint256 amount, uint256 monthlyRate) external;\n\n    /*\n     *   Methods restricted to other Orbs contracts\n     */\n\n    /// @dev Called by: elections contract (committee provider)\n    /// Notifies a change in the committee\n    function committeeChanged(address[] calldata addrs, uint256[] calldata stakes) external /* onlyCommitteeProvider */;\n\n    /*\n    *   Reward-governor methods\n    */\n\n    /// @dev Assigns rewards and sets a new monthly rate for the fixed pool.\n    function setFixedPoolMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;\n\n    /// @dev Assigns rewards and sets a new monthly rate for the pro-rata pool.\n    function setProRataPoolMonthlyRate(uint256 rate) external /* onlyRewardsGovernor */;\n\n    /*\n     * General governance\n     */\n\n    /// @dev Updates the address of the contract registry\n    function setContractRegistry(IContractRegistry _contractRegistry) external /* onlyOwner */;\n\n\n}\n",
+  "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
+  "ast": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
+    "exportedSymbols": {
+      "IRewards": [
+        6178
+      ]
+    },
+    "id": 6179,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6080,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:15"
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
+        "file": "../IStakingContract.sol",
+        "id": 6081,
+        "nodeType": "ImportDirective",
+        "scope": 6179,
+        "sourceUnit": 2576,
+        "src": "25:33:15",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
+        "file": "./IContractRegistry.sol",
+        "id": 6082,
+        "nodeType": "ImportDirective",
+        "scope": 6179,
+        "sourceUnit": 5894,
+        "src": "59:33:15",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title Rewards contract interface",
+        "fullyImplemented": false,
+        "id": 6178,
+        "linearizedBaseContracts": [
+          6178
+        ],
+        "name": "IRewards",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 6090,
+            "name": "RewardAssigned",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6089,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6084,
+                  "indexed": false,
+                  "name": "assignee",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6090,
+                  "src": "178:16:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6083,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "178:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6086,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6090,
+                  "src": "196:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6085,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "196:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6088,
+                  "indexed": false,
+                  "name": "balance",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6090,
+                  "src": "212:15:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6087,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "212:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "177:51:15"
+            },
+            "src": "157:72:15"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 6098,
+            "name": "FeeAddedToBucket",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6097,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6092,
+                  "indexed": false,
+                  "name": "bucketId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6098,
+                  "src": "257:16:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6091,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "257:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6094,
+                  "indexed": false,
+                  "name": "added",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6098,
+                  "src": "275:13:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6093,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "275:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6096,
+                  "indexed": false,
+                  "name": "total",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6098,
+                  "src": "290:13:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6095,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "290:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "256:48:15"
+            },
+            "src": "234:71:15"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Calculates and assigns validator rewards for the time period since the last reward calculation",
+            "id": 6103,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "assignRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6099,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "483:2:15"
+            },
+            "returnParameters": {
+              "id": 6102,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6101,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6103,
+                  "src": "504:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6100,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "504:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "503:9:15"
+            },
+            "scope": 6178,
+            "src": "461:52:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@return Returns the currently unclaimed orbs token reward balance of the given address.",
+            "id": 6110,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getOrbsBalance",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6106,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6105,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6110,
+                  "src": "639:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6104,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "639:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "638:14:15"
+            },
+            "returnParameters": {
+              "id": 6109,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6108,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6110,
+                  "src": "676:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6107,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "676:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "675:9:15"
+            },
+            "scope": 6178,
+            "src": "615:70:15",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@return Returns the currently unclaimed external token reward balance of the given address.",
+            "id": 6117,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getExternalTokenBalance",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6113,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6112,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6117,
+                  "src": "824:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6111,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "824:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "823:14:15"
+            },
+            "returnParameters": {
+              "id": 6116,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6115,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6117,
+                  "src": "861:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6114,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "861:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "860:9:15"
+            },
+            "scope": 6178,
+            "src": "791:79:15",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.",
+            "id": 6126,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "distributeOrbsTokenRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6124,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6120,
+                  "name": "to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6126,
+                  "src": "1045:21:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6118,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1045:7:15",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 6119,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1045:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6123,
+                  "name": "amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6126,
+                  "src": "1068:26:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6121,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1068:7:15",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 6122,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1068:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1044:51:15"
+            },
+            "returnParameters": {
+              "id": 6125,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1104:0:15"
+            },
+            "scope": 6178,
+            "src": "1009:96:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Transfer all of msg.sender's outstanding external rewards to their account",
+            "id": 6131,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawExternalTokenRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6127,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1236:2:15"
+            },
+            "returnParameters": {
+              "id": 6130,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6129,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6131,
+                  "src": "1257:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6128,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1257:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1256:9:15"
+            },
+            "scope": 6178,
+            "src": "1199:67:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@return The timestamp of the last reward allocation.",
+            "id": 6136,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLastPayedAt",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6132,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1356:2:15"
+            },
+            "returnParameters": {
+              "id": 6135,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6134,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6136,
+                  "src": "1382:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6133,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1382:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1381:9:15"
+            },
+            "scope": 6178,
+            "src": "1333:58:15",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Transfers the given amount of external tokens form the sender to this contract an update the pool.",
+            "id": 6141,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "topUpFixedPool",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6139,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6138,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6141,
+                  "src": "1533:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6137,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1533:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1532:16:15"
+            },
+            "returnParameters": {
+              "id": 6140,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1557:0:15"
+            },
+            "scope": 6178,
+            "src": "1509:49:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.",
+            "id": 6146,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "topUpProRataPool",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6144,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6143,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6146,
+                  "src": "1698:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6142,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1698:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1697:16:15"
+            },
+            "returnParameters": {
+              "id": 6145,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1722:0:15"
+            },
+            "scope": 6178,
+            "src": "1672:51:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: subscriptions contract\n Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)",
+            "id": 6153,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "fillFeeBuckets",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6151,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6148,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6153,
+                  "src": "1918:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6147,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1918:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6150,
+                  "name": "monthlyRate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6153,
+                  "src": "1934:19:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6149,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1934:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1917:37:15"
+            },
+            "returnParameters": {
+              "id": 6152,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1963:0:15"
+            },
+            "scope": 6178,
+            "src": "1894:70:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: elections contract (committee provider)\n Notifies a change in the committee",
+            "id": 6162,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "committeeChanged",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6160,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6156,
+                  "name": "addrs",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6162,
+                  "src": "2171:24:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6154,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2171:7:15",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 6155,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2171:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6159,
+                  "name": "stakes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6162,
+                  "src": "2197:25:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6157,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2197:7:15",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 6158,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2197:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2170:53:15"
+            },
+            "returnParameters": {
+              "id": 6161,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2260:0:15"
+            },
+            "scope": 6178,
+            "src": "2145:116:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Assigns rewards and sets a new monthly rate for the fixed pool.",
+            "id": 6167,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setFixedPoolMonthlyRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6165,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6164,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6167,
+                  "src": "2424:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6163,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2424:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2423:14:15"
+            },
+            "returnParameters": {
+              "id": 6166,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2472:0:15"
+            },
+            "scope": 6178,
+            "src": "2391:82:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Assigns rewards and sets a new monthly rate for the pro-rata pool.",
+            "id": 6172,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setProRataPoolMonthlyRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6170,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6169,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6172,
+                  "src": "2594:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6168,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2594:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2593:14:15"
+            },
+            "returnParameters": {
+              "id": 6171,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2642:0:15"
+            },
+            "scope": 6178,
+            "src": "2559:84:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Updates the address of the contract registry",
+            "id": 6177,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setContractRegistry",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6175,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6174,
+                  "name": "_contractRegistry",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6177,
+                  "src": "2778:35:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                    "typeString": "contract IContractRegistry"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 6173,
+                    "name": "IContractRegistry",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5893,
+                    "src": "2778:17:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                      "typeString": "contract IContractRegistry"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2777:37:15"
+            },
+            "returnParameters": {
+              "id": 6176,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2839:0:15"
+            },
+            "scope": 6178,
+            "src": "2749:91:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6179,
+        "src": "132:2712:15"
+      }
+    ],
+    "src": "0:2845:15"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
+    "exportedSymbols": {
+      "IRewards": [
+        6178
+      ]
+    },
+    "id": 6179,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6080,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:15"
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
+        "file": "../IStakingContract.sol",
+        "id": 6081,
+        "nodeType": "ImportDirective",
+        "scope": 6179,
+        "sourceUnit": 2576,
+        "src": "25:33:15",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
+        "file": "./IContractRegistry.sol",
+        "id": 6082,
+        "nodeType": "ImportDirective",
+        "scope": 6179,
+        "sourceUnit": 5894,
+        "src": "59:33:15",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title Rewards contract interface",
+        "fullyImplemented": false,
+        "id": 6178,
+        "linearizedBaseContracts": [
+          6178
+        ],
+        "name": "IRewards",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 6090,
+            "name": "RewardAssigned",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6089,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6084,
+                  "indexed": false,
+                  "name": "assignee",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6090,
+                  "src": "178:16:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6083,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "178:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6086,
+                  "indexed": false,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6090,
+                  "src": "196:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6085,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "196:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6088,
+                  "indexed": false,
+                  "name": "balance",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6090,
+                  "src": "212:15:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6087,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "212:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "177:51:15"
+            },
+            "src": "157:72:15"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 6098,
+            "name": "FeeAddedToBucket",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6097,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6092,
+                  "indexed": false,
+                  "name": "bucketId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6098,
+                  "src": "257:16:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6091,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "257:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6094,
+                  "indexed": false,
+                  "name": "added",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6098,
+                  "src": "275:13:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6093,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "275:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6096,
+                  "indexed": false,
+                  "name": "total",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6098,
+                  "src": "290:13:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6095,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "290:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "256:48:15"
+            },
+            "src": "234:71:15"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Calculates and assigns validator rewards for the time period since the last reward calculation",
+            "id": 6103,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "assignRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6099,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "483:2:15"
+            },
+            "returnParameters": {
+              "id": 6102,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6101,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6103,
+                  "src": "504:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6100,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "504:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "503:9:15"
+            },
+            "scope": 6178,
+            "src": "461:52:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@return Returns the currently unclaimed orbs token reward balance of the given address.",
+            "id": 6110,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getOrbsBalance",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6106,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6105,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6110,
+                  "src": "639:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6104,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "639:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "638:14:15"
+            },
+            "returnParameters": {
+              "id": 6109,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6108,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6110,
+                  "src": "676:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6107,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "676:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "675:9:15"
+            },
+            "scope": 6178,
+            "src": "615:70:15",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@return Returns the currently unclaimed external token reward balance of the given address.",
+            "id": 6117,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getExternalTokenBalance",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6113,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6112,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6117,
+                  "src": "824:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6111,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "824:7:15",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "823:14:15"
+            },
+            "returnParameters": {
+              "id": 6116,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6115,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6117,
+                  "src": "861:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6114,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "861:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "860:9:15"
+            },
+            "scope": 6178,
+            "src": "791:79:15",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.",
+            "id": 6126,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "distributeOrbsTokenRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6124,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6120,
+                  "name": "to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6126,
+                  "src": "1045:21:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6118,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1045:7:15",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 6119,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1045:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6123,
+                  "name": "amounts",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6126,
+                  "src": "1068:26:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6121,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1068:7:15",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 6122,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1068:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1044:51:15"
+            },
+            "returnParameters": {
+              "id": 6125,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1104:0:15"
+            },
+            "scope": 6178,
+            "src": "1009:96:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Transfer all of msg.sender's outstanding external rewards to their account",
+            "id": 6131,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "withdrawExternalTokenRewards",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6127,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1236:2:15"
+            },
+            "returnParameters": {
+              "id": 6130,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6129,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6131,
+                  "src": "1257:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6128,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1257:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1256:9:15"
+            },
+            "scope": 6178,
+            "src": "1199:67:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@return The timestamp of the last reward allocation.",
+            "id": 6136,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLastPayedAt",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6132,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1356:2:15"
+            },
+            "returnParameters": {
+              "id": 6135,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6134,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6136,
+                  "src": "1382:7:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6133,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1382:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1381:9:15"
+            },
+            "scope": 6178,
+            "src": "1333:58:15",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Transfers the given amount of external tokens form the sender to this contract an update the pool.",
+            "id": 6141,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "topUpFixedPool",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6139,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6138,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6141,
+                  "src": "1533:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6137,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1533:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1532:16:15"
+            },
+            "returnParameters": {
+              "id": 6140,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1557:0:15"
+            },
+            "scope": 6178,
+            "src": "1509:49:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.",
+            "id": 6146,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "topUpProRataPool",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6144,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6143,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6146,
+                  "src": "1698:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6142,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1698:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1697:16:15"
+            },
+            "returnParameters": {
+              "id": 6145,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1722:0:15"
+            },
+            "scope": 6178,
+            "src": "1672:51:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: subscriptions contract\n Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)",
+            "id": 6153,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "fillFeeBuckets",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6151,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6148,
+                  "name": "amount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6153,
+                  "src": "1918:14:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6147,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1918:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6150,
+                  "name": "monthlyRate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6153,
+                  "src": "1934:19:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6149,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1934:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1917:37:15"
+            },
+            "returnParameters": {
+              "id": 6152,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1963:0:15"
+            },
+            "scope": 6178,
+            "src": "1894:70:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Called by: elections contract (committee provider)\n Notifies a change in the committee",
+            "id": 6162,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "committeeChanged",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6160,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6156,
+                  "name": "addrs",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6162,
+                  "src": "2171:24:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                    "typeString": "address[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6154,
+                      "name": "address",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2171:7:15",
+                      "stateMutability": "nonpayable",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "id": 6155,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2171:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                      "typeString": "address[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6159,
+                  "name": "stakes",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6162,
+                  "src": "2197:25:15",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 6157,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "2197:7:15",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 6158,
+                    "length": null,
+                    "nodeType": "ArrayTypeName",
+                    "src": "2197:9:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2170:53:15"
+            },
+            "returnParameters": {
+              "id": 6161,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2260:0:15"
+            },
+            "scope": 6178,
+            "src": "2145:116:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Assigns rewards and sets a new monthly rate for the fixed pool.",
+            "id": 6167,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setFixedPoolMonthlyRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6165,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6164,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6167,
+                  "src": "2424:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6163,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2424:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2423:14:15"
+            },
+            "returnParameters": {
+              "id": 6166,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2472:0:15"
+            },
+            "scope": 6178,
+            "src": "2391:82:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Assigns rewards and sets a new monthly rate for the pro-rata pool.",
+            "id": 6172,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setProRataPoolMonthlyRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6170,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6169,
+                  "name": "rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6172,
+                  "src": "2594:12:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6168,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2594:7:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2593:14:15"
+            },
+            "returnParameters": {
+              "id": 6171,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2642:0:15"
+            },
+            "scope": 6178,
+            "src": "2559:84:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@dev Updates the address of the contract registry",
+            "id": 6177,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setContractRegistry",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6175,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6174,
+                  "name": "_contractRegistry",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6177,
+                  "src": "2778:35:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                    "typeString": "contract IContractRegistry"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 6173,
+                    "name": "IContractRegistry",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5893,
+                    "src": "2778:17:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                      "typeString": "contract IContractRegistry"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2777:37:15"
+            },
+            "returnParameters": {
+              "id": 6176,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2839:0:15"
+            },
+            "scope": 6178,
+            "src": "2749:91:15",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6179,
+        "src": "132:2712:15"
+      }
+    ],
+    "src": "0:2845:15"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.23",
+  "updatedAt": "2020-03-11T14:45:21.669Z",
+  "devdoc": {
+    "methods": {
+      "assignRewards()": {
+        "details": "Calculates and assigns validator rewards for the time period since the last reward calculation"
+      },
+      "committeeChanged(address[],uint256[])": {
+        "details": "Called by: elections contract (committee provider) Notifies a change in the committee"
+      },
+      "distributeOrbsTokenRewards(address[],uint256[])": {
+        "details": "Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract."
+      },
+      "fillFeeBuckets(uint256,uint256)": {
+        "details": "Called by: subscriptions contract Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)"
+      },
+      "getExternalTokenBalance(address)": {
+        "return": "Returns the currently unclaimed external token reward balance of the given address."
+      },
+      "getLastPayedAt()": {
+        "return": "The timestamp of the last reward allocation."
+      },
+      "getOrbsBalance(address)": {
+        "return": "Returns the currently unclaimed orbs token reward balance of the given address."
+      },
+      "setContractRegistry(address)": {
+        "details": "Updates the address of the contract registry"
+      },
+      "setFixedPoolMonthlyRate(uint256)": {
+        "details": "Assigns rewards and sets a new monthly rate for the fixed pool."
+      },
+      "setProRataPoolMonthlyRate(uint256)": {
+        "details": "Assigns rewards and sets a new monthly rate for the pro-rata pool."
+      },
+      "topUpFixedPool(uint256)": {
+        "details": "Transfers the given amount of external tokens form the sender to this contract an update the pool."
+      },
+      "topUpProRataPool(uint256)": {
+        "details": "Transfers the given amount of orbs tokens form the sender to this contract an update the pool."
+      },
+      "withdrawExternalTokenRewards()": {
+        "details": "Transfer all of msg.sender's outstanding external rewards to their account"
+      }
+    },
+    "title": "Rewards contract interface"
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
