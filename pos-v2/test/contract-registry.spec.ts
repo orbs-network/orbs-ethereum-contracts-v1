@@ -1,16 +1,15 @@
-import Web3 from "web3";
-declare const web3: Web3;
+import 'mocha';
 
 import BN from "bn.js";
-import {Driver, expectRejected, ZERO_ADDR} from "./driver";
+import {Driver, expectRejected} from "./driver";
 import chai from "chai";
-import {subscriptionChangedEvents} from "./event-parsing";
+
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
 const expect = chai.expect;
 
-contract('contract-registry-high-level-flows', async () => {
+describe('contract-registry-high-level-flows', async () => {
 
   it('registers contracts only by governor and emits events', async () => {
     const d = await Driver.new();

@@ -1,0 +1,21 @@
+{
+  "name": "pos-v2-consumer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "ts-node index.ts",
+    "start-ganache": "mkdir -p _out && ganache-cli -p 7545 -i 5777 -a 100 -m  \"vanish junk genuine web seminar cook absurd royal ability series taste method identify elevator liquid\" > _out/ganache.log"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bn.js": "^5.1.1",
+    "pos-v2": "file:../pos-v2"
+  },
+  "devDependencies": {
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3",
+    "ganache-cli": "^6.9.1"
+  }
+}

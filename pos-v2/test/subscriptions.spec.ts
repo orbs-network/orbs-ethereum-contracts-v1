@@ -1,17 +1,17 @@
-import Web3 from "web3";
-declare const web3: Web3;
+import 'mocha';
 
 import BN from "bn.js";
 import {Driver, expectRejected, ZERO_ADDR} from "./driver";
 import chai from "chai";
 import {subscriptionChangedEvents} from "./event-parsing";
+import {web3} from "../eth";
 import {bn} from "./helpers";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
 const expect = chai.expect;
 
-contract('subscriptions-high-level-flows', async () => {
+describe('subscriptions-high-level-flows', async () => {
 
   it('registers and pays for a VC', async () => {
     const d = await Driver.new();
@@ -30,7 +30,7 @@ contract('subscriptions-high-level-flows', async () => {
     expect(r).to.have.subscriptionChangedEvent();
     const firstSubsc = subscriptionChangedEvents(r).pop()!;
 
-    const blockNumber = new BN(r.receipt.blockNumber);
+    const blockNumber = new BN(r.blockNumber);
     const blockTimestamp = new BN((await web3.eth.getBlock(blockNumber)).timestamp);
     const expectedGenRef = blockNumber.add(new BN('300'));
     const secondsInMonth = new BN(30 * 24 * 60 * 60);
@@ -76,7 +76,7 @@ contract('subscriptions-high-level-flows', async () => {
 
   it('registers subsciber only by owner', async () => {
     const d = await Driver.new();
-    const subscriber = await artifacts.require('MonthlySubscriptionPlan').new(d.erc20.address, 'tier', 1);
+    const subscriber = await d.newSubscriber('tier', 1);
 
     await expectRejected(d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsNonOwner}), "Non-owner should not be able to add a subscriber");
     await d.subscriptions.addSubscriber(subscriber.address, {from: d.contractsOwner});

@@ -11,21 +11,16 @@ jobs:
       - store_test_results:
           path: pos-v2/_reports
 
+  posv2-testkit-consumer-e2e:
+    docker:
+      - image: aviramstern/aviram-orbs:ubuntu-go-node
+    steps:
+      - checkout
+      - run: cd pos-v2-consumer && ./test.sh
+
 workflows:
   version: 2
-  posv2:
+  build:
     jobs:
       - posv2-contracts-e2e
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 23 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      # tests that integrate with orbs-network-go
-      - voting-orbs-tests
-      - voting-e2e
-      - subscription-e2e
+      - posv2-testkit-consumer-e2e
