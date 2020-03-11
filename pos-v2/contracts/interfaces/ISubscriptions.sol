@@ -8,6 +8,8 @@ interface ISubscriptions {
     event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);
     event VcConfigRecordChanged(uint256 vcid, string key, string value);
     event SubscriberAdded(address subscriber);
+    event VcCreated(uint256 vcid, address owner);
+    event VcOwnerChanged(uint256 vcid, address previousOwner, address newOwner);
 
     /*
      *   Methods restricted to other Orbs contracts
@@ -23,6 +25,9 @@ interface ISubscriptions {
 
     /// @dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.
     function setVcConfigRecord(uint256 vcid, string calldata key, string calldata value) external;
+
+    /// @dev Transfers VC ownership to a new owner (can only be called by the current owner)
+    function setVcOwner(uint256 vcid, address owner) external /* onlyVcOwner */;
 
     /*
      *   Governance methods

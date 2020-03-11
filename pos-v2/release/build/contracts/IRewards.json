@@ -285,14 +285,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
     "exportedSymbols": {
       "IRewards": [
-        5896
+        5934
       ]
     },
-    "id": 5897,
+    "id": 5935,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5798,
+        "id": 5836,
         "literals": [
           "solidity",
           "0.5",
@@ -304,9 +304,9 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
         "file": "../IStakingContract.sol",
-        "id": 5799,
+        "id": 5837,
         "nodeType": "ImportDirective",
-        "scope": 5897,
+        "scope": 5935,
         "sourceUnit": 2576,
         "src": "25:33:13",
         "symbolAliases": [],
@@ -315,10 +315,10 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
         "file": "./IContractRegistry.sol",
-        "id": 5800,
+        "id": 5838,
         "nodeType": "ImportDirective",
-        "scope": 5897,
-        "sourceUnit": 5644,
+        "scope": 5935,
+        "sourceUnit": 5682,
         "src": "59:33:13",
         "symbolAliases": [],
         "unitAlias": ""
@@ -329,9 +329,9 @@
         "contractKind": "interface",
         "documentation": "@title Rewards contract interface",
         "fullyImplemented": false,
-        "id": 5896,
+        "id": 5934,
         "linearizedBaseContracts": [
-          5896
+          5934
         ],
         "name": "IRewards",
         "nodeType": "ContractDefinition",
@@ -339,20 +339,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5808,
+            "id": 5846,
             "name": "RewardAssigned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5807,
+              "id": 5845,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5802,
+                  "id": 5840,
                   "indexed": false,
                   "name": "assignee",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5808,
+                  "scope": 5846,
                   "src": "178:16:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -361,7 +361,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5801,
+                    "id": 5839,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "178:7:13",
@@ -376,11 +376,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5804,
+                  "id": 5842,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5808,
+                  "scope": 5846,
                   "src": "196:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -389,7 +389,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5803,
+                    "id": 5841,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "196:7:13",
@@ -403,11 +403,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5806,
+                  "id": 5844,
                   "indexed": false,
                   "name": "balance",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5808,
+                  "scope": 5846,
                   "src": "212:15:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -416,7 +416,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5805,
+                    "id": 5843,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "212:7:13",
@@ -436,20 +436,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5816,
+            "id": 5854,
             "name": "FeeAddedToBucket",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5815,
+              "id": 5853,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5810,
+                  "id": 5848,
                   "indexed": false,
                   "name": "bucketId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5816,
+                  "scope": 5854,
                   "src": "257:16:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -458,7 +458,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5809,
+                    "id": 5847,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "257:7:13",
@@ -472,11 +472,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5812,
+                  "id": 5850,
                   "indexed": false,
                   "name": "added",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5816,
+                  "scope": 5854,
                   "src": "275:13:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -485,7 +485,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5811,
+                    "id": 5849,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "275:7:13",
@@ -499,11 +499,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5814,
+                  "id": 5852,
                   "indexed": false,
                   "name": "total",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5816,
+                  "scope": 5854,
                   "src": "290:13:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -512,7 +512,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5813,
+                    "id": 5851,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "290:7:13",
@@ -532,28 +532,28 @@
           {
             "body": null,
             "documentation": "@dev Calculates and assigns validator rewards for the time period since the last reward calculation",
-            "id": 5821,
+            "id": 5859,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "assignRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5817,
+              "id": 5855,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "483:2:13"
             },
             "returnParameters": {
-              "id": 5820,
+              "id": 5858,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5819,
+                  "id": 5857,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5821,
+                  "scope": 5859,
                   "src": "504:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -562,7 +562,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5818,
+                    "id": 5856,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "504:7:13",
@@ -577,7 +577,7 @@
               ],
               "src": "503:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "461:52:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -586,22 +586,22 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed orbs token reward balance of the given address.",
-            "id": 5828,
+            "id": 5866,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getOrbsBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5824,
+              "id": 5862,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5823,
+                  "id": 5861,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5828,
+                  "scope": 5866,
                   "src": "639:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -610,7 +610,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5822,
+                    "id": 5860,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "639:7:13",
@@ -627,15 +627,15 @@
               "src": "638:14:13"
             },
             "returnParameters": {
-              "id": 5827,
+              "id": 5865,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5826,
+                  "id": 5864,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5828,
+                  "scope": 5866,
                   "src": "676:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -644,7 +644,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5825,
+                    "id": 5863,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "676:7:13",
@@ -659,7 +659,7 @@
               ],
               "src": "675:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "615:70:13",
             "stateMutability": "view",
             "superFunction": null,
@@ -668,22 +668,22 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed external token reward balance of the given address.",
-            "id": 5835,
+            "id": 5873,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getExternalTokenBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5831,
+              "id": 5869,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5830,
+                  "id": 5868,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5835,
+                  "scope": 5873,
                   "src": "824:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -692,7 +692,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5829,
+                    "id": 5867,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "824:7:13",
@@ -709,15 +709,15 @@
               "src": "823:14:13"
             },
             "returnParameters": {
-              "id": 5834,
+              "id": 5872,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5833,
+                  "id": 5871,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5835,
+                  "scope": 5873,
                   "src": "861:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -726,7 +726,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5832,
+                    "id": 5870,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "861:7:13",
@@ -741,7 +741,7 @@
               ],
               "src": "860:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "791:79:13",
             "stateMutability": "view",
             "superFunction": null,
@@ -750,22 +750,22 @@
           {
             "body": null,
             "documentation": "@dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.",
-            "id": 5844,
+            "id": 5882,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "distributeOrbsTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5842,
+              "id": 5880,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5838,
+                  "id": 5876,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5844,
+                  "scope": 5882,
                   "src": "1045:21:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -775,7 +775,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5836,
+                      "id": 5874,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1045:7:13",
@@ -785,7 +785,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5837,
+                    "id": 5875,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1045:9:13",
@@ -799,10 +799,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5841,
+                  "id": 5879,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5844,
+                  "scope": 5882,
                   "src": "1068:26:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -812,7 +812,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5839,
+                      "id": 5877,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "1068:7:13",
@@ -821,7 +821,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5840,
+                    "id": 5878,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1068:9:13",
@@ -837,12 +837,12 @@
               "src": "1044:51:13"
             },
             "returnParameters": {
-              "id": 5843,
+              "id": 5881,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1104:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1009:96:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -851,28 +851,28 @@
           {
             "body": null,
             "documentation": "@dev Transfer all of msg.sender's outstanding external rewards to their account",
-            "id": 5849,
+            "id": 5887,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "withdrawExternalTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5845,
+              "id": 5883,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1236:2:13"
             },
             "returnParameters": {
-              "id": 5848,
+              "id": 5886,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5847,
+                  "id": 5885,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5849,
+                  "scope": 5887,
                   "src": "1257:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -881,7 +881,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5846,
+                    "id": 5884,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1257:7:13",
@@ -896,7 +896,7 @@
               ],
               "src": "1256:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1199:67:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -905,28 +905,28 @@
           {
             "body": null,
             "documentation": "@return The timestamp of the last reward allocation.",
-            "id": 5854,
+            "id": 5892,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getLastPayedAt",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5850,
+              "id": 5888,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1356:2:13"
             },
             "returnParameters": {
-              "id": 5853,
+              "id": 5891,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5852,
+                  "id": 5890,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
+                  "scope": 5892,
                   "src": "1382:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -935,7 +935,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5851,
+                    "id": 5889,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1382:7:13",
@@ -950,7 +950,7 @@
               ],
               "src": "1381:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1333:58:13",
             "stateMutability": "view",
             "superFunction": null,
@@ -959,22 +959,22 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of external tokens form the sender to this contract an update the pool.",
-            "id": 5859,
+            "id": 5897,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpFixedPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5857,
+              "id": 5895,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5856,
+                  "id": 5894,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5859,
+                  "scope": 5897,
                   "src": "1533:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -983,7 +983,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5855,
+                    "id": 5893,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1533:7:13",
@@ -999,12 +999,12 @@
               "src": "1532:16:13"
             },
             "returnParameters": {
-              "id": 5858,
+              "id": 5896,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1557:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1509:49:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1013,22 +1013,22 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.",
-            "id": 5864,
+            "id": 5902,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpProRataPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5862,
+              "id": 5900,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5861,
+                  "id": 5899,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5864,
+                  "scope": 5902,
                   "src": "1698:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1037,7 +1037,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5860,
+                    "id": 5898,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1698:7:13",
@@ -1053,12 +1053,12 @@
               "src": "1697:16:13"
             },
             "returnParameters": {
-              "id": 5863,
+              "id": 5901,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1722:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1672:51:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1067,22 +1067,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: subscriptions contract\n Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)",
-            "id": 5871,
+            "id": 5909,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "fillFeeBuckets",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5869,
+              "id": 5907,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5866,
+                  "id": 5904,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5871,
+                  "scope": 5909,
                   "src": "1918:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1091,7 +1091,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5865,
+                    "id": 5903,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1918:7:13",
@@ -1105,10 +1105,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5868,
+                  "id": 5906,
                   "name": "monthlyRate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5871,
+                  "scope": 5909,
                   "src": "1934:19:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1117,7 +1117,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5867,
+                    "id": 5905,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1934:7:13",
@@ -1133,12 +1133,12 @@
               "src": "1917:37:13"
             },
             "returnParameters": {
-              "id": 5870,
+              "id": 5908,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1963:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1894:70:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1147,22 +1147,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: elections contract (committee provider)\n Notifies a change in the committee",
-            "id": 5880,
+            "id": 5918,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "committeeChanged",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5878,
+              "id": 5916,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5874,
+                  "id": 5912,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5880,
+                  "scope": 5918,
                   "src": "2171:24:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1172,7 +1172,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5872,
+                      "id": 5910,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "2171:7:13",
@@ -1182,7 +1182,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5873,
+                    "id": 5911,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2171:9:13",
@@ -1196,10 +1196,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5877,
+                  "id": 5915,
                   "name": "stakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5880,
+                  "scope": 5918,
                   "src": "2197:25:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1209,7 +1209,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5875,
+                      "id": 5913,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "2197:7:13",
@@ -1218,7 +1218,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5876,
+                    "id": 5914,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2197:9:13",
@@ -1234,12 +1234,12 @@
               "src": "2170:53:13"
             },
             "returnParameters": {
-              "id": 5879,
+              "id": 5917,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2260:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2145:116:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1248,22 +1248,22 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the fixed pool.",
-            "id": 5885,
+            "id": 5923,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setFixedPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5883,
+              "id": 5921,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5882,
+                  "id": 5920,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5885,
+                  "scope": 5923,
                   "src": "2424:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1272,7 +1272,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5881,
+                    "id": 5919,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2424:7:13",
@@ -1288,12 +1288,12 @@
               "src": "2423:14:13"
             },
             "returnParameters": {
-              "id": 5884,
+              "id": 5922,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2472:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2391:82:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1302,22 +1302,22 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the pro-rata pool.",
-            "id": 5890,
+            "id": 5928,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProRataPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5888,
+              "id": 5926,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5887,
+                  "id": 5925,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5890,
+                  "scope": 5928,
                   "src": "2594:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1326,7 +1326,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5886,
+                    "id": 5924,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2594:7:13",
@@ -1342,12 +1342,12 @@
               "src": "2593:14:13"
             },
             "returnParameters": {
-              "id": 5889,
+              "id": 5927,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2642:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2559:84:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1356,38 +1356,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address of the contract registry",
-            "id": 5895,
+            "id": 5933,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5893,
+              "id": 5931,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5892,
+                  "id": 5930,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5895,
+                  "scope": 5933,
                   "src": "2778:35:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5891,
+                    "id": 5929,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5643,
+                    "referencedDeclaration": 5681,
                     "src": "2778:17:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -1398,19 +1398,19 @@
               "src": "2777:37:13"
             },
             "returnParameters": {
-              "id": 5894,
+              "id": 5932,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2839:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2749:91:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5897,
+        "scope": 5935,
         "src": "132:2712:13"
       }
     ],
@@ -1420,14 +1420,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
     "exportedSymbols": {
       "IRewards": [
-        5896
+        5934
       ]
     },
-    "id": 5897,
+    "id": 5935,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5798,
+        "id": 5836,
         "literals": [
           "solidity",
           "0.5",
@@ -1439,9 +1439,9 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
         "file": "../IStakingContract.sol",
-        "id": 5799,
+        "id": 5837,
         "nodeType": "ImportDirective",
-        "scope": 5897,
+        "scope": 5935,
         "sourceUnit": 2576,
         "src": "25:33:13",
         "symbolAliases": [],
@@ -1450,10 +1450,10 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
         "file": "./IContractRegistry.sol",
-        "id": 5800,
+        "id": 5838,
         "nodeType": "ImportDirective",
-        "scope": 5897,
-        "sourceUnit": 5644,
+        "scope": 5935,
+        "sourceUnit": 5682,
         "src": "59:33:13",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1464,9 +1464,9 @@
         "contractKind": "interface",
         "documentation": "@title Rewards contract interface",
         "fullyImplemented": false,
-        "id": 5896,
+        "id": 5934,
         "linearizedBaseContracts": [
-          5896
+          5934
         ],
         "name": "IRewards",
         "nodeType": "ContractDefinition",
@@ -1474,20 +1474,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5808,
+            "id": 5846,
             "name": "RewardAssigned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5807,
+              "id": 5845,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5802,
+                  "id": 5840,
                   "indexed": false,
                   "name": "assignee",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5808,
+                  "scope": 5846,
                   "src": "178:16:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1496,7 +1496,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5801,
+                    "id": 5839,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "178:7:13",
@@ -1511,11 +1511,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5804,
+                  "id": 5842,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5808,
+                  "scope": 5846,
                   "src": "196:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1524,7 +1524,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5803,
+                    "id": 5841,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "196:7:13",
@@ -1538,11 +1538,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5806,
+                  "id": 5844,
                   "indexed": false,
                   "name": "balance",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5808,
+                  "scope": 5846,
                   "src": "212:15:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1551,7 +1551,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5805,
+                    "id": 5843,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "212:7:13",
@@ -1571,20 +1571,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5816,
+            "id": 5854,
             "name": "FeeAddedToBucket",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5815,
+              "id": 5853,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5810,
+                  "id": 5848,
                   "indexed": false,
                   "name": "bucketId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5816,
+                  "scope": 5854,
                   "src": "257:16:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1593,7 +1593,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5809,
+                    "id": 5847,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "257:7:13",
@@ -1607,11 +1607,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5812,
+                  "id": 5850,
                   "indexed": false,
                   "name": "added",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5816,
+                  "scope": 5854,
                   "src": "275:13:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1620,7 +1620,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5811,
+                    "id": 5849,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "275:7:13",
@@ -1634,11 +1634,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5814,
+                  "id": 5852,
                   "indexed": false,
                   "name": "total",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5816,
+                  "scope": 5854,
                   "src": "290:13:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1647,7 +1647,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5813,
+                    "id": 5851,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "290:7:13",
@@ -1667,28 +1667,28 @@
           {
             "body": null,
             "documentation": "@dev Calculates and assigns validator rewards for the time period since the last reward calculation",
-            "id": 5821,
+            "id": 5859,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "assignRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5817,
+              "id": 5855,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "483:2:13"
             },
             "returnParameters": {
-              "id": 5820,
+              "id": 5858,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5819,
+                  "id": 5857,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5821,
+                  "scope": 5859,
                   "src": "504:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1697,7 +1697,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5818,
+                    "id": 5856,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "504:7:13",
@@ -1712,7 +1712,7 @@
               ],
               "src": "503:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "461:52:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1721,22 +1721,22 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed orbs token reward balance of the given address.",
-            "id": 5828,
+            "id": 5866,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getOrbsBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5824,
+              "id": 5862,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5823,
+                  "id": 5861,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5828,
+                  "scope": 5866,
                   "src": "639:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1745,7 +1745,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5822,
+                    "id": 5860,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "639:7:13",
@@ -1762,15 +1762,15 @@
               "src": "638:14:13"
             },
             "returnParameters": {
-              "id": 5827,
+              "id": 5865,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5826,
+                  "id": 5864,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5828,
+                  "scope": 5866,
                   "src": "676:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1779,7 +1779,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5825,
+                    "id": 5863,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "676:7:13",
@@ -1794,7 +1794,7 @@
               ],
               "src": "675:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "615:70:13",
             "stateMutability": "view",
             "superFunction": null,
@@ -1803,22 +1803,22 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed external token reward balance of the given address.",
-            "id": 5835,
+            "id": 5873,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getExternalTokenBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5831,
+              "id": 5869,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5830,
+                  "id": 5868,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5835,
+                  "scope": 5873,
                   "src": "824:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1827,7 +1827,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5829,
+                    "id": 5867,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "824:7:13",
@@ -1844,15 +1844,15 @@
               "src": "823:14:13"
             },
             "returnParameters": {
-              "id": 5834,
+              "id": 5872,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5833,
+                  "id": 5871,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5835,
+                  "scope": 5873,
                   "src": "861:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1861,7 +1861,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5832,
+                    "id": 5870,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "861:7:13",
@@ -1876,7 +1876,7 @@
               ],
               "src": "860:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "791:79:13",
             "stateMutability": "view",
             "superFunction": null,
@@ -1885,22 +1885,22 @@
           {
             "body": null,
             "documentation": "@dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.",
-            "id": 5844,
+            "id": 5882,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "distributeOrbsTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5842,
+              "id": 5880,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5838,
+                  "id": 5876,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5844,
+                  "scope": 5882,
                   "src": "1045:21:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1910,7 +1910,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5836,
+                      "id": 5874,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1045:7:13",
@@ -1920,7 +1920,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5837,
+                    "id": 5875,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1045:9:13",
@@ -1934,10 +1934,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5841,
+                  "id": 5879,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5844,
+                  "scope": 5882,
                   "src": "1068:26:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1947,7 +1947,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5839,
+                      "id": 5877,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "1068:7:13",
@@ -1956,7 +1956,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5840,
+                    "id": 5878,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1068:9:13",
@@ -1972,12 +1972,12 @@
               "src": "1044:51:13"
             },
             "returnParameters": {
-              "id": 5843,
+              "id": 5881,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1104:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1009:96:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1986,28 +1986,28 @@
           {
             "body": null,
             "documentation": "@dev Transfer all of msg.sender's outstanding external rewards to their account",
-            "id": 5849,
+            "id": 5887,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "withdrawExternalTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5845,
+              "id": 5883,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1236:2:13"
             },
             "returnParameters": {
-              "id": 5848,
+              "id": 5886,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5847,
+                  "id": 5885,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5849,
+                  "scope": 5887,
                   "src": "1257:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2016,7 +2016,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5846,
+                    "id": 5884,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1257:7:13",
@@ -2031,7 +2031,7 @@
               ],
               "src": "1256:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1199:67:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2040,28 +2040,28 @@
           {
             "body": null,
             "documentation": "@return The timestamp of the last reward allocation.",
-            "id": 5854,
+            "id": 5892,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getLastPayedAt",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5850,
+              "id": 5888,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1356:2:13"
             },
             "returnParameters": {
-              "id": 5853,
+              "id": 5891,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5852,
+                  "id": 5890,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
+                  "scope": 5892,
                   "src": "1382:7:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2070,7 +2070,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5851,
+                    "id": 5889,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1382:7:13",
@@ -2085,7 +2085,7 @@
               ],
               "src": "1381:9:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1333:58:13",
             "stateMutability": "view",
             "superFunction": null,
@@ -2094,22 +2094,22 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of external tokens form the sender to this contract an update the pool.",
-            "id": 5859,
+            "id": 5897,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpFixedPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5857,
+              "id": 5895,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5856,
+                  "id": 5894,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5859,
+                  "scope": 5897,
                   "src": "1533:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2118,7 +2118,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5855,
+                    "id": 5893,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1533:7:13",
@@ -2134,12 +2134,12 @@
               "src": "1532:16:13"
             },
             "returnParameters": {
-              "id": 5858,
+              "id": 5896,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1557:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1509:49:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2148,22 +2148,22 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.",
-            "id": 5864,
+            "id": 5902,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpProRataPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5862,
+              "id": 5900,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5861,
+                  "id": 5899,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5864,
+                  "scope": 5902,
                   "src": "1698:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2172,7 +2172,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5860,
+                    "id": 5898,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1698:7:13",
@@ -2188,12 +2188,12 @@
               "src": "1697:16:13"
             },
             "returnParameters": {
-              "id": 5863,
+              "id": 5901,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1722:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1672:51:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2202,22 +2202,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: subscriptions contract\n Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)",
-            "id": 5871,
+            "id": 5909,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "fillFeeBuckets",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5869,
+              "id": 5907,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5866,
+                  "id": 5904,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5871,
+                  "scope": 5909,
                   "src": "1918:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2226,7 +2226,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5865,
+                    "id": 5903,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1918:7:13",
@@ -2240,10 +2240,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5868,
+                  "id": 5906,
                   "name": "monthlyRate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5871,
+                  "scope": 5909,
                   "src": "1934:19:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2252,7 +2252,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5867,
+                    "id": 5905,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1934:7:13",
@@ -2268,12 +2268,12 @@
               "src": "1917:37:13"
             },
             "returnParameters": {
-              "id": 5870,
+              "id": 5908,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1963:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "1894:70:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2282,22 +2282,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: elections contract (committee provider)\n Notifies a change in the committee",
-            "id": 5880,
+            "id": 5918,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "committeeChanged",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5878,
+              "id": 5916,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5874,
+                  "id": 5912,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5880,
+                  "scope": 5918,
                   "src": "2171:24:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -2307,7 +2307,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5872,
+                      "id": 5910,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "2171:7:13",
@@ -2317,7 +2317,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5873,
+                    "id": 5911,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2171:9:13",
@@ -2331,10 +2331,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5877,
+                  "id": 5915,
                   "name": "stakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5880,
+                  "scope": 5918,
                   "src": "2197:25:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -2344,7 +2344,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5875,
+                      "id": 5913,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "2197:7:13",
@@ -2353,7 +2353,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5876,
+                    "id": 5914,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2197:9:13",
@@ -2369,12 +2369,12 @@
               "src": "2170:53:13"
             },
             "returnParameters": {
-              "id": 5879,
+              "id": 5917,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2260:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2145:116:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2383,22 +2383,22 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the fixed pool.",
-            "id": 5885,
+            "id": 5923,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setFixedPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5883,
+              "id": 5921,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5882,
+                  "id": 5920,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5885,
+                  "scope": 5923,
                   "src": "2424:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2407,7 +2407,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5881,
+                    "id": 5919,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2424:7:13",
@@ -2423,12 +2423,12 @@
               "src": "2423:14:13"
             },
             "returnParameters": {
-              "id": 5884,
+              "id": 5922,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2472:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2391:82:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2437,22 +2437,22 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the pro-rata pool.",
-            "id": 5890,
+            "id": 5928,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProRataPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5888,
+              "id": 5926,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5887,
+                  "id": 5925,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5890,
+                  "scope": 5928,
                   "src": "2594:12:13",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2461,7 +2461,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5886,
+                    "id": 5924,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2594:7:13",
@@ -2477,12 +2477,12 @@
               "src": "2593:14:13"
             },
             "returnParameters": {
-              "id": 5889,
+              "id": 5927,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2642:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2559:84:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2491,38 +2491,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address of the contract registry",
-            "id": 5895,
+            "id": 5933,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5893,
+              "id": 5931,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5892,
+                  "id": 5930,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5895,
+                  "scope": 5933,
                   "src": "2778:35:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5891,
+                    "id": 5929,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5643,
+                    "referencedDeclaration": 5681,
                     "src": "2778:17:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -2533,19 +2533,19 @@
               "src": "2777:37:13"
             },
             "returnParameters": {
-              "id": 5894,
+              "id": 5932,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2839:0:13"
             },
-            "scope": 5896,
+            "scope": 5934,
             "src": "2749:91:13",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5897,
+        "scope": 5935,
         "src": "132:2712:13"
       }
     ],
@@ -2557,7 +2557,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-10T11:14:57.967Z",
+  "updatedAt": "2020-03-11T13:50:01.674Z",
   "devdoc": {
     "methods": {
       "assignRewards()": {

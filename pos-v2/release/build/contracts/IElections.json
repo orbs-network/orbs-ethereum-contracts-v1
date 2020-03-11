@@ -420,14 +420,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IElections.sol",
     "exportedSymbols": {
       "IElections": [
-        5796
+        5834
       ]
     },
-    "id": 5797,
+    "id": 5835,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5645,
+        "id": 5683,
         "literals": [
           "solidity",
           "0.5",
@@ -439,10 +439,10 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
         "file": "./IContractRegistry.sol",
-        "id": 5646,
+        "id": 5684,
         "nodeType": "ImportDirective",
-        "scope": 5797,
-        "sourceUnit": 5644,
+        "scope": 5835,
+        "sourceUnit": 5682,
         "src": "25:33:12",
         "symbolAliases": [],
         "unitAlias": ""
@@ -450,9 +450,9 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakeChangeNotifier.sol",
         "file": "../IStakeChangeNotifier.sol",
-        "id": 5647,
+        "id": 5685,
         "nodeType": "ImportDirective",
-        "scope": 5797,
+        "scope": 5835,
         "sourceUnit": 2477,
         "src": "59:37:12",
         "symbolAliases": [],
@@ -464,9 +464,9 @@
         "contractKind": "interface",
         "documentation": "@title Elections contract interface",
         "fullyImplemented": false,
-        "id": 5796,
+        "id": 5834,
         "linearizedBaseContracts": [
-          5796
+          5834
         ],
         "name": "IElections",
         "nodeType": "ContractDefinition",
@@ -474,20 +474,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5655,
+            "id": 5693,
             "name": "ValidatorRegistered",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5654,
+              "id": 5692,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5649,
+                  "id": 5687,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5655,
+                  "scope": 5693,
                   "src": "218:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -496,7 +496,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5648,
+                    "id": 5686,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "218:7:12",
@@ -511,11 +511,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5651,
+                  "id": 5689,
                   "indexed": false,
                   "name": "ip",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5655,
+                  "scope": 5693,
                   "src": "232:9:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -524,7 +524,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 5650,
+                    "id": 5688,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "232:6:12",
@@ -538,11 +538,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5653,
+                  "id": 5691,
                   "indexed": false,
                   "name": "orbsAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5655,
+                  "scope": 5693,
                   "src": "243:16:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -551,7 +551,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5652,
+                    "id": 5690,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "243:7:12",
@@ -572,20 +572,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5666,
+            "id": 5704,
             "name": "CommitteeChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5665,
+              "id": 5703,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5658,
+                  "id": 5696,
                   "indexed": false,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
+                  "scope": 5704,
                   "src": "286:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -595,7 +595,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5656,
+                      "id": 5694,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "286:7:12",
@@ -605,7 +605,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5657,
+                    "id": 5695,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "286:9:12",
@@ -619,11 +619,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5661,
+                  "id": 5699,
                   "indexed": false,
                   "name": "orbsAddrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
+                  "scope": 5704,
                   "src": "303:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -633,7 +633,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5659,
+                      "id": 5697,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "303:7:12",
@@ -643,7 +643,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5660,
+                    "id": 5698,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "303:9:12",
@@ -657,11 +657,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5664,
+                  "id": 5702,
                   "indexed": false,
                   "name": "stakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
+                  "scope": 5704,
                   "src": "324:16:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -671,7 +671,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5662,
+                      "id": 5700,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "324:7:12",
@@ -680,7 +680,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5663,
+                    "id": 5701,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "324:9:12",
@@ -700,20 +700,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5674,
+            "id": 5712,
             "name": "TopologyChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5673,
+              "id": 5711,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5669,
+                  "id": 5707,
                   "indexed": false,
                   "name": "orbsAddrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5674,
+                  "scope": 5712,
                   "src": "366:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -723,7 +723,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5667,
+                      "id": 5705,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "366:7:12",
@@ -733,7 +733,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5668,
+                    "id": 5706,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "366:9:12",
@@ -747,11 +747,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5672,
+                  "id": 5710,
                   "indexed": false,
                   "name": "ips",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5674,
+                  "scope": 5712,
                   "src": "387:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -761,7 +761,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5670,
+                      "id": 5708,
                       "name": "bytes4",
                       "nodeType": "ElementaryTypeName",
                       "src": "387:6:12",
@@ -770,7 +770,7 @@
                         "typeString": "bytes4"
                       }
                     },
-                    "id": 5671,
+                    "id": 5709,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "387:8:12",
@@ -790,20 +790,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5680,
+            "id": 5718,
             "name": "VoteOut",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5679,
+              "id": 5717,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5676,
+                  "id": 5714,
                   "indexed": false,
                   "name": "voter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
+                  "scope": 5718,
                   "src": "417:13:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -812,7 +812,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5675,
+                    "id": 5713,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "417:7:12",
@@ -827,11 +827,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5678,
+                  "id": 5716,
                   "indexed": false,
                   "name": "against",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
+                  "scope": 5718,
                   "src": "432:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -840,7 +840,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5677,
+                    "id": 5715,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "432:7:12",
@@ -861,20 +861,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5684,
+            "id": 5722,
             "name": "VotedOutOfCommittee",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5683,
+              "id": 5721,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5682,
+                  "id": 5720,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5684,
+                  "scope": 5722,
                   "src": "477:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -883,7 +883,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5681,
+                    "id": 5719,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "477:7:12",
@@ -904,20 +904,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5691,
+            "id": 5729,
             "name": "BanningVote",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5690,
+              "id": 5728,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5686,
+                  "id": 5724,
                   "indexed": false,
                   "name": "voter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5691,
+                  "scope": 5729,
                   "src": "511:13:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -926,7 +926,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5685,
+                    "id": 5723,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "511:7:12",
@@ -941,11 +941,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5689,
+                  "id": 5727,
                   "indexed": false,
                   "name": "against",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5691,
+                  "scope": 5729,
                   "src": "526:17:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -955,7 +955,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5687,
+                      "id": 5725,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "526:7:12",
@@ -965,7 +965,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5688,
+                    "id": 5726,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "526:9:12",
@@ -985,20 +985,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5697,
+            "id": 5735,
             "name": "Delegated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5696,
+              "id": 5734,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5693,
+                  "id": 5731,
                   "indexed": false,
                   "name": "from",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5697,
+                  "scope": 5735,
                   "src": "563:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1007,7 +1007,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5692,
+                    "id": 5730,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "563:7:12",
@@ -1022,11 +1022,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5695,
+                  "id": 5733,
                   "indexed": false,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5697,
+                  "scope": 5735,
                   "src": "577:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1035,7 +1035,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5694,
+                    "id": 5732,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:7:12",
@@ -1056,20 +1056,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5711,
+            "id": 5749,
             "name": "StakeChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5710,
+              "id": 5748,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5699,
+                  "id": 5737,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "610:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1078,7 +1078,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5698,
+                    "id": 5736,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "610:7:12",
@@ -1093,11 +1093,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5701,
+                  "id": 5739,
                   "indexed": false,
                   "name": "ownStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "624:16:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1106,7 +1106,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5700,
+                    "id": 5738,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "624:7:12",
@@ -1120,11 +1120,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5703,
+                  "id": 5741,
                   "indexed": false,
                   "name": "uncappedStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "642:21:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1133,7 +1133,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5702,
+                    "id": 5740,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "642:7:12",
@@ -1147,11 +1147,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5705,
+                  "id": 5743,
                   "indexed": false,
                   "name": "governanceStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "665:23:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1160,7 +1160,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5704,
+                    "id": 5742,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "665:7:12",
@@ -1174,11 +1174,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5707,
+                  "id": 5745,
                   "indexed": false,
                   "name": "committeeStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "690:22:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1187,7 +1187,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5706,
+                    "id": 5744,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "690:7:12",
@@ -1201,11 +1201,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5709,
+                  "id": 5747,
                   "indexed": false,
                   "name": "totalGovernanceStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "714:28:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1214,7 +1214,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5708,
+                    "id": 5746,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "714:7:12",
@@ -1234,20 +1234,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5715,
+            "id": 5753,
             "name": "Banned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5714,
+              "id": 5752,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5713,
+                  "id": 5751,
                   "indexed": false,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5715,
+                  "scope": 5753,
                   "src": "759:17:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1256,7 +1256,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5712,
+                    "id": 5750,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "759:7:12",
@@ -1277,20 +1277,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5719,
+            "id": 5757,
             "name": "Unbanned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5718,
+              "id": 5756,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5717,
+                  "id": 5755,
                   "indexed": false,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5719,
+                  "scope": 5757,
                   "src": "795:17:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1299,7 +1299,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5716,
+                    "id": 5754,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "795:7:12",
@@ -1320,22 +1320,22 @@
           {
             "body": null,
             "documentation": "@dev Called by a participant who wishes to register as a validator",
-            "id": 5726,
+            "id": 5764,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "registerValidator",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5724,
+              "id": 5762,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5721,
+                  "id": 5759,
                   "name": "_ip",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5726,
+                  "scope": 5764,
                   "src": "949:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1344,7 +1344,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 5720,
+                    "id": 5758,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "949:6:12",
@@ -1358,10 +1358,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5723,
+                  "id": 5761,
                   "name": "_orbsAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5726,
+                  "scope": 5764,
                   "src": "961:20:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1370,7 +1370,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5722,
+                    "id": 5760,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "961:7:12",
@@ -1387,12 +1387,12 @@
               "src": "948:34:12"
             },
             "returnParameters": {
-              "id": 5725,
+              "id": 5763,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "991:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "922:70:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1401,25 +1401,25 @@
           {
             "body": null,
             "documentation": "@dev Called by a validator when ready to join the committee, typically after syncing is complete or after being voted out",
-            "id": 5729,
+            "id": 5767,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "notifyReadyForCommittee",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5727,
+              "id": 5765,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1154:2:12"
             },
             "returnParameters": {
-              "id": 5728,
+              "id": 5766,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1165:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1122:44:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1428,22 +1428,22 @@
           {
             "body": null,
             "documentation": "@dev Stake delegation",
-            "id": 5734,
+            "id": 5772,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "delegate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5732,
+              "id": 5770,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5731,
+                  "id": 5769,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5734,
+                  "scope": 5772,
                   "src": "1214:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1452,7 +1452,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5730,
+                    "id": 5768,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1214:7:12",
@@ -1469,12 +1469,12 @@
               "src": "1213:12:12"
             },
             "returnParameters": {
-              "id": 5733,
+              "id": 5771,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1234:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1196:39:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1483,22 +1483,22 @@
           {
             "body": null,
             "documentation": "@dev Called by a validator as part of the automatic vote-out flow",
-            "id": 5739,
+            "id": 5777,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "voteOut",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5737,
+              "id": 5775,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5736,
+                  "id": 5774,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5739,
+                  "scope": 5777,
                   "src": "1326:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1507,7 +1507,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5735,
+                    "id": 5773,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1326:7:12",
@@ -1524,12 +1524,12 @@
               "src": "1325:14:12"
             },
             "returnParameters": {
-              "id": 5738,
+              "id": 5776,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1348:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1309:40:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1538,22 +1538,22 @@
           {
             "body": null,
             "documentation": "@dev Refreshes the staking information (and the corresponding rank in committee and topology) for the given addresses.",
-            "id": 5745,
+            "id": 5783,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "refreshStakes",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5743,
+              "id": 5781,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5742,
+                  "id": 5780,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5745,
+                  "scope": 5783,
                   "src": "1499:24:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1563,7 +1563,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5740,
+                      "id": 5778,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1499:7:12",
@@ -1573,7 +1573,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5741,
+                    "id": 5779,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1499:9:12",
@@ -1589,12 +1589,12 @@
               "src": "1498:26:12"
             },
             "returnParameters": {
-              "id": 5744,
+              "id": 5782,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1533:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1476:58:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1603,22 +1603,22 @@
           {
             "body": null,
             "documentation": "@dev casts a banning vote by the sender to the given address",
-            "id": 5751,
+            "id": 5789,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setBanningVotes",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5749,
+              "id": 5787,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5748,
+                  "id": 5786,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5751,
+                  "scope": 5789,
                   "src": "1628:24:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1628,7 +1628,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5746,
+                      "id": 5784,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1628:7:12",
@@ -1638,7 +1638,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5747,
+                    "id": 5785,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1628:9:12",
@@ -1654,12 +1654,12 @@
               "src": "1627:26:12"
             },
             "returnParameters": {
-              "id": 5750,
+              "id": 5788,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1662:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1603:60:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1668,22 +1668,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: staking contract\n Notifies a batch of stake updates",
-            "id": 5766,
+            "id": 5804,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stakeChangeBatch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5764,
+              "id": 5802,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5754,
+                  "id": 5792,
                   "name": "_stakeOwners",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1828:31:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1693,7 +1693,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5752,
+                      "id": 5790,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1828:7:12",
@@ -1703,7 +1703,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5753,
+                    "id": 5791,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1828:9:12",
@@ -1717,10 +1717,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5757,
+                  "id": 5795,
                   "name": "_amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1861:27:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1730,7 +1730,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5755,
+                      "id": 5793,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "1861:7:12",
@@ -1739,7 +1739,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5756,
+                    "id": 5794,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1861:9:12",
@@ -1753,10 +1753,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5760,
+                  "id": 5798,
                   "name": "_signs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1890:22:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1766,7 +1766,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5758,
+                      "id": 5796,
                       "name": "bool",
                       "nodeType": "ElementaryTypeName",
                       "src": "1890:4:12",
@@ -1775,7 +1775,7 @@
                         "typeString": "bool"
                       }
                     },
-                    "id": 5759,
+                    "id": 5797,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1890:6:12",
@@ -1789,10 +1789,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5763,
+                  "id": 5801,
                   "name": "_updatedStakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1916:33:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1802,7 +1802,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5761,
+                      "id": 5799,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "1916:7:12",
@@ -1811,7 +1811,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5762,
+                    "id": 5800,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1916:9:12",
@@ -1827,12 +1827,12 @@
               "src": "1827:123:12"
             },
             "returnParameters": {
-              "id": 5765,
+              "id": 5803,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1985:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1802:184:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1841,22 +1841,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: staking contract\n Notifies an stake change event",
-            "id": 5777,
+            "id": 5815,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stakeChange",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5775,
+              "id": 5813,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5768,
+                  "id": 5806,
                   "name": "_stakeOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2084:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1865,7 +1865,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5767,
+                    "id": 5805,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2084:7:12",
@@ -1880,10 +1880,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5770,
+                  "id": 5808,
                   "name": "_amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2105:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1892,7 +1892,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5769,
+                    "id": 5807,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2105:7:12",
@@ -1906,10 +1906,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5772,
+                  "id": 5810,
                   "name": "_sign",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2122:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1918,7 +1918,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5771,
+                    "id": 5809,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2122:4:12",
@@ -1932,10 +1932,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5774,
+                  "id": 5812,
                   "name": "_updatedStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2134:21:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1944,7 +1944,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5773,
+                    "id": 5811,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2134:7:12",
@@ -1960,12 +1960,12 @@
               "src": "2083:73:12"
             },
             "returnParameters": {
-              "id": 5776,
+              "id": 5814,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2191:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2063:129:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1974,22 +1974,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: staking contract\n Notifies an stake migration event",
-            "id": 5784,
+            "id": 5822,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stakeMigration",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5782,
+              "id": 5820,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5779,
+                  "id": 5817,
                   "name": "_stakeOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5784,
+                  "scope": 5822,
                   "src": "2296:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1998,7 +1998,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5778,
+                    "id": 5816,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2296:7:12",
@@ -2013,10 +2013,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5781,
+                  "id": 5819,
                   "name": "_amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5784,
+                  "scope": 5822,
                   "src": "2317:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2025,7 +2025,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5780,
+                    "id": 5818,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2317:7:12",
@@ -2041,12 +2041,12 @@
               "src": "2295:38:12"
             },
             "returnParameters": {
-              "id": 5783,
+              "id": 5821,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2368:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2272:97:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2055,38 +2055,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address calldata of the contract registry",
-            "id": 5789,
+            "id": 5827,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5787,
+              "id": 5825,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5786,
+                  "id": 5824,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5789,
+                  "scope": 5827,
                   "src": "2489:35:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5785,
+                    "id": 5823,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5643,
+                    "referencedDeclaration": 5681,
                     "src": "2489:17:12",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -2097,12 +2097,12 @@
               "src": "2488:37:12"
             },
             "returnParameters": {
-              "id": 5788,
+              "id": 5826,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2550:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2460:91:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2111,28 +2111,28 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5795,
+            "id": 5833,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getTopology",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5790,
+              "id": 5828,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2603:2:12"
             },
             "returnParameters": {
-              "id": 5794,
+              "id": 5832,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5793,
+                  "id": 5831,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5795,
+                  "scope": 5833,
                   "src": "2629:16:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -2142,7 +2142,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5791,
+                      "id": 5829,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "2629:7:12",
@@ -2152,7 +2152,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5792,
+                    "id": 5830,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2629:9:12",
@@ -2167,14 +2167,14 @@
               ],
               "src": "2628:18:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2583:64:12",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5797,
+        "scope": 5835,
         "src": "138:2511:12"
       }
     ],
@@ -2184,14 +2184,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IElections.sol",
     "exportedSymbols": {
       "IElections": [
-        5796
+        5834
       ]
     },
-    "id": 5797,
+    "id": 5835,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5645,
+        "id": 5683,
         "literals": [
           "solidity",
           "0.5",
@@ -2203,10 +2203,10 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
         "file": "./IContractRegistry.sol",
-        "id": 5646,
+        "id": 5684,
         "nodeType": "ImportDirective",
-        "scope": 5797,
-        "sourceUnit": 5644,
+        "scope": 5835,
+        "sourceUnit": 5682,
         "src": "25:33:12",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2214,9 +2214,9 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakeChangeNotifier.sol",
         "file": "../IStakeChangeNotifier.sol",
-        "id": 5647,
+        "id": 5685,
         "nodeType": "ImportDirective",
-        "scope": 5797,
+        "scope": 5835,
         "sourceUnit": 2477,
         "src": "59:37:12",
         "symbolAliases": [],
@@ -2228,9 +2228,9 @@
         "contractKind": "interface",
         "documentation": "@title Elections contract interface",
         "fullyImplemented": false,
-        "id": 5796,
+        "id": 5834,
         "linearizedBaseContracts": [
-          5796
+          5834
         ],
         "name": "IElections",
         "nodeType": "ContractDefinition",
@@ -2238,20 +2238,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5655,
+            "id": 5693,
             "name": "ValidatorRegistered",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5654,
+              "id": 5692,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5649,
+                  "id": 5687,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5655,
+                  "scope": 5693,
                   "src": "218:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2260,7 +2260,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5648,
+                    "id": 5686,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "218:7:12",
@@ -2275,11 +2275,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5651,
+                  "id": 5689,
                   "indexed": false,
                   "name": "ip",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5655,
+                  "scope": 5693,
                   "src": "232:9:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2288,7 +2288,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 5650,
+                    "id": 5688,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "232:6:12",
@@ -2302,11 +2302,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5653,
+                  "id": 5691,
                   "indexed": false,
                   "name": "orbsAddr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5655,
+                  "scope": 5693,
                   "src": "243:16:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2315,7 +2315,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5652,
+                    "id": 5690,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "243:7:12",
@@ -2336,20 +2336,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5666,
+            "id": 5704,
             "name": "CommitteeChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5665,
+              "id": 5703,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5658,
+                  "id": 5696,
                   "indexed": false,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
+                  "scope": 5704,
                   "src": "286:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2359,7 +2359,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5656,
+                      "id": 5694,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "286:7:12",
@@ -2369,7 +2369,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5657,
+                    "id": 5695,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "286:9:12",
@@ -2383,11 +2383,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5661,
+                  "id": 5699,
                   "indexed": false,
                   "name": "orbsAddrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
+                  "scope": 5704,
                   "src": "303:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2397,7 +2397,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5659,
+                      "id": 5697,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "303:7:12",
@@ -2407,7 +2407,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5660,
+                    "id": 5698,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "303:9:12",
@@ -2421,11 +2421,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5664,
+                  "id": 5702,
                   "indexed": false,
                   "name": "stakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
+                  "scope": 5704,
                   "src": "324:16:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2435,7 +2435,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5662,
+                      "id": 5700,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "324:7:12",
@@ -2444,7 +2444,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5663,
+                    "id": 5701,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "324:9:12",
@@ -2464,20 +2464,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5674,
+            "id": 5712,
             "name": "TopologyChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5673,
+              "id": 5711,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5669,
+                  "id": 5707,
                   "indexed": false,
                   "name": "orbsAddrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5674,
+                  "scope": 5712,
                   "src": "366:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2487,7 +2487,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5667,
+                      "id": 5705,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "366:7:12",
@@ -2497,7 +2497,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5668,
+                    "id": 5706,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "366:9:12",
@@ -2511,11 +2511,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5672,
+                  "id": 5710,
                   "indexed": false,
                   "name": "ips",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5674,
+                  "scope": 5712,
                   "src": "387:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2525,7 +2525,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5670,
+                      "id": 5708,
                       "name": "bytes4",
                       "nodeType": "ElementaryTypeName",
                       "src": "387:6:12",
@@ -2534,7 +2534,7 @@
                         "typeString": "bytes4"
                       }
                     },
-                    "id": 5671,
+                    "id": 5709,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "387:8:12",
@@ -2554,20 +2554,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5680,
+            "id": 5718,
             "name": "VoteOut",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5679,
+              "id": 5717,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5676,
+                  "id": 5714,
                   "indexed": false,
                   "name": "voter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
+                  "scope": 5718,
                   "src": "417:13:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2576,7 +2576,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5675,
+                    "id": 5713,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "417:7:12",
@@ -2591,11 +2591,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5678,
+                  "id": 5716,
                   "indexed": false,
                   "name": "against",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
+                  "scope": 5718,
                   "src": "432:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2604,7 +2604,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5677,
+                    "id": 5715,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "432:7:12",
@@ -2625,20 +2625,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5684,
+            "id": 5722,
             "name": "VotedOutOfCommittee",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5683,
+              "id": 5721,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5682,
+                  "id": 5720,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5684,
+                  "scope": 5722,
                   "src": "477:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2647,7 +2647,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5681,
+                    "id": 5719,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "477:7:12",
@@ -2668,20 +2668,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5691,
+            "id": 5729,
             "name": "BanningVote",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5690,
+              "id": 5728,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5686,
+                  "id": 5724,
                   "indexed": false,
                   "name": "voter",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5691,
+                  "scope": 5729,
                   "src": "511:13:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2690,7 +2690,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5685,
+                    "id": 5723,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "511:7:12",
@@ -2705,11 +2705,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5689,
+                  "id": 5727,
                   "indexed": false,
                   "name": "against",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5691,
+                  "scope": 5729,
                   "src": "526:17:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2719,7 +2719,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5687,
+                      "id": 5725,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "526:7:12",
@@ -2729,7 +2729,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5688,
+                    "id": 5726,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "526:9:12",
@@ -2749,20 +2749,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5697,
+            "id": 5735,
             "name": "Delegated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5696,
+              "id": 5734,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5693,
+                  "id": 5731,
                   "indexed": false,
                   "name": "from",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5697,
+                  "scope": 5735,
                   "src": "563:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2771,7 +2771,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5692,
+                    "id": 5730,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "563:7:12",
@@ -2786,11 +2786,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5695,
+                  "id": 5733,
                   "indexed": false,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5697,
+                  "scope": 5735,
                   "src": "577:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2799,7 +2799,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5694,
+                    "id": 5732,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "577:7:12",
@@ -2820,20 +2820,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5711,
+            "id": 5749,
             "name": "StakeChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5710,
+              "id": 5748,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5699,
+                  "id": 5737,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "610:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2842,7 +2842,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5698,
+                    "id": 5736,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "610:7:12",
@@ -2857,11 +2857,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5701,
+                  "id": 5739,
                   "indexed": false,
                   "name": "ownStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "624:16:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2870,7 +2870,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5700,
+                    "id": 5738,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "624:7:12",
@@ -2884,11 +2884,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5703,
+                  "id": 5741,
                   "indexed": false,
                   "name": "uncappedStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "642:21:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2897,7 +2897,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5702,
+                    "id": 5740,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "642:7:12",
@@ -2911,11 +2911,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5705,
+                  "id": 5743,
                   "indexed": false,
                   "name": "governanceStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "665:23:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2924,7 +2924,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5704,
+                    "id": 5742,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "665:7:12",
@@ -2938,11 +2938,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5707,
+                  "id": 5745,
                   "indexed": false,
                   "name": "committeeStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "690:22:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2951,7 +2951,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5706,
+                    "id": 5744,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "690:7:12",
@@ -2965,11 +2965,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5709,
+                  "id": 5747,
                   "indexed": false,
                   "name": "totalGovernanceStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5711,
+                  "scope": 5749,
                   "src": "714:28:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2978,7 +2978,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5708,
+                    "id": 5746,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "714:7:12",
@@ -2998,20 +2998,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5715,
+            "id": 5753,
             "name": "Banned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5714,
+              "id": 5752,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5713,
+                  "id": 5751,
                   "indexed": false,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5715,
+                  "scope": 5753,
                   "src": "759:17:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3020,7 +3020,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5712,
+                    "id": 5750,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "759:7:12",
@@ -3041,20 +3041,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5719,
+            "id": 5757,
             "name": "Unbanned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5718,
+              "id": 5756,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5717,
+                  "id": 5755,
                   "indexed": false,
                   "name": "validator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5719,
+                  "scope": 5757,
                   "src": "795:17:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3063,7 +3063,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5716,
+                    "id": 5754,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "795:7:12",
@@ -3084,22 +3084,22 @@
           {
             "body": null,
             "documentation": "@dev Called by a participant who wishes to register as a validator",
-            "id": 5726,
+            "id": 5764,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "registerValidator",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5724,
+              "id": 5762,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5721,
+                  "id": 5759,
                   "name": "_ip",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5726,
+                  "scope": 5764,
                   "src": "949:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3108,7 +3108,7 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 5720,
+                    "id": 5758,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
                     "src": "949:6:12",
@@ -3122,10 +3122,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5723,
+                  "id": 5761,
                   "name": "_orbsAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5726,
+                  "scope": 5764,
                   "src": "961:20:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3134,7 +3134,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5722,
+                    "id": 5760,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "961:7:12",
@@ -3151,12 +3151,12 @@
               "src": "948:34:12"
             },
             "returnParameters": {
-              "id": 5725,
+              "id": 5763,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "991:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "922:70:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3165,25 +3165,25 @@
           {
             "body": null,
             "documentation": "@dev Called by a validator when ready to join the committee, typically after syncing is complete or after being voted out",
-            "id": 5729,
+            "id": 5767,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "notifyReadyForCommittee",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5727,
+              "id": 5765,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1154:2:12"
             },
             "returnParameters": {
-              "id": 5728,
+              "id": 5766,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1165:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1122:44:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3192,22 +3192,22 @@
           {
             "body": null,
             "documentation": "@dev Stake delegation",
-            "id": 5734,
+            "id": 5772,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "delegate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5732,
+              "id": 5770,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5731,
+                  "id": 5769,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5734,
+                  "scope": 5772,
                   "src": "1214:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3216,7 +3216,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5730,
+                    "id": 5768,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1214:7:12",
@@ -3233,12 +3233,12 @@
               "src": "1213:12:12"
             },
             "returnParameters": {
-              "id": 5733,
+              "id": 5771,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1234:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1196:39:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3247,22 +3247,22 @@
           {
             "body": null,
             "documentation": "@dev Called by a validator as part of the automatic vote-out flow",
-            "id": 5739,
+            "id": 5777,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "voteOut",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5737,
+              "id": 5775,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5736,
+                  "id": 5774,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5739,
+                  "scope": 5777,
                   "src": "1326:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3271,7 +3271,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5735,
+                    "id": 5773,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1326:7:12",
@@ -3288,12 +3288,12 @@
               "src": "1325:14:12"
             },
             "returnParameters": {
-              "id": 5738,
+              "id": 5776,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1348:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1309:40:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3302,22 +3302,22 @@
           {
             "body": null,
             "documentation": "@dev Refreshes the staking information (and the corresponding rank in committee and topology) for the given addresses.",
-            "id": 5745,
+            "id": 5783,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "refreshStakes",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5743,
+              "id": 5781,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5742,
+                  "id": 5780,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5745,
+                  "scope": 5783,
                   "src": "1499:24:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -3327,7 +3327,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5740,
+                      "id": 5778,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1499:7:12",
@@ -3337,7 +3337,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5741,
+                    "id": 5779,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1499:9:12",
@@ -3353,12 +3353,12 @@
               "src": "1498:26:12"
             },
             "returnParameters": {
-              "id": 5744,
+              "id": 5782,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1533:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1476:58:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3367,22 +3367,22 @@
           {
             "body": null,
             "documentation": "@dev casts a banning vote by the sender to the given address",
-            "id": 5751,
+            "id": 5789,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setBanningVotes",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5749,
+              "id": 5787,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5748,
+                  "id": 5786,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5751,
+                  "scope": 5789,
                   "src": "1628:24:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -3392,7 +3392,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5746,
+                      "id": 5784,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1628:7:12",
@@ -3402,7 +3402,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5747,
+                    "id": 5785,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1628:9:12",
@@ -3418,12 +3418,12 @@
               "src": "1627:26:12"
             },
             "returnParameters": {
-              "id": 5750,
+              "id": 5788,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1662:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1603:60:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3432,22 +3432,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: staking contract\n Notifies a batch of stake updates",
-            "id": 5766,
+            "id": 5804,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stakeChangeBatch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5764,
+              "id": 5802,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5754,
+                  "id": 5792,
                   "name": "_stakeOwners",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1828:31:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -3457,7 +3457,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5752,
+                      "id": 5790,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "1828:7:12",
@@ -3467,7 +3467,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5753,
+                    "id": 5791,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1828:9:12",
@@ -3481,10 +3481,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5757,
+                  "id": 5795,
                   "name": "_amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1861:27:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -3494,7 +3494,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5755,
+                      "id": 5793,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "1861:7:12",
@@ -3503,7 +3503,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5756,
+                    "id": 5794,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1861:9:12",
@@ -3517,10 +3517,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5760,
+                  "id": 5798,
                   "name": "_signs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1890:22:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -3530,7 +3530,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5758,
+                      "id": 5796,
                       "name": "bool",
                       "nodeType": "ElementaryTypeName",
                       "src": "1890:4:12",
@@ -3539,7 +3539,7 @@
                         "typeString": "bool"
                       }
                     },
-                    "id": 5759,
+                    "id": 5797,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1890:6:12",
@@ -3553,10 +3553,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5763,
+                  "id": 5801,
                   "name": "_updatedStakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5766,
+                  "scope": 5804,
                   "src": "1916:33:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -3566,7 +3566,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5761,
+                      "id": 5799,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "1916:7:12",
@@ -3575,7 +3575,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5762,
+                    "id": 5800,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "1916:9:12",
@@ -3591,12 +3591,12 @@
               "src": "1827:123:12"
             },
             "returnParameters": {
-              "id": 5765,
+              "id": 5803,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1985:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "1802:184:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3605,22 +3605,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: staking contract\n Notifies an stake change event",
-            "id": 5777,
+            "id": 5815,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stakeChange",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5775,
+              "id": 5813,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5768,
+                  "id": 5806,
                   "name": "_stakeOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2084:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3629,7 +3629,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5767,
+                    "id": 5805,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2084:7:12",
@@ -3644,10 +3644,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5770,
+                  "id": 5808,
                   "name": "_amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2105:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3656,7 +3656,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5769,
+                    "id": 5807,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2105:7:12",
@@ -3670,10 +3670,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5772,
+                  "id": 5810,
                   "name": "_sign",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2122:10:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3682,7 +3682,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 5771,
+                    "id": 5809,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2122:4:12",
@@ -3696,10 +3696,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5774,
+                  "id": 5812,
                   "name": "_updatedStake",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5777,
+                  "scope": 5815,
                   "src": "2134:21:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3708,7 +3708,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5773,
+                    "id": 5811,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2134:7:12",
@@ -3724,12 +3724,12 @@
               "src": "2083:73:12"
             },
             "returnParameters": {
-              "id": 5776,
+              "id": 5814,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2191:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2063:129:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3738,22 +3738,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: staking contract\n Notifies an stake migration event",
-            "id": 5784,
+            "id": 5822,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "stakeMigration",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5782,
+              "id": 5820,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5779,
+                  "id": 5817,
                   "name": "_stakeOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5784,
+                  "scope": 5822,
                   "src": "2296:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3762,7 +3762,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5778,
+                    "id": 5816,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2296:7:12",
@@ -3777,10 +3777,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 5781,
+                  "id": 5819,
                   "name": "_amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5784,
+                  "scope": 5822,
                   "src": "2317:15:12",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3789,7 +3789,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5780,
+                    "id": 5818,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2317:7:12",
@@ -3805,12 +3805,12 @@
               "src": "2295:38:12"
             },
             "returnParameters": {
-              "id": 5783,
+              "id": 5821,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2368:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2272:97:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3819,38 +3819,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address calldata of the contract registry",
-            "id": 5789,
+            "id": 5827,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5787,
+              "id": 5825,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5786,
+                  "id": 5824,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5789,
+                  "scope": 5827,
                   "src": "2489:35:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5785,
+                    "id": 5823,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5643,
+                    "referencedDeclaration": 5681,
                     "src": "2489:17:12",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5643",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5681",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -3861,12 +3861,12 @@
               "src": "2488:37:12"
             },
             "returnParameters": {
-              "id": 5788,
+              "id": 5826,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2550:0:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2460:91:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3875,28 +3875,28 @@
           {
             "body": null,
             "documentation": null,
-            "id": 5795,
+            "id": 5833,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getTopology",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5790,
+              "id": 5828,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2603:2:12"
             },
             "returnParameters": {
-              "id": 5794,
+              "id": 5832,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5793,
+                  "id": 5831,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5795,
+                  "scope": 5833,
                   "src": "2629:16:12",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -3906,7 +3906,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5791,
+                      "id": 5829,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "2629:7:12",
@@ -3916,7 +3916,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 5792,
+                    "id": 5830,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "2629:9:12",
@@ -3931,14 +3931,14 @@
               ],
               "src": "2628:18:12"
             },
-            "scope": 5796,
+            "scope": 5834,
             "src": "2583:64:12",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5797,
+        "scope": 5835,
         "src": "138:2511:12"
       }
     ],
@@ -3950,7 +3950,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-10T11:14:57.965Z",
+  "updatedAt": "2020-03-11T13:50:01.672Z",
   "devdoc": {
     "methods": {
       "delegate(address)": {

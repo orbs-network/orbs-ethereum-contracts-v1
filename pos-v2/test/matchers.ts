@@ -18,12 +18,14 @@ import {
   contractAddressUpdatedEvents,
   banningVoteEvents,
   electionsBanned,
-  electionsUnbanned
+  electionsUnbanned,
+  vcOwnerChangedEvents,
+  vcCreatedEvents
 } from "./event-parsing";
 import * as _ from "lodash";
 import {
   SubscriptionChangedEvent,
-  PaymentEvent, VcConfigRecordChangedEvent
+  PaymentEvent, VcConfigRecordChangedEvent, VcOwnerChangedEvent, VcCreatedEvent
 } from "../typings/subscriptions-contract";
 import {
   DelegatedEvent,
@@ -126,6 +128,8 @@ module.exports = function(chai) {
   chai.Assertion.overwriteMethod("bannedEvent", containEvent(electionsBanned));
   chai.Assertion.overwriteMethod("unbannedEvent", containEvent(electionsUnbanned));
   chai.Assertion.overwriteMethod("vcConfigRecordChangedEvent", containEvent(vcConfigRecordChangedEvents));
+  chai.Assertion.overwriteMethod("vcOwnerChangedEvent", containEvent(vcOwnerChangedEvents));
+  chai.Assertion.overwriteMethod("vcCreatedEvent", containEvent(vcCreatedEvents));
   chai.Assertion.overwriteMethod("contractAddressUpdatedEvent", containEvent(contractAddressUpdatedEvents));
 
   chai.Assertion.overwriteMethod("haveCommittee", containEvent(function(o) {return [o];}));
@@ -144,6 +148,8 @@ declare global {
       subscriptionChangedEvent(data?: Partial<SubscriptionChangedEvent>): void;
       paymentEvent(data?: Partial<PaymentEvent>): void;
       vcConfigRecordChangedEvent(data?: Partial<VcConfigRecordChangedEvent>): void;
+      vcCreatedEvent(data?: Partial<VcCreatedEvent>): void;
+      vcOwnerChangedEvent(data?: Partial<VcOwnerChangedEvent>): void;
       voteOutEvent(data?: Partial<VoteOutEvent>): void;
       votedOutOfCommitteeEvent(data?: Partial<VotedOutOfCommitteeEvent>): void;
       contractAddressUpdatedEvent(data?: Partial<ContractAddressUpdatedEvent>): void;

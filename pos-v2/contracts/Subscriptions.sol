@@ -63,12 +63,21 @@ contract Subscriptions is ISubscriptions, Ownable{
         });
         virtualChains[vcid] = vc;
 
+        emit VcCreated(vcid, owner);
+
         _extendSubscription(vcid, amount, owner);
         return (vcid, vc.genRef);
     }
 
     function extendSubscription(uint256 vcid, uint256 amount, address payer) external {
         _extendSubscription(vcid, amount, payer);
+    }
+
+    function setVcOwner(uint256 vcid, address owner) external {
+        require(msg.sender == virtualChains[vcid].owner, "only the vc owner can transfer ownership");
+
+        virtualChains[vcid].owner = owner;
+        emit VcOwnerChanged(vcid, msg.sender, owner);
     }
 
     function _extendSubscription(uint256 vcid, uint256 amount, address payer) private {

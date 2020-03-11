@@ -1,4 +1,4 @@
-import { SubscriptionChangedEvent, PaymentEvent, VcConfigRecordChangedEvent } from "../typings/subscriptions-contract";
+import { SubscriptionChangedEvent, PaymentEvent, VcConfigRecordChangedEvent, VcOwnerChangedEvent, VcCreatedEvent } from "../typings/subscriptions-contract";
 import { DelegatedEvent, CommitteeChangedEvent, TopologyChangedEvent, ValidatorRegisteredEvent, StakeChangeEvent, VoteOutEvent, VotedOutOfCommitteeEvent, BanningVoteEvent, BannedEvent, UnbannedEvent } from "../typings/elections-contract";
 import { StakedEvent, UnstakedEvent } from "../typings/staking-contract";
 import { ContractAddressUpdatedEvent } from "../typings/contract-registry-contract";
@@ -16,6 +16,8 @@ declare global {
             subscriptionChangedEvent(data?: Partial<SubscriptionChangedEvent>): void;
             paymentEvent(data?: Partial<PaymentEvent>): void;
             vcConfigRecordChangedEvent(data?: Partial<VcConfigRecordChangedEvent>): void;
+            vcCreatedEvent(data?: Partial<VcCreatedEvent>): void;
+            vcOwnerChangedEvent(data?: Partial<VcOwnerChangedEvent>): void;
             voteOutEvent(data?: Partial<VoteOutEvent>): void;
             votedOutOfCommitteeEvent(data?: Partial<VotedOutOfCommitteeEvent>): void;
             contractAddressUpdatedEvent(data?: Partial<ContractAddressUpdatedEvent>): void;

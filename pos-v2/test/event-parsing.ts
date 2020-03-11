@@ -34,6 +34,8 @@ export const topologyChangedEvents = (txResult) => parseLogs(txResult, elections
 export const voteOutEvents = (txResult) => parseLogs(txResult, elections, "VoteOut(address,address)");
 export const votedOutOfCommitteeEvents = (txResult) => parseLogs(txResult, elections, "VotedOutOfCommittee(address)");
 export const vcConfigRecordChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcConfigRecordChanged(uint256,string,string)");
+export const vcOwnerChangedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcOwnerChanged(uint256,address,address)");
+export const vcCreatedEvents = (txResult) => parseLogs(txResult, subscriptions, "VcCreated(uint256,address)");
 export const contractAddressUpdatedEvents = (txResult) => parseLogs(txResult, contractRegistry, "ContractAddressUpdated(string,address)");
 export const banningVoteEvents = (txResult) => parseLogs(txResult, elections, "BanningVote(address,address[])");
 export const electionsBanned = (txResult) => parseLogs(txResult, elections, "Banned(address)");

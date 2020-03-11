@@ -45,6 +45,7 @@ var driver_1 = require("./driver");
 var chai_1 = __importDefault(require("chai"));
 var event_parsing_1 = require("./event-parsing");
 var eth_1 = require("../eth");
+var helpers_1 = require("./helpers");
 chai_1.default.use(require('chai-bn')(bn_js_1.default));
 chai_1.default.use(require('./matchers'));
 var expect = chai_1.default.expect;
@@ -249,6 +250,58 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                         return [4 /*yield*/, driver_1.expectRejected(d.subscriptions.setVcConfigRecord(vcid, key, value, { from: nonOwner.address }))];
                     case 8:
                         _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        it('allows VC owner to transfer ownership', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var d, subs, owner, amount, r, vcid, newOwner, nonOwner;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, driver_1.Driver.new()];
+                    case 1:
+                        d = _a.sent();
+                        return [4 /*yield*/, d.newSubscriber("tier", 1)];
+                    case 2:
+                        subs = _a.sent();
+                        owner = d.newParticipant();
+                        amount = 10;
+                        return [4 /*yield*/, owner.assignAndApproveOrbs(amount, subs.address)];
+                    case 3:
+                        _a.sent();
+                        return [4 /*yield*/, subs.createVC(amount, { from: owner.address })];
+                    case 4:
+                        r = _a.sent();
+                        expect(r).to.have.a.subscriptionChangedEvent();
+                        vcid = helpers_1.bn(event_parsing_1.subscriptionChangedEvents(r)[0].vcid);
+                        expect(r).to.have.a.vcCreatedEvent({
+                            vcid: vcid,
+                            owner: owner.address
+                        });
+                        newOwner = d.newParticipant();
+                        nonOwner = d.newParticipant();
+                        return [4 /*yield*/, driver_1.expectRejected(d.subscriptions.setVcOwner(vcid, newOwner.address, { from: nonOwner.address }))];
+                    case 5:
+                        _a.sent();
+                        return [4 /*yield*/, d.subscriptions.setVcOwner(vcid, newOwner.address, { from: owner.address })];
+                    case 6:
+                        r = _a.sent();
+                        expect(r).to.have.a.vcOwnerChangedEvent({
+                            vcid: vcid,
+                            previousOwner: owner.address,
+                            newOwner: newOwner.address
+                        });
+                        return [4 /*yield*/, driver_1.expectRejected(d.subscriptions.setVcOwner(vcid, owner.address, { from: owner.address }))];
+                    case 7:
+                        _a.sent();
+                        return [4 /*yield*/, d.subscriptions.setVcOwner(vcid, owner.address, { from: newOwner.address })];
+                    case 8:
+                        r = _a.sent();
+                        expect(r).to.have.a.vcOwnerChangedEvent({
+                            vcid: vcid,
+                            previousOwner: newOwner.address,
+                            newOwner: owner.address
+                        });
                         return [2 /*return*/];
                 }
             });
