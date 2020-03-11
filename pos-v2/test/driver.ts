@@ -36,7 +36,7 @@ export class Driver {
         public contractRegistry: ContractRegistryContract,
     ) {}
 
-    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT, banningThreshold=DEFAULT_BANNING_THRESHOLD) {
+    static async new(maxCommitteeSize=DEFAULT_COMMITTEE_SIZE, maxTopologySize=DEFAULT_TOPOLOGY_SIZE, minimumStake:number|BN=DEFAULT_MINIMUM_STAKE, maxDelegationRatio=DEFAULT_MAX_DELEGATION_RATIO, voteOutThreshold=DEFAULT_VOTE_OUT_THRESHOLD, voteOutTimeout=DEFAULT_VOTE_OUT_TIMEOUT, banningThreshold=DEFAULT_BANNING_THRESHOLD): Promise<Driver> {
         const accounts = await web3.eth.getAccounts();
 
         const contractRegistry: ContractRegistryContract = await deploy( 'ContractRegistry',[accounts[0]]);

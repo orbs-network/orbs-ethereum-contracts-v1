@@ -4,8 +4,8 @@ import BN from "bn.js";
 import {Driver, expectRejected, ZERO_ADDR} from "./driver";
 import chai from "chai";
 import {subscriptionChangedEvents} from "./event-parsing";
-import {bn} from "./helpers";
 import {web3} from "../eth";
+import {bn} from "./helpers";
 chai.use(require('chai-bn')(BN));
 chai.use(require('./matchers'));
 
