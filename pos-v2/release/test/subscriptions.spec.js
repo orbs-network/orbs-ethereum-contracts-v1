@@ -198,8 +198,8 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                 }
             });
         }); });
-        it('sets,overrides and clears a vc config field by and only by the vc owner', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var d, subs, owner, amount, r, vcid, key, value, value2, nonOwner;
+        it('sets, overrides, gets and clears a vc config field by and only by the vc owner', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var d, subs, owner, amount, r, vcid, key, value, nonOwner, v, value2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, driver_1.Driver.new()];
@@ -228,17 +228,27 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                             key: key,
                             value: value
                         });
+                        nonOwner = d.newParticipant();
+                        return [4 /*yield*/, d.subscriptions.getVcConfigRecord(vcid, key, { from: nonOwner.address })];
+                    case 6:
+                        v = _a.sent();
+                        expect(v).to.equal(value);
                         value2 = 'value2_' + Date.now().toString();
                         return [4 /*yield*/, d.subscriptions.setVcConfigRecord(vcid, key, value2, { from: owner.address })];
-                    case 6:
+                    case 7:
                         r = _a.sent();
                         expect(r).to.have.a.vcConfigRecordChangedEvent({
                             vcid: vcid,
                             key: key,
                             value: value2
                         });
+                        return [4 /*yield*/, d.subscriptions.getVcConfigRecord(vcid, key, { from: nonOwner.address })];
+                    case 8:
+                        // get again
+                        v = _a.sent();
+                        expect(v).to.equal(value2);
                         return [4 /*yield*/, d.subscriptions.setVcConfigRecord(vcid, key, "", { from: owner.address })];
-                    case 7:
+                    case 9:
                         // clear
                         r = _a.sent();
                         expect(r).to.have.a.vcConfigRecordChangedEvent({
@@ -246,9 +256,15 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                             key: key,
                             value: ""
                         });
-                        nonOwner = d.newParticipant();
+                        return [4 /*yield*/, d.subscriptions.getVcConfigRecord(vcid, key, { from: nonOwner.address })];
+                    case 10:
+                        // get again
+                        v = _a.sent();
+                        expect(v).to.equal("");
+                        // reject if set by non owner
                         return [4 /*yield*/, driver_1.expectRejected(d.subscriptions.setVcConfigRecord(vcid, key, value, { from: nonOwner.address }))];
-                    case 8:
+                    case 11:
+                        // reject if set by non owner
                         _a.sent();
                         return [2 /*return*/];
                 }

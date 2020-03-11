@@ -25,19 +25,20 @@ export interface VcConfigRecordChangedEvent {
 }
 
 export interface VcOwnerChangedEvent {
-  vcid: number | BN;
-  previousOwner: string;
-  newOwner: string;
+    vcid: number | BN;
+    previousOwner: string;
+    newOwner: string;
 }
 
 export interface VcCreatedEvent {
-  vcid: number | BN;
-  owner: string;
+    vcid: number | BN;
+    owner: string;
 }
 
 export interface SubscriptionsContract extends Contract {
   addSubscriber(address,params?: TransactionConfig): Promise<TransactionReceipt>;
   setVcConfigRecord(vcid: number|BN, key: string, value: string, params?: TransactionConfig): Promise<TransactionReceipt>;
+  getVcConfigRecord(vcid: number|BN, key: string, params?: TransactionConfig): Promise<TransactionReceipt>;
   setContractRegistry(contractRegistry: string, params?: TransactionConfig): Promise<TransactionReceipt>;
   setVcOwner(vcid: number|BN, owner: string, params?: TransactionConfig): Promise<TransactionReceipt>;
 }

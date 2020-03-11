@@ -103,7 +103,7 @@ describe('subscriptions-high-level-flows', async () => {
     expect(r).to.have.a.subscriptionChangedEvent();
   });
 
-  it('sets,overrides and clears a vc config field by and only by the vc owner', async () => {
+  it('sets, overrides, gets and clears a vc config field by and only by the vc owner', async () => {
     const d = await Driver.new();
     const subs = await d.newSubscriber("tier", 1);
 
@@ -126,6 +126,11 @@ describe('subscriptions-high-level-flows', async () => {
       value
     });
 
+    // get
+    const nonOwner = d.newParticipant();
+    let v = await d.subscriptions.getVcConfigRecord(vcid, key, {from: nonOwner.address});
+    expect(v).to.equal(value);
+
     // override
     const value2 = 'value2_' + Date.now().toString();
     r = await d.subscriptions.setVcConfigRecord(vcid, key, value2, {from: owner.address});
@@ -135,6 +140,10 @@ describe('subscriptions-high-level-flows', async () => {
       value: value2
     });
 
+    // get again
+    v = await d.subscriptions.getVcConfigRecord(vcid, key, {from: nonOwner.address});
+    expect(v).to.equal(value2);
+
     // clear
     r = await d.subscriptions.setVcConfigRecord(vcid, key, "", {from: owner.address});
     expect(r).to.have.a.vcConfigRecordChangedEvent({
@@ -143,8 +152,11 @@ describe('subscriptions-high-level-flows', async () => {
       value: ""
     });
 
+    // get again
+    v = await d.subscriptions.getVcConfigRecord(vcid, key, {from: nonOwner.address});
+    expect(v).to.equal("");
+
     // reject if set by non owner
-    const nonOwner = d.newParticipant();
     await expectRejected(d.subscriptions.setVcConfigRecord(vcid, key, value, {from: nonOwner.address}));
   });
 
