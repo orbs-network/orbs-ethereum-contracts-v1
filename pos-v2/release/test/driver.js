@@ -102,7 +102,7 @@ var Driver = /** @class */ (function () {
                         return [4 /*yield*/, eth_1.deploy('Subscriptions', [erc20.address])];
                     case 8:
                         subscriptions = _a.sent();
-                        return [4 /*yield*/, eth_1.deploy('Protocol', [accounts[0]])];
+                        return [4 /*yield*/, eth_1.deploy('Protocol', [])];
                     case 9:
                         protocol = _a.sent();
                         return [4 /*yield*/, contractRegistry.set("staking", staking.address)];

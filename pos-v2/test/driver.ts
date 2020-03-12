@@ -49,7 +49,7 @@ export class Driver {
         const elections: ElectionsContract = await deploy( "Elections", [maxCommitteeSize, maxTopologySize, minimumStake, maxDelegationRatio, voteOutThreshold, voteOutTimeout, banningThreshold]);
         const staking: StakingContract = await Driver.newStakingContract(elections.address, erc20.address);
         const subscriptions: SubscriptionsContract = await deploy( 'Subscriptions', [erc20.address] );
-        const protocol: ProtocolContract = await deploy('Protocol', [ accounts[0] ]);
+        const protocol: ProtocolContract = await deploy('Protocol', []);
 
         await contractRegistry.set("staking", staking.address);
         await contractRegistry.set("rewards", rewards.address);

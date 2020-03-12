@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 import {bn} from "./helpers";
 
-describe('protocol-contract', async () => {
+describe.only('protocol-contract', async () => {
 
   it('schedules a protocol version upgrade for the main, canary deployment subsets', async () => {
     const d = await Driver.new();

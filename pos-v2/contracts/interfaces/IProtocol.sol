@@ -17,8 +17,4 @@ interface IProtocol {
 
     /// @dev schedules a protocol version upgrade for the given deployment subset.
     function setProtocolVersion(string calldata deploymentSubset, uint protocolVersion, uint asOfBlock) external /* onlyGovernor */;
-
-    /// @dev sets a new governor for protocol upgrades
-    function setGovernor(address newGovernor) external /* onlyGovernor */;
-
 }

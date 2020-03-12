@@ -71,42 +71,27 @@
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "newGovernor",
-          "type": "address"
-        }
-      ],
-      "name": "setGovernor",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"ProtocolVersionChanged\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"}],\"name\":\"deploymentSubsetExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"newGovernor\",\"type\":\"address\"}],\"name\":\"setGovernor\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"setProtocolVersion\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"deploymentSubsetExists(string)\":{\"details\":\"returns true if the given deployment subset exists (i.e - is registered with a protocol version)\"},\"setGovernor(address)\":{\"details\":\"sets a new governor for protocol upgrades\"},\"setProtocolVersion(string,uint256,uint256)\":{\"details\":\"schedules a protocol version upgrade for the given deployment subset.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":\"IProtocol\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":{\"keccak256\":\"0x06b984f88acad8fbafe58fddc1aac1ef769b8ce364f296d4799034af5833f952\",\"urls\":[\"bzz-raw://672823801b9c6b9288f2615b9387cb8569c83ef987cbb87ad5add7e2cbdfaa94\",\"dweb:/ipfs/QmT6E8MNgCgF2QeqPcVQKLvrELdoyu2WHxet2e8DZsYBbP\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"ProtocolVersionChanged\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"}],\"name\":\"deploymentSubsetExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"setProtocolVersion\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"deploymentSubsetExists(string)\":{\"details\":\"returns true if the given deployment subset exists (i.e - is registered with a protocol version)\"},\"setProtocolVersion(string,uint256,uint256)\":{\"details\":\"schedules a protocol version upgrade for the given deployment subset.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":\"IProtocol\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":{\"keccak256\":\"0xccd5d307c5c01cb8e3eb9cd87af6b3c2e0e97cf991983ffc563a53566592b8fa\",\"urls\":[\"bzz-raw://06de507fa44639c73057dc4ef9c36d0897ead648ccc8a7b67daa109570fb5f15\",\"dweb:/ipfs/QmU4ibs8eye1vVBCevjcGFCPhh8GQ9RyjG4h2Pwpyv1j87\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.5.16;\n\ninterface IProtocol {\n\n    event ProtocolVersionChanged(string deploymentSubset, uint protocolVersion, uint asOfBlock);\n\n    /*\n     *   External methods\n     */\n\n    /// @dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)\n    function deploymentSubsetExists(string calldata deploymentSubset) external returns (bool);\n\n    /*\n     *   Governor methods\n     */\n\n    /// @dev schedules a protocol version upgrade for the given deployment subset.\n    function setProtocolVersion(string calldata deploymentSubset, uint protocolVersion, uint asOfBlock) external /* onlyGovernor */;\n\n    /// @dev sets a new governor for protocol upgrades\n    function setGovernor(address newGovernor) external /* onlyGovernor */;\n\n}\n",
+  "source": "pragma solidity 0.5.16;\n\ninterface IProtocol {\n\n    event ProtocolVersionChanged(string deploymentSubset, uint protocolVersion, uint asOfBlock);\n\n    /*\n     *   External methods\n     */\n\n    /// @dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)\n    function deploymentSubsetExists(string calldata deploymentSubset) external returns (bool);\n\n    /*\n     *   Governor methods\n     */\n\n    /// @dev schedules a protocol version upgrade for the given deployment subset.\n    function setProtocolVersion(string calldata deploymentSubset, uint protocolVersion, uint asOfBlock) external /* onlyGovernor */;\n}\n",
   "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
   "ast": {
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
     "exportedSymbols": {
       "IProtocol": [
-        6078
+        6037
       ]
     },
-    "id": 6079,
+    "id": 6038,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6048,
+        "id": 6012,
         "literals": [
           "solidity",
           "0.5",
@@ -121,9 +106,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6078,
+        "id": 6037,
         "linearizedBaseContracts": [
-          6078
+          6037
         ],
         "name": "IProtocol",
         "nodeType": "ContractDefinition",
@@ -131,20 +116,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6056,
+            "id": 6020,
             "name": "ProtocolVersionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6055,
+              "id": 6019,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6050,
+                  "id": 6014,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6056,
+                  "scope": 6020,
                   "src": "81:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -153,7 +138,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6049,
+                    "id": 6013,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "81:6:14",
@@ -167,11 +152,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6052,
+                  "id": 6016,
                   "indexed": false,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6056,
+                  "scope": 6020,
                   "src": "106:20:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -180,7 +165,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6051,
+                    "id": 6015,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "106:4:14",
@@ -194,11 +179,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6054,
+                  "id": 6018,
                   "indexed": false,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6056,
+                  "scope": 6020,
                   "src": "128:14:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -207,7 +192,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6053,
+                    "id": 6017,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "128:4:14",
@@ -227,22 +212,22 @@
           {
             "body": null,
             "documentation": "@dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)",
-            "id": 6063,
+            "id": 6027,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "deploymentSubsetExists",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6059,
+              "id": 6023,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6058,
+                  "id": 6022,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6063,
+                  "scope": 6027,
                   "src": "334:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -251,7 +236,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6057,
+                    "id": 6021,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "334:6:14",
@@ -267,15 +252,15 @@
               "src": "333:34:14"
             },
             "returnParameters": {
-              "id": 6062,
+              "id": 6026,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6061,
+                  "id": 6025,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6063,
+                  "scope": 6027,
                   "src": "386:4:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -284,7 +269,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 6060,
+                    "id": 6024,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "386:4:14",
@@ -299,7 +284,7 @@
               ],
               "src": "385:6:14"
             },
-            "scope": 6078,
+            "scope": 6037,
             "src": "302:90:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -308,22 +293,22 @@
           {
             "body": null,
             "documentation": "@dev schedules a protocol version upgrade for the given deployment subset.",
-            "id": 6072,
+            "id": 6036,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProtocolVersion",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6070,
+              "id": 6034,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6065,
+                  "id": 6029,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6072,
+                  "scope": 6036,
                   "src": "551:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -332,7 +317,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6064,
+                    "id": 6028,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "551:6:14",
@@ -346,10 +331,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6067,
+                  "id": 6031,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6072,
+                  "scope": 6036,
                   "src": "585:20:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -358,7 +343,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6066,
+                    "id": 6030,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "585:4:14",
@@ -372,10 +357,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6069,
+                  "id": 6033,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6072,
+                  "scope": 6036,
                   "src": "607:14:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -384,7 +369,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6068,
+                    "id": 6032,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "607:4:14",
@@ -400,91 +385,36 @@
               "src": "550:72:14"
             },
             "returnParameters": {
-              "id": 6071,
+              "id": 6035,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "650:0:14"
             },
-            "scope": 6078,
+            "scope": 6037,
             "src": "523:128:14",
-            "stateMutability": "nonpayable",
-            "superFunction": null,
-            "visibility": "external"
-          },
-          {
-            "body": null,
-            "documentation": "@dev sets a new governor for protocol upgrades",
-            "id": 6077,
-            "implemented": false,
-            "kind": "function",
-            "modifiers": [],
-            "name": "setGovernor",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 6075,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6074,
-                  "name": "newGovernor",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 6077,
-                  "src": "733:19:14",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
-                  },
-                  "typeName": {
-                    "id": 6073,
-                    "name": "address",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "733:7:14",
-                    "stateMutability": "nonpayable",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "732:21:14"
-            },
-            "returnParameters": {
-              "id": 6076,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "781:0:14"
-            },
-            "scope": 6078,
-            "src": "712:70:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6079,
-        "src": "25:760:14"
+        "scope": 6038,
+        "src": "25:628:14"
       }
     ],
-    "src": "0:786:14"
+    "src": "0:654:14"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
     "exportedSymbols": {
       "IProtocol": [
-        6078
+        6037
       ]
     },
-    "id": 6079,
+    "id": 6038,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6048,
+        "id": 6012,
         "literals": [
           "solidity",
           "0.5",
@@ -499,9 +429,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6078,
+        "id": 6037,
         "linearizedBaseContracts": [
-          6078
+          6037
         ],
         "name": "IProtocol",
         "nodeType": "ContractDefinition",
@@ -509,20 +439,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6056,
+            "id": 6020,
             "name": "ProtocolVersionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6055,
+              "id": 6019,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6050,
+                  "id": 6014,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6056,
+                  "scope": 6020,
                   "src": "81:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -531,7 +461,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6049,
+                    "id": 6013,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "81:6:14",
@@ -545,11 +475,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6052,
+                  "id": 6016,
                   "indexed": false,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6056,
+                  "scope": 6020,
                   "src": "106:20:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -558,7 +488,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6051,
+                    "id": 6015,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "106:4:14",
@@ -572,11 +502,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6054,
+                  "id": 6018,
                   "indexed": false,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6056,
+                  "scope": 6020,
                   "src": "128:14:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -585,7 +515,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6053,
+                    "id": 6017,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "128:4:14",
@@ -605,22 +535,22 @@
           {
             "body": null,
             "documentation": "@dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)",
-            "id": 6063,
+            "id": 6027,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "deploymentSubsetExists",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6059,
+              "id": 6023,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6058,
+                  "id": 6022,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6063,
+                  "scope": 6027,
                   "src": "334:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -629,7 +559,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6057,
+                    "id": 6021,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "334:6:14",
@@ -645,15 +575,15 @@
               "src": "333:34:14"
             },
             "returnParameters": {
-              "id": 6062,
+              "id": 6026,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6061,
+                  "id": 6025,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6063,
+                  "scope": 6027,
                   "src": "386:4:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -662,7 +592,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 6060,
+                    "id": 6024,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "386:4:14",
@@ -677,7 +607,7 @@
               ],
               "src": "385:6:14"
             },
-            "scope": 6078,
+            "scope": 6037,
             "src": "302:90:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -686,22 +616,22 @@
           {
             "body": null,
             "documentation": "@dev schedules a protocol version upgrade for the given deployment subset.",
-            "id": 6072,
+            "id": 6036,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProtocolVersion",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6070,
+              "id": 6034,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6065,
+                  "id": 6029,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6072,
+                  "scope": 6036,
                   "src": "551:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -710,7 +640,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6064,
+                    "id": 6028,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "551:6:14",
@@ -724,10 +654,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6067,
+                  "id": 6031,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6072,
+                  "scope": 6036,
                   "src": "585:20:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -736,7 +666,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6066,
+                    "id": 6030,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "585:4:14",
@@ -750,10 +680,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6069,
+                  "id": 6033,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6072,
+                  "scope": 6036,
                   "src": "607:14:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -762,7 +692,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6068,
+                    "id": 6032,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "607:4:14",
@@ -778,78 +708,23 @@
               "src": "550:72:14"
             },
             "returnParameters": {
-              "id": 6071,
+              "id": 6035,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "650:0:14"
             },
-            "scope": 6078,
+            "scope": 6037,
             "src": "523:128:14",
-            "stateMutability": "nonpayable",
-            "superFunction": null,
-            "visibility": "external"
-          },
-          {
-            "body": null,
-            "documentation": "@dev sets a new governor for protocol upgrades",
-            "id": 6077,
-            "implemented": false,
-            "kind": "function",
-            "modifiers": [],
-            "name": "setGovernor",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 6075,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 6074,
-                  "name": "newGovernor",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 6077,
-                  "src": "733:19:14",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_address",
-                    "typeString": "address"
-                  },
-                  "typeName": {
-                    "id": 6073,
-                    "name": "address",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "733:7:14",
-                    "stateMutability": "nonpayable",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_address",
-                      "typeString": "address"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "732:21:14"
-            },
-            "returnParameters": {
-              "id": 6076,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "781:0:14"
-            },
-            "scope": 6078,
-            "src": "712:70:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6079,
-        "src": "25:760:14"
+        "scope": 6038,
+        "src": "25:628:14"
       }
     ],
-    "src": "0:786:14"
+    "src": "0:654:14"
   },
   "compiler": {
     "name": "solc",
@@ -857,14 +732,11 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-11T14:45:21.668Z",
+  "updatedAt": "2020-03-12T10:18:10.844Z",
   "devdoc": {
     "methods": {
       "deploymentSubsetExists(string)": {
         "details": "returns true if the given deployment subset exists (i.e - is registered with a protocol version)"
-      },
-      "setGovernor(address)": {
-        "details": "sets a new governor for protocol upgrades"
       },
       "setProtocolVersion(string,uint256,uint256)": {
         "details": "schedules a protocol version upgrade for the given deployment subset."
