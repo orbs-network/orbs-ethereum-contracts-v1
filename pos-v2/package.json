@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "./release/test/driver.js",
-  "directories": {
-    "release": "release"
-  },
   "scripts": {
     "test": "npm run compile && mocha --exit --full-trace -r ./tsinit.js ./test/*.spec.ts --timeout 20000",
     "coverage": "solidity-coverage",
