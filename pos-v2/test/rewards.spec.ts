@@ -3,7 +3,7 @@ import 'mocha';
 import * as _ from "lodash";
 import Web3 from "web3";
 import BN from "bn.js";
-import {Driver} from "./driver";
+import {Driver, DEPLOYMENT_SUBSET_MAIN} from "./driver";
 import chai from "chai";
 import {feeAddedToBucketEvents} from "./event-parsing";
 import {evmIncreaseTime} from "./helpers";
@@ -84,7 +84,7 @@ describe('rewards-level-flows', async () => {
     await d.erc20.assign(appOwner.address, payment);
     await d.erc20.approve(subs.address, payment, {from: appOwner.address});
 
-    let r = await subs.createVC(payment, "main", {from: appOwner.address});
+    let r = await subs.createVC(payment, DEPLOYMENT_SUBSET_MAIN, {from: appOwner.address});
     let startTime = await txTimestamp(r);
 
     const feeBuckets = feeAddedToBucketEvents(r);

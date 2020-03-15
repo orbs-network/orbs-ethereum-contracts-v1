@@ -13,6 +13,7 @@ import { MonthlySubscriptionPlanContract } from "../typings/monthly-subscription
 import {ContractRegistryContract} from "../typings/contract-registry-contract";
 import {deploy, web3} from "../eth";
 import {ProtocolContract} from "../typings/protocol-contract";
+import {DEFAULT_ENCODING} from "crypto";
 
 export const DEFAULT_MINIMUM_STAKE = 100;
 export const DEFAULT_COMMITTEE_SIZE = 2;
@@ -22,7 +23,8 @@ export const DEFAULT_VOTE_OUT_THRESHOLD = 80;
 export const DEFAULT_BANNING_THRESHOLD = 80;
 export const DEFAULT_VOTE_OUT_TIMEOUT = 24*60*60;
 export const BANNING_LOCK_TIMEOUT = 7*24*60*60;
-export const MAIN_DEPLOYMENT_SUBSET_NAME = "main";
+export const DEPLOYMENT_SUBSET_MAIN = "main";
+export const DEPLOYMENT_SUBSET_CANARY = "canary";
 
 export class Driver {
     private participants: Participant[] = [];
@@ -61,7 +63,7 @@ export class Driver {
         await rewards.setContractRegistry(contractRegistry.address);
         await subscriptions.setContractRegistry(contractRegistry.address);
 
-        await protocol.setProtocolVersion(MAIN_DEPLOYMENT_SUBSET_NAME, 1, 0);
+        await protocol.setProtocolVersion(DEPLOYMENT_SUBSET_MAIN, 1, 0);
 
         return new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, protocol, contractRegistry);
     }

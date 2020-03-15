@@ -16,7 +16,8 @@ export declare const DEFAULT_VOTE_OUT_THRESHOLD = 80;
 export declare const DEFAULT_BANNING_THRESHOLD = 80;
 export declare const DEFAULT_VOTE_OUT_TIMEOUT: number;
 export declare const BANNING_LOCK_TIMEOUT: number;
-export declare const MAIN_DEPLOYMENT_SUBSET_NAME = "main";
+export declare const DEPLOYMENT_SUBSET_MAIN = "main";
+export declare const DEPLOYMENT_SUBSET_CANARY = "canary";
 export declare class Driver {
     accounts: string[];
     elections: ElectionsContract;

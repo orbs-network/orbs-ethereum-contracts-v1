@@ -150,7 +150,7 @@ describe('rewards-level-flows', function () { return __awaiter(void 0, void 0, v
                         return [4 /*yield*/, d.erc20.approve(subs.address, payment, { from: appOwner.address })];
                     case 16:
                         _s.sent();
-                        return [4 /*yield*/, subs.createVC(payment, "main", { from: appOwner.address })];
+                        return [4 /*yield*/, subs.createVC(payment, driver_1.DEPLOYMENT_SUBSET_MAIN, { from: appOwner.address })];
                     case 17:
                         r = _s.sent();
                         return [4 /*yield*/, txTimestamp(r)];

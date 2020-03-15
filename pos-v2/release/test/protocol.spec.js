@@ -48,7 +48,7 @@ chai_1.default.use(require('chai-bn')(bn_js_1.default));
 chai_1.default.use(require('./matchers'));
 var expect = chai_1.default.expect;
 var helpers_1 = require("./helpers");
-describe.only('protocol-contract', function () { return __awaiter(void 0, void 0, void 0, function () {
+describe('protocol-contract', function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         it('schedules a protocol version upgrade for the main, canary deployment subsets', function () { return __awaiter(void 0, void 0, void 0, function () {
             var d, curBlockNumber, r;
@@ -60,11 +60,11 @@ describe.only('protocol-contract', function () { return __awaiter(void 0, void 0
                         return [4 /*yield*/, new Promise(function (resolve, reject) { return eth_1.web3.eth.getBlockNumber(function (err, blockNumber) { return err ? reject(err) : resolve(blockNumber); }); })];
                     case 2:
                         curBlockNumber = _a.sent();
-                        return [4 /*yield*/, d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber + 100)];
+                        return [4 /*yield*/, d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 2, curBlockNumber + 100)];
                     case 3:
                         r = _a.sent();
                         expect(r).to.have.a.protocolChangedEvent({
-                            deploymentSubset: driver_1.MAIN_DEPLOYMENT_SUBSET_NAME,
+                            deploymentSubset: driver_1.DEPLOYMENT_SUBSET_MAIN,
                             protocolVersion: helpers_1.bn(2),
                             asOfBlock: helpers_1.bn(curBlockNumber + 100)
                         });
@@ -98,18 +98,18 @@ describe.only('protocol-contract', function () { return __awaiter(void 0, void 0
                         return [4 /*yield*/, new Promise(function (resolve, reject) { return eth_1.web3.eth.getBlockNumber(function (err, blockNumber) { return err ? reject(err) : resolve(blockNumber); }); })];
                     case 2:
                         curBlockNumber = _a.sent();
-                        return [4 /*yield*/, d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber + 100)];
+                        return [4 /*yield*/, d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 2, curBlockNumber + 100)];
                     case 3:
                         r = _a.sent();
                         expect(r).to.have.a.protocolChangedEvent({
-                            deploymentSubset: driver_1.MAIN_DEPLOYMENT_SUBSET_NAME,
+                            deploymentSubset: driver_1.DEPLOYMENT_SUBSET_MAIN,
                             protocolVersion: helpers_1.bn(2),
                             asOfBlock: helpers_1.bn(curBlockNumber + 100)
                         });
-                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 100))];
+                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 3, curBlockNumber + 100))];
                     case 4:
                         _a.sent();
-                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 99))];
+                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 3, curBlockNumber + 99))];
                     case 5:
                         _a.sent();
                         return [2 /*return*/];
@@ -126,7 +126,7 @@ describe.only('protocol-contract', function () { return __awaiter(void 0, void 0
                         return [4 /*yield*/, new Promise(function (resolve, reject) { return eth_1.web3.eth.getBlockNumber(function (err, blockNumber) { return err ? reject(err) : resolve(blockNumber); }); })];
                     case 2:
                         curBlockNumber = _a.sent();
-                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber))];
+                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 2, curBlockNumber))];
                     case 3:
                         _a.sent();
                         return [2 /*return*/];
@@ -143,18 +143,18 @@ describe.only('protocol-contract', function () { return __awaiter(void 0, void 0
                         return [4 /*yield*/, new Promise(function (resolve, reject) { return eth_1.web3.eth.getBlockNumber(function (err, blockNumber) { return err ? reject(err) : resolve(blockNumber); }); })];
                     case 2:
                         curBlockNumber = _a.sent();
-                        return [4 /*yield*/, d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 100)];
+                        return [4 /*yield*/, d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 3, curBlockNumber + 100)];
                     case 3:
                         r = _a.sent();
                         expect(r).to.have.a.protocolChangedEvent({
-                            deploymentSubset: driver_1.MAIN_DEPLOYMENT_SUBSET_NAME,
+                            deploymentSubset: driver_1.DEPLOYMENT_SUBSET_MAIN,
                             protocolVersion: helpers_1.bn(3),
                             asOfBlock: helpers_1.bn(curBlockNumber + 100)
                         });
-                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 3, curBlockNumber + 101))];
+                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 3, curBlockNumber + 101))];
                     case 4:
                         _a.sent();
-                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.MAIN_DEPLOYMENT_SUBSET_NAME, 2, curBlockNumber + 102))];
+                        return [4 /*yield*/, driver_1.expectRejected(d.protocol.setProtocolVersion(driver_1.DEPLOYMENT_SUBSET_MAIN, 2, curBlockNumber + 102))];
                     case 5:
                         _a.sent();
                         return [2 /*return*/];

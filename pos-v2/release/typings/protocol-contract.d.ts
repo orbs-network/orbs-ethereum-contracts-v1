@@ -9,6 +9,5 @@ export interface ProtocolChangedEvent {
 
 export interface ProtocolContract extends Contract {
   setProtocolVersion(deploymentSubset: string, protocolVersion: number, asOfBlock: number,params?: TransactionConfig): Promise<TransactionReceipt>;
-  setGovernor(newGovernor: string, params?: TransactionConfig): Promise<TransactionReceipt>;
   deploymentSubsetExists(deploymentSubset: string, params?: TransactionConfig): Promise<boolean>;
 }

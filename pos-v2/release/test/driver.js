@@ -52,7 +52,8 @@ exports.DEFAULT_VOTE_OUT_THRESHOLD = 80;
 exports.DEFAULT_BANNING_THRESHOLD = 80;
 exports.DEFAULT_VOTE_OUT_TIMEOUT = 24 * 60 * 60;
 exports.BANNING_LOCK_TIMEOUT = 7 * 24 * 60 * 60;
-exports.MAIN_DEPLOYMENT_SUBSET_NAME = "main";
+exports.DEPLOYMENT_SUBSET_MAIN = "main";
+exports.DEPLOYMENT_SUBSET_CANARY = "canary";
 var Driver = /** @class */ (function () {
     function Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, protocol, contractRegistry) {
         this.accounts = accounts;
@@ -129,7 +130,7 @@ var Driver = /** @class */ (function () {
                         return [4 /*yield*/, subscriptions.setContractRegistry(contractRegistry.address)];
                     case 17:
                         _a.sent();
-                        return [4 /*yield*/, protocol.setProtocolVersion(exports.MAIN_DEPLOYMENT_SUBSET_NAME, 1, 0)];
+                        return [4 /*yield*/, protocol.setProtocolVersion(exports.DEPLOYMENT_SUBSET_MAIN, 1, 0)];
                     case 18:
                         _a.sent();
                         return [2 /*return*/, new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, protocol, contractRegistry)];

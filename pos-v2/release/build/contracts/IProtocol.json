@@ -27,7 +27,7 @@
       "type": "event"
     },
     {
-      "constant": false,
+      "constant": true,
       "inputs": [
         {
           "internalType": "string",
@@ -44,7 +44,7 @@
         }
       ],
       "payable": false,
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -73,25 +73,25 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"ProtocolVersionChanged\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"}],\"name\":\"deploymentSubsetExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"setProtocolVersion\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"deploymentSubsetExists(string)\":{\"details\":\"returns true if the given deployment subset exists (i.e - is registered with a protocol version)\"},\"setProtocolVersion(string,uint256,uint256)\":{\"details\":\"schedules a protocol version upgrade for the given deployment subset.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":\"IProtocol\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":{\"keccak256\":\"0xccd5d307c5c01cb8e3eb9cd87af6b3c2e0e97cf991983ffc563a53566592b8fa\",\"urls\":[\"bzz-raw://06de507fa44639c73057dc4ef9c36d0897ead648ccc8a7b67daa109570fb5f15\",\"dweb:/ipfs/QmU4ibs8eye1vVBCevjcGFCPhh8GQ9RyjG4h2Pwpyv1j87\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"ProtocolVersionChanged\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"}],\"name\":\"deploymentSubsetExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"setProtocolVersion\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"deploymentSubsetExists(string)\":{\"details\":\"returns true if the given deployment subset exists (i.e - is registered with a protocol version)\"},\"setProtocolVersion(string,uint256,uint256)\":{\"details\":\"schedules a protocol version upgrade for the given deployment subset.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":\"IProtocol\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":{\"keccak256\":\"0x79e83f4a54672b73add6d4c3ac23c28277287cc40265fefe851baa699745f590\",\"urls\":[\"bzz-raw://30ccf6155388c2200f5b4bb93abaa3c87d5204a513d6e6975f14987d788fc7d0\",\"dweb:/ipfs/QmcHSF9q6bSURJPy79FHz8ZU2QTd7ve4T7BrQa96eo46qF\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity 0.5.16;\n\ninterface IProtocol {\n\n    event ProtocolVersionChanged(string deploymentSubset, uint protocolVersion, uint asOfBlock);\n\n    /*\n     *   External methods\n     */\n\n    /// @dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)\n    function deploymentSubsetExists(string calldata deploymentSubset) external returns (bool);\n\n    /*\n     *   Governor methods\n     */\n\n    /// @dev schedules a protocol version upgrade for the given deployment subset.\n    function setProtocolVersion(string calldata deploymentSubset, uint protocolVersion, uint asOfBlock) external /* onlyGovernor */;\n}\n",
+  "source": "pragma solidity 0.5.16;\n\ninterface IProtocol {\n    event ProtocolVersionChanged(string deploymentSubset, uint256 protocolVersion, uint256 asOfBlock);\n\n    /*\n     *   External methods\n     */\n\n    /// @dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)\n    function deploymentSubsetExists(string calldata deploymentSubset) external view returns (bool);\n\n    /*\n     *   Governor methods\n     */\n\n    /// @dev schedules a protocol version upgrade for the given deployment subset.\n    function setProtocolVersion(string calldata deploymentSubset, uint256 protocolVersion, uint256 asOfBlock) external /* onlyOwner */;\n}\n",
   "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
   "ast": {
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
     "exportedSymbols": {
       "IProtocol": [
-        6037
+        6026
       ]
     },
-    "id": 6038,
+    "id": 6027,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6012,
+        "id": 6001,
         "literals": [
           "solidity",
           "0.5",
@@ -106,9 +106,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6037,
+        "id": 6026,
         "linearizedBaseContracts": [
-          6037
+          6026
         ],
         "name": "IProtocol",
         "nodeType": "ContractDefinition",
@@ -116,21 +116,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6020,
+            "id": 6009,
             "name": "ProtocolVersionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6019,
+              "id": 6008,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6014,
+                  "id": 6003,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6020,
-                  "src": "81:23:14",
+                  "scope": 6009,
+                  "src": "80:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -138,10 +138,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6013,
+                    "id": 6002,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "81:6:14",
+                    "src": "80:6:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -152,12 +152,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6016,
+                  "id": 6005,
                   "indexed": false,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6020,
-                  "src": "106:20:14",
+                  "scope": 6009,
+                  "src": "105:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -165,10 +165,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6015,
-                    "name": "uint",
+                    "id": 6004,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "106:4:14",
+                    "src": "105:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -179,12 +179,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6018,
+                  "id": 6007,
                   "indexed": false,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6020,
-                  "src": "128:14:14",
+                  "scope": 6009,
+                  "src": "130:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -192,10 +192,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6017,
-                    "name": "uint",
+                    "id": 6006,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "128:4:14",
+                    "src": "130:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -205,30 +205,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "80:63:14"
+              "src": "79:69:14"
             },
-            "src": "52:92:14"
+            "src": "51:98:14"
           },
           {
             "body": null,
             "documentation": "@dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)",
-            "id": 6027,
+            "id": 6016,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "deploymentSubsetExists",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6023,
+              "id": 6012,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6022,
+                  "id": 6011,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6027,
-                  "src": "334:32:14",
+                  "scope": 6016,
+                  "src": "339:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -236,10 +236,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6021,
+                    "id": 6010,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "334:6:14",
+                    "src": "339:6:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -249,19 +249,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "333:34:14"
+              "src": "338:34:14"
             },
             "returnParameters": {
-              "id": 6026,
+              "id": 6015,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6025,
+                  "id": 6014,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6027,
-                  "src": "386:4:14",
+                  "scope": 6016,
+                  "src": "396:4:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -269,10 +269,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 6024,
+                    "id": 6013,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "386:4:14",
+                    "src": "396:4:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -282,34 +282,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "385:6:14"
+              "src": "395:6:14"
             },
-            "scope": 6037,
-            "src": "302:90:14",
-            "stateMutability": "nonpayable",
+            "scope": 6026,
+            "src": "307:95:14",
+            "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           },
           {
             "body": null,
             "documentation": "@dev schedules a protocol version upgrade for the given deployment subset.",
-            "id": 6036,
+            "id": 6025,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProtocolVersion",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6034,
+              "id": 6023,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6029,
+                  "id": 6018,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6036,
-                  "src": "551:32:14",
+                  "scope": 6025,
+                  "src": "561:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -317,10 +317,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6028,
+                    "id": 6017,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "551:6:14",
+                    "src": "561:6:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -331,11 +331,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6031,
+                  "id": 6020,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6036,
-                  "src": "585:20:14",
+                  "scope": 6025,
+                  "src": "595:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -343,10 +343,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6030,
-                    "name": "uint",
+                    "id": 6019,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "585:4:14",
+                    "src": "595:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -357,11 +357,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6033,
+                  "id": 6022,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6036,
-                  "src": "607:14:14",
+                  "scope": 6025,
+                  "src": "620:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -369,10 +369,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6032,
-                    "name": "uint",
+                    "id": 6021,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "607:4:14",
+                    "src": "620:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -382,39 +382,39 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "550:72:14"
+              "src": "560:78:14"
             },
             "returnParameters": {
-              "id": 6035,
+              "id": 6024,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "650:0:14"
+              "src": "663:0:14"
             },
-            "scope": 6037,
-            "src": "523:128:14",
+            "scope": 6026,
+            "src": "533:131:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6038,
-        "src": "25:628:14"
+        "scope": 6027,
+        "src": "25:641:14"
       }
     ],
-    "src": "0:654:14"
+    "src": "0:667:14"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
     "exportedSymbols": {
       "IProtocol": [
-        6037
+        6026
       ]
     },
-    "id": 6038,
+    "id": 6027,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6012,
+        "id": 6001,
         "literals": [
           "solidity",
           "0.5",
@@ -429,9 +429,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6037,
+        "id": 6026,
         "linearizedBaseContracts": [
-          6037
+          6026
         ],
         "name": "IProtocol",
         "nodeType": "ContractDefinition",
@@ -439,21 +439,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6020,
+            "id": 6009,
             "name": "ProtocolVersionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6019,
+              "id": 6008,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6014,
+                  "id": 6003,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6020,
-                  "src": "81:23:14",
+                  "scope": 6009,
+                  "src": "80:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -461,10 +461,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6013,
+                    "id": 6002,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "81:6:14",
+                    "src": "80:6:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -475,12 +475,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6016,
+                  "id": 6005,
                   "indexed": false,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6020,
-                  "src": "106:20:14",
+                  "scope": 6009,
+                  "src": "105:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -488,10 +488,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6015,
-                    "name": "uint",
+                    "id": 6004,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "106:4:14",
+                    "src": "105:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -502,12 +502,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 6018,
+                  "id": 6007,
                   "indexed": false,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6020,
-                  "src": "128:14:14",
+                  "scope": 6009,
+                  "src": "130:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -515,10 +515,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6017,
-                    "name": "uint",
+                    "id": 6006,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "128:4:14",
+                    "src": "130:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -528,30 +528,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "80:63:14"
+              "src": "79:69:14"
             },
-            "src": "52:92:14"
+            "src": "51:98:14"
           },
           {
             "body": null,
             "documentation": "@dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)",
-            "id": 6027,
+            "id": 6016,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "deploymentSubsetExists",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6023,
+              "id": 6012,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6022,
+                  "id": 6011,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6027,
-                  "src": "334:32:14",
+                  "scope": 6016,
+                  "src": "339:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -559,10 +559,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6021,
+                    "id": 6010,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "334:6:14",
+                    "src": "339:6:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -572,19 +572,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "333:34:14"
+              "src": "338:34:14"
             },
             "returnParameters": {
-              "id": 6026,
+              "id": 6015,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6025,
+                  "id": 6014,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6027,
-                  "src": "386:4:14",
+                  "scope": 6016,
+                  "src": "396:4:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -592,10 +592,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 6024,
+                    "id": 6013,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "386:4:14",
+                    "src": "396:4:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -605,34 +605,34 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "385:6:14"
+              "src": "395:6:14"
             },
-            "scope": 6037,
-            "src": "302:90:14",
-            "stateMutability": "nonpayable",
+            "scope": 6026,
+            "src": "307:95:14",
+            "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           },
           {
             "body": null,
             "documentation": "@dev schedules a protocol version upgrade for the given deployment subset.",
-            "id": 6036,
+            "id": 6025,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProtocolVersion",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6034,
+              "id": 6023,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6029,
+                  "id": 6018,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6036,
-                  "src": "551:32:14",
+                  "scope": 6025,
+                  "src": "561:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -640,10 +640,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6028,
+                    "id": 6017,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "551:6:14",
+                    "src": "561:6:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -654,11 +654,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6031,
+                  "id": 6020,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6036,
-                  "src": "585:20:14",
+                  "scope": 6025,
+                  "src": "595:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -666,10 +666,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6030,
-                    "name": "uint",
+                    "id": 6019,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "585:4:14",
+                    "src": "595:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -680,11 +680,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6033,
+                  "id": 6022,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6036,
-                  "src": "607:14:14",
+                  "scope": 6025,
+                  "src": "620:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -692,10 +692,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6032,
-                    "name": "uint",
+                    "id": 6021,
+                    "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "607:4:14",
+                    "src": "620:7:14",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -705,26 +705,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "550:72:14"
+              "src": "560:78:14"
             },
             "returnParameters": {
-              "id": 6035,
+              "id": 6024,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "650:0:14"
+              "src": "663:0:14"
             },
-            "scope": 6037,
-            "src": "523:128:14",
+            "scope": 6026,
+            "src": "533:131:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6038,
-        "src": "25:628:14"
+        "scope": 6027,
+        "src": "25:641:14"
       }
     ],
-    "src": "0:654:14"
+    "src": "0:667:14"
   },
   "compiler": {
     "name": "solc",
@@ -732,7 +732,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-12T10:18:10.844Z",
+  "updatedAt": "2020-03-15T16:20:03.729Z",
   "devdoc": {
     "methods": {
       "deploymentSubsetExists(string)": {
