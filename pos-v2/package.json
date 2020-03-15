@@ -1,8 +1,8 @@
 {
   "name": "pos-v2",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "",
-  "main": "./release/test/driver.js",
+  "main": "./release/test/test-kit.js",
   "scripts": {
     "test": "npm run compile && mocha --exit --full-trace -r ./tsinit.js ./test/*.spec.ts --timeout 20000",
     "coverage": "solidity-coverage",
@@ -32,7 +32,9 @@
     "bn.js": "^5.1.1",
     "chai": "^4.2.0",
     "chai-bn": "^0.2.0",
+    "node-fetch": "^2.6.0",
     "truffle-hdwallet-provider": "1.0.3",
+    "ts-retry-promise": "^0.2.0",
     "web3": "1.2.6",
     "web3-core": "^1.2.6",
     "web3-eth-contract": "^1.2.6"

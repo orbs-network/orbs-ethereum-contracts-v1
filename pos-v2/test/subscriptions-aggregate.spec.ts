@@ -12,6 +12,7 @@ import path from "path";
 import fs from "fs";
 import chalk from "chalk";
 import { Contract, EventData } from "web3-eth-contract";
+import { createVC } from './test-kit';
 
 chai.use(require("chai-bn")(BN));
 chai.use(require("./matchers"));
@@ -25,21 +26,9 @@ describe("subscriptions aggregation", async () => {
   it("reads VCs from SubscriptionChanged events", async () => {
     const d = await Driver.new();
     const numnberOfVChains = 5;
-    const monthlyRate = new BN(1000);
-    const firstPayment = monthlyRate.mul(new BN(2));
 
-    const subscriber = await d.newSubscriber("defaultTier", monthlyRate);
     for (let i of new Array(numnberOfVChains)) {
-      // buy subscription for a new VC
-      const appOwner = d.newParticipant();
-      await d.erc20.assign(appOwner.address, firstPayment); // TODO extract assign+approve to driver in two places
-      await d.erc20.approve(subscriber.address, firstPayment, {
-        from: appOwner.address
-      });
-
-      let r = await subscriber.createVC(firstPayment, "main",  {
-        from: appOwner.address
-      });
+      let r = await createVC(d);
       expect(r).to.have.subscriptionChangedEvent();
     }
 

@@ -44,6 +44,7 @@ var bn_js_1 = __importDefault(require("bn.js"));
 var driver_1 = require("./driver");
 var chai_1 = __importDefault(require("chai"));
 var rimraf_1 = __importDefault(require("rimraf"));
+var test_kit_1 = require("./test-kit");
 chai_1.default.use(require("chai-bn")(bn_js_1.default));
 chai_1.default.use(require("./matchers"));
 var expect = chai_1.default.expect;
@@ -53,47 +54,31 @@ var rmDir = function (path) {
 describe("subscriptions aggregation", function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         it("reads VCs from SubscriptionChanged events", function () { return __awaiter(void 0, void 0, void 0, function () {
-            var d, numnberOfVChains, monthlyRate, firstPayment, subscriber, _i, _a, i, appOwner, r, events, vcs;
+            var d, numnberOfVChains, _i, _a, i, r, events, vcs;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, driver_1.Driver.new()];
                     case 1:
                         d = _b.sent();
                         numnberOfVChains = 5;
-                        monthlyRate = new bn_js_1.default(1000);
-                        firstPayment = monthlyRate.mul(new bn_js_1.default(2));
-                        return [4 /*yield*/, d.newSubscriber("defaultTier", monthlyRate)];
-                    case 2:
-                        subscriber = _b.sent();
                         _i = 0, _a = new Array(numnberOfVChains);
-                        _b.label = 3;
-                    case 3:
-                        if (!(_i < _a.length)) return [3 /*break*/, 8];
+                        _b.label = 2;
+                    case 2:
+                        if (!(_i < _a.length)) return [3 /*break*/, 5];
                         i = _a[_i];
-                        appOwner = d.newParticipant();
-                        return [4 /*yield*/, d.erc20.assign(appOwner.address, firstPayment)];
-                    case 4:
-                        _b.sent(); // TODO extract assign+approve to driver in two places
-                        return [4 /*yield*/, d.erc20.approve(subscriber.address, firstPayment, {
-                                from: appOwner.address
-                            })];
-                    case 5:
-                        _b.sent();
-                        return [4 /*yield*/, subscriber.createVC(firstPayment, "main", {
-                                from: appOwner.address
-                            })];
-                    case 6:
+                        return [4 /*yield*/, test_kit_1.createVC(d)];
+                    case 3:
                         r = _b.sent();
                         expect(r).to.have.subscriptionChangedEvent();
-                        _b.label = 7;
-                    case 7:
+                        _b.label = 4;
+                    case 4:
                         _i++;
-                        return [3 /*break*/, 3];
-                    case 8: return [4 /*yield*/, d.subscriptions.web3Contract.getPastEvents("SubscriptionChanged", {
+                        return [3 /*break*/, 2];
+                    case 5: return [4 /*yield*/, d.subscriptions.web3Contract.getPastEvents("SubscriptionChanged", {
                             fromBlock: 0,
                             toBlock: "latest"
                         })];
-                    case 9:
+                    case 6:
                         events = _b.sent();
                         vcs = events.map(function (event) { return event.returnValues.vcid; });
                         expect(vcs.length).to.eql(numnberOfVChains);

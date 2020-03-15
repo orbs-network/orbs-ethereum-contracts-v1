@@ -107,7 +107,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 98,
-        "sourceUnit": 5894,
+        "sourceUnit": 5854,
         "src": "24:44:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -121,10 +121,10 @@
               "id": 3,
               "name": "IContractRegistry",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5893,
+              "referencedDeclaration": 5853,
               "src": "99:17:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                "typeIdentifier": "t_contract$_IContractRegistry_$5853",
                 "typeString": "contract IContractRegistry"
               }
             },
@@ -134,7 +134,7 @@
           }
         ],
         "contractDependencies": [
-          5893
+          5853
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -142,7 +142,7 @@
         "id": 97,
         "linearizedBaseContracts": [
           97,
-          5893
+          5853
         ],
         "name": "ContractRegistry",
         "nodeType": "ContractDefinition",
@@ -249,7 +249,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7183,
+                            "referencedDeclaration": 7138,
                             "src": "218:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -325,10 +325,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "210:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -505,10 +505,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "335:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -766,10 +766,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "518:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -913,7 +913,7 @@
                       "name": "ContractAddressUpdated",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5878,
+                      "referencedDeclaration": 5838,
                       "src": "616:22:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_string_memory_ptr_$_t_address_$returns$__$",
@@ -1036,7 +1036,7 @@
             "scope": 97,
             "src": "435:227:0",
             "stateMutability": "nonpayable",
-            "superFunction": 5885,
+            "superFunction": 5845,
             "visibility": "external"
           },
           {
@@ -1248,10 +1248,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "786:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1374,7 +1374,7 @@
             "scope": 97,
             "src": "665:206:0",
             "stateMutability": "view",
-            "superFunction": 5892,
+            "superFunction": 5852,
             "visibility": "external"
           }
         ],
@@ -1410,7 +1410,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 98,
-        "sourceUnit": 5894,
+        "sourceUnit": 5854,
         "src": "24:44:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1424,10 +1424,10 @@
               "id": 3,
               "name": "IContractRegistry",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 5893,
+              "referencedDeclaration": 5853,
               "src": "99:17:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                "typeIdentifier": "t_contract$_IContractRegistry_$5853",
                 "typeString": "contract IContractRegistry"
               }
             },
@@ -1437,7 +1437,7 @@
           }
         ],
         "contractDependencies": [
-          5893
+          5853
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -1445,7 +1445,7 @@
         "id": 97,
         "linearizedBaseContracts": [
           97,
-          5893
+          5853
         ],
         "name": "ContractRegistry",
         "nodeType": "ContractDefinition",
@@ -1552,7 +1552,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 7183,
+                            "referencedDeclaration": 7138,
                             "src": "218:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -1628,10 +1628,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "210:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1808,10 +1808,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "335:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2069,10 +2069,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "518:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2216,7 +2216,7 @@
                       "name": "ContractAddressUpdated",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 5878,
+                      "referencedDeclaration": 5838,
                       "src": "616:22:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_string_memory_ptr_$_t_address_$returns$__$",
@@ -2339,7 +2339,7 @@
             "scope": 97,
             "src": "435:227:0",
             "stateMutability": "nonpayable",
-            "superFunction": 5885,
+            "superFunction": 5845,
             "visibility": "external"
           },
           {
@@ -2551,10 +2551,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        7186,
-                        7187
+                        7141,
+                        7142
                       ],
-                      "referencedDeclaration": 7187,
+                      "referencedDeclaration": 7142,
                       "src": "786:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2677,7 +2677,7 @@
             "scope": 97,
             "src": "665:206:0",
             "stateMutability": "view",
-            "superFunction": 5892,
+            "superFunction": 5852,
             "visibility": "external"
           }
         ],
@@ -2693,7 +2693,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-11T14:45:21.503Z",
+  "updatedAt": "2020-03-15T18:47:13.248Z",
   "devdoc": {
     "methods": {}
   },

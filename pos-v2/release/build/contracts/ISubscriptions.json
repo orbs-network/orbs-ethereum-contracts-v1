@@ -341,14 +341,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/ISubscriptions.sol",
     "exportedSymbols": {
       "ISubscriptions": [
-        6293
+        6248
       ]
     },
-    "id": 6294,
+    "id": 6249,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6180,
+        "id": 6135,
         "literals": [
           "solidity",
           "0.5",
@@ -360,10 +360,10 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
         "file": "./IRewards.sol",
-        "id": 6181,
+        "id": 6136,
         "nodeType": "ImportDirective",
-        "scope": 6294,
-        "sourceUnit": 6179,
+        "scope": 6249,
+        "sourceUnit": 6134,
         "src": "25:24:16",
         "symbolAliases": [],
         "unitAlias": ""
@@ -374,9 +374,9 @@
         "contractKind": "interface",
         "documentation": "@title Subscriptions contract interface",
         "fullyImplemented": false,
-        "id": 6293,
+        "id": 6248,
         "linearizedBaseContracts": [
-          6293
+          6248
         ],
         "name": "ISubscriptions",
         "nodeType": "ContractDefinition",
@@ -384,20 +384,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6193,
+            "id": 6148,
             "name": "SubscriptionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6192,
+              "id": 6147,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6183,
+                  "id": 6138,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "152:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -406,7 +406,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6182,
+                    "id": 6137,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "152:7:16",
@@ -420,11 +420,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6185,
+                  "id": 6140,
                   "indexed": false,
                   "name": "genRef",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "166:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -433,7 +433,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6184,
+                    "id": 6139,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "166:7:16",
@@ -447,11 +447,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6187,
+                  "id": 6142,
                   "indexed": false,
                   "name": "expiresAt",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "182:17:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -460,7 +460,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6186,
+                    "id": 6141,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "182:7:16",
@@ -474,11 +474,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6189,
+                  "id": 6144,
                   "indexed": false,
                   "name": "tier",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "201:11:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -487,7 +487,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6188,
+                    "id": 6143,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "201:6:16",
@@ -501,11 +501,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6191,
+                  "id": 6146,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "214:23:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -514,7 +514,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6190,
+                    "id": 6145,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "214:6:16",
@@ -534,20 +534,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6205,
+            "id": 6160,
             "name": "Payment",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6204,
+              "id": 6159,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6195,
+                  "id": 6150,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "258:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -556,7 +556,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6194,
+                    "id": 6149,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "258:7:16",
@@ -570,11 +570,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6197,
+                  "id": 6152,
                   "indexed": false,
                   "name": "by",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "272:10:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -583,7 +583,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6196,
+                    "id": 6151,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "272:7:16",
@@ -598,11 +598,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6199,
+                  "id": 6154,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "284:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -611,7 +611,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6198,
+                    "id": 6153,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "284:7:16",
@@ -625,11 +625,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6201,
+                  "id": 6156,
                   "indexed": false,
                   "name": "tier",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "300:11:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -638,7 +638,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6200,
+                    "id": 6155,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "300:6:16",
@@ -652,11 +652,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6203,
+                  "id": 6158,
                   "indexed": false,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "313:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -665,7 +665,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6202,
+                    "id": 6157,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "313:7:16",
@@ -685,20 +685,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6213,
+            "id": 6168,
             "name": "VcConfigRecordChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6212,
+              "id": 6167,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6207,
+                  "id": 6162,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6213,
+                  "scope": 6168,
                   "src": "360:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -707,7 +707,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6206,
+                    "id": 6161,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "360:7:16",
@@ -721,11 +721,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6209,
+                  "id": 6164,
                   "indexed": false,
                   "name": "key",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6213,
+                  "scope": 6168,
                   "src": "374:10:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -734,7 +734,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6208,
+                    "id": 6163,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "374:6:16",
@@ -748,11 +748,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6211,
+                  "id": 6166,
                   "indexed": false,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6213,
+                  "scope": 6168,
                   "src": "386:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -761,7 +761,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6210,
+                    "id": 6165,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "386:6:16",
@@ -781,20 +781,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6217,
+            "id": 6172,
             "name": "SubscriberAdded",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6216,
+              "id": 6171,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6215,
+                  "id": 6170,
                   "indexed": false,
                   "name": "subscriber",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6217,
+                  "scope": 6172,
                   "src": "427:18:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -803,7 +803,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6214,
+                    "id": 6169,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "427:7:16",
@@ -824,20 +824,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6223,
+            "id": 6178,
             "name": "VcCreated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6222,
+              "id": 6177,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6219,
+                  "id": 6174,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6223,
+                  "scope": 6178,
                   "src": "468:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -846,7 +846,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6218,
+                    "id": 6173,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "468:7:16",
@@ -860,11 +860,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6221,
+                  "id": 6176,
                   "indexed": false,
                   "name": "owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6223,
+                  "scope": 6178,
                   "src": "482:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -873,7 +873,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6220,
+                    "id": 6175,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "482:7:16",
@@ -894,20 +894,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6231,
+            "id": 6186,
             "name": "VcOwnerChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6230,
+              "id": 6185,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6225,
+                  "id": 6180,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6231,
+                  "scope": 6186,
                   "src": "523:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -916,7 +916,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6224,
+                    "id": 6179,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "523:7:16",
@@ -930,11 +930,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6227,
+                  "id": 6182,
                   "indexed": false,
                   "name": "previousOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6231,
+                  "scope": 6186,
                   "src": "537:21:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -943,7 +943,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6226,
+                    "id": 6181,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "537:7:16",
@@ -958,11 +958,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6229,
+                  "id": 6184,
                   "indexed": false,
                   "name": "newOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6231,
+                  "scope": 6186,
                   "src": "560:16:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -971,7 +971,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6228,
+                    "id": 6183,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "560:7:16",
@@ -992,22 +992,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Creates a new VC",
-            "id": 6248,
+            "id": 6203,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "createVC",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6242,
+              "id": 6197,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6233,
+                  "id": 6188,
                   "name": "tier",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "758:20:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1016,7 +1016,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6232,
+                    "id": 6187,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "758:6:16",
@@ -1030,10 +1030,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6235,
+                  "id": 6190,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "780:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1042,7 +1042,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6234,
+                    "id": 6189,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "780:7:16",
@@ -1056,10 +1056,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6237,
+                  "id": 6192,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "794:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1068,7 +1068,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6236,
+                    "id": 6191,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "794:7:16",
@@ -1082,10 +1082,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6239,
+                  "id": 6194,
                   "name": "owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "810:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1094,7 +1094,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6238,
+                    "id": 6193,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "810:7:16",
@@ -1109,10 +1109,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6241,
+                  "id": 6196,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "825:32:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1121,7 +1121,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6240,
+                    "id": 6195,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "825:6:16",
@@ -1137,15 +1137,15 @@
               "src": "757:101:16"
             },
             "returnParameters": {
-              "id": 6247,
+              "id": 6202,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6244,
+                  "id": 6199,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "877:4:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1154,7 +1154,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6243,
+                    "id": 6198,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "877:4:16",
@@ -1168,10 +1168,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6246,
+                  "id": 6201,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "883:4:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1180,7 +1180,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6245,
+                    "id": 6200,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "883:4:16",
@@ -1195,7 +1195,7 @@
               ],
               "src": "876:12:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "740:149:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1204,22 +1204,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Extends the subscription of an existing VC.",
-            "id": 6257,
+            "id": 6212,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "extendSubscription",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6255,
+              "id": 6210,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6250,
+                  "id": 6205,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6257,
+                  "scope": 6212,
                   "src": "1038:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1228,7 +1228,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6249,
+                    "id": 6204,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1038:7:16",
@@ -1242,10 +1242,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6252,
+                  "id": 6207,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6257,
+                  "scope": 6212,
                   "src": "1052:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1254,7 +1254,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6251,
+                    "id": 6206,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1052:7:16",
@@ -1268,10 +1268,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6254,
+                  "id": 6209,
                   "name": "payer",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6257,
+                  "scope": 6212,
                   "src": "1068:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1280,7 +1280,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6253,
+                    "id": 6208,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1068:7:16",
@@ -1297,12 +1297,12 @@
               "src": "1037:45:16"
             },
             "returnParameters": {
-              "id": 6256,
+              "id": 6211,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1091:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1010:82:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1311,22 +1311,22 @@
           {
             "body": null,
             "documentation": "@dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.",
-            "id": 6266,
+            "id": 6221,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setVcConfigRecord",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6264,
+              "id": 6219,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6259,
+                  "id": 6214,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6266,
+                  "scope": 6221,
                   "src": "1221:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1335,7 +1335,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6258,
+                    "id": 6213,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1221:7:16",
@@ -1349,10 +1349,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6261,
+                  "id": 6216,
                   "name": "key",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6266,
+                  "scope": 6221,
                   "src": "1235:19:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1361,7 +1361,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6260,
+                    "id": 6215,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1235:6:16",
@@ -1375,10 +1375,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6263,
+                  "id": 6218,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6266,
+                  "scope": 6221,
                   "src": "1256:21:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1387,7 +1387,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6262,
+                    "id": 6217,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1256:6:16",
@@ -1403,12 +1403,12 @@
               "src": "1220:58:16"
             },
             "returnParameters": {
-              "id": 6265,
+              "id": 6220,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1305:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1194:112:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1417,22 +1417,22 @@
           {
             "body": null,
             "documentation": "@dev returns the value of a VC config record",
-            "id": 6275,
+            "id": 6230,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getVcConfigRecord",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6271,
+              "id": 6226,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6268,
+                  "id": 6223,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6275,
+                  "scope": 6230,
                   "src": "1392:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1441,7 +1441,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6267,
+                    "id": 6222,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1392:7:16",
@@ -1455,10 +1455,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6270,
+                  "id": 6225,
                   "name": "key",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6275,
+                  "scope": 6230,
                   "src": "1406:19:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1467,7 +1467,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6269,
+                    "id": 6224,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1406:6:16",
@@ -1483,15 +1483,15 @@
               "src": "1391:35:16"
             },
             "returnParameters": {
-              "id": 6274,
+              "id": 6229,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6273,
+                  "id": 6228,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6275,
+                  "scope": 6230,
                   "src": "1450:13:16",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -1500,7 +1500,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6272,
+                    "id": 6227,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1450:6:16",
@@ -1515,7 +1515,7 @@
               ],
               "src": "1449:15:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1365:100:16",
             "stateMutability": "view",
             "superFunction": null,
@@ -1524,22 +1524,22 @@
           {
             "body": null,
             "documentation": "@dev Transfers VC ownership to a new owner (can only be called by the current owner)",
-            "id": 6282,
+            "id": 6237,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setVcOwner",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6280,
+              "id": 6235,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6277,
+                  "id": 6232,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6282,
+                  "scope": 6237,
                   "src": "1584:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1548,7 +1548,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6276,
+                    "id": 6231,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1584:7:16",
@@ -1562,10 +1562,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6279,
+                  "id": 6234,
                   "name": "owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6282,
+                  "scope": 6237,
                   "src": "1598:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1574,7 +1574,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6278,
+                    "id": 6233,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1598:7:16",
@@ -1591,12 +1591,12 @@
               "src": "1583:29:16"
             },
             "returnParameters": {
-              "id": 6281,
+              "id": 6236,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1639:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1564:76:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1605,22 +1605,22 @@
           {
             "body": null,
             "documentation": "@dev Called by the owner to authorize a subscriber (plan)",
-            "id": 6287,
+            "id": 6242,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "addSubscriber",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6285,
+              "id": 6240,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6284,
+                  "id": 6239,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6287,
+                  "scope": 6242,
                   "src": "1779:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1629,7 +1629,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6283,
+                    "id": 6238,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1779:7:16",
@@ -1646,12 +1646,12 @@
               "src": "1778:14:16"
             },
             "returnParameters": {
-              "id": 6286,
+              "id": 6241,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1817:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1756:62:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1660,38 +1660,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address of the contract registry",
-            "id": 6292,
+            "id": 6247,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6290,
+              "id": 6245,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6289,
+                  "id": 6244,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6292,
+                  "scope": 6247,
                   "src": "1911:35:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5853",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6288,
+                    "id": 6243,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5893,
+                    "referencedDeclaration": 5853,
                     "src": "1911:17:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5853",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -1702,19 +1702,19 @@
               "src": "1910:37:16"
             },
             "returnParameters": {
-              "id": 6291,
+              "id": 6246,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1972:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1882:91:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6294,
+        "scope": 6249,
         "src": "95:1881:16"
       }
     ],
@@ -1724,14 +1724,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/ISubscriptions.sol",
     "exportedSymbols": {
       "ISubscriptions": [
-        6293
+        6248
       ]
     },
-    "id": 6294,
+    "id": 6249,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6180,
+        "id": 6135,
         "literals": [
           "solidity",
           "0.5",
@@ -1743,10 +1743,10 @@
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
         "file": "./IRewards.sol",
-        "id": 6181,
+        "id": 6136,
         "nodeType": "ImportDirective",
-        "scope": 6294,
-        "sourceUnit": 6179,
+        "scope": 6249,
+        "sourceUnit": 6134,
         "src": "25:24:16",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1757,9 +1757,9 @@
         "contractKind": "interface",
         "documentation": "@title Subscriptions contract interface",
         "fullyImplemented": false,
-        "id": 6293,
+        "id": 6248,
         "linearizedBaseContracts": [
-          6293
+          6248
         ],
         "name": "ISubscriptions",
         "nodeType": "ContractDefinition",
@@ -1767,20 +1767,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6193,
+            "id": 6148,
             "name": "SubscriptionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6192,
+              "id": 6147,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6183,
+                  "id": 6138,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "152:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1789,7 +1789,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6182,
+                    "id": 6137,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "152:7:16",
@@ -1803,11 +1803,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6185,
+                  "id": 6140,
                   "indexed": false,
                   "name": "genRef",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "166:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1816,7 +1816,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6184,
+                    "id": 6139,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "166:7:16",
@@ -1830,11 +1830,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6187,
+                  "id": 6142,
                   "indexed": false,
                   "name": "expiresAt",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "182:17:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1843,7 +1843,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6186,
+                    "id": 6141,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "182:7:16",
@@ -1857,11 +1857,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6189,
+                  "id": 6144,
                   "indexed": false,
                   "name": "tier",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "201:11:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1870,7 +1870,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6188,
+                    "id": 6143,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "201:6:16",
@@ -1884,11 +1884,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6191,
+                  "id": 6146,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6193,
+                  "scope": 6148,
                   "src": "214:23:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1897,7 +1897,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6190,
+                    "id": 6145,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "214:6:16",
@@ -1917,20 +1917,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6205,
+            "id": 6160,
             "name": "Payment",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6204,
+              "id": 6159,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6195,
+                  "id": 6150,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "258:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1939,7 +1939,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6194,
+                    "id": 6149,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "258:7:16",
@@ -1953,11 +1953,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6197,
+                  "id": 6152,
                   "indexed": false,
                   "name": "by",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "272:10:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1966,7 +1966,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6196,
+                    "id": 6151,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "272:7:16",
@@ -1981,11 +1981,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6199,
+                  "id": 6154,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "284:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1994,7 +1994,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6198,
+                    "id": 6153,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "284:7:16",
@@ -2008,11 +2008,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6201,
+                  "id": 6156,
                   "indexed": false,
                   "name": "tier",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "300:11:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2021,7 +2021,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6200,
+                    "id": 6155,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "300:6:16",
@@ -2035,11 +2035,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6203,
+                  "id": 6158,
                   "indexed": false,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6205,
+                  "scope": 6160,
                   "src": "313:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2048,7 +2048,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6202,
+                    "id": 6157,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "313:7:16",
@@ -2068,20 +2068,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6213,
+            "id": 6168,
             "name": "VcConfigRecordChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6212,
+              "id": 6167,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6207,
+                  "id": 6162,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6213,
+                  "scope": 6168,
                   "src": "360:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2090,7 +2090,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6206,
+                    "id": 6161,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "360:7:16",
@@ -2104,11 +2104,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6209,
+                  "id": 6164,
                   "indexed": false,
                   "name": "key",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6213,
+                  "scope": 6168,
                   "src": "374:10:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2117,7 +2117,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6208,
+                    "id": 6163,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "374:6:16",
@@ -2131,11 +2131,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6211,
+                  "id": 6166,
                   "indexed": false,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6213,
+                  "scope": 6168,
                   "src": "386:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2144,7 +2144,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6210,
+                    "id": 6165,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "386:6:16",
@@ -2164,20 +2164,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6217,
+            "id": 6172,
             "name": "SubscriberAdded",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6216,
+              "id": 6171,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6215,
+                  "id": 6170,
                   "indexed": false,
                   "name": "subscriber",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6217,
+                  "scope": 6172,
                   "src": "427:18:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2186,7 +2186,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6214,
+                    "id": 6169,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "427:7:16",
@@ -2207,20 +2207,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6223,
+            "id": 6178,
             "name": "VcCreated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6222,
+              "id": 6177,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6219,
+                  "id": 6174,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6223,
+                  "scope": 6178,
                   "src": "468:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2229,7 +2229,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6218,
+                    "id": 6173,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "468:7:16",
@@ -2243,11 +2243,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6221,
+                  "id": 6176,
                   "indexed": false,
                   "name": "owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6223,
+                  "scope": 6178,
                   "src": "482:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2256,7 +2256,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6220,
+                    "id": 6175,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "482:7:16",
@@ -2277,20 +2277,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6231,
+            "id": 6186,
             "name": "VcOwnerChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6230,
+              "id": 6185,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6225,
+                  "id": 6180,
                   "indexed": false,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6231,
+                  "scope": 6186,
                   "src": "523:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2299,7 +2299,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6224,
+                    "id": 6179,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "523:7:16",
@@ -2313,11 +2313,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6227,
+                  "id": 6182,
                   "indexed": false,
                   "name": "previousOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6231,
+                  "scope": 6186,
                   "src": "537:21:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2326,7 +2326,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6226,
+                    "id": 6181,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "537:7:16",
@@ -2341,11 +2341,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6229,
+                  "id": 6184,
                   "indexed": false,
                   "name": "newOwner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6231,
+                  "scope": 6186,
                   "src": "560:16:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2354,7 +2354,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6228,
+                    "id": 6183,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "560:7:16",
@@ -2375,22 +2375,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Creates a new VC",
-            "id": 6248,
+            "id": 6203,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "createVC",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6242,
+              "id": 6197,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6233,
+                  "id": 6188,
                   "name": "tier",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "758:20:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -2399,7 +2399,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6232,
+                    "id": 6187,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "758:6:16",
@@ -2413,10 +2413,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6235,
+                  "id": 6190,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "780:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2425,7 +2425,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6234,
+                    "id": 6189,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "780:7:16",
@@ -2439,10 +2439,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6237,
+                  "id": 6192,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "794:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2451,7 +2451,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6236,
+                    "id": 6191,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "794:7:16",
@@ -2465,10 +2465,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6239,
+                  "id": 6194,
                   "name": "owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "810:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2477,7 +2477,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6238,
+                    "id": 6193,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "810:7:16",
@@ -2492,10 +2492,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6241,
+                  "id": 6196,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "825:32:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -2504,7 +2504,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6240,
+                    "id": 6195,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "825:6:16",
@@ -2520,15 +2520,15 @@
               "src": "757:101:16"
             },
             "returnParameters": {
-              "id": 6247,
+              "id": 6202,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6244,
+                  "id": 6199,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "877:4:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2537,7 +2537,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6243,
+                    "id": 6198,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "877:4:16",
@@ -2551,10 +2551,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6246,
+                  "id": 6201,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6248,
+                  "scope": 6203,
                   "src": "883:4:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2563,7 +2563,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6245,
+                    "id": 6200,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "883:4:16",
@@ -2578,7 +2578,7 @@
               ],
               "src": "876:12:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "740:149:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2587,22 +2587,22 @@
           {
             "body": null,
             "documentation": "@dev Called by: authorized subscriber (plan) contracts\n Extends the subscription of an existing VC.",
-            "id": 6257,
+            "id": 6212,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "extendSubscription",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6255,
+              "id": 6210,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6250,
+                  "id": 6205,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6257,
+                  "scope": 6212,
                   "src": "1038:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2611,7 +2611,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6249,
+                    "id": 6204,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1038:7:16",
@@ -2625,10 +2625,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6252,
+                  "id": 6207,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6257,
+                  "scope": 6212,
                   "src": "1052:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2637,7 +2637,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6251,
+                    "id": 6206,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1052:7:16",
@@ -2651,10 +2651,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6254,
+                  "id": 6209,
                   "name": "payer",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6257,
+                  "scope": 6212,
                   "src": "1068:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2663,7 +2663,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6253,
+                    "id": 6208,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1068:7:16",
@@ -2680,12 +2680,12 @@
               "src": "1037:45:16"
             },
             "returnParameters": {
-              "id": 6256,
+              "id": 6211,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1091:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1010:82:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2694,22 +2694,22 @@
           {
             "body": null,
             "documentation": "@dev called by VC owner to set a VC config record. Emits a VcConfigRecordChanged event.",
-            "id": 6266,
+            "id": 6221,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setVcConfigRecord",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6264,
+              "id": 6219,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6259,
+                  "id": 6214,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6266,
+                  "scope": 6221,
                   "src": "1221:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2718,7 +2718,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6258,
+                    "id": 6213,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1221:7:16",
@@ -2732,10 +2732,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6261,
+                  "id": 6216,
                   "name": "key",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6266,
+                  "scope": 6221,
                   "src": "1235:19:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -2744,7 +2744,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6260,
+                    "id": 6215,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1235:6:16",
@@ -2758,10 +2758,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6263,
+                  "id": 6218,
                   "name": "value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6266,
+                  "scope": 6221,
                   "src": "1256:21:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -2770,7 +2770,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6262,
+                    "id": 6217,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1256:6:16",
@@ -2786,12 +2786,12 @@
               "src": "1220:58:16"
             },
             "returnParameters": {
-              "id": 6265,
+              "id": 6220,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1305:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1194:112:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2800,22 +2800,22 @@
           {
             "body": null,
             "documentation": "@dev returns the value of a VC config record",
-            "id": 6275,
+            "id": 6230,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getVcConfigRecord",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6271,
+              "id": 6226,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6268,
+                  "id": 6223,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6275,
+                  "scope": 6230,
                   "src": "1392:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2824,7 +2824,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6267,
+                    "id": 6222,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1392:7:16",
@@ -2838,10 +2838,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6270,
+                  "id": 6225,
                   "name": "key",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6275,
+                  "scope": 6230,
                   "src": "1406:19:16",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -2850,7 +2850,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6269,
+                    "id": 6224,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1406:6:16",
@@ -2866,15 +2866,15 @@
               "src": "1391:35:16"
             },
             "returnParameters": {
-              "id": 6274,
+              "id": 6229,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6273,
+                  "id": 6228,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6275,
+                  "scope": 6230,
                   "src": "1450:13:16",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -2883,7 +2883,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6272,
+                    "id": 6227,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "1450:6:16",
@@ -2898,7 +2898,7 @@
               ],
               "src": "1449:15:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1365:100:16",
             "stateMutability": "view",
             "superFunction": null,
@@ -2907,22 +2907,22 @@
           {
             "body": null,
             "documentation": "@dev Transfers VC ownership to a new owner (can only be called by the current owner)",
-            "id": 6282,
+            "id": 6237,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setVcOwner",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6280,
+              "id": 6235,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6277,
+                  "id": 6232,
                   "name": "vcid",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6282,
+                  "scope": 6237,
                   "src": "1584:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2931,7 +2931,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6276,
+                    "id": 6231,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1584:7:16",
@@ -2945,10 +2945,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6279,
+                  "id": 6234,
                   "name": "owner",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6282,
+                  "scope": 6237,
                   "src": "1598:13:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2957,7 +2957,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6278,
+                    "id": 6233,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1598:7:16",
@@ -2974,12 +2974,12 @@
               "src": "1583:29:16"
             },
             "returnParameters": {
-              "id": 6281,
+              "id": 6236,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1639:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1564:76:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2988,22 +2988,22 @@
           {
             "body": null,
             "documentation": "@dev Called by the owner to authorize a subscriber (plan)",
-            "id": 6287,
+            "id": 6242,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "addSubscriber",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6285,
+              "id": 6240,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6284,
+                  "id": 6239,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6287,
+                  "scope": 6242,
                   "src": "1779:12:16",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3012,7 +3012,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 6283,
+                    "id": 6238,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1779:7:16",
@@ -3029,12 +3029,12 @@
               "src": "1778:14:16"
             },
             "returnParameters": {
-              "id": 6286,
+              "id": 6241,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1817:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1756:62:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3043,38 +3043,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address of the contract registry",
-            "id": 6292,
+            "id": 6247,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6290,
+              "id": 6245,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6289,
+                  "id": 6244,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6292,
+                  "scope": 6247,
                   "src": "1911:35:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5853",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 6288,
+                    "id": 6243,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5893,
+                    "referencedDeclaration": 5853,
                     "src": "1911:17:16",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5893",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5853",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -3085,19 +3085,19 @@
               "src": "1910:37:16"
             },
             "returnParameters": {
-              "id": 6291,
+              "id": 6246,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1972:0:16"
             },
-            "scope": 6293,
+            "scope": 6248,
             "src": "1882:91:16",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6294,
+        "scope": 6249,
         "src": "95:1881:16"
       }
     ],
@@ -3109,7 +3109,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-11T14:45:21.671Z",
+  "updatedAt": "2020-03-15T18:47:13.271Z",
   "devdoc": {
     "methods": {
       "addSubscriber(address)": {

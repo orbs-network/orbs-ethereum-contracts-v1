@@ -84,14 +84,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
     "exportedSymbols": {
       "IProtocol": [
-        6026
+        6033
       ]
     },
-    "id": 6027,
+    "id": 6034,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6001,
+        "id": 6008,
         "literals": [
           "solidity",
           "0.5",
@@ -106,9 +106,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6026,
+        "id": 6033,
         "linearizedBaseContracts": [
-          6026
+          6033
         ],
         "name": "IProtocol",
         "nodeType": "ContractDefinition",
@@ -116,20 +116,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6009,
+            "id": 6016,
             "name": "ProtocolVersionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6008,
+              "id": 6015,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6003,
+                  "id": 6010,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6009,
+                  "scope": 6016,
                   "src": "80:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -138,7 +138,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6002,
+                    "id": 6009,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "80:6:14",
@@ -152,11 +152,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6005,
+                  "id": 6012,
                   "indexed": false,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6009,
+                  "scope": 6016,
                   "src": "105:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -165,7 +165,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6004,
+                    "id": 6011,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "105:7:14",
@@ -179,11 +179,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6007,
+                  "id": 6014,
                   "indexed": false,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6009,
+                  "scope": 6016,
                   "src": "130:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -192,7 +192,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6006,
+                    "id": 6013,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "130:7:14",
@@ -212,22 +212,22 @@
           {
             "body": null,
             "documentation": "@dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)",
-            "id": 6016,
+            "id": 6023,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "deploymentSubsetExists",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6012,
+              "id": 6019,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6011,
+                  "id": 6018,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6016,
+                  "scope": 6023,
                   "src": "339:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -236,7 +236,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6010,
+                    "id": 6017,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "339:6:14",
@@ -252,15 +252,15 @@
               "src": "338:34:14"
             },
             "returnParameters": {
-              "id": 6015,
+              "id": 6022,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6014,
+                  "id": 6021,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6016,
+                  "scope": 6023,
                   "src": "396:4:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -269,7 +269,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 6013,
+                    "id": 6020,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "396:4:14",
@@ -284,7 +284,7 @@
               ],
               "src": "395:6:14"
             },
-            "scope": 6026,
+            "scope": 6033,
             "src": "307:95:14",
             "stateMutability": "view",
             "superFunction": null,
@@ -293,22 +293,22 @@
           {
             "body": null,
             "documentation": "@dev schedules a protocol version upgrade for the given deployment subset.",
-            "id": 6025,
+            "id": 6032,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProtocolVersion",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6023,
+              "id": 6030,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6018,
+                  "id": 6025,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6025,
+                  "scope": 6032,
                   "src": "561:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -317,7 +317,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6017,
+                    "id": 6024,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "561:6:14",
@@ -331,10 +331,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6020,
+                  "id": 6027,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6025,
+                  "scope": 6032,
                   "src": "595:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -343,7 +343,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6019,
+                    "id": 6026,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "595:7:14",
@@ -357,10 +357,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6022,
+                  "id": 6029,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6025,
+                  "scope": 6032,
                   "src": "620:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -369,7 +369,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6021,
+                    "id": 6028,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "620:7:14",
@@ -385,19 +385,19 @@
               "src": "560:78:14"
             },
             "returnParameters": {
-              "id": 6024,
+              "id": 6031,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "663:0:14"
             },
-            "scope": 6026,
+            "scope": 6033,
             "src": "533:131:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6027,
+        "scope": 6034,
         "src": "25:641:14"
       }
     ],
@@ -407,14 +407,14 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
     "exportedSymbols": {
       "IProtocol": [
-        6026
+        6033
       ]
     },
-    "id": 6027,
+    "id": 6034,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 6001,
+        "id": 6008,
         "literals": [
           "solidity",
           "0.5",
@@ -429,9 +429,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 6026,
+        "id": 6033,
         "linearizedBaseContracts": [
-          6026
+          6033
         ],
         "name": "IProtocol",
         "nodeType": "ContractDefinition",
@@ -439,20 +439,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 6009,
+            "id": 6016,
             "name": "ProtocolVersionChanged",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 6008,
+              "id": 6015,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6003,
+                  "id": 6010,
                   "indexed": false,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6009,
+                  "scope": 6016,
                   "src": "80:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -461,7 +461,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6002,
+                    "id": 6009,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "80:6:14",
@@ -475,11 +475,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6005,
+                  "id": 6012,
                   "indexed": false,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6009,
+                  "scope": 6016,
                   "src": "105:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -488,7 +488,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6004,
+                    "id": 6011,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "105:7:14",
@@ -502,11 +502,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 6007,
+                  "id": 6014,
                   "indexed": false,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6009,
+                  "scope": 6016,
                   "src": "130:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -515,7 +515,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6006,
+                    "id": 6013,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "130:7:14",
@@ -535,22 +535,22 @@
           {
             "body": null,
             "documentation": "@dev returns true if the given deployment subset exists (i.e - is registered with a protocol version)",
-            "id": 6016,
+            "id": 6023,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "deploymentSubsetExists",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6012,
+              "id": 6019,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6011,
+                  "id": 6018,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6016,
+                  "scope": 6023,
                   "src": "339:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -559,7 +559,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6010,
+                    "id": 6017,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "339:6:14",
@@ -575,15 +575,15 @@
               "src": "338:34:14"
             },
             "returnParameters": {
-              "id": 6015,
+              "id": 6022,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6014,
+                  "id": 6021,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6016,
+                  "scope": 6023,
                   "src": "396:4:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -592,7 +592,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 6013,
+                    "id": 6020,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "396:4:14",
@@ -607,7 +607,7 @@
               ],
               "src": "395:6:14"
             },
-            "scope": 6026,
+            "scope": 6033,
             "src": "307:95:14",
             "stateMutability": "view",
             "superFunction": null,
@@ -616,22 +616,22 @@
           {
             "body": null,
             "documentation": "@dev schedules a protocol version upgrade for the given deployment subset.",
-            "id": 6025,
+            "id": 6032,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProtocolVersion",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 6023,
+              "id": 6030,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 6018,
+                  "id": 6025,
                   "name": "deploymentSubset",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6025,
+                  "scope": 6032,
                   "src": "561:32:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -640,7 +640,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 6017,
+                    "id": 6024,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "561:6:14",
@@ -654,10 +654,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6020,
+                  "id": 6027,
                   "name": "protocolVersion",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6025,
+                  "scope": 6032,
                   "src": "595:23:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -666,7 +666,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6019,
+                    "id": 6026,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "595:7:14",
@@ -680,10 +680,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 6022,
+                  "id": 6029,
                   "name": "asOfBlock",
                   "nodeType": "VariableDeclaration",
-                  "scope": 6025,
+                  "scope": 6032,
                   "src": "620:17:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -692,7 +692,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6021,
+                    "id": 6028,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "620:7:14",
@@ -708,19 +708,19 @@
               "src": "560:78:14"
             },
             "returnParameters": {
-              "id": 6024,
+              "id": 6031,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "663:0:14"
             },
-            "scope": 6026,
+            "scope": 6033,
             "src": "533:131:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 6027,
+        "scope": 6034,
         "src": "25:641:14"
       }
     ],
@@ -732,7 +732,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-15T16:20:03.729Z",
+  "updatedAt": "2020-03-15T18:47:13.270Z",
   "devdoc": {
     "methods": {
       "deploymentSubsetExists(string)": {
