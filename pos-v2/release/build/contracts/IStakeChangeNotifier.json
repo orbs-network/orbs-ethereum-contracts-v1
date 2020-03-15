@@ -252,7 +252,7 @@
             "scope": 2476,
             "src": "528:103:3",
             "stateMutability": "nonpayable",
-            "superFunction": 5777,
+            "superFunction": 6027,
             "visibility": "external"
           },
           {
@@ -425,7 +425,7 @@
             "scope": 2476,
             "src": "1008:164:3",
             "stateMutability": "nonpayable",
-            "superFunction": 5766,
+            "superFunction": 6016,
             "visibility": "external"
           },
           {
@@ -506,7 +506,7 @@
             "scope": 2476,
             "src": "1353:71:3",
             "stateMutability": "nonpayable",
-            "superFunction": 5784,
+            "superFunction": 6034,
             "visibility": "external"
           }
         ],
@@ -679,7 +679,7 @@
             "scope": 2476,
             "src": "528:103:3",
             "stateMutability": "nonpayable",
-            "superFunction": 5777,
+            "superFunction": 6027,
             "visibility": "external"
           },
           {
@@ -852,7 +852,7 @@
             "scope": 2476,
             "src": "1008:164:3",
             "stateMutability": "nonpayable",
-            "superFunction": 5766,
+            "superFunction": 6016,
             "visibility": "external"
           },
           {
@@ -933,7 +933,7 @@
             "scope": 2476,
             "src": "1353:71:3",
             "stateMutability": "nonpayable",
-            "superFunction": 5784,
+            "superFunction": 6034,
             "visibility": "external"
           }
         ],
@@ -949,7 +949,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-10T11:14:57.905Z",
+  "updatedAt": "2020-03-11T14:45:21.553Z",
   "devdoc": {
     "methods": {
       "stakeChange(address,uint256,bool,uint256)": {

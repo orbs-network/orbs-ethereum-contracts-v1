@@ -18,7 +18,7 @@ const test = async () => {
         from: appOwner.address
     });
 
-    await subscriber.createVC(firstPayment, {
+    await subscriber.createVC(firstPayment, "main", {
         from: appOwner.address
     });
 

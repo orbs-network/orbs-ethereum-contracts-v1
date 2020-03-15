@@ -84,5 +84,6 @@ module.exports = function (chai) {
     chai.Assertion.overwriteMethod("vcOwnerChangedEvent", containEvent(event_parsing_1.vcOwnerChangedEvents));
     chai.Assertion.overwriteMethod("vcCreatedEvent", containEvent(event_parsing_1.vcCreatedEvents));
     chai.Assertion.overwriteMethod("contractAddressUpdatedEvent", containEvent(event_parsing_1.contractAddressUpdatedEvents));
+    chai.Assertion.overwriteMethod("protocolChangedEvent", containEvent(event_parsing_1.protocolChangedEvents));
     chai.Assertion.overwriteMethod("haveCommittee", containEvent(function (o) { return [o]; }));
 };

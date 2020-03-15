@@ -285,41 +285,41 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
     "exportedSymbols": {
       "IRewards": [
-        5934
+        6178
       ]
     },
-    "id": 5935,
+    "id": 6179,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5836,
+        "id": 6080,
         "literals": [
           "solidity",
           "0.5",
           ".16"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:13"
+        "src": "0:23:15"
       },
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
         "file": "../IStakingContract.sol",
-        "id": 5837,
+        "id": 6081,
         "nodeType": "ImportDirective",
-        "scope": 5935,
+        "scope": 6179,
         "sourceUnit": 2576,
-        "src": "25:33:13",
+        "src": "25:33:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
         "file": "./IContractRegistry.sol",
-        "id": 5838,
+        "id": 6082,
         "nodeType": "ImportDirective",
-        "scope": 5935,
-        "sourceUnit": 5682,
-        "src": "59:33:13",
+        "scope": 6179,
+        "sourceUnit": 5894,
+        "src": "59:33:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -329,9 +329,9 @@
         "contractKind": "interface",
         "documentation": "@title Rewards contract interface",
         "fullyImplemented": false,
-        "id": 5934,
+        "id": 6178,
         "linearizedBaseContracts": [
-          5934
+          6178
         ],
         "name": "IRewards",
         "nodeType": "ContractDefinition",
@@ -339,21 +339,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5846,
+            "id": 6090,
             "name": "RewardAssigned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5845,
+              "id": 6089,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5840,
+                  "id": 6084,
                   "indexed": false,
                   "name": "assignee",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5846,
-                  "src": "178:16:13",
+                  "scope": 6090,
+                  "src": "178:16:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -361,10 +361,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5839,
+                    "id": 6083,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "178:7:13",
+                    "src": "178:7:15",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -376,12 +376,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5842,
+                  "id": 6086,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5846,
-                  "src": "196:14:13",
+                  "scope": 6090,
+                  "src": "196:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -389,10 +389,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5841,
+                    "id": 6085,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "196:7:13",
+                    "src": "196:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -403,12 +403,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5844,
+                  "id": 6088,
                   "indexed": false,
                   "name": "balance",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5846,
-                  "src": "212:15:13",
+                  "scope": 6090,
+                  "src": "212:15:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -416,10 +416,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5843,
+                    "id": 6087,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "212:7:13",
+                    "src": "212:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -429,28 +429,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "177:51:13"
+              "src": "177:51:15"
             },
-            "src": "157:72:13"
+            "src": "157:72:15"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5854,
+            "id": 6098,
             "name": "FeeAddedToBucket",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5853,
+              "id": 6097,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5848,
+                  "id": 6092,
                   "indexed": false,
                   "name": "bucketId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
-                  "src": "257:16:13",
+                  "scope": 6098,
+                  "src": "257:16:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -458,10 +458,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5847,
+                    "id": 6091,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "257:7:13",
+                    "src": "257:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -472,12 +472,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5850,
+                  "id": 6094,
                   "indexed": false,
                   "name": "added",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
-                  "src": "275:13:13",
+                  "scope": 6098,
+                  "src": "275:13:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -485,10 +485,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5849,
+                    "id": 6093,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "275:7:13",
+                    "src": "275:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -499,12 +499,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5852,
+                  "id": 6096,
                   "indexed": false,
                   "name": "total",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
-                  "src": "290:13:13",
+                  "scope": 6098,
+                  "src": "290:13:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -512,10 +512,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5851,
+                    "id": 6095,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "290:7:13",
+                    "src": "290:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -525,36 +525,36 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "256:48:13"
+              "src": "256:48:15"
             },
-            "src": "234:71:13"
+            "src": "234:71:15"
           },
           {
             "body": null,
             "documentation": "@dev Calculates and assigns validator rewards for the time period since the last reward calculation",
-            "id": 5859,
+            "id": 6103,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "assignRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5855,
+              "id": 6099,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "483:2:13"
+              "src": "483:2:15"
             },
             "returnParameters": {
-              "id": 5858,
+              "id": 6102,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5857,
+                  "id": 6101,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5859,
-                  "src": "504:7:13",
+                  "scope": 6103,
+                  "src": "504:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -562,10 +562,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5856,
+                    "id": 6100,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "504:7:13",
+                    "src": "504:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -575,10 +575,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "503:9:13"
+              "src": "503:9:15"
             },
-            "scope": 5934,
-            "src": "461:52:13",
+            "scope": 6178,
+            "src": "461:52:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -586,23 +586,23 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed orbs token reward balance of the given address.",
-            "id": 5866,
+            "id": 6110,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getOrbsBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5862,
+              "id": 6106,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5861,
+                  "id": 6105,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5866,
-                  "src": "639:12:13",
+                  "scope": 6110,
+                  "src": "639:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -610,10 +610,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5860,
+                    "id": 6104,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "639:7:13",
+                    "src": "639:7:15",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -624,19 +624,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "638:14:13"
+              "src": "638:14:15"
             },
             "returnParameters": {
-              "id": 5865,
+              "id": 6109,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5864,
+                  "id": 6108,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5866,
-                  "src": "676:7:13",
+                  "scope": 6110,
+                  "src": "676:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -644,10 +644,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5863,
+                    "id": 6107,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "676:7:13",
+                    "src": "676:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -657,10 +657,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "675:9:13"
+              "src": "675:9:15"
             },
-            "scope": 5934,
-            "src": "615:70:13",
+            "scope": 6178,
+            "src": "615:70:15",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -668,23 +668,23 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed external token reward balance of the given address.",
-            "id": 5873,
+            "id": 6117,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getExternalTokenBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5869,
+              "id": 6113,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5868,
+                  "id": 6112,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5873,
-                  "src": "824:12:13",
+                  "scope": 6117,
+                  "src": "824:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -692,10 +692,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5867,
+                    "id": 6111,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "824:7:13",
+                    "src": "824:7:15",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -706,19 +706,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "823:14:13"
+              "src": "823:14:15"
             },
             "returnParameters": {
-              "id": 5872,
+              "id": 6116,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5871,
+                  "id": 6115,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5873,
-                  "src": "861:7:13",
+                  "scope": 6117,
+                  "src": "861:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -726,10 +726,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5870,
+                    "id": 6114,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "861:7:13",
+                    "src": "861:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -739,10 +739,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "860:9:13"
+              "src": "860:9:15"
             },
-            "scope": 5934,
-            "src": "791:79:13",
+            "scope": 6178,
+            "src": "791:79:15",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -750,23 +750,23 @@
           {
             "body": null,
             "documentation": "@dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.",
-            "id": 5882,
+            "id": 6126,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "distributeOrbsTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5880,
+              "id": 6124,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5876,
+                  "id": 6120,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5882,
-                  "src": "1045:21:13",
+                  "scope": 6126,
+                  "src": "1045:21:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -775,20 +775,20 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5874,
+                      "id": 6118,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1045:7:13",
+                      "src": "1045:7:15",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 5875,
+                    "id": 6119,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1045:9:13",
+                    "src": "1045:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -799,11 +799,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5879,
+                  "id": 6123,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5882,
-                  "src": "1068:26:13",
+                  "scope": 6126,
+                  "src": "1068:26:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -812,19 +812,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5877,
+                      "id": 6121,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1068:7:13",
+                      "src": "1068:7:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5878,
+                    "id": 6122,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1068:9:13",
+                    "src": "1068:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -834,16 +834,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1044:51:13"
+              "src": "1044:51:15"
             },
             "returnParameters": {
-              "id": 5881,
+              "id": 6125,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1104:0:13"
+              "src": "1104:0:15"
             },
-            "scope": 5934,
-            "src": "1009:96:13",
+            "scope": 6178,
+            "src": "1009:96:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -851,29 +851,29 @@
           {
             "body": null,
             "documentation": "@dev Transfer all of msg.sender's outstanding external rewards to their account",
-            "id": 5887,
+            "id": 6131,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "withdrawExternalTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5883,
+              "id": 6127,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1236:2:13"
+              "src": "1236:2:15"
             },
             "returnParameters": {
-              "id": 5886,
+              "id": 6130,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5885,
+                  "id": 6129,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5887,
-                  "src": "1257:7:13",
+                  "scope": 6131,
+                  "src": "1257:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -881,10 +881,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5884,
+                    "id": 6128,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1257:7:13",
+                    "src": "1257:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -894,10 +894,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1256:9:13"
+              "src": "1256:9:15"
             },
-            "scope": 5934,
-            "src": "1199:67:13",
+            "scope": 6178,
+            "src": "1199:67:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -905,29 +905,29 @@
           {
             "body": null,
             "documentation": "@return The timestamp of the last reward allocation.",
-            "id": 5892,
+            "id": 6136,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getLastPayedAt",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5888,
+              "id": 6132,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1356:2:13"
+              "src": "1356:2:15"
             },
             "returnParameters": {
-              "id": 5891,
+              "id": 6135,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5890,
+                  "id": 6134,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5892,
-                  "src": "1382:7:13",
+                  "scope": 6136,
+                  "src": "1382:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -935,10 +935,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5889,
+                    "id": 6133,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1382:7:13",
+                    "src": "1382:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -948,10 +948,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1381:9:13"
+              "src": "1381:9:15"
             },
-            "scope": 5934,
-            "src": "1333:58:13",
+            "scope": 6178,
+            "src": "1333:58:15",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -959,23 +959,23 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of external tokens form the sender to this contract an update the pool.",
-            "id": 5897,
+            "id": 6141,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpFixedPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5895,
+              "id": 6139,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5894,
+                  "id": 6138,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5897,
-                  "src": "1533:14:13",
+                  "scope": 6141,
+                  "src": "1533:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -983,10 +983,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5893,
+                    "id": 6137,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1533:7:13",
+                    "src": "1533:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -996,16 +996,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1532:16:13"
+              "src": "1532:16:15"
             },
             "returnParameters": {
-              "id": 5896,
+              "id": 6140,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1557:0:13"
+              "src": "1557:0:15"
             },
-            "scope": 5934,
-            "src": "1509:49:13",
+            "scope": 6178,
+            "src": "1509:49:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1013,23 +1013,23 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.",
-            "id": 5902,
+            "id": 6146,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpProRataPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5900,
+              "id": 6144,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5899,
+                  "id": 6143,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5902,
-                  "src": "1698:14:13",
+                  "scope": 6146,
+                  "src": "1698:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1037,10 +1037,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5898,
+                    "id": 6142,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1698:7:13",
+                    "src": "1698:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1050,16 +1050,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1697:16:13"
+              "src": "1697:16:15"
             },
             "returnParameters": {
-              "id": 5901,
+              "id": 6145,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1722:0:13"
+              "src": "1722:0:15"
             },
-            "scope": 5934,
-            "src": "1672:51:13",
+            "scope": 6178,
+            "src": "1672:51:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1067,23 +1067,23 @@
           {
             "body": null,
             "documentation": "@dev Called by: subscriptions contract\n Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)",
-            "id": 5909,
+            "id": 6153,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "fillFeeBuckets",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5907,
+              "id": 6151,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5904,
+                  "id": 6148,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5909,
-                  "src": "1918:14:13",
+                  "scope": 6153,
+                  "src": "1918:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1091,10 +1091,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5903,
+                    "id": 6147,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1918:7:13",
+                    "src": "1918:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1105,11 +1105,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5906,
+                  "id": 6150,
                   "name": "monthlyRate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5909,
-                  "src": "1934:19:13",
+                  "scope": 6153,
+                  "src": "1934:19:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1117,10 +1117,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5905,
+                    "id": 6149,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1934:7:13",
+                    "src": "1934:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1130,16 +1130,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1917:37:13"
+              "src": "1917:37:15"
             },
             "returnParameters": {
-              "id": 5908,
+              "id": 6152,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1963:0:13"
+              "src": "1963:0:15"
             },
-            "scope": 5934,
-            "src": "1894:70:13",
+            "scope": 6178,
+            "src": "1894:70:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1147,23 +1147,23 @@
           {
             "body": null,
             "documentation": "@dev Called by: elections contract (committee provider)\n Notifies a change in the committee",
-            "id": 5918,
+            "id": 6162,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "committeeChanged",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5916,
+              "id": 6160,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5912,
+                  "id": 6156,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5918,
-                  "src": "2171:24:13",
+                  "scope": 6162,
+                  "src": "2171:24:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1172,20 +1172,20 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5910,
+                      "id": 6154,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "2171:7:13",
+                      "src": "2171:7:15",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 5911,
+                    "id": 6155,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "2171:9:13",
+                    "src": "2171:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -1196,11 +1196,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5915,
+                  "id": 6159,
                   "name": "stakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5918,
-                  "src": "2197:25:13",
+                  "scope": 6162,
+                  "src": "2197:25:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1209,19 +1209,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5913,
+                      "id": 6157,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "2197:7:13",
+                      "src": "2197:7:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5914,
+                    "id": 6158,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "2197:9:13",
+                    "src": "2197:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -1231,16 +1231,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2170:53:13"
+              "src": "2170:53:15"
             },
             "returnParameters": {
-              "id": 5917,
+              "id": 6161,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2260:0:13"
+              "src": "2260:0:15"
             },
-            "scope": 5934,
-            "src": "2145:116:13",
+            "scope": 6178,
+            "src": "2145:116:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1248,23 +1248,23 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the fixed pool.",
-            "id": 5923,
+            "id": 6167,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setFixedPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5921,
+              "id": 6165,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5920,
+                  "id": 6164,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5923,
-                  "src": "2424:12:13",
+                  "scope": 6167,
+                  "src": "2424:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1272,10 +1272,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5919,
+                    "id": 6163,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2424:7:13",
+                    "src": "2424:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1285,16 +1285,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2423:14:13"
+              "src": "2423:14:15"
             },
             "returnParameters": {
-              "id": 5922,
+              "id": 6166,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2472:0:13"
+              "src": "2472:0:15"
             },
-            "scope": 5934,
-            "src": "2391:82:13",
+            "scope": 6178,
+            "src": "2391:82:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1302,23 +1302,23 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the pro-rata pool.",
-            "id": 5928,
+            "id": 6172,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProRataPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5926,
+              "id": 6170,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5925,
+                  "id": 6169,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5928,
-                  "src": "2594:12:13",
+                  "scope": 6172,
+                  "src": "2594:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1326,10 +1326,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5924,
+                    "id": 6168,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2594:7:13",
+                    "src": "2594:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1339,16 +1339,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2593:14:13"
+              "src": "2593:14:15"
             },
             "returnParameters": {
-              "id": 5927,
+              "id": 6171,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2642:0:13"
+              "src": "2642:0:15"
             },
-            "scope": 5934,
-            "src": "2559:84:13",
+            "scope": 6178,
+            "src": "2559:84:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1356,38 +1356,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address of the contract registry",
-            "id": 5933,
+            "id": 6177,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5931,
+              "id": 6175,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5930,
+                  "id": 6174,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5933,
-                  "src": "2778:35:13",
+                  "scope": 6177,
+                  "src": "2778:35:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5681",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5893",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5929,
+                    "id": 6173,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5681,
-                    "src": "2778:17:13",
+                    "referencedDeclaration": 5893,
+                    "src": "2778:17:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5681",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5893",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -1395,66 +1395,66 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2777:37:13"
+              "src": "2777:37:15"
             },
             "returnParameters": {
-              "id": 5932,
+              "id": 6176,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2839:0:13"
+              "src": "2839:0:15"
             },
-            "scope": 5934,
-            "src": "2749:91:13",
+            "scope": 6178,
+            "src": "2749:91:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5935,
-        "src": "132:2712:13"
+        "scope": 6179,
+        "src": "132:2712:15"
       }
     ],
-    "src": "0:2845:13"
+    "src": "0:2845:15"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IRewards.sol",
     "exportedSymbols": {
       "IRewards": [
-        5934
+        6178
       ]
     },
-    "id": 5935,
+    "id": 6179,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5836,
+        "id": 6080,
         "literals": [
           "solidity",
           "0.5",
           ".16"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:13"
+        "src": "0:23:15"
       },
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/IStakingContract.sol",
         "file": "../IStakingContract.sol",
-        "id": 5837,
+        "id": 6081,
         "nodeType": "ImportDirective",
-        "scope": 5935,
+        "scope": 6179,
         "sourceUnit": 2576,
-        "src": "25:33:13",
+        "src": "25:33:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
         "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
         "file": "./IContractRegistry.sol",
-        "id": 5838,
+        "id": 6082,
         "nodeType": "ImportDirective",
-        "scope": 5935,
-        "sourceUnit": 5682,
-        "src": "59:33:13",
+        "scope": 6179,
+        "sourceUnit": 5894,
+        "src": "59:33:15",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -1464,9 +1464,9 @@
         "contractKind": "interface",
         "documentation": "@title Rewards contract interface",
         "fullyImplemented": false,
-        "id": 5934,
+        "id": 6178,
         "linearizedBaseContracts": [
-          5934
+          6178
         ],
         "name": "IRewards",
         "nodeType": "ContractDefinition",
@@ -1474,21 +1474,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5846,
+            "id": 6090,
             "name": "RewardAssigned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5845,
+              "id": 6089,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5840,
+                  "id": 6084,
                   "indexed": false,
                   "name": "assignee",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5846,
-                  "src": "178:16:13",
+                  "scope": 6090,
+                  "src": "178:16:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1496,10 +1496,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5839,
+                    "id": 6083,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "178:7:13",
+                    "src": "178:7:15",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1511,12 +1511,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5842,
+                  "id": 6086,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5846,
-                  "src": "196:14:13",
+                  "scope": 6090,
+                  "src": "196:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1524,10 +1524,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5841,
+                    "id": 6085,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "196:7:13",
+                    "src": "196:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1538,12 +1538,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5844,
+                  "id": 6088,
                   "indexed": false,
                   "name": "balance",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5846,
-                  "src": "212:15:13",
+                  "scope": 6090,
+                  "src": "212:15:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1551,10 +1551,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5843,
+                    "id": 6087,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "212:7:13",
+                    "src": "212:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1564,28 +1564,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "177:51:13"
+              "src": "177:51:15"
             },
-            "src": "157:72:13"
+            "src": "157:72:15"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5854,
+            "id": 6098,
             "name": "FeeAddedToBucket",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5853,
+              "id": 6097,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5848,
+                  "id": 6092,
                   "indexed": false,
                   "name": "bucketId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
-                  "src": "257:16:13",
+                  "scope": 6098,
+                  "src": "257:16:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1593,10 +1593,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5847,
+                    "id": 6091,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "257:7:13",
+                    "src": "257:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1607,12 +1607,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5850,
+                  "id": 6094,
                   "indexed": false,
                   "name": "added",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
-                  "src": "275:13:13",
+                  "scope": 6098,
+                  "src": "275:13:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1620,10 +1620,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5849,
+                    "id": 6093,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "275:7:13",
+                    "src": "275:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1634,12 +1634,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5852,
+                  "id": 6096,
                   "indexed": false,
                   "name": "total",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5854,
-                  "src": "290:13:13",
+                  "scope": 6098,
+                  "src": "290:13:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1647,10 +1647,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5851,
+                    "id": 6095,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "290:7:13",
+                    "src": "290:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1660,36 +1660,36 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "256:48:13"
+              "src": "256:48:15"
             },
-            "src": "234:71:13"
+            "src": "234:71:15"
           },
           {
             "body": null,
             "documentation": "@dev Calculates and assigns validator rewards for the time period since the last reward calculation",
-            "id": 5859,
+            "id": 6103,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "assignRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5855,
+              "id": 6099,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "483:2:13"
+              "src": "483:2:15"
             },
             "returnParameters": {
-              "id": 5858,
+              "id": 6102,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5857,
+                  "id": 6101,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5859,
-                  "src": "504:7:13",
+                  "scope": 6103,
+                  "src": "504:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1697,10 +1697,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5856,
+                    "id": 6100,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "504:7:13",
+                    "src": "504:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1710,10 +1710,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "503:9:13"
+              "src": "503:9:15"
             },
-            "scope": 5934,
-            "src": "461:52:13",
+            "scope": 6178,
+            "src": "461:52:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1721,23 +1721,23 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed orbs token reward balance of the given address.",
-            "id": 5866,
+            "id": 6110,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getOrbsBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5862,
+              "id": 6106,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5861,
+                  "id": 6105,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5866,
-                  "src": "639:12:13",
+                  "scope": 6110,
+                  "src": "639:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1745,10 +1745,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5860,
+                    "id": 6104,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "639:7:13",
+                    "src": "639:7:15",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1759,19 +1759,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "638:14:13"
+              "src": "638:14:15"
             },
             "returnParameters": {
-              "id": 5865,
+              "id": 6109,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5864,
+                  "id": 6108,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5866,
-                  "src": "676:7:13",
+                  "scope": 6110,
+                  "src": "676:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1779,10 +1779,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5863,
+                    "id": 6107,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "676:7:13",
+                    "src": "676:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1792,10 +1792,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "675:9:13"
+              "src": "675:9:15"
             },
-            "scope": 5934,
-            "src": "615:70:13",
+            "scope": 6178,
+            "src": "615:70:15",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -1803,23 +1803,23 @@
           {
             "body": null,
             "documentation": "@return Returns the currently unclaimed external token reward balance of the given address.",
-            "id": 5873,
+            "id": 6117,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getExternalTokenBalance",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5869,
+              "id": 6113,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5868,
+                  "id": 6112,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5873,
-                  "src": "824:12:13",
+                  "scope": 6117,
+                  "src": "824:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1827,10 +1827,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5867,
+                    "id": 6111,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "824:7:13",
+                    "src": "824:7:15",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1841,19 +1841,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "823:14:13"
+              "src": "823:14:15"
             },
             "returnParameters": {
-              "id": 5872,
+              "id": 6116,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5871,
+                  "id": 6115,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5873,
-                  "src": "861:7:13",
+                  "scope": 6117,
+                  "src": "861:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1861,10 +1861,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5870,
+                    "id": 6114,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "861:7:13",
+                    "src": "861:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1874,10 +1874,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "860:9:13"
+              "src": "860:9:15"
             },
-            "scope": 5934,
-            "src": "791:79:13",
+            "scope": 6178,
+            "src": "791:79:15",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -1885,23 +1885,23 @@
           {
             "body": null,
             "documentation": "@dev Distributes msg.sender's orbs token rewards to a list of addresses, by transferring directly into the staking contract.",
-            "id": 5882,
+            "id": 6126,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "distributeOrbsTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5880,
+              "id": 6124,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5876,
+                  "id": 6120,
                   "name": "to",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5882,
-                  "src": "1045:21:13",
+                  "scope": 6126,
+                  "src": "1045:21:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1910,20 +1910,20 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5874,
+                      "id": 6118,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1045:7:13",
+                      "src": "1045:7:15",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 5875,
+                    "id": 6119,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1045:9:13",
+                    "src": "1045:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -1934,11 +1934,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5879,
+                  "id": 6123,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5882,
-                  "src": "1068:26:13",
+                  "scope": 6126,
+                  "src": "1068:26:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -1947,19 +1947,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5877,
+                      "id": 6121,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1068:7:13",
+                      "src": "1068:7:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5878,
+                    "id": 6122,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1068:9:13",
+                    "src": "1068:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -1969,16 +1969,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1044:51:13"
+              "src": "1044:51:15"
             },
             "returnParameters": {
-              "id": 5881,
+              "id": 6125,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1104:0:13"
+              "src": "1104:0:15"
             },
-            "scope": 5934,
-            "src": "1009:96:13",
+            "scope": 6178,
+            "src": "1009:96:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1986,29 +1986,29 @@
           {
             "body": null,
             "documentation": "@dev Transfer all of msg.sender's outstanding external rewards to their account",
-            "id": 5887,
+            "id": 6131,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "withdrawExternalTokenRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5883,
+              "id": 6127,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1236:2:13"
+              "src": "1236:2:15"
             },
             "returnParameters": {
-              "id": 5886,
+              "id": 6130,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5885,
+                  "id": 6129,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5887,
-                  "src": "1257:7:13",
+                  "scope": 6131,
+                  "src": "1257:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2016,10 +2016,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5884,
+                    "id": 6128,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1257:7:13",
+                    "src": "1257:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2029,10 +2029,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1256:9:13"
+              "src": "1256:9:15"
             },
-            "scope": 5934,
-            "src": "1199:67:13",
+            "scope": 6178,
+            "src": "1199:67:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2040,29 +2040,29 @@
           {
             "body": null,
             "documentation": "@return The timestamp of the last reward allocation.",
-            "id": 5892,
+            "id": 6136,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getLastPayedAt",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5888,
+              "id": 6132,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1356:2:13"
+              "src": "1356:2:15"
             },
             "returnParameters": {
-              "id": 5891,
+              "id": 6135,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5890,
+                  "id": 6134,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5892,
-                  "src": "1382:7:13",
+                  "scope": 6136,
+                  "src": "1382:7:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2070,10 +2070,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5889,
+                    "id": 6133,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1382:7:13",
+                    "src": "1382:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2083,10 +2083,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1381:9:13"
+              "src": "1381:9:15"
             },
-            "scope": 5934,
-            "src": "1333:58:13",
+            "scope": 6178,
+            "src": "1333:58:15",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -2094,23 +2094,23 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of external tokens form the sender to this contract an update the pool.",
-            "id": 5897,
+            "id": 6141,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpFixedPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5895,
+              "id": 6139,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5894,
+                  "id": 6138,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5897,
-                  "src": "1533:14:13",
+                  "scope": 6141,
+                  "src": "1533:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2118,10 +2118,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5893,
+                    "id": 6137,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1533:7:13",
+                    "src": "1533:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2131,16 +2131,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1532:16:13"
+              "src": "1532:16:15"
             },
             "returnParameters": {
-              "id": 5896,
+              "id": 6140,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1557:0:13"
+              "src": "1557:0:15"
             },
-            "scope": 5934,
-            "src": "1509:49:13",
+            "scope": 6178,
+            "src": "1509:49:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2148,23 +2148,23 @@
           {
             "body": null,
             "documentation": "@dev Transfers the given amount of orbs tokens form the sender to this contract an update the pool.",
-            "id": 5902,
+            "id": 6146,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "topUpProRataPool",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5900,
+              "id": 6144,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5899,
+                  "id": 6143,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5902,
-                  "src": "1698:14:13",
+                  "scope": 6146,
+                  "src": "1698:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2172,10 +2172,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5898,
+                    "id": 6142,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1698:7:13",
+                    "src": "1698:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2185,16 +2185,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1697:16:13"
+              "src": "1697:16:15"
             },
             "returnParameters": {
-              "id": 5901,
+              "id": 6145,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1722:0:13"
+              "src": "1722:0:15"
             },
-            "scope": 5934,
-            "src": "1672:51:13",
+            "scope": 6178,
+            "src": "1672:51:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2202,23 +2202,23 @@
           {
             "body": null,
             "documentation": "@dev Called by: subscriptions contract\n Top-ups the fee pool with the given amount at the given rate (typically called by the subscriptions contract)",
-            "id": 5909,
+            "id": 6153,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "fillFeeBuckets",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5907,
+              "id": 6151,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5904,
+                  "id": 6148,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5909,
-                  "src": "1918:14:13",
+                  "scope": 6153,
+                  "src": "1918:14:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2226,10 +2226,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5903,
+                    "id": 6147,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1918:7:13",
+                    "src": "1918:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2240,11 +2240,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5906,
+                  "id": 6150,
                   "name": "monthlyRate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5909,
-                  "src": "1934:19:13",
+                  "scope": 6153,
+                  "src": "1934:19:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2252,10 +2252,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5905,
+                    "id": 6149,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1934:7:13",
+                    "src": "1934:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2265,16 +2265,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1917:37:13"
+              "src": "1917:37:15"
             },
             "returnParameters": {
-              "id": 5908,
+              "id": 6152,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1963:0:13"
+              "src": "1963:0:15"
             },
-            "scope": 5934,
-            "src": "1894:70:13",
+            "scope": 6178,
+            "src": "1894:70:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2282,23 +2282,23 @@
           {
             "body": null,
             "documentation": "@dev Called by: elections contract (committee provider)\n Notifies a change in the committee",
-            "id": 5918,
+            "id": 6162,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "committeeChanged",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5916,
+              "id": 6160,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5912,
+                  "id": 6156,
                   "name": "addrs",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5918,
-                  "src": "2171:24:13",
+                  "scope": 6162,
+                  "src": "2171:24:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -2307,20 +2307,20 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5910,
+                      "id": 6154,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "2171:7:13",
+                      "src": "2171:7:15",
                       "stateMutability": "nonpayable",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 5911,
+                    "id": 6155,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "2171:9:13",
+                    "src": "2171:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -2331,11 +2331,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5915,
+                  "id": 6159,
                   "name": "stakes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5918,
-                  "src": "2197:25:13",
+                  "scope": 6162,
+                  "src": "2197:25:15",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -2344,19 +2344,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 5913,
+                      "id": 6157,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "2197:7:13",
+                      "src": "2197:7:15",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 5914,
+                    "id": 6158,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "2197:9:13",
+                    "src": "2197:9:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -2366,16 +2366,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2170:53:13"
+              "src": "2170:53:15"
             },
             "returnParameters": {
-              "id": 5917,
+              "id": 6161,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2260:0:13"
+              "src": "2260:0:15"
             },
-            "scope": 5934,
-            "src": "2145:116:13",
+            "scope": 6178,
+            "src": "2145:116:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2383,23 +2383,23 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the fixed pool.",
-            "id": 5923,
+            "id": 6167,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setFixedPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5921,
+              "id": 6165,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5920,
+                  "id": 6164,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5923,
-                  "src": "2424:12:13",
+                  "scope": 6167,
+                  "src": "2424:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2407,10 +2407,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5919,
+                    "id": 6163,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2424:7:13",
+                    "src": "2424:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2420,16 +2420,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2423:14:13"
+              "src": "2423:14:15"
             },
             "returnParameters": {
-              "id": 5922,
+              "id": 6166,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2472:0:13"
+              "src": "2472:0:15"
             },
-            "scope": 5934,
-            "src": "2391:82:13",
+            "scope": 6178,
+            "src": "2391:82:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2437,23 +2437,23 @@
           {
             "body": null,
             "documentation": "@dev Assigns rewards and sets a new monthly rate for the pro-rata pool.",
-            "id": 5928,
+            "id": 6172,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setProRataPoolMonthlyRate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5926,
+              "id": 6170,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5925,
+                  "id": 6169,
                   "name": "rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5928,
-                  "src": "2594:12:13",
+                  "scope": 6172,
+                  "src": "2594:12:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2461,10 +2461,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 5924,
+                    "id": 6168,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2594:7:13",
+                    "src": "2594:7:15",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2474,16 +2474,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2593:14:13"
+              "src": "2593:14:15"
             },
             "returnParameters": {
-              "id": 5927,
+              "id": 6171,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2642:0:13"
+              "src": "2642:0:15"
             },
-            "scope": 5934,
-            "src": "2559:84:13",
+            "scope": 6178,
+            "src": "2559:84:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2491,38 +2491,38 @@
           {
             "body": null,
             "documentation": "@dev Updates the address of the contract registry",
-            "id": 5933,
+            "id": 6177,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "setContractRegistry",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5931,
+              "id": 6175,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5930,
+                  "id": 6174,
                   "name": "_contractRegistry",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5933,
-                  "src": "2778:35:13",
+                  "scope": 6177,
+                  "src": "2778:35:15",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IContractRegistry_$5681",
+                    "typeIdentifier": "t_contract$_IContractRegistry_$5893",
                     "typeString": "contract IContractRegistry"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 5929,
+                    "id": 6173,
                     "name": "IContractRegistry",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 5681,
-                    "src": "2778:17:13",
+                    "referencedDeclaration": 5893,
+                    "src": "2778:17:15",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IContractRegistry_$5681",
+                      "typeIdentifier": "t_contract$_IContractRegistry_$5893",
                       "typeString": "contract IContractRegistry"
                     }
                   },
@@ -2530,26 +2530,26 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2777:37:13"
+              "src": "2777:37:15"
             },
             "returnParameters": {
-              "id": 5932,
+              "id": 6176,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "2839:0:13"
+              "src": "2839:0:15"
             },
-            "scope": 5934,
-            "src": "2749:91:13",
+            "scope": 6178,
+            "src": "2749:91:15",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5935,
-        "src": "132:2712:13"
+        "scope": 6179,
+        "src": "132:2712:15"
       }
     ],
-    "src": "0:2845:13"
+    "src": "0:2845:15"
   },
   "compiler": {
     "name": "solc",
@@ -2557,7 +2557,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-11T13:50:01.674Z",
+  "updatedAt": "2020-03-11T14:45:21.669Z",
   "devdoc": {
     "methods": {
       "assignRewards()": {

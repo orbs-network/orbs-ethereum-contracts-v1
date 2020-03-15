@@ -37,7 +37,7 @@ describe("subscriptions aggregation", async () => {
         from: appOwner.address
       });
 
-      let r = await subscriber.createVC(firstPayment, {
+      let r = await subscriber.createVC(firstPayment, "main",  {
         from: appOwner.address
       });
       expect(r).to.have.subscriptionChangedEvent();

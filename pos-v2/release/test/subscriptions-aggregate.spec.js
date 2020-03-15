@@ -79,7 +79,7 @@ describe("subscriptions aggregation", function () { return __awaiter(void 0, voi
                             })];
                     case 5:
                         _b.sent();
-                        return [4 /*yield*/, subscriber.createVC(firstPayment, {
+                        return [4 /*yield*/, subscriber.createVC(firstPayment, "main", {
                                 from: appOwner.address
                             })];
                     case 6:

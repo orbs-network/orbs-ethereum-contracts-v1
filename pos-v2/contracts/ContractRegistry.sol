@@ -8,7 +8,7 @@ contract ContractRegistry is IContractRegistry {
 	mapping (string => address) contracts;
 
 	modifier onlyGovernor() {
-		require(msg.sender == governor, "caller is the registry governor");
+		require(msg.sender == governor, "caller is not the registry governor");
 
 		_;
 	}

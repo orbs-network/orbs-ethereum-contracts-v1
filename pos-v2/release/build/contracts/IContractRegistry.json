@@ -73,21 +73,21 @@
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
     "exportedSymbols": {
       "IContractRegistry": [
-        5681
+        5893
       ]
     },
-    "id": 5682,
+    "id": 5894,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5660,
+        "id": 5872,
         "literals": [
           "solidity",
           "0.5",
           ".16"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:11"
+        "src": "0:23:12"
       },
       {
         "baseContracts": [],
@@ -95,9 +95,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5681,
+        "id": 5893,
         "linearizedBaseContracts": [
-          5681
+          5893
         ],
         "name": "IContractRegistry",
         "nodeType": "ContractDefinition",
@@ -105,21 +105,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5666,
+            "id": 5878,
             "name": "ContractAddressUpdated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5665,
+              "id": 5877,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5662,
+                  "id": 5874,
                   "indexed": false,
                   "name": "contractName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
-                  "src": "86:19:11",
+                  "scope": 5878,
+                  "src": "86:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -127,10 +127,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5661,
+                    "id": 5873,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "86:6:11",
+                    "src": "86:6:12",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -141,12 +141,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5664,
+                  "id": 5876,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
-                  "src": "107:12:11",
+                  "scope": 5878,
+                  "src": "107:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -154,10 +154,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5663,
+                    "id": 5875,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "107:7:11",
+                    "src": "107:7:12",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -168,30 +168,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "85:35:11"
+              "src": "85:35:12"
             },
-            "src": "57:64:11"
+            "src": "57:64:12"
           },
           {
             "body": null,
             "documentation": "@dev updates the contracts address and emits a corresponding event",
-            "id": 5673,
+            "id": 5885,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "set",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5671,
+              "id": 5883,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5668,
+                  "id": 5880,
                   "name": "contractName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5673,
-                  "src": "209:28:11",
+                  "scope": 5885,
+                  "src": "209:28:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -199,10 +199,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5667,
+                    "id": 5879,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "209:6:11",
+                    "src": "209:6:12",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -213,11 +213,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5670,
+                  "id": 5882,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5673,
-                  "src": "239:12:11",
+                  "scope": 5885,
+                  "src": "239:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -225,10 +225,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5669,
+                    "id": 5881,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "239:7:11",
+                    "src": "239:7:12",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -239,16 +239,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "208:44:11"
+              "src": "208:44:12"
             },
             "returnParameters": {
-              "id": 5672,
+              "id": 5884,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "280:0:11"
+              "src": "280:0:12"
             },
-            "scope": 5681,
-            "src": "196:85:11",
+            "scope": 5893,
+            "src": "196:85:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -256,23 +256,23 @@
           {
             "body": null,
             "documentation": "@dev returns the current address of the",
-            "id": 5680,
+            "id": 5892,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "get",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5676,
+              "id": 5888,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5675,
+                  "id": 5887,
                   "name": "contractName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
-                  "src": "342:28:11",
+                  "scope": 5892,
+                  "src": "342:28:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -280,10 +280,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5674,
+                    "id": 5886,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "342:6:11",
+                    "src": "342:6:12",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -293,19 +293,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "341:30:11"
+              "src": "341:30:12"
             },
             "returnParameters": {
-              "id": 5679,
+              "id": 5891,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5678,
+                  "id": 5890,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
-                  "src": "395:7:11",
+                  "scope": 5892,
+                  "src": "395:7:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -313,10 +313,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5677,
+                    "id": 5889,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "395:7:11",
+                    "src": "395:7:12",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -327,40 +327,40 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "394:9:11"
+              "src": "394:9:12"
             },
-            "scope": 5681,
-            "src": "329:75:11",
+            "scope": 5893,
+            "src": "329:75:12",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5682,
-        "src": "25:381:11"
+        "scope": 5894,
+        "src": "25:381:12"
       }
     ],
-    "src": "0:407:11"
+    "src": "0:407:12"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IContractRegistry.sol",
     "exportedSymbols": {
       "IContractRegistry": [
-        5681
+        5893
       ]
     },
-    "id": 5682,
+    "id": 5894,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 5660,
+        "id": 5872,
         "literals": [
           "solidity",
           "0.5",
           ".16"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:11"
+        "src": "0:23:12"
       },
       {
         "baseContracts": [],
@@ -368,9 +368,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 5681,
+        "id": 5893,
         "linearizedBaseContracts": [
-          5681
+          5893
         ],
         "name": "IContractRegistry",
         "nodeType": "ContractDefinition",
@@ -378,21 +378,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 5666,
+            "id": 5878,
             "name": "ContractAddressUpdated",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 5665,
+              "id": 5877,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5662,
+                  "id": 5874,
                   "indexed": false,
                   "name": "contractName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
-                  "src": "86:19:11",
+                  "scope": 5878,
+                  "src": "86:19:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -400,10 +400,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5661,
+                    "id": 5873,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "86:6:11",
+                    "src": "86:6:12",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -414,12 +414,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5664,
+                  "id": 5876,
                   "indexed": false,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5666,
-                  "src": "107:12:11",
+                  "scope": 5878,
+                  "src": "107:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -427,10 +427,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5663,
+                    "id": 5875,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "107:7:11",
+                    "src": "107:7:12",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -441,30 +441,30 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "85:35:11"
+              "src": "85:35:12"
             },
-            "src": "57:64:11"
+            "src": "57:64:12"
           },
           {
             "body": null,
             "documentation": "@dev updates the contracts address and emits a corresponding event",
-            "id": 5673,
+            "id": 5885,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "set",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5671,
+              "id": 5883,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5668,
+                  "id": 5880,
                   "name": "contractName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5673,
-                  "src": "209:28:11",
+                  "scope": 5885,
+                  "src": "209:28:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -472,10 +472,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5667,
+                    "id": 5879,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "209:6:11",
+                    "src": "209:6:12",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -486,11 +486,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 5670,
+                  "id": 5882,
                   "name": "addr",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5673,
-                  "src": "239:12:11",
+                  "scope": 5885,
+                  "src": "239:12:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -498,10 +498,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5669,
+                    "id": 5881,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "239:7:11",
+                    "src": "239:7:12",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -512,16 +512,16 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "208:44:11"
+              "src": "208:44:12"
             },
             "returnParameters": {
-              "id": 5672,
+              "id": 5884,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "280:0:11"
+              "src": "280:0:12"
             },
-            "scope": 5681,
-            "src": "196:85:11",
+            "scope": 5893,
+            "src": "196:85:12",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -529,23 +529,23 @@
           {
             "body": null,
             "documentation": "@dev returns the current address of the",
-            "id": 5680,
+            "id": 5892,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "get",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 5676,
+              "id": 5888,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5675,
+                  "id": 5887,
                   "name": "contractName",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
-                  "src": "342:28:11",
+                  "scope": 5892,
+                  "src": "342:28:12",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -553,10 +553,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 5674,
+                    "id": 5886,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "342:6:11",
+                    "src": "342:6:12",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -566,19 +566,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "341:30:11"
+              "src": "341:30:12"
             },
             "returnParameters": {
-              "id": 5679,
+              "id": 5891,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 5678,
+                  "id": 5890,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 5680,
-                  "src": "395:7:11",
+                  "scope": 5892,
+                  "src": "395:7:12",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -586,10 +586,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 5677,
+                    "id": 5889,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "395:7:11",
+                    "src": "395:7:12",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -600,20 +600,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "394:9:11"
+              "src": "394:9:12"
             },
-            "scope": 5681,
-            "src": "329:75:11",
+            "scope": 5893,
+            "src": "329:75:12",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 5682,
-        "src": "25:381:11"
+        "scope": 5894,
+        "src": "25:381:12"
       }
     ],
-    "src": "0:407:11"
+    "src": "0:407:12"
   },
   "compiler": {
     "name": "solc",
@@ -621,7 +621,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-11T13:50:01.671Z",
+  "updatedAt": "2020-03-11T14:45:21.665Z",
   "devdoc": {
     "methods": {
       "get(string)": {

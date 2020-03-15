@@ -2,6 +2,7 @@ import { SubscriptionChangedEvent, PaymentEvent, VcConfigRecordChangedEvent, VcO
 import { DelegatedEvent, CommitteeChangedEvent, TopologyChangedEvent, ValidatorRegisteredEvent, StakeChangeEvent, VoteOutEvent, VotedOutOfCommitteeEvent, BanningVoteEvent, BannedEvent, UnbannedEvent } from "../typings/elections-contract";
 import { StakedEvent, UnstakedEvent } from "../typings/staking-contract";
 import { ContractAddressUpdatedEvent } from "../typings/contract-registry-contract";
+import { ProtocolChangedEvent } from "../typings/protocol-contract";
 export declare function isBNArrayEqual(a1: Array<any>, a2: Array<any>): boolean;
 declare global {
     export namespace Chai {
@@ -24,6 +25,7 @@ declare global {
             banningVoteEvent(data?: Partial<BanningVoteEvent>): void;
             bannedEvent(data?: Partial<BannedEvent>): void;
             unbannedEvent(data?: Partial<UnbannedEvent>): void;
+            protocolChangedEvent(data?: Partial<ProtocolChangedEvent>): void;
         }
         interface Assertion {
             bignumber: Assertion;

@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "./interfaces/ISubscriptions.sol";
 import "./interfaces/IRewards.sol";
 import "./interfaces/IContractRegistry.sol";
+import "./interfaces/IProtocol.sol";
 
 contract Subscriptions is ISubscriptions, Ownable{
     using SafeMath for uint256;
@@ -17,6 +18,7 @@ contract Subscriptions is ISubscriptions, Ownable{
         uint expiresAt;
         uint genRef;
         address owner;
+        string deploymentSubset;
 
         mapping (string => string) configRecords;
     }
@@ -56,8 +58,9 @@ contract Subscriptions is ISubscriptions, Ownable{
         authorizedSubscribers[addr] = true;
     }
 
-    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint) {
+    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner, string calldata deploymentSubset) external returns (uint, uint) {
         require(authorizedSubscribers[msg.sender], "must be an authorized subscriber");
+        require(IProtocol(contractRegistry.get("protocol")).deploymentSubsetExists(deploymentSubset) == true, "No such deployment subset");
 
         uint vcid = nextVcid++;
         VirtualChain memory vc = VirtualChain({
@@ -65,7 +68,8 @@ contract Subscriptions is ISubscriptions, Ownable{
             genRef: block.number + 300,
             owner: owner,
             tier: tier,
-            rate: rate
+            rate: rate,
+            deploymentSubset: deploymentSubset
         });
         virtualChains[vcid] = vc;
 
@@ -94,7 +98,7 @@ contract Subscriptions is ISubscriptions, Ownable{
         require(erc20.transfer(address(rewardsContract), amount), "failed to transfer subscription fees");
         rewardsContract.fillFeeBuckets(amount, vc.rate);
 
-        emit SubscriptionChanged(vcid, vc.genRef, vc.expiresAt, vc.tier);
+        emit SubscriptionChanged(vcid, vc.genRef, vc.expiresAt, vc.tier, vc.deploymentSubset);
         emit Payment(vcid, payer, amount, vc.tier, vc.rate);
     }
 

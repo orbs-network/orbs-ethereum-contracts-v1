@@ -52,8 +52,10 @@ exports.DEFAULT_VOTE_OUT_THRESHOLD = 80;
 exports.DEFAULT_BANNING_THRESHOLD = 80;
 exports.DEFAULT_VOTE_OUT_TIMEOUT = 24 * 60 * 60;
 exports.BANNING_LOCK_TIMEOUT = 7 * 24 * 60 * 60;
+exports.DEPLOYMENT_SUBSET_MAIN = "main";
+exports.DEPLOYMENT_SUBSET_CANARY = "canary";
 var Driver = /** @class */ (function () {
-    function Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, contractRegistry) {
+    function Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, protocol, contractRegistry) {
         this.accounts = accounts;
         this.elections = elections;
         this.erc20 = erc20;
@@ -61,6 +63,7 @@ var Driver = /** @class */ (function () {
         this.staking = staking;
         this.subscriptions = subscriptions;
         this.rewards = rewards;
+        this.protocol = protocol;
         this.contractRegistry = contractRegistry;
         this.participants = [];
     }
@@ -73,7 +76,7 @@ var Driver = /** @class */ (function () {
         if (voteOutTimeout === void 0) { voteOutTimeout = exports.DEFAULT_VOTE_OUT_TIMEOUT; }
         if (banningThreshold === void 0) { banningThreshold = exports.DEFAULT_BANNING_THRESHOLD; }
         return __awaiter(this, void 0, void 0, function () {
-            var accounts, contractRegistry, externalToken, erc20, rewards, elections, staking, subscriptions;
+            var accounts, contractRegistry, externalToken, erc20, rewards, elections, staking, subscriptions, protocol;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, eth_1.web3.eth.getAccounts()];
@@ -100,28 +103,37 @@ var Driver = /** @class */ (function () {
                         return [4 /*yield*/, eth_1.deploy('Subscriptions', [erc20.address])];
                     case 8:
                         subscriptions = _a.sent();
-                        return [4 /*yield*/, contractRegistry.set("staking", staking.address)];
+                        return [4 /*yield*/, eth_1.deploy('Protocol', [])];
                     case 9:
-                        _a.sent();
-                        return [4 /*yield*/, contractRegistry.set("rewards", rewards.address)];
+                        protocol = _a.sent();
+                        return [4 /*yield*/, contractRegistry.set("staking", staking.address)];
                     case 10:
                         _a.sent();
-                        return [4 /*yield*/, contractRegistry.set("elections", elections.address)];
+                        return [4 /*yield*/, contractRegistry.set("rewards", rewards.address)];
                     case 11:
                         _a.sent();
-                        return [4 /*yield*/, contractRegistry.set("subscriptions", subscriptions.address)];
+                        return [4 /*yield*/, contractRegistry.set("elections", elections.address)];
                     case 12:
                         _a.sent();
-                        return [4 /*yield*/, elections.setContractRegistry(contractRegistry.address)];
+                        return [4 /*yield*/, contractRegistry.set("subscriptions", subscriptions.address)];
                     case 13:
                         _a.sent();
-                        return [4 /*yield*/, rewards.setContractRegistry(contractRegistry.address)];
+                        return [4 /*yield*/, contractRegistry.set("protocol", protocol.address)];
                     case 14:
                         _a.sent();
-                        return [4 /*yield*/, subscriptions.setContractRegistry(contractRegistry.address)];
+                        return [4 /*yield*/, elections.setContractRegistry(contractRegistry.address)];
                     case 15:
                         _a.sent();
-                        return [2 /*return*/, new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, contractRegistry)];
+                        return [4 /*yield*/, rewards.setContractRegistry(contractRegistry.address)];
+                    case 16:
+                        _a.sent();
+                        return [4 /*yield*/, subscriptions.setContractRegistry(contractRegistry.address)];
+                    case 17:
+                        _a.sent();
+                        return [4 /*yield*/, protocol.setProtocolVersion(exports.DEPLOYMENT_SUBSET_MAIN, 1, 0)];
+                    case 18:
+                        _a.sent();
+                        return [2 /*return*/, new Driver(accounts, elections, erc20, externalToken, staking, subscriptions, rewards, protocol, contractRegistry)];
                 }
             });
         });

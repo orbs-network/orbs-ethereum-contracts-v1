@@ -16,6 +16,7 @@ export declare const vcConfigRecordChangedEvents: (txResult: any) => any;
 export declare const vcOwnerChangedEvents: (txResult: any) => any;
 export declare const vcCreatedEvents: (txResult: any) => any;
 export declare const contractAddressUpdatedEvents: (txResult: any) => any;
+export declare const protocolChangedEvents: (txResult: any) => any;
 export declare const banningVoteEvents: (txResult: any) => any;
 export declare const electionsBanned: (txResult: any) => any;
 export declare const electionsUnbanned: (txResult: any) => any;

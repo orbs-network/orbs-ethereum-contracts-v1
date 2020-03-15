@@ -1,0 +1,3274 @@
+{
+  "contractName": "Protocol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "deploymentSubset",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "protocolVersion",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "asOfBlock",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProtocolVersionChanged",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "deploymentSubset",
+          "type": "string"
+        }
+      ],
+      "name": "deploymentSubsetExists",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "deploymentSubset",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "protocolVersion",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "asOfBlock",
+          "type": "uint256"
+        }
+      ],
+      "name": "setProtocolVersion",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"ProtocolVersionChanged\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"}],\"name\":\"deploymentSubsetExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"string\",\"name\":\"deploymentSubset\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"protocolVersion\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"asOfBlock\",\"type\":\"uint256\"}],\"name\":\"setProtocolVersion\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/Protocol.sol\":\"Protocol\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/Protocol.sol\":{\"keccak256\":\"0xa26a0ea5a1693b11a4521e9045e32f434123a61d9e90cf7c6277a613a4de47e9\",\"urls\":[\"bzz-raw://24feb41ec232e6a986edb64d5954f475aa191d46eea30393b8a7d34c1fa023aa\",\"dweb:/ipfs/QmaV7oj4f2StjJUmvV6yY1aabxQjTKmWSUeH2t26tvoH3w\"]},\"/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol\":{\"keccak256\":\"0x79e83f4a54672b73add6d4c3ac23c28277287cc40265fefe851baa699745f590\",\"urls\":[\"bzz-raw://30ccf6155388c2200f5b4bb93abaa3c87d5204a513d6e6975f14987d788fc7d0\",\"dweb:/ipfs/QmcHSF9q6bSURJPy79FHz8ZU2QTd7ve4T7BrQa96eo46qF\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x90a3995645af7562d84b9d69363ffa5ae7217714ab61e951bf7bc450f40e4061\",\"urls\":[\"bzz-raw://216ef9d6b614db4eb46970b4e84903f2534a45572dd30a79f0041f1a5830f436\",\"dweb:/ipfs/QmNPrJ4MWKUAWzKXpUqeyKRUfosaoANZAqXgvepdrCwZAG\"]},\"@openzeppelin/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x6fb9d7889769d7cc161225f9ef7a90e468ba9788b253816f8d8b6894d3472c24\",\"urls\":[\"bzz-raw://cf4c00fc3c37cc5acf0c82ec6fd97bab67d72c2567fdc0ebf023d9c09b30a08e\",\"dweb:/ipfs/Qmb7TChG6DsEDX7LooJ4vmxot19f7VXX8S1zUGPeJTWbwZ\"]}},\"version\":1}",
+  "bytecode": "0x608060405260006100176001600160e01b0361006616565b600080546001600160a01b0319166001600160a01b0383169081178255604051929350917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a35061006a565b3390565b610845806100796000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c8063715018a61461006757806382adb1dd146100715780638b8c3105146100e75780638da5cb5b146101a15780638f32d59b146101c5578063f2fde38b146101cd575b600080fd5b61006f6101f3565b005b61006f6004803603606081101561008757600080fd5b8101906020810181356401000000008111156100a257600080fd5b8201836020820111156100b457600080fd5b803590602001918460018302840111640100000000831117156100d657600080fd5b919350915080359060200135610296565b61018d600480360360208110156100fd57600080fd5b81019060208101813564010000000081111561011857600080fd5b82018360208201111561012a57600080fd5b8035906020019184600183028401116401000000008311171561014c57600080fd5b91908080601f01602080910402602001604051908101604052809392919081815260200183838082843760009201919091525092955061057b945050505050565b604080519115158252519081900360200190f35b6101a96105e6565b604080516001600160a01b039092168252519081900360200190f35b61018d6105f5565b61006f600480360360208110156101e357600080fd5b50356001600160a01b0316610619565b6101fb6105f5565b61024c576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b61029e6105f5565b6102ef576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600184846040518083838082843780830192505050925050509081526020016040518091039020600101546000141561036457801561035f5760405162461bcd60e51b815260040180806020018281038252602d81526020018061077a602d913960400191505060405180910390fd5b610472565b4381116103a25760405162461bcd60e51b81526004018080602001828103825260318152602001806107496031913960400191505060405180910390fd5b60018484604051808383808284378083019250505092505050908152602001604051809103902060020154811161040a5760405162461bcd60e51b81526004018080602001828103825260478152602001806107a76047913960600191505060405180910390fd5b6001848460405180838380828437808301925050509250505090815260200160405180910390206001015482116104725760405162461bcd60e51b81526004018080602001828103825260238152602001806107ee6023913960400191505060405180910390fd5b816001858560405180838380828437808301925050509250505090815260200160405180910390206001018190555080600185856040518083838082843780830192505050925050509081526020016040518091039020600201819055506001808585604051808383808284379190910194855250506040805160209481900385018120805460ff19169615159690961790955592840186905250508101829052606080825281018490527fd61a08069647ae3b41023b3206c1b946c1da3f213c47023357f1e1147be6587c9085908590859085908060808101868680828437600083820152604051601f909101601f191690920182900397509095505050505050a150505050565b60006001826040518082805190602001908083835b602083106105af5780518252601f199092019160209182019101610590565b51815160209384036101000a600019018019909216911617905292019485525060405193849003019092205460ff16949350505050565b6000546001600160a01b031690565b600080546001600160a01b031661060a61067e565b6001600160a01b031614905090565b6106216105f5565b610672576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b61067b81610682565b50565b3390565b6001600160a01b0381166106c75760405162461bcd60e51b81526004018080602001828103825260268152602001806107236026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f206164647265737370726f746f636f6c207570646174652063616e206f6e6c792074616b6520706c61636520696e2074686520667574757265696e697469616c2070726f746f636f6c2076657273696f6e206d7573742062652066726f6d20626c6f636b203070726f746f636f6c20757067726164652063616e206f6e6c792074616b6520706c616365206166746572207468652070726576696f75732070726f746f636f6c2075706461746570726f746f636f6c20646f776e6772616465206973206e6f7420737570706f72746564a265627a7a72315820322fa026dee386e060931c976e553448849c2f00b7fdf0501f03a9ca4071af6364736f6c63430005100032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100625760003560e01c8063715018a61461006757806382adb1dd146100715780638b8c3105146100e75780638da5cb5b146101a15780638f32d59b146101c5578063f2fde38b146101cd575b600080fd5b61006f6101f3565b005b61006f6004803603606081101561008757600080fd5b8101906020810181356401000000008111156100a257600080fd5b8201836020820111156100b457600080fd5b803590602001918460018302840111640100000000831117156100d657600080fd5b919350915080359060200135610296565b61018d600480360360208110156100fd57600080fd5b81019060208101813564010000000081111561011857600080fd5b82018360208201111561012a57600080fd5b8035906020019184600183028401116401000000008311171561014c57600080fd5b91908080601f01602080910402602001604051908101604052809392919081815260200183838082843760009201919091525092955061057b945050505050565b604080519115158252519081900360200190f35b6101a96105e6565b604080516001600160a01b039092168252519081900360200190f35b61018d6105f5565b61006f600480360360208110156101e357600080fd5b50356001600160a01b0316610619565b6101fb6105f5565b61024c576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b61029e6105f5565b6102ef576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b600184846040518083838082843780830192505050925050509081526020016040518091039020600101546000141561036457801561035f5760405162461bcd60e51b815260040180806020018281038252602d81526020018061077a602d913960400191505060405180910390fd5b610472565b4381116103a25760405162461bcd60e51b81526004018080602001828103825260318152602001806107496031913960400191505060405180910390fd5b60018484604051808383808284378083019250505092505050908152602001604051809103902060020154811161040a5760405162461bcd60e51b81526004018080602001828103825260478152602001806107a76047913960600191505060405180910390fd5b6001848460405180838380828437808301925050509250505090815260200160405180910390206001015482116104725760405162461bcd60e51b81526004018080602001828103825260238152602001806107ee6023913960400191505060405180910390fd5b816001858560405180838380828437808301925050509250505090815260200160405180910390206001018190555080600185856040518083838082843780830192505050925050509081526020016040518091039020600201819055506001808585604051808383808284379190910194855250506040805160209481900385018120805460ff19169615159690961790955592840186905250508101829052606080825281018490527fd61a08069647ae3b41023b3206c1b946c1da3f213c47023357f1e1147be6587c9085908590859085908060808101868680828437600083820152604051601f909101601f191690920182900397509095505050505050a150505050565b60006001826040518082805190602001908083835b602083106105af5780518252601f199092019160209182019101610590565b51815160209384036101000a600019018019909216911617905292019485525060405193849003019092205460ff16949350505050565b6000546001600160a01b031690565b600080546001600160a01b031661060a61067e565b6001600160a01b031614905090565b6106216105f5565b610672576040805162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015290519081900360640190fd5b61067b81610682565b50565b3390565b6001600160a01b0381166106c75760405162461bcd60e51b81526004018080602001828103825260268152602001806107236026913960400191505060405180910390fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b039290921691909117905556fe4f776e61626c653a206e6577206f776e657220697320746865207a65726f206164647265737370726f746f636f6c207570646174652063616e206f6e6c792074616b6520706c61636520696e2074686520667574757265696e697469616c2070726f746f636f6c2076657273696f6e206d7573742062652066726f6d20626c6f636b203070726f746f636f6c20757067726164652063616e206f6e6c792074616b6520706c616365206166746572207468652070726576696f75732070726f746f636f6c2075706461746570726f746f636f6c20646f776e6772616465206973206e6f7420737570706f72746564a265627a7a72315820322fa026dee386e060931c976e553448849c2f00b7fdf0501f03a9ca4071af6364736f6c63430005100032",
+  "sourceMap": "119:1485:6:-;;;698:17:20;718:12;-1:-1:-1;;;;;718:10:20;:12;:::i;:::-;740:6;:18;;-1:-1:-1;;;;;;740:18:20;-1:-1:-1;;;;;740:18:20;;;;;;;773:43;;740:18;;-1:-1:-1;740:18:20;773:43;;740:6;;773:43;664:159;119:1485:6;;788:96:17;867:10;788:96;:::o;119:1485:6:-;;;;;;;",
+  "deployedSourceMap": "119:1485:6:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;119:1485:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1684:137:20;;;:::i;:::-;;633:969:6;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;633:969:6;;;;;;;;21:11:-1;5:28;;2:2;;;46:1;43;36:12;2:2;633:969:6;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;633:969:6;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;633:969:6;;-1:-1:-1;633:969:6;-1:-1:-1;633:969:6;;;;;;;:::i;470:157::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;470:157:6;;;;;;;;21:11:-1;5:28;;2:2;;;46:1;43;36:12;2:2;470:157:6;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;470:157:6;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;470:157:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;470:157:6;;-1:-1:-1;470:157:6;;-1:-1:-1;;;;;470:157:6:i;:::-;;;;;;;;;;;;;;;;;;899:77:20;;;:::i;:::-;;;;-1:-1:-1;;;;;899:77:20;;;;;;;;;;;;;;1250:92;;;:::i;1970:107::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1970:107:20;-1:-1:-1;;;;;1970:107:20;;:::i;1684:137::-;1103:9;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1782:1;1766:6;;1745:40;;-1:-1:-1;;;;;1766:6:20;;;;1745:40;;1782:1;;1745:40;1812:1;1795:19;;-1:-1:-1;;;;;;1795:19:20;;;1684:137::o;633:969:6:-;1103:9:20;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;772:17:6;790:16;;772:35;;;;;30:3:-1;22:6;14;1:33;57:3;49:6;45:16;35:26;;772:35:6;;;;;;;;;;;;;;;;;;:43;;;819:1;772:48;768:546;;;844:14;;836:72;;;;-1:-1:-1;;;836:72:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;768:546;;;959:12;947:9;:24;939:86;;;;-1:-1:-1;;;939:86:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1059:17;1077:16;;1059:35;;;;;30:3:-1;22:6;14;1:33;57:3;49:6;45:16;35:26;;1059:35:6;;;;;;;;;;;;;;;;;;:45;;;1047:9;:57;1039:141;;;;-1:-1:-1;;;1039:141:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1220:17;1238:16;;1220:35;;;;;30:3:-1;22:6;14;1:33;57:3;49:6;45:16;35:26;;1220:35:6;;;;;;;;;;;;;;;;;;:43;;;1202:15;:61;1194:109;;;;-1:-1:-1;;;1194:109:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1370:15;1324:17;1342:16;;1324:35;;;;;30:3:-1;22:6;14;1:33;57:3;49:6;45:16;35:26;;1324:35:6;;;;;;;;;;;;;;;;;;:43;;:61;;;;1443:9;1395:17;1413:16;;1395:35;;;;;30:3:-1;22:6;14;1:33;57:3;49:6;45:16;35:26;;1395:35:6;;;;;;;;;;;;;;;;;;:45;;:57;;;;1507:4;1462:17;1480:16;;1462:35;;;;;30:3:-1;22:6;14;1:33;45:16;;;;1462:35:6;;;-1:-1:-1;;1462:35:6;;;;;;;;;;;;:49;;-1:-1:-1;;1462:49:6;;;;;;;;;;;1527:68;;;;;;-1:-1:-1;;1527:68:6;;;;;;;;;;;;;;;;1550:16;;1527:68;;;;;;1462:35;1527:68;;;1550:16;1527:68;;1550:16;1527:68;1:33:-1;99:1;81:16;;;74:27;1527:68:6;;137:4:-1;117:14;;;-1:-1;;113:30;157:16;;;1527:68:6;;;;-1:-1:-1;1527:68:6;;-1:-1:-1;;;;;;1527:68:6;633:969;;;;:::o;470:157::-;555:4;578:17;596:16;578:35;;;;;;;;;;;;;36:153:-1;66:2;61:3;58:11;36:153;;176:10;;164:23;;-1:-1;;139:12;;;;98:2;89:12;;;;114;36:153;;;299:10;344;;263:2;259:12;;;254:3;250:22;-1:-1;;246:30;311:9;;295:26;;;340:21;;377:20;365:33;;578:35:6;;;;;-1:-1:-1;578:35:6;;;;;;;;;;:42;;;;470:157;-1:-1:-1;;;;470:157:6:o;899:77:20:-;937:7;963:6;-1:-1:-1;;;;;963:6:20;899:77;:::o;1250:92::-;1290:4;1329:6;;-1:-1:-1;;;;;1329:6:20;1313:12;:10;:12::i;:::-;-1:-1:-1;;;;;1313:22:20;;1306:29;;1250:92;:::o;1970:107::-;1103:9;:7;:9::i;:::-;1095:54;;;;;-1:-1:-1;;;1095:54:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2042:28;2061:8;2042:18;:28::i;:::-;1970:107;:::o;788:96:17:-;867:10;788:96;:::o;2178:225:20:-;-1:-1:-1;;;;;2251:22:20;;2243:73;;;;-1:-1:-1;;;2243:73:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2352:6;;;2331:38;;-1:-1:-1;;;;;2331:38:20;;;;2352:6;;;2331:38;;;2379:6;:17;;-1:-1:-1;;;;;;2379:17:20;-1:-1:-1;;;;;2379:17:20;;;;;;;;;;2178:225::o",
+  "source": "pragma solidity 0.5.16;\n\nimport \"@openzeppelin/contracts/ownership/Ownable.sol\";\nimport \"./interfaces/IProtocol.sol\";\n\ncontract Protocol is IProtocol, Ownable {\n\n    // TODO - allow amending future upgrades - see https://github.com/orbs-network/orbs-ethereum-contracts/pull/192#discussion_r391179003\n\n    struct DeploymentSubset {\n        bool exists;\n        uint version;\n        uint asOfBlock;\n    }\n\n    mapping (string => DeploymentSubset) deploymentSubsets;\n\n    function deploymentSubsetExists(string memory deploymentSubset) public view returns (bool) {\n        return deploymentSubsets[deploymentSubset].exists;\n    }\n\n    function setProtocolVersion(string calldata deploymentSubset, uint256 protocolVersion, uint256 asOfBlock) external onlyOwner {\n        if (deploymentSubsets[deploymentSubset].version == 0) {\n            require(asOfBlock == 0, \"initial protocol version must be from block 0\");\n        } else {\n            require(asOfBlock > block.number, \"protocol update can only take place in the future\");\n            require(asOfBlock > deploymentSubsets[deploymentSubset].asOfBlock, \"protocol upgrade can only take place after the previous protocol update\");\n            require(protocolVersion > deploymentSubsets[deploymentSubset].version, \"protocol downgrade is not supported\");\n        }\n\n        deploymentSubsets[deploymentSubset].version = protocolVersion;\n        deploymentSubsets[deploymentSubset].asOfBlock = asOfBlock;\n        deploymentSubsets[deploymentSubset].exists = true;\n\n        emit ProtocolVersionChanged(deploymentSubset, protocolVersion, asOfBlock);\n    }\n}\n",
+  "sourcePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/Protocol.sol",
+  "ast": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/Protocol.sol",
+    "exportedSymbols": {
+      "Protocol": [
+        2858
+      ]
+    },
+    "id": 2859,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2744,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:6"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "id": 2745,
+        "nodeType": "ImportDirective",
+        "scope": 2859,
+        "sourceUnit": 6650,
+        "src": "25:55:6",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
+        "file": "./interfaces/IProtocol.sol",
+        "id": 2746,
+        "nodeType": "ImportDirective",
+        "scope": 2859,
+        "sourceUnit": 6034,
+        "src": "81:36:6",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 2747,
+              "name": "IProtocol",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6033,
+              "src": "140:9:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IProtocol_$6033",
+                "typeString": "contract IProtocol"
+              }
+            },
+            "id": 2748,
+            "nodeType": "InheritanceSpecifier",
+            "src": "140:9:6"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 2749,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6649,
+              "src": "151:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$6649",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 2750,
+            "nodeType": "InheritanceSpecifier",
+            "src": "151:7:6"
+          }
+        ],
+        "contractDependencies": [
+          6033,
+          6275,
+          6649
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 2858,
+        "linearizedBaseContracts": [
+          2858,
+          6649,
+          6275,
+          6033
+        ],
+        "name": "Protocol",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "Protocol.DeploymentSubset",
+            "id": 2757,
+            "members": [
+              {
+                "constant": false,
+                "id": 2752,
+                "name": "exists",
+                "nodeType": "VariableDeclaration",
+                "scope": 2757,
+                "src": "339:11:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 2751,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "339:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2754,
+                "name": "version",
+                "nodeType": "VariableDeclaration",
+                "scope": 2757,
+                "src": "360:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2753,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "360:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2756,
+                "name": "asOfBlock",
+                "nodeType": "VariableDeclaration",
+                "scope": 2757,
+                "src": "382:14:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2755,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "382:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "DeploymentSubset",
+            "nodeType": "StructDefinition",
+            "scope": 2858,
+            "src": "305:98:6",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 2761,
+            "name": "deploymentSubsets",
+            "nodeType": "VariableDeclaration",
+            "scope": 2858,
+            "src": "409:54:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+              "typeString": "mapping(string => struct Protocol.DeploymentSubset)"
+            },
+            "typeName": {
+              "id": 2760,
+              "keyType": {
+                "id": 2758,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "418:6:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "409:36:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                "typeString": "mapping(string => struct Protocol.DeploymentSubset)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 2759,
+                "name": "DeploymentSubset",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 2757,
+                "src": "428:16:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage_ptr",
+                  "typeString": "struct Protocol.DeploymentSubset"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 2773,
+              "nodeType": "Block",
+              "src": "561:66:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "baseExpression": {
+                        "argumentTypes": null,
+                        "id": 2768,
+                        "name": "deploymentSubsets",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2761,
+                        "src": "578:17:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                          "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                        }
+                      },
+                      "id": 2770,
+                      "indexExpression": {
+                        "argumentTypes": null,
+                        "id": 2769,
+                        "name": "deploymentSubset",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2763,
+                        "src": "596:16:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "578:35:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                        "typeString": "struct Protocol.DeploymentSubset storage ref"
+                      }
+                    },
+                    "id": 2771,
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "exists",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 2752,
+                    "src": "578:42:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 2767,
+                  "id": 2772,
+                  "nodeType": "Return",
+                  "src": "571:49:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 2774,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "deploymentSubsetExists",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2764,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2763,
+                  "name": "deploymentSubset",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2774,
+                  "src": "502:30:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2762,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "502:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "501:32:6"
+            },
+            "returnParameters": {
+              "id": 2767,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2766,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2774,
+                  "src": "555:4:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 2765,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "555:4:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "554:6:6"
+            },
+            "scope": 2858,
+            "src": "470:157:6",
+            "stateMutability": "view",
+            "superFunction": 6023,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 2856,
+              "nodeType": "Block",
+              "src": "758:844:6",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 2790,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2785,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "772:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2787,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2786,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "790:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "772:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2788,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "version",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2754,
+                      "src": "772:43:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "hexValue": "30",
+                      "id": 2789,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "819:1:6",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_0_by_1",
+                        "typeString": "int_const 0"
+                      },
+                      "value": "0"
+                    },
+                    "src": "772:48:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": {
+                    "id": 2827,
+                    "nodeType": "Block",
+                    "src": "925:389:6",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2803,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2800,
+                                "name": "asOfBlock",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2780,
+                                "src": "947:9:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": ">",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "expression": {
+                                  "argumentTypes": null,
+                                  "id": 2801,
+                                  "name": "block",
+                                  "nodeType": "Identifier",
+                                  "overloadedDeclarations": [],
+                                  "referencedDeclaration": 7128,
+                                  "src": "959:5:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_magic_block",
+                                    "typeString": "block"
+                                  }
+                                },
+                                "id": 2802,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "memberName": "number",
+                                "nodeType": "MemberAccess",
+                                "referencedDeclaration": null,
+                                "src": "959:12:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "947:24:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "70726f746f636f6c207570646174652063616e206f6e6c792074616b6520706c61636520696e2074686520667574757265",
+                              "id": 2804,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "973:51:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_7b0e29b31ed2d1a349d711762f0fb6e0492ce68d479f9eaedc5365014f13c7be",
+                                "typeString": "literal_string \"protocol update can only take place in the future\""
+                              },
+                              "value": "protocol update can only take place in the future"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_7b0e29b31ed2d1a349d711762f0fb6e0492ce68d479f9eaedc5365014f13c7be",
+                                "typeString": "literal_string \"protocol update can only take place in the future\""
+                              }
+                            ],
+                            "id": 2799,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "939:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2805,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "939:86:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2806,
+                        "nodeType": "ExpressionStatement",
+                        "src": "939:86:6"
+                      },
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2813,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2808,
+                                "name": "asOfBlock",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2780,
+                                "src": "1047:9:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": ">",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "expression": {
+                                  "argumentTypes": null,
+                                  "baseExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2809,
+                                    "name": "deploymentSubsets",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2761,
+                                    "src": "1059:17:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                                      "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                                    }
+                                  },
+                                  "id": 2811,
+                                  "indexExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2810,
+                                    "name": "deploymentSubset",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2776,
+                                    "src": "1077:16:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_calldata_ptr",
+                                      "typeString": "string calldata"
+                                    }
+                                  },
+                                  "isConstant": false,
+                                  "isLValue": true,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "nodeType": "IndexAccess",
+                                  "src": "1059:35:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                                    "typeString": "struct Protocol.DeploymentSubset storage ref"
+                                  }
+                                },
+                                "id": 2812,
+                                "isConstant": false,
+                                "isLValue": true,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "memberName": "asOfBlock",
+                                "nodeType": "MemberAccess",
+                                "referencedDeclaration": 2756,
+                                "src": "1059:45:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "1047:57:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "70726f746f636f6c20757067726164652063616e206f6e6c792074616b6520706c616365206166746572207468652070726576696f75732070726f746f636f6c20757064617465",
+                              "id": 2814,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "1106:73:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_c19bba356514fc50d52bce30c79186c4f48160c8612bb3f2cfdc1f46307a20be",
+                                "typeString": "literal_string \"protocol upgrade can only take place after the previous protocol update\""
+                              },
+                              "value": "protocol upgrade can only take place after the previous protocol update"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_c19bba356514fc50d52bce30c79186c4f48160c8612bb3f2cfdc1f46307a20be",
+                                "typeString": "literal_string \"protocol upgrade can only take place after the previous protocol update\""
+                              }
+                            ],
+                            "id": 2807,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "1039:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2815,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "1039:141:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2816,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1039:141:6"
+                      },
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2823,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2818,
+                                "name": "protocolVersion",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2778,
+                                "src": "1202:15:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": ">",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "expression": {
+                                  "argumentTypes": null,
+                                  "baseExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2819,
+                                    "name": "deploymentSubsets",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2761,
+                                    "src": "1220:17:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                                      "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                                    }
+                                  },
+                                  "id": 2821,
+                                  "indexExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2820,
+                                    "name": "deploymentSubset",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2776,
+                                    "src": "1238:16:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_calldata_ptr",
+                                      "typeString": "string calldata"
+                                    }
+                                  },
+                                  "isConstant": false,
+                                  "isLValue": true,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "nodeType": "IndexAccess",
+                                  "src": "1220:35:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                                    "typeString": "struct Protocol.DeploymentSubset storage ref"
+                                  }
+                                },
+                                "id": 2822,
+                                "isConstant": false,
+                                "isLValue": true,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "memberName": "version",
+                                "nodeType": "MemberAccess",
+                                "referencedDeclaration": 2754,
+                                "src": "1220:43:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "1202:61:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "70726f746f636f6c20646f776e6772616465206973206e6f7420737570706f72746564",
+                              "id": 2824,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "1265:37:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_e3b4d990b40b8c1612511e09b7fdf1a09cd8a2dce021d8b53f5f4a9ecd499286",
+                                "typeString": "literal_string \"protocol downgrade is not supported\""
+                              },
+                              "value": "protocol downgrade is not supported"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_e3b4d990b40b8c1612511e09b7fdf1a09cd8a2dce021d8b53f5f4a9ecd499286",
+                                "typeString": "literal_string \"protocol downgrade is not supported\""
+                              }
+                            ],
+                            "id": 2817,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "1194:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2825,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "1194:109:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2826,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1194:109:6"
+                      }
+                    ]
+                  },
+                  "id": 2828,
+                  "nodeType": "IfStatement",
+                  "src": "768:546:6",
+                  "trueBody": {
+                    "id": 2798,
+                    "nodeType": "Block",
+                    "src": "822:97:6",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2794,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2792,
+                                "name": "asOfBlock",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2780,
+                                "src": "844:9:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": "==",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "hexValue": "30",
+                                "id": 2793,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": true,
+                                "kind": "number",
+                                "lValueRequested": false,
+                                "nodeType": "Literal",
+                                "src": "857:1:6",
+                                "subdenomination": null,
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_rational_0_by_1",
+                                  "typeString": "int_const 0"
+                                },
+                                "value": "0"
+                              },
+                              "src": "844:14:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "696e697469616c2070726f746f636f6c2076657273696f6e206d7573742062652066726f6d20626c6f636b2030",
+                              "id": 2795,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "860:47:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_92499ba12b5b45bc57a999058c51110897645947741654a4869422b024d08eae",
+                                "typeString": "literal_string \"initial protocol version must be from block 0\""
+                              },
+                              "value": "initial protocol version must be from block 0"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_92499ba12b5b45bc57a999058c51110897645947741654a4869422b024d08eae",
+                                "typeString": "literal_string \"initial protocol version must be from block 0\""
+                              }
+                            ],
+                            "id": 2791,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "836:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2796,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "836:72:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2797,
+                        "nodeType": "ExpressionStatement",
+                        "src": "836:72:6"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 2834,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2829,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "1324:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2831,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2830,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "1342:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1324:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2832,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "version",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2754,
+                      "src": "1324:43:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 2833,
+                      "name": "protocolVersion",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2778,
+                      "src": "1370:15:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1324:61:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 2835,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1324:61:6"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 2841,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2836,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "1395:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2838,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2837,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "1413:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1395:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2839,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "asOfBlock",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2756,
+                      "src": "1395:45:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 2840,
+                      "name": "asOfBlock",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2780,
+                      "src": "1443:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1395:57:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 2842,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1395:57:6"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 2848,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2843,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "1462:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2845,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2844,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "1480:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1462:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2846,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "exists",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2752,
+                      "src": "1462:42:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "hexValue": "74727565",
+                      "id": 2847,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "bool",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1507:4:6",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "value": "true"
+                    },
+                    "src": "1462:49:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 2849,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1462:49:6"
+                },
+                {
+                  "eventCall": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 2851,
+                        "name": "deploymentSubset",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2776,
+                        "src": "1550:16:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 2852,
+                        "name": "protocolVersion",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2778,
+                        "src": "1568:15:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 2853,
+                        "name": "asOfBlock",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2780,
+                        "src": "1585:9:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 2850,
+                      "name": "ProtocolVersionChanged",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6016,
+                      "src": "1527:22:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_string_memory_ptr_$_t_uint256_$_t_uint256_$returns$__$",
+                        "typeString": "function (string memory,uint256,uint256)"
+                      }
+                    },
+                    "id": 2854,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1527:68:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 2855,
+                  "nodeType": "EmitStatement",
+                  "src": "1522:73:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 2857,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 2783,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 2782,
+                  "name": "onlyOwner",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 6582,
+                  "src": "748:9:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "748:9:6"
+              }
+            ],
+            "name": "setProtocolVersion",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2781,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2776,
+                  "name": "deploymentSubset",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2857,
+                  "src": "661:32:6",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2775,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "661:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2778,
+                  "name": "protocolVersion",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2857,
+                  "src": "695:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2777,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "695:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2780,
+                  "name": "asOfBlock",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2857,
+                  "src": "720:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2779,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "720:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "660:78:6"
+            },
+            "returnParameters": {
+              "id": 2784,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "758:0:6"
+            },
+            "scope": 2858,
+            "src": "633:969:6",
+            "stateMutability": "nonpayable",
+            "superFunction": 6032,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2859,
+        "src": "119:1485:6"
+      }
+    ],
+    "src": "0:1605:6"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/Protocol.sol",
+    "exportedSymbols": {
+      "Protocol": [
+        2858
+      ]
+    },
+    "id": 2859,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2744,
+        "literals": [
+          "solidity",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:6"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "file": "@openzeppelin/contracts/ownership/Ownable.sol",
+        "id": 2745,
+        "nodeType": "ImportDirective",
+        "scope": 2859,
+        "sourceUnit": 6650,
+        "src": "25:55:6",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/ron/repos/orbs-ethereum-contracts/pos-v2/contracts/interfaces/IProtocol.sol",
+        "file": "./interfaces/IProtocol.sol",
+        "id": 2746,
+        "nodeType": "ImportDirective",
+        "scope": 2859,
+        "sourceUnit": 6034,
+        "src": "81:36:6",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 2747,
+              "name": "IProtocol",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6033,
+              "src": "140:9:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IProtocol_$6033",
+                "typeString": "contract IProtocol"
+              }
+            },
+            "id": 2748,
+            "nodeType": "InheritanceSpecifier",
+            "src": "140:9:6"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 2749,
+              "name": "Ownable",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6649,
+              "src": "151:7:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Ownable_$6649",
+                "typeString": "contract Ownable"
+              }
+            },
+            "id": 2750,
+            "nodeType": "InheritanceSpecifier",
+            "src": "151:7:6"
+          }
+        ],
+        "contractDependencies": [
+          6033,
+          6275,
+          6649
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 2858,
+        "linearizedBaseContracts": [
+          2858,
+          6649,
+          6275,
+          6033
+        ],
+        "name": "Protocol",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "Protocol.DeploymentSubset",
+            "id": 2757,
+            "members": [
+              {
+                "constant": false,
+                "id": 2752,
+                "name": "exists",
+                "nodeType": "VariableDeclaration",
+                "scope": 2757,
+                "src": "339:11:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 2751,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "339:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2754,
+                "name": "version",
+                "nodeType": "VariableDeclaration",
+                "scope": 2757,
+                "src": "360:12:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2753,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "360:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2756,
+                "name": "asOfBlock",
+                "nodeType": "VariableDeclaration",
+                "scope": 2757,
+                "src": "382:14:6",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2755,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "382:4:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "DeploymentSubset",
+            "nodeType": "StructDefinition",
+            "scope": 2858,
+            "src": "305:98:6",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 2761,
+            "name": "deploymentSubsets",
+            "nodeType": "VariableDeclaration",
+            "scope": 2858,
+            "src": "409:54:6",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+              "typeString": "mapping(string => struct Protocol.DeploymentSubset)"
+            },
+            "typeName": {
+              "id": 2760,
+              "keyType": {
+                "id": 2758,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "418:6:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "409:36:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                "typeString": "mapping(string => struct Protocol.DeploymentSubset)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 2759,
+                "name": "DeploymentSubset",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 2757,
+                "src": "428:16:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage_ptr",
+                  "typeString": "struct Protocol.DeploymentSubset"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 2773,
+              "nodeType": "Block",
+              "src": "561:66:6",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "baseExpression": {
+                        "argumentTypes": null,
+                        "id": 2768,
+                        "name": "deploymentSubsets",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2761,
+                        "src": "578:17:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                          "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                        }
+                      },
+                      "id": 2770,
+                      "indexExpression": {
+                        "argumentTypes": null,
+                        "id": 2769,
+                        "name": "deploymentSubset",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2763,
+                        "src": "596:16:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "IndexAccess",
+                      "src": "578:35:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                        "typeString": "struct Protocol.DeploymentSubset storage ref"
+                      }
+                    },
+                    "id": 2771,
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "exists",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 2752,
+                    "src": "578:42:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 2767,
+                  "id": 2772,
+                  "nodeType": "Return",
+                  "src": "571:49:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 2774,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "deploymentSubsetExists",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2764,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2763,
+                  "name": "deploymentSubset",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2774,
+                  "src": "502:30:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2762,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "502:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "501:32:6"
+            },
+            "returnParameters": {
+              "id": 2767,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2766,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2774,
+                  "src": "555:4:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 2765,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "555:4:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "554:6:6"
+            },
+            "scope": 2858,
+            "src": "470:157:6",
+            "stateMutability": "view",
+            "superFunction": 6023,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 2856,
+              "nodeType": "Block",
+              "src": "758:844:6",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 2790,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2785,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "772:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2787,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2786,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "790:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "772:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2788,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "version",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2754,
+                      "src": "772:43:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "hexValue": "30",
+                      "id": 2789,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "819:1:6",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_0_by_1",
+                        "typeString": "int_const 0"
+                      },
+                      "value": "0"
+                    },
+                    "src": "772:48:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": {
+                    "id": 2827,
+                    "nodeType": "Block",
+                    "src": "925:389:6",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2803,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2800,
+                                "name": "asOfBlock",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2780,
+                                "src": "947:9:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": ">",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "expression": {
+                                  "argumentTypes": null,
+                                  "id": 2801,
+                                  "name": "block",
+                                  "nodeType": "Identifier",
+                                  "overloadedDeclarations": [],
+                                  "referencedDeclaration": 7128,
+                                  "src": "959:5:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_magic_block",
+                                    "typeString": "block"
+                                  }
+                                },
+                                "id": 2802,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "memberName": "number",
+                                "nodeType": "MemberAccess",
+                                "referencedDeclaration": null,
+                                "src": "959:12:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "947:24:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "70726f746f636f6c207570646174652063616e206f6e6c792074616b6520706c61636520696e2074686520667574757265",
+                              "id": 2804,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "973:51:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_7b0e29b31ed2d1a349d711762f0fb6e0492ce68d479f9eaedc5365014f13c7be",
+                                "typeString": "literal_string \"protocol update can only take place in the future\""
+                              },
+                              "value": "protocol update can only take place in the future"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_7b0e29b31ed2d1a349d711762f0fb6e0492ce68d479f9eaedc5365014f13c7be",
+                                "typeString": "literal_string \"protocol update can only take place in the future\""
+                              }
+                            ],
+                            "id": 2799,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "939:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2805,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "939:86:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2806,
+                        "nodeType": "ExpressionStatement",
+                        "src": "939:86:6"
+                      },
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2813,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2808,
+                                "name": "asOfBlock",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2780,
+                                "src": "1047:9:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": ">",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "expression": {
+                                  "argumentTypes": null,
+                                  "baseExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2809,
+                                    "name": "deploymentSubsets",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2761,
+                                    "src": "1059:17:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                                      "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                                    }
+                                  },
+                                  "id": 2811,
+                                  "indexExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2810,
+                                    "name": "deploymentSubset",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2776,
+                                    "src": "1077:16:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_calldata_ptr",
+                                      "typeString": "string calldata"
+                                    }
+                                  },
+                                  "isConstant": false,
+                                  "isLValue": true,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "nodeType": "IndexAccess",
+                                  "src": "1059:35:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                                    "typeString": "struct Protocol.DeploymentSubset storage ref"
+                                  }
+                                },
+                                "id": 2812,
+                                "isConstant": false,
+                                "isLValue": true,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "memberName": "asOfBlock",
+                                "nodeType": "MemberAccess",
+                                "referencedDeclaration": 2756,
+                                "src": "1059:45:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "1047:57:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "70726f746f636f6c20757067726164652063616e206f6e6c792074616b6520706c616365206166746572207468652070726576696f75732070726f746f636f6c20757064617465",
+                              "id": 2814,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "1106:73:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_c19bba356514fc50d52bce30c79186c4f48160c8612bb3f2cfdc1f46307a20be",
+                                "typeString": "literal_string \"protocol upgrade can only take place after the previous protocol update\""
+                              },
+                              "value": "protocol upgrade can only take place after the previous protocol update"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_c19bba356514fc50d52bce30c79186c4f48160c8612bb3f2cfdc1f46307a20be",
+                                "typeString": "literal_string \"protocol upgrade can only take place after the previous protocol update\""
+                              }
+                            ],
+                            "id": 2807,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "1039:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2815,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "1039:141:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2816,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1039:141:6"
+                      },
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2823,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2818,
+                                "name": "protocolVersion",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2778,
+                                "src": "1202:15:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": ">",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "expression": {
+                                  "argumentTypes": null,
+                                  "baseExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2819,
+                                    "name": "deploymentSubsets",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2761,
+                                    "src": "1220:17:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                                      "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                                    }
+                                  },
+                                  "id": 2821,
+                                  "indexExpression": {
+                                    "argumentTypes": null,
+                                    "id": 2820,
+                                    "name": "deploymentSubset",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2776,
+                                    "src": "1238:16:6",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_string_calldata_ptr",
+                                      "typeString": "string calldata"
+                                    }
+                                  },
+                                  "isConstant": false,
+                                  "isLValue": true,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "nodeType": "IndexAccess",
+                                  "src": "1220:35:6",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                                    "typeString": "struct Protocol.DeploymentSubset storage ref"
+                                  }
+                                },
+                                "id": 2822,
+                                "isConstant": false,
+                                "isLValue": true,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "memberName": "version",
+                                "nodeType": "MemberAccess",
+                                "referencedDeclaration": 2754,
+                                "src": "1220:43:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "src": "1202:61:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "70726f746f636f6c20646f776e6772616465206973206e6f7420737570706f72746564",
+                              "id": 2824,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "1265:37:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_e3b4d990b40b8c1612511e09b7fdf1a09cd8a2dce021d8b53f5f4a9ecd499286",
+                                "typeString": "literal_string \"protocol downgrade is not supported\""
+                              },
+                              "value": "protocol downgrade is not supported"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_e3b4d990b40b8c1612511e09b7fdf1a09cd8a2dce021d8b53f5f4a9ecd499286",
+                                "typeString": "literal_string \"protocol downgrade is not supported\""
+                              }
+                            ],
+                            "id": 2817,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "1194:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2825,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "1194:109:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2826,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1194:109:6"
+                      }
+                    ]
+                  },
+                  "id": 2828,
+                  "nodeType": "IfStatement",
+                  "src": "768:546:6",
+                  "trueBody": {
+                    "id": 2798,
+                    "nodeType": "Block",
+                    "src": "822:97:6",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "commonType": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              "id": 2794,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "leftExpression": {
+                                "argumentTypes": null,
+                                "id": 2792,
+                                "name": "asOfBlock",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2780,
+                                "src": "844:9:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              },
+                              "nodeType": "BinaryOperation",
+                              "operator": "==",
+                              "rightExpression": {
+                                "argumentTypes": null,
+                                "hexValue": "30",
+                                "id": 2793,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": true,
+                                "kind": "number",
+                                "lValueRequested": false,
+                                "nodeType": "Literal",
+                                "src": "857:1:6",
+                                "subdenomination": null,
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_rational_0_by_1",
+                                  "typeString": "int_const 0"
+                                },
+                                "value": "0"
+                              },
+                              "src": "844:14:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "hexValue": "696e697469616c2070726f746f636f6c2076657273696f6e206d7573742062652066726f6d20626c6f636b2030",
+                              "id": 2795,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "string",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "860:47:6",
+                              "subdenomination": null,
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_stringliteral_92499ba12b5b45bc57a999058c51110897645947741654a4869422b024d08eae",
+                                "typeString": "literal_string \"initial protocol version must be from block 0\""
+                              },
+                              "value": "initial protocol version must be from block 0"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              {
+                                "typeIdentifier": "t_stringliteral_92499ba12b5b45bc57a999058c51110897645947741654a4869422b024d08eae",
+                                "typeString": "literal_string \"initial protocol version must be from block 0\""
+                              }
+                            ],
+                            "id": 2791,
+                            "name": "require",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [
+                              7141,
+                              7142
+                            ],
+                            "referencedDeclaration": 7142,
+                            "src": "836:7:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                              "typeString": "function (bool,string memory) pure"
+                            }
+                          },
+                          "id": 2796,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "836:72:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_tuple$__$",
+                            "typeString": "tuple()"
+                          }
+                        },
+                        "id": 2797,
+                        "nodeType": "ExpressionStatement",
+                        "src": "836:72:6"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 2834,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2829,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "1324:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2831,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2830,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "1342:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1324:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2832,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "version",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2754,
+                      "src": "1324:43:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 2833,
+                      "name": "protocolVersion",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2778,
+                      "src": "1370:15:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1324:61:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 2835,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1324:61:6"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 2841,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2836,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "1395:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2838,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2837,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "1413:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1395:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2839,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "asOfBlock",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2756,
+                      "src": "1395:45:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 2840,
+                      "name": "asOfBlock",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2780,
+                      "src": "1443:9:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "src": "1395:57:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 2842,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1395:57:6"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 2848,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "baseExpression": {
+                          "argumentTypes": null,
+                          "id": 2843,
+                          "name": "deploymentSubsets",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2761,
+                          "src": "1462:17:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_DeploymentSubset_$2757_storage_$",
+                            "typeString": "mapping(string memory => struct Protocol.DeploymentSubset storage ref)"
+                          }
+                        },
+                        "id": 2845,
+                        "indexExpression": {
+                          "argumentTypes": null,
+                          "id": 2844,
+                          "name": "deploymentSubset",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2776,
+                          "src": "1480:16:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_calldata_ptr",
+                            "typeString": "string calldata"
+                          }
+                        },
+                        "isConstant": false,
+                        "isLValue": true,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "IndexAccess",
+                        "src": "1462:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_DeploymentSubset_$2757_storage",
+                          "typeString": "struct Protocol.DeploymentSubset storage ref"
+                        }
+                      },
+                      "id": 2846,
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "memberName": "exists",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 2752,
+                      "src": "1462:42:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "hexValue": "74727565",
+                      "id": 2847,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "bool",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1507:4:6",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "value": "true"
+                    },
+                    "src": "1462:49:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 2849,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1462:49:6"
+                },
+                {
+                  "eventCall": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 2851,
+                        "name": "deploymentSubset",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2776,
+                        "src": "1550:16:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 2852,
+                        "name": "protocolVersion",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2778,
+                        "src": "1568:15:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 2853,
+                        "name": "asOfBlock",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2780,
+                        "src": "1585:9:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_string_calldata_ptr",
+                          "typeString": "string calldata"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 2850,
+                      "name": "ProtocolVersionChanged",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6016,
+                      "src": "1527:22:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_string_memory_ptr_$_t_uint256_$_t_uint256_$returns$__$",
+                        "typeString": "function (string memory,uint256,uint256)"
+                      }
+                    },
+                    "id": 2854,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1527:68:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 2855,
+                  "nodeType": "EmitStatement",
+                  "src": "1522:73:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 2857,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "arguments": null,
+                "id": 2783,
+                "modifierName": {
+                  "argumentTypes": null,
+                  "id": 2782,
+                  "name": "onlyOwner",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 6582,
+                  "src": "748:9:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_modifier$__$",
+                    "typeString": "modifier ()"
+                  }
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "748:9:6"
+              }
+            ],
+            "name": "setProtocolVersion",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2781,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2776,
+                  "name": "deploymentSubset",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2857,
+                  "src": "661:32:6",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 2775,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "661:6:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2778,
+                  "name": "protocolVersion",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2857,
+                  "src": "695:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2777,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "695:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 2780,
+                  "name": "asOfBlock",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2857,
+                  "src": "720:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2779,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "720:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "660:78:6"
+            },
+            "returnParameters": {
+              "id": 2784,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "758:0:6"
+            },
+            "scope": 2858,
+            "src": "633:969:6",
+            "stateMutability": "nonpayable",
+            "superFunction": 6032,
+            "visibility": "external"
+          }
+        ],
+        "scope": 2859,
+        "src": "119:1485:6"
+      }
+    ],
+    "src": "0:1605:6"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.23",
+  "updatedAt": "2020-03-15T16:41:58.143Z",
+  "devdoc": {
+    "methods": {
+      "isOwner()": {
+        "details": "Returns true if the caller is the current owner."
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
