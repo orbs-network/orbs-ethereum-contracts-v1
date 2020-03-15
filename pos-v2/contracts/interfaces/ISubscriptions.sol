@@ -4,7 +4,7 @@ import "./IRewards.sol";
 
 /// @title Subscriptions contract interface
 interface ISubscriptions {
-    event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier);
+    event SubscriptionChanged(uint256 vcid, uint256 genRef, uint256 expiresAt, string tier, string deploymentSubset);
     event Payment(uint256 vcid, address by, uint256 amount, string tier, uint256 rate);
     event VcConfigRecordChanged(uint256 vcid, string key, string value);
     event SubscriberAdded(address subscriber);
@@ -17,7 +17,7 @@ interface ISubscriptions {
 
     /// @dev Called by: authorized subscriber (plan) contracts
     /// Creates a new VC
-    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner) external returns (uint, uint);
+    function createVC(string calldata tier, uint256 rate, uint256 amount, address owner, string calldata deploymentSubset) external returns (uint, uint);
 
     /// @dev Called by: authorized subscriber (plan) contracts
     /// Extends the subscription of an existing VC.

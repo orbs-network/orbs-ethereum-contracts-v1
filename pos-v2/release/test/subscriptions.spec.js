@@ -70,7 +70,7 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                         return [4 /*yield*/, d.erc20.approve(subscriber.address, firstPayment, { from: appOwner.address })];
                     case 4:
                         _g.sent();
-                        return [4 /*yield*/, subscriber.createVC(firstPayment, { from: appOwner.address })];
+                        return [4 /*yield*/, subscriber.createVC(firstPayment, "main", { from: appOwner.address })];
                     case 5:
                         r = _g.sent();
                         expect(r).to.have.subscriptionChangedEvent();
@@ -183,14 +183,14 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                         return [4 /*yield*/, owner.assignAndApproveOrbs(amount, subs.address)];
                     case 3:
                         _a.sent();
-                        return [4 /*yield*/, subs.createVC(amount, { from: owner.address })];
+                        return [4 /*yield*/, subs.createVC(amount, "main", { from: owner.address })];
                     case 4:
                         r = _a.sent();
                         expect(r).to.have.a.subscriptionChangedEvent();
                         return [4 /*yield*/, owner.assignAndApproveOrbs(amount, subs.address)];
                     case 5:
                         _a.sent();
-                        return [4 /*yield*/, subs.createVC(amount, { from: owner.address })];
+                        return [4 /*yield*/, subs.createVC(amount, "main", { from: owner.address })];
                     case 6:
                         r = _a.sent();
                         expect(r).to.have.a.subscriptionChangedEvent();
@@ -213,7 +213,7 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                         return [4 /*yield*/, owner.assignAndApproveOrbs(amount, subs.address)];
                     case 3:
                         _a.sent();
-                        return [4 /*yield*/, subs.createVC(amount, { from: owner.address })];
+                        return [4 /*yield*/, subs.createVC(amount, "main", { from: owner.address })];
                     case 4:
                         r = _a.sent();
                         expect(r).to.have.a.subscriptionChangedEvent();
@@ -285,7 +285,7 @@ describe('subscriptions-high-level-flows', function () { return __awaiter(void 0
                         return [4 /*yield*/, owner.assignAndApproveOrbs(amount, subs.address)];
                     case 3:
                         _a.sent();
-                        return [4 /*yield*/, subs.createVC(amount, { from: owner.address })];
+                        return [4 /*yield*/, subs.createVC(amount, "main", { from: owner.address })];
                     case 4:
                         r = _a.sent();
                         expect(r).to.have.a.subscriptionChangedEvent();

@@ -16,6 +16,7 @@ import {
   votedOutOfCommitteeEvents,
   vcConfigRecordChangedEvents,
   contractAddressUpdatedEvents,
+  protocolChangedEvents,
   banningVoteEvents,
   electionsBanned,
   electionsUnbanned,
@@ -41,6 +42,7 @@ import {
 } from "../typings/elections-contract";
 import { StakedEvent, UnstakedEvent } from "../typings/staking-contract";
 import {ContractAddressUpdatedEvent} from "../typings/contract-registry-contract";
+import {ProtocolChangedEvent} from "../typings/protocol-contract";
 
 export function isBNArrayEqual(a1: Array<any>, a2: Array<any>): boolean {
   return (
@@ -131,6 +133,7 @@ module.exports = function(chai) {
   chai.Assertion.overwriteMethod("vcOwnerChangedEvent", containEvent(vcOwnerChangedEvents));
   chai.Assertion.overwriteMethod("vcCreatedEvent", containEvent(vcCreatedEvents));
   chai.Assertion.overwriteMethod("contractAddressUpdatedEvent", containEvent(contractAddressUpdatedEvents));
+  chai.Assertion.overwriteMethod("protocolChangedEvent", containEvent(protocolChangedEvents));
 
   chai.Assertion.overwriteMethod("haveCommittee", containEvent(function(o) {return [o];}));
 };
@@ -156,6 +159,7 @@ declare global {
       banningVoteEvent(data?: Partial<BanningVoteEvent>): void;
       bannedEvent(data?: Partial<BannedEvent>): void;
       unbannedEvent(data?: Partial<UnbannedEvent>): void;
+      protocolChangedEvent(data?: Partial<ProtocolChangedEvent>): void;
     }
 
     export interface Assertion {

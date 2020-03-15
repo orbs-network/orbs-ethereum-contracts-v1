@@ -7,6 +7,7 @@ import { StakingContract } from "../typings/staking-contract";
 import { RewardsContract } from "../typings/rewards-contract";
 import { MonthlySubscriptionPlanContract } from "../typings/monthly-subscription-plan-contract";
 import { ContractRegistryContract } from "../typings/contract-registry-contract";
+import { ProtocolContract } from "../typings/protocol-contract";
 export declare const DEFAULT_MINIMUM_STAKE = 100;
 export declare const DEFAULT_COMMITTEE_SIZE = 2;
 export declare const DEFAULT_TOPOLOGY_SIZE = 3;
@@ -15,6 +16,8 @@ export declare const DEFAULT_VOTE_OUT_THRESHOLD = 80;
 export declare const DEFAULT_BANNING_THRESHOLD = 80;
 export declare const DEFAULT_VOTE_OUT_TIMEOUT: number;
 export declare const BANNING_LOCK_TIMEOUT: number;
+export declare const DEPLOYMENT_SUBSET_MAIN = "main";
+export declare const DEPLOYMENT_SUBSET_CANARY = "canary";
 export declare class Driver {
     accounts: string[];
     elections: ElectionsContract;
@@ -23,9 +26,10 @@ export declare class Driver {
     staking: StakingContract;
     subscriptions: SubscriptionsContract;
     rewards: RewardsContract;
+    protocol: ProtocolContract;
     contractRegistry: ContractRegistryContract;
     private participants;
-    constructor(accounts: string[], elections: ElectionsContract, erc20: ERC20Contract, externalToken: ERC20Contract, staking: StakingContract, subscriptions: SubscriptionsContract, rewards: RewardsContract, contractRegistry: ContractRegistryContract);
+    constructor(accounts: string[], elections: ElectionsContract, erc20: ERC20Contract, externalToken: ERC20Contract, staking: StakingContract, subscriptions: SubscriptionsContract, rewards: RewardsContract, protocol: ProtocolContract, contractRegistry: ContractRegistryContract);
     static new(maxCommitteeSize?: number, maxTopologySize?: number, minimumStake?: number | BN, maxDelegationRatio?: number, voteOutThreshold?: number, voteOutTimeout?: number, banningThreshold?: number): Promise<Driver>;
     static newContractRegistry(governorAddr: string): Promise<ContractRegistryContract>;
     static newStakingContract(electionsAddr: string, erc20Addr: string): Promise<StakingContract>;

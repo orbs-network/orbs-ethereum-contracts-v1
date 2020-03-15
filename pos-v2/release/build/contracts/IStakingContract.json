@@ -2597,7 +2597,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.23",
-  "updatedAt": "2020-03-10T11:14:57.905Z",
+  "updatedAt": "2020-03-11T14:45:21.554Z",
   "devdoc": {
     "methods": {
       "distributeRewards(uint256,address[],uint256[])": {

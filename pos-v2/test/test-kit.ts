@@ -3,7 +3,7 @@ import { ETHEREUM_URL } from '../eth';
 import fetch from 'node-fetch';
 import { retry } from 'ts-retry-promise';
 import BN from 'bn.js';
-import { Driver } from './driver';
+import { Driver, DEPLOYMENT_SUBSET_MAIN } from './driver';
 
 export { Driver } from './driver';
 
@@ -19,7 +19,7 @@ export async function createVC(d : Driver) {
         from: appOwner.address
     });
 
-    return subscriber.createVC(firstPayment, {
+    return subscriber.createVC(firstPayment, DEPLOYMENT_SUBSET_MAIN, {
         from: appOwner.address
     });
 }

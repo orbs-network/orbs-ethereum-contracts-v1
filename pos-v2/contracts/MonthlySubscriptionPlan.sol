@@ -29,14 +29,14 @@ contract MonthlySubscriptionPlan is Ownable {
         contractRegistry = _contractRegistry;
     }
 
-    function createVC(uint256 amount) external {
+    function createVC(uint256 amount, string calldata deploymentSubset) external {
         require(amount > 0, "must include funds");
 
         ISubscriptions subs = ISubscriptions(contractRegistry.get("subscriptions"));
 
         // TODO TBD subs has to trust this contract to transfer the funds. alternatively, transfer to this account and then approve subs to pull same amount.
         require(erc20.transferFrom(msg.sender, address(subs), amount), "failed to transfer subscription fees");
-        subs.createVC(tier, monthlyRate, amount, msg.sender);
+        subs.createVC(tier, monthlyRate, amount, msg.sender, deploymentSubset);
     }
 
     function extendSubscription(uint256 vcid, uint256 amount) external {
