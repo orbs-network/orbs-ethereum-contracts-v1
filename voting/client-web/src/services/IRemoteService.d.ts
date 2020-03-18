@@ -1,5 +1,5 @@
 import { IGuardianData } from './IGuardianData';
-import { IValidatorData } from './IValidatorData';
+import { IElectedValidatorData, IValidatorData } from './IValidatorData';
 
 export interface IRemoteService {
   getGuardians(): Promise<string[]>;
@@ -7,7 +7,7 @@ export interface IRemoteService {
   getValidators(): Promise<string[]>;
   getElectedValidators(): Promise<string[]>;
   getValidatorData(address: string): Promise<IValidatorData>;
-  getElectedValidatorData(address: string): Promise<{}>;
+  getElectedValidatorData(address: string): Promise<IElectedValidatorData>;
   getRewards(address: string): Promise<any>;
   getRewardsHistory(address: string): Promise<any>;
   getTotalParticipatingTokens(): Promise<string>;

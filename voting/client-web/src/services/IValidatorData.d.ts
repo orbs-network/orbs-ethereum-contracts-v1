@@ -12,3 +12,10 @@ export interface IValidatorData {
   ipAddress: string;
   orbsAddress: string;
 }
+
+// DEV_NOTE : This interface is standing for the actual data that returns from
+//            the remote endpoint.
+// TODO : FUTURE : O.L : Add proper types from the remote api library.
+interface IElectedValidatorData extends IValidatorData {
+  stake: number;
+}

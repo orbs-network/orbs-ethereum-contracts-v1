@@ -8,39 +8,41 @@
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useApi } from '../../services/ApiContext';
 import { ValidatorsList } from './ValidatorsList';
+import { IElectedValidatorData } from '../../services/IValidatorData';
 
 const styles = () => ({});
 
 const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
-  const [validators, setValidators] = useState({});
+  const [selectedValidatorsDataList, setSelectedValidatorsDataList] = useState<Array<IElectedValidatorData>>([]);
   const { remoteService, metamask } = useApi();
 
-  const getValidatorsData = async address => {
-    const data = await remoteService.getElectedValidatorData(address);
-    if (!validators[address]) {
-      validators[address] = {};
-    }
+  const readValidatorsData = useCallback(
+    async (addresses: Array<string>) => {
+      const promises = addresses.map(address => remoteService.getElectedValidatorData(address));
 
-    validators[address].name = data['name'];
-    validators[address].orbsAddress = data['orbsAddress'];
-    validators[address].stake = data['stake'];
+      const electedValidatorData = await Promise.all(promises);
 
-    setValidators(Object.assign({}, validators));
-  };
+      return electedValidatorData;
+    },
+    [remoteService],
+  );
 
-  const fetchElectedValidators = async () => {
-    const ids = await remoteService.getElectedValidators();
-    ids.map(getValidatorsData);
-  };
+  const fetchElectedValidators = useCallback(async () => {
+    const addresses = await remoteService.getElectedValidators();
+    const validatorsData = await readValidatorsData(addresses);
 
+    setSelectedValidatorsDataList(validatorsData);
+  }, [remoteService, readValidatorsData]);
+
+  // Runs once on component load
   useEffect(() => {
     fetchElectedValidators();
-  }, []);
+  }, [fetchElectedValidators]);
 
   const { t } = useTranslation();
   return (
@@ -57,7 +59,7 @@ const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
         </Link>
       )}
 
-      <ValidatorsList validators={validators} />
+      <ValidatorsList validators={selectedValidatorsDataList} />
     </>
   );
 };
