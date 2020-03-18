@@ -13,12 +13,13 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { Location } from 'history';
 import { parse as parseQuery } from 'querystring';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { RewardsHistoryTable } from './RewardsHistoryTable';
 import { useTranslation } from 'react-i18next';
 import { useApi } from '../../services/ApiContext';
 import { DelegationInfoTable } from './DelegationInfoTable';
 import { RewardsTable } from './RewardsTable';
+import { useQueryParam, StringParam } from 'use-query-params';
 
 const styles = theme => ({
   form: {
@@ -38,49 +39,71 @@ const styles = theme => ({
   },
 });
 
-const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Location }) => {
+const RewardsPageImpl = ({ classes }: { classes: any }) => {
   const { remoteService } = useApi();
-  const [address, setAddress] = useState('');
+  const [formAddress, setFormAddress] = useState('');
   const [rewards, setRewards] = useState({});
   const [rewardsHistory, setRewardsHistory] = useState([]);
   const [delegatorInfo, setDelegatorInfo] = useState({});
   const [guardianInfo, setGuardianInfo] = useState({});
   const [electionBlock, setElectionBlock] = useState('0');
 
-  const fetchRewards = address => remoteService.getRewards(address).then(setRewards);
-  const fetchRewardsHistory = address => remoteService.getRewardsHistory(address).then(setRewardsHistory);
+  const [queryAddress, setQueryAddress] = useQueryParam('address', StringParam);
 
-  const fetchDelegationInfo = async address => {
-    const info: any = await remoteService.getCurrentDelegationInfo(address);
-    setDelegatorInfo(info);
-    if (info.delegationType === 'Not-Delegated') {
-      setGuardianInfo({});
-    } else {
-      const guardianData = await remoteService.getGuardianData(info['delegatedTo']);
-      setGuardianInfo(guardianData);
-    }
-  };
+  const fetchRewards = useCallback(async address => remoteService.getRewards(address).then(setRewards), [
+    remoteService,
+  ]);
+  const fetchRewardsHistory = useCallback(address => remoteService.getRewardsHistory(address).then(setRewardsHistory), [
+    remoteService,
+  ]);
 
-  const fetchEffectiveElectionBlock = () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock);
+  const fetchDelegationInfo = useCallback(
+    async address => {
+      const info: any = await remoteService.getCurrentDelegationInfo(address);
+      setDelegatorInfo(info);
+      if (info.delegationType === 'Not-Delegated') {
+        setGuardianInfo({});
+      } else {
+        const guardianData = await remoteService.getGuardianData(info['delegatedTo']);
+        setGuardianInfo(guardianData);
+      }
+    },
+    [remoteService],
+  );
 
-  const submitHandler = () => {
-    fetchRewards(address);
-    fetchRewardsHistory(address);
-    fetchDelegationInfo(address);
-  };
+  const fetchAllDataForAddress = useCallback(
+    async (accountAddress: string) => {
+      fetchRewards(accountAddress);
+      fetchRewardsHistory(accountAddress);
+      fetchDelegationInfo(accountAddress);
+    },
+    [fetchRewards, fetchRewardsHistory, fetchDelegationInfo],
+  );
+
+  const fetchEffectiveElectionBlock = useCallback(
+    () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock),
+    [remoteService],
+  );
+
+  const submitHandler = useCallback(async () => {
+    setQueryAddress(formAddress, 'pushIn');
+  }, [setQueryAddress, formAddress]);
 
   useEffect(() => {
-    fetchEffectiveElectionBlock();
+    async function asyncInnerFunction() {
+      await fetchEffectiveElectionBlock();
 
-    if (!location!.search) {
-      return;
+      if (!queryAddress) {
+        return;
+      }
+
+      setFormAddress(queryAddress);
+
+      await fetchAllDataForAddress(queryAddress);
     }
 
-    const queryParams: any = parseQuery(location!.search.substr(1));
-    setAddress(queryParams.address);
-    fetchRewards(queryParams.address);
-    fetchDelegationInfo(queryParams.address);
-  }, []);
+    asyncInnerFunction();
+  }, [fetchAllDataForAddress, fetchEffectiveElectionBlock, queryAddress]);
 
   const { t } = useTranslation();
   return (
@@ -94,8 +117,8 @@ const RewardsPageImpl = ({ classes, location }: { classes: any; location?: Locat
           required
           className={classes.input}
           placeholder={t('Enter the address')}
-          value={address}
-          onChange={ev => setAddress(ev.target.value)}
+          value={formAddress}
+          onChange={ev => setFormAddress(ev.target.value)}
           margin='normal'
           variant='standard'
         />

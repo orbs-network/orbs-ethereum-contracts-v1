@@ -6,11 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
+import React from 'react';
+import { QueryParamProvider } from 'use-query-params';
+import { Route } from 'react-router-dom';
+import classNames from 'classnames';
 import { WithStyles } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
-import React from 'react';
+import { LangRouter } from '../multi-lang/LangRouter';
 import { IConfig } from '../../config';
 import { ApiContext } from '../../services/ApiContext';
 import { IRemoteService } from '../../services/IRemoteService';
@@ -19,7 +22,6 @@ import { RemoteService } from '../../services/RemoteService';
 import { resources } from '../../translations';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
-import { LangRouter } from '../multi-lang/LangRouter';
 import { AppStyles } from './App.style';
 import { ThemeProvider } from './ThemeProvider';
 
@@ -33,20 +35,22 @@ const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
-      <ThemeProvider>
-        <ApiContext.Provider value={{ remoteService, metamask }}>
-          <CssBaseline />
-          <div
-            className={classNames({
-              [classes.root]: true,
-            })}
-            data-testid='container'
-          >
-            <Header />
-            <Main />
-          </div>
-        </ApiContext.Provider>
-      </ThemeProvider>
+      <QueryParamProvider ReactRouterRoute={Route}>
+        <ThemeProvider>
+          <ApiContext.Provider value={{ remoteService, metamask }}>
+            <CssBaseline />
+            <div
+              className={classNames({
+                [classes.root]: true,
+              })}
+              data-testid='container'
+            >
+              <Header />
+              <Main />
+            </div>
+          </ApiContext.Provider>
+        </ThemeProvider>
+      </QueryParamProvider>
     </LangRouter>
   );
 };
