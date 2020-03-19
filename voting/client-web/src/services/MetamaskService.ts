@@ -19,8 +19,8 @@ export class MetamaskService implements IMetamask {
   private guardiansContract;
   private votingContract;
 
-  constructor() {
-    this.web3 = new Web3(ethereum as any);
+  constructor(web3: Web3) {
+    this.web3 = web3;
     this.validatorsRegistryContract = validatorsRegistryContractFactory(this.web3);
     this.guardiansContract = guardiansContractFactory(this.web3);
     this.votingContract = votingContractFactory(this.web3);
@@ -47,7 +47,10 @@ export class MetamaskService implements IMetamask {
   }
 
   private enableMetamask(): Promise<string> {
-    return ethereum.enable().then((addresses: string[]) => addresses[0], (err: any) => Promise.reject(err));
+    return ethereum.enable().then(
+      (addresses: string[]) => addresses[0],
+      (err: any) => Promise.reject(err),
+    );
   }
 
   isMainNet(): boolean {

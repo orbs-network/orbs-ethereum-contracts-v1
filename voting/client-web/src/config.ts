@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 /**
  * Copyright 2019 the staking-dashboard authors
  * This file is part of the staking-dashboard library in the Orbs project.
@@ -19,8 +20,10 @@ const orbsAuditNodeEndpoint_prod = 'https://orbs-voting-proxy-server.herokuapp.c
 
 export interface IConfig {
   orbsAuditNodeEndpoint: string;
+  ETHEREUM_PROVIDER_WS: string;
 }
 
 export const configs: IConfig = {
   orbsAuditNodeEndpoint: IS_DEV ? orbsAuditNodeEndpoint_dev : orbsAuditNodeEndpoint_prod,
+  ETHEREUM_PROVIDER_WS: 'wss://mainnet.infura.io/ws/v3/3fe9b03bd8374639809addf2164f7287',
 };
