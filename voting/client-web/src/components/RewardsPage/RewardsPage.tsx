@@ -20,6 +20,7 @@ import { RewardsTable } from './RewardsTable';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { RouteProps } from 'react-router';
 import { ICommonPageProps } from '../../types/pageTypes';
+import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -42,11 +43,12 @@ const useStyles = makeStyles(theme => ({
 export const RewardsPage = React.memo<ICommonPageProps>(() => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { remoteService } = useApi();
+  const { remoteService, stakingService } = useApi();
   const [formAddress, setFormAddress] = useState('');
   const [rewards, setRewards] = useState({});
   const [rewardsHistory, setRewardsHistory] = useState([]);
   const [delegatorInfo, setDelegatorInfo] = useState({});
+  const [delegatorStakingInfo, setDelegatorStakingInfo] = useState<{ stakedOrbs: number }>({ stakedOrbs: 0 });
   const [guardianInfo, setGuardianInfo] = useState({});
   const [electionBlock, setElectionBlock] = useState('0');
 
@@ -61,16 +63,27 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
 
   const fetchDelegationInfo = useCallback(
     async address => {
-      const info: any = await remoteService.getCurrentDelegationInfo(address);
-      setDelegatorInfo(info);
-      if (info.delegationType === 'Not-Delegated') {
+      const delegatorInfo: any = await remoteService.getCurrentDelegationInfo(address);
+      setDelegatorInfo(delegatorInfo);
+
+      if (delegatorInfo.delegationType === 'Not-Delegated') {
         setGuardianInfo({});
       } else {
-        const guardianData = await remoteService.getGuardianData(info['delegatedTo']);
+        const guardianData = await remoteService.getGuardianData(delegatorInfo['delegatedTo']);
         setGuardianInfo(guardianData);
       }
     },
     [remoteService],
+  );
+
+  const fetchStakingInfoForAddress = useCallback(
+    async address => {
+      const stakedOrbsInWeiOrbs = await stakingService.readStakeBalanceOf(address);
+      const fullStakedOrbs = fullOrbsFromWeiOrbs(stakedOrbsInWeiOrbs);
+
+      setDelegatorStakingInfo({ stakedOrbs: fullStakedOrbs });
+    },
+    [stakingService],
   );
 
   const fetchAllDataForAddress = useCallback(
@@ -78,8 +91,9 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
       fetchRewards(accountAddress);
       fetchRewardsHistory(accountAddress);
       fetchDelegationInfo(accountAddress);
+      fetchStakingInfoForAddress(accountAddress).catch(e => console.error('Error fetching staking info', e));
     },
-    [fetchRewards, fetchRewardsHistory, fetchDelegationInfo],
+    [fetchRewards, fetchRewardsHistory, fetchDelegationInfo, fetchStakingInfoForAddress],
   );
 
   const fetchEffectiveElectionBlock = useCallback(
@@ -149,7 +163,11 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
         </Typography>
-        <DelegationInfoTable delegatorInfo={delegatorInfo} guardianInfo={guardianInfo} />
+        <DelegationInfoTable
+          delegatorStakingInfo={delegatorStakingInfo}
+          delegatorInfo={delegatorInfo}
+          guardianInfo={guardianInfo}
+        />
       </section>
 
       <section className={classes.section}>

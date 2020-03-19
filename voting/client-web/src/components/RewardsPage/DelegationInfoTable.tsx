@@ -6,13 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { VoteChip } from '../VoteChip/VoteChip';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import { useTranslation } from 'react-i18next';
+import { useBoolean } from 'react-hanger';
 
 const formatTimestamp = timestamp =>
   new Date(timestamp).toLocaleString('en-gb', {
@@ -27,35 +28,90 @@ const formatTimestamp = timestamp =>
     second: 'numeric',
   });
 
-export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
+// TODO : FUTRUE : O.L : Fix types
+interface IProps {
+  delegatorInfo: any;
+  guardianInfo: any;
+  delegatorStakingInfo: { stakedOrbs: number };
+}
+
+export const DelegationInfoTable = React.memo<IProps>(props => {
+  const { delegatorInfo, delegatorStakingInfo, guardianInfo } = props;
+
   const { t } = useTranslation();
-  let delegatorBalance: string;
-  let delegatedTo: string;
-  let delegationBlockNumber: string;
-  let delegationTimestamp: string;
-  const delegationType = delegatorInfo.delegationType;
-  if (delegationType === 'Not-Delegated') {
-    delegatorBalance = '-';
-    delegatedTo = '-';
-    delegationBlockNumber = '-';
-    delegationTimestamp = '-';
-  } else {
-    delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
-    delegatedTo = delegatorInfo.delegatedTo;
-    delegationBlockNumber = (delegatorInfo.delegationBlockNumber || 0).toLocaleString();
-    delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
-  }
+  const warnAboutUndelegatedStakedOrbs = useBoolean(false);
+
+  // DEV_NOTE : This huge memo could be broken
+  const {
+    delegationType,
+    delegatorBalance,
+    delegatedTo,
+    delegationBlockNumber,
+    delegationTimestamp,
+    delegatedToExtraStyle,
+  } = useMemo<{
+    delegationType: string;
+    delegatorBalance: string;
+    delegatedTo: string;
+    delegationBlockNumber: string;
+    delegationTimestamp: string;
+    delegatedToExtraStyle: React.CSSProperties;
+  }>(() => {
+    let delegatorBalance: string;
+    let delegatedTo: string;
+    let delegationBlockNumber: string;
+    let delegationTimestamp: string;
+    let delegatedToExtraStyle: React.CSSProperties = {};
+
+    const hasStakedOrbs = delegatorStakingInfo.stakedOrbs > 0;
+    const delegationType = delegatorInfo.delegationType;
+    if (delegationType === 'Not-Delegated') {
+      delegatorBalance = '-';
+      delegatedTo = '-';
+      delegationBlockNumber = '-';
+      delegationTimestamp = '-';
+
+      // Has staked ORBS but not delegating ? WARN !!!
+      if (hasStakedOrbs) {
+        warnAboutUndelegatedStakedOrbs.setTrue();
+        // TODO : ORL : Add this key to translations
+        delegatedTo = t('Warning - Has stacked ORBS but no selected guardian - No rewards will be accumulated');
+        delegatedToExtraStyle = { color: 'red' };
+      }
+    } else {
+      delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
+      delegatedTo = delegatorInfo.delegatedTo;
+      delegationBlockNumber = (delegatorInfo.delegationBlockNumber || 0).toLocaleString();
+      delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
+    }
+
+    return {
+      delegationType,
+      delegatorBalance,
+      delegatedTo,
+      delegationBlockNumber,
+      delegationTimestamp,
+      delegatedToExtraStyle,
+    };
+  }, [delegatorInfo, delegatorStakingInfo, warnAboutUndelegatedStakedOrbs, t]);
 
   return (
     <Table>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegated To')}</TableCell>
-          <TableCell align='right'>{delegatedTo}</TableCell>
+          <TableCell align='right' style={delegatedToExtraStyle}>
+            {delegatedTo}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t(`Delegator's ORBS Balance`)}</TableCell>
           <TableCell align='right'>{delegatorBalance}</TableCell>
+        </TableRow>
+        {/* TODO : ORL : Add this key to translations */}
+        <TableRow>
+          <TableCell>{t(`Delegator's staked ORBS`)}</TableCell>
+          <TableCell align='right'>{delegatorStakingInfo.stakedOrbs}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
@@ -92,4 +148,4 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
       </TableBody>
     </Table>
   );
-};
+});

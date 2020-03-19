@@ -26,6 +26,7 @@ import { Main } from '../Main/Main';
 import { AppStyles } from './App.style';
 import { ThemeProvider } from './ThemeProvider';
 import { configs } from '../../config';
+import { StakingService } from 'orbs-pos-data';
 
 interface IProps extends WithStyles<typeof AppStyles> {
   configs: IConfig;
@@ -46,12 +47,13 @@ const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
   const remoteService: IRemoteService = new RemoteService(configs.orbsAuditNodeEndpoint);
   // TODO : FUTURE: O.L : This method of signaling no meta-mask is too fragile and unclear, change it to be like staking wallet
   const metamask = ethereumProvider ? new MetamaskService(web3) : undefined;
+  const stakingService = new StakingService(web3, configs.contractsAddressesOverride.stakingContract);
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
       <QueryParamProvider ReactRouterRoute={Route}>
         <ThemeProvider>
-          <ApiContext.Provider value={{ remoteService, metamask }}>
+          <ApiContext.Provider value={{ remoteService, metamask, stakingService }}>
             <CssBaseline />
             <div
               className={classNames({
