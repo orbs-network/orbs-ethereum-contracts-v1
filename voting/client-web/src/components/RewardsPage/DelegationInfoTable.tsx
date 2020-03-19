@@ -47,7 +47,7 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
   }
 
   return (
-    <Table padding='none'>
+    <Table>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegated To')}</TableCell>

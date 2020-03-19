@@ -8,11 +8,9 @@
 
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { Location } from 'history';
-import { parse as parseQuery } from 'querystring';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RewardsHistoryTable } from './RewardsHistoryTable';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +18,13 @@ import { useApi } from '../../services/ApiContext';
 import { DelegationInfoTable } from './DelegationInfoTable';
 import { RewardsTable } from './RewardsTable';
 import { useQueryParam, StringParam } from 'use-query-params';
+import { RouteProps } from 'react-router';
+import { ICommonPageProps } from '../../types/pageTypes';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   form: {
     display: 'flex',
-    flexDirection: 'row' as any,
+    flexDirection: 'row',
     alignItems: 'baseline',
     width: '60%',
   },
@@ -35,11 +35,13 @@ const styles = theme => ({
     marginLeft: 30,
   },
   section: {
-    marginTop: `${theme.spacing.unit * 8}px`,
+    marginTop: `${theme.spacing(8)}px`,
   },
-});
+}));
 
-const RewardsPageImpl = ({ classes }: { classes: any }) => {
+export const RewardsPage = React.memo<ICommonPageProps>(() => {
+  const classes = useStyles();
+  const { t } = useTranslation();
   const { remoteService } = useApi();
   const [formAddress, setFormAddress] = useState('');
   const [rewards, setRewards] = useState({});
@@ -89,6 +91,7 @@ const RewardsPageImpl = ({ classes }: { classes: any }) => {
     setQueryAddress(formAddress, 'pushIn');
   }, [setQueryAddress, formAddress]);
 
+  // Updates rewards data based on the query address param
   useEffect(() => {
     async function asyncInnerFunction() {
       await fetchEffectiveElectionBlock();
@@ -105,7 +108,6 @@ const RewardsPageImpl = ({ classes }: { classes: any }) => {
     asyncInnerFunction();
   }, [fetchAllDataForAddress, fetchEffectiveElectionBlock, queryAddress]);
 
-  const { t } = useTranslation();
   return (
     <>
       <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
@@ -151,17 +153,15 @@ const RewardsPageImpl = ({ classes }: { classes: any }) => {
       </section>
 
       <section className={classes.section}>
-        <Typography inline variant='subtitle1' color='textPrimary'>
+        <Typography display={'inline'} variant='subtitle1' color='textSecondary'>
           {'* '}
           {t('The information above corresponds to elections at block number')}
           {': '}
         </Typography>
-        <Typography inline variant='subtitle1' color='secondary'>
+        <Typography display={'inline'} variant='subtitle1' color='secondary'>
           {parseInt(electionBlock, 10).toLocaleString()}
         </Typography>
       </section>
     </>
   );
-};
-
-export const RewardsPage = withStyles(styles)(RewardsPageImpl);
+});

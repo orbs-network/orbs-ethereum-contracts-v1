@@ -10,6 +10,8 @@ describe('Guardians Page', () => {
       _metamask: {
         isEnabled: () => true,
       },
+      enable: () => true,
+      selectedAddress: '',
     };
     validatorsData = generateValidatorsData();
     driver = new GuardiansDriver(validatorsData);

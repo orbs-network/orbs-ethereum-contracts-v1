@@ -19,7 +19,7 @@ export const RewardsTable = ({ rewards }) => {
   const { delegatorReward = 0, guardianReward = 0, validatorReward = 0 } = rewards;
   const totalReward = delegatorReward + guardianReward + validatorReward;
   return (
-    <Table padding='none'>
+    <Table>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegator Reward')}</TableCell>

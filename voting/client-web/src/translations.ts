@@ -1,6 +1,6 @@
-import i18n from 'i18next';
+import i18n, { Resource } from 'i18next';
 
-export const resources: i18n.Resource = {
+export const resources: Resource = {
   jp: {
     translation: {
       fontFamily: 'Meiryo,Hiragino Kaku Gothic ProN,MS PGothic,sans-serif',

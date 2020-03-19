@@ -143,7 +143,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
     }
   };
 
-  const isMetamaskActive = () => ethereum._metamask.isEnabled();
+  const isMetamaskActive = () => window.ethereum._metamask.isEnabled();
 
   const hasSomebodySelected = () => Object.keys(validators).some(address => validators[address].checked);
 

@@ -12,7 +12,6 @@ export const AppTheme = (fontFamily: string) =>
       },
     },
     typography: {
-      useNextVariants: true,
       fontFamily,
     },
     overrides: {

@@ -93,10 +93,10 @@ const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, del
             <TableCell padding='none'>
               <CopyAddressButton address={guardian['address']} />
             </TableCell>
-            <TableCell padding='dense' className={classes.cell} data-testid={`guardian-${guardian['address']}-address`}>
+            <TableCell size='small' className={classes.cell} data-testid={`guardian-${guardian['address']}-address`}>
               {guardian['address']}
             </TableCell>
-            <TableCell padding='dense' className={classes.cell}>
+            <TableCell size='small' className={classes.cell}>
               <Link
                 data-testid={`guardian-${guardian['address']}-url`}
                 href={guardian['url']}
@@ -108,8 +108,8 @@ const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, del
                 {guardian['url']}
               </Link>
             </TableCell>
-            <TableCell padding='dense'>{asPercent(guardian['stake'])}</TableCell>
-            <TableCell padding='dense' className={classes.cell}>
+            <TableCell size='small'>{asPercent(guardian['stake'])}</TableCell>
+            <TableCell size='small' className={classes.cell}>
               <VoteChip value={guardian['hasEligibleVote']} />
             </TableCell>
           </TableRow>

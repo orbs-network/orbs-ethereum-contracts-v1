@@ -7,9 +7,9 @@
  */
 
 import React from 'react';
-import { App } from './App';
+import { App } from '../components/App/App';
 import { render } from '@testing-library/react';
-import { configs } from '../../config';
+import { configs } from '../config';
 
 export class AppDriver {
   render() {

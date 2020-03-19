@@ -9,11 +9,11 @@
 import React, { useMemo } from 'react';
 import Snackbar, { SnackbarOrigin } from '@material-ui/core/Snackbar';
 import Link from '@material-ui/core/Link';
-import { Button, SnackbarContent, StyleRulesCallback } from '@material-ui/core';
+import { Button, SnackbarContent } from '@material-ui/core';
 import amber from '@material-ui/core/colors/amber';
-import { withStyles, WithStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
-const styles: StyleRulesCallback = () => ({
+const useStyles = makeStyles(() => ({
   container: {
     width: '100%',
   },
@@ -29,9 +29,9 @@ const styles: StyleRulesCallback = () => ({
     position: 'absolute',
     right: '2%',
   },
-});
+}));
 
-interface IProps extends WithStyles<typeof styles> {
+interface IProps {
   isOpen: boolean;
   closeBanner(): void;
 }
@@ -48,7 +48,9 @@ const buildMessage = () => {
   );
 };
 
-const ReadOnlyBannerImpl: React.FC<IProps> = ({ classes, isOpen, closeBanner }) => {
+export const ReadOnlyBanner: React.FC<IProps> = ({ isOpen, closeBanner }) => {
+  const classes = useStyles();
+
   const anchorOrigin: SnackbarOrigin = useMemo(
     () => ({
       vertical: 'top',
@@ -79,5 +81,3 @@ const ReadOnlyBannerImpl: React.FC<IProps> = ({ classes, isOpen, closeBanner }) 
     </Snackbar>
   );
 };
-
-export const ReadOnlyBanner = withStyles(styles)(ReadOnlyBannerImpl);
