@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Table from '@material-ui/core/Table';
 import Tooltip from '@material-ui/core/Tooltip';
 import TableRow from '@material-ui/core/TableRow';
@@ -27,8 +27,26 @@ const styles = () => ({
   },
 });
 
-const ValidatorsListImpl = ({ validators, classes }: { validators: Array<IElectedValidatorData>; classes }) => {
+const ValidatorsListImpl = ({
+  validators,
+  shouldSort,
+  classes,
+}: {
+  validators: Array<IElectedValidatorData>;
+  shouldSort?: boolean;
+  classes;
+}) => {
   const { t } = useTranslation();
+
+  const validatorsInOrder = useMemo(() => {
+    const validatorsClone = [...validators];
+
+    if (shouldSort) {
+      return validatorsClone.sort((a, b) => b.stake - a.stake);
+    } else {
+      return validatorsClone;
+    }
+  }, [shouldSort, validators]);
 
   return (
     <Table className={classes.table}>
@@ -47,7 +65,7 @@ const ValidatorsListImpl = ({ validators, classes }: { validators: Array<IElecte
         </TableRow>
       </TableHead>
       <TableBody data-testid='validators-list'>
-        {validators.map(electedValidatorData => {
+        {validatorsInOrder.map(electedValidatorData => {
           const keyId = electedValidatorData.orbsAddress;
 
           return (

@@ -59,7 +59,7 @@ const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
         </Link>
       )}
 
-      <ValidatorsList validators={selectedValidatorsDataList} />
+      <ValidatorsList validators={selectedValidatorsDataList} shouldSort />
     </>
   );
 };
