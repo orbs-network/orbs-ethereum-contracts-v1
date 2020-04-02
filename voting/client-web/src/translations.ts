@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import i18n, { Resource } from 'i18next';
 
 export const resources: Resource = {
@@ -111,6 +112,23 @@ export const resources: Resource = {
         'Validators run Orbs network. They participate in the block creation and validation and maintain the state and block history. Validators are skilled professionals, capable of maintaining their node security, availability and connectivity and providing the required quality of service.',
       'Manual Delegation Description':
         'You can delegate your stake to anyone. They will need to delegate\ntheir own stake & your stake to a guardian. Only stake delegated to a\nvoting guardian will be rewarded.',
+
+      // *************************
+      // Well formatted messages
+      // *************************
+
+      // Rewards table
+      delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
+      delegatorStakedOrbs: 'Delegator’s stacked ORBS',
+
+      // Alerts
+      alert_stakingWithoutGuardian:
+        'Warning - this address has staked ORBS but no selected Guardian. No rewards will be accumulated',
+      alert_notParticipating: 'Notice : This address has ORBS but none of them are staked',
+      action_goToTetra: 'Go to {{tetraLink}}',
+      action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
+        'You can stake your ORBS and select a guardian with {{tetraLink}}',
+      text_tetraName: 'Tetra',
     },
   },
   ko: {
