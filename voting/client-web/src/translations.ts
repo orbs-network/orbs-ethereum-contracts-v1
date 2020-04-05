@@ -242,6 +242,23 @@ export const resources: Resource = {
       'Manually Delegate Your Stake': '직접 수동으로 위임하기',
       Cancel: '취소하기',
       'Display ORBS in metamask': '메타마스크에 있는 ORBS 표시',
+
+      // *************************
+      // Well formatted messages
+      // *************************
+
+      // Rewards table
+      delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
+      delegatorStakedOrbs: 'Delegator’s stacked ORBS',
+
+      // Alerts
+      alert_stakingWithoutGuardian:
+        'Warning - this address has staked ORBS but no selected Guardian. No rewards will be accumulated',
+      alert_notParticipating: 'Notice : This address has ORBS but none of them are staked',
+      action_goToTetra: 'Go to {{tetraLink}}',
+      action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
+        'You can stake your ORBS and select a guardian with {{tetraLink}}',
+      text_tetraName: 'Tetra',
     },
   },
 };
