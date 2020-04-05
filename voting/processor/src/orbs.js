@@ -1,15 +1,23 @@
+/**
+ * Copyright 2019 the orbs-ethereum-contracts authors
+ * This file is part of the orbs-ethereum-contracts library in the Orbs project.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+ * The above notice should be included in all copies or substantial portions of the software.
+ */
+BigInt.prototype.toJSON = function() { return this.toString(); };
 const OrbsClientSdk = require("orbs-client-sdk");
 
 class Orbs {
     constructor(url, vChainId, name) {
         if (!url) {
-            throw("missing orbs url");
+            throw new Error("missing orbs url");
         }
         if (!name) {
-            throw("missing orbs virtual chain id");
+            throw new Error("missing orbs virtual chain id");
         }
         if (!name) {
-            throw("missing orbs contract name");
+            throw new Error("missing orbs contract name");
         }
 
         this.name = name;
@@ -73,6 +81,7 @@ class Orbs {
         } else if (response.requestStatus === "IN_PROCESS" && response.executionResult === "NOT_EXECUTED" && response.transactionStatus === "PENDING") {
             return this.ProcessPending;
         } else {
+            console.error(`request processVoting returned error`, response); // log as this is not a throw "error" kind of fail.
             return this.ProcessError;
         }
     }
@@ -90,8 +99,7 @@ class Orbs {
     async queryResult(methodName, ...args) {
         let response = await this.query(methodName, ...args);
         if(!(response.requestStatus === "COMPLETED" && response.executionResult === "SUCCESS")) {
-            console.log(response);
-            throw new Error(response.toString());
+            throw new Error(`Error: query to method ${methodName} returned error message ${JSON.stringify(response)}`);
         }
         return Orbs.getRawValue(response);
     }
@@ -112,7 +120,7 @@ async function create(urlsString, vChainId, name) {
             console.log(`could not connect to ${urls[i]}`);
         }
     }
-    throw new Error(`Cannot connect to any of the Orbs urls ${urlsString}`);
+    throw new Error(`Error: Cannot connect to any of the Orbs urls ${urlsString}`);
 }
 
 module.exports = create;

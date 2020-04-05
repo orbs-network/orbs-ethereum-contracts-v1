@@ -17,7 +17,7 @@ const slack = require('./src/slack');
 
 function validateInput() {
     if (!ethereumConnectionURL) {
-        throw("missing env variable NETWORK_URL_ON_ETHEREUM");
+        throw new Error("missing env variable NETWORK_URL_ON_ETHEREUM");
     }
 }
 
@@ -50,7 +50,7 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\nAll Good Done!!");
     }).catch(e => {
-        slack.sendSlack(`IsAlive ended with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
+        slack.sendSlack(`IsAlive ended with message: \n${e.message}\nPlease check Jenkins!`).finally(() => {
             console.error(e);
             process.exit(-4);
         });
