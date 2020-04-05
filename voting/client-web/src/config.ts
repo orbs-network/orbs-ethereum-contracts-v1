@@ -24,16 +24,24 @@ export interface IConfig {
   orbsAuditNodeEndpoint: string;
   ETHEREUM_PROVIDER_WS: string;
   contractsAddressesOverride: Partial<IOrbsPosContractsAddresses & { stakingContract: string }>;
+  earliestBlockForDelegationOverride?: number;
 }
 
 const contractsAddressesOverride: Partial<IOrbsPosContractsAddresses & { stakingContract: string }> = IS_DEV
   ? {
       stakingContract: '0x88287444f10709f9531D11e08DCd692deccd1d63', // ROPSTEN
+      erc20Contract: '0xeD0Aa9A4F9e5ae9092994f4B86F6AAa89944939b', // ROPSTEN
+      guardiansContract: '0x636315bcD912B1DbFe38E6b75f5B6AEE4Cd63B30', // ROPSTEN
+      votingContract: '0xF90a738CA659Fe99E357cB7F47Aaa5cB9b5724a2', // ROPSTEN
     }
   : {};
 
-export const configs: IConfig = {
+const configsObject: IConfig = {
   orbsAuditNodeEndpoint: IS_DEV ? orbsAuditNodeEndpoint_dev : orbsAuditNodeEndpoint_prod,
   ETHEREUM_PROVIDER_WS: 'wss://mainnet.infura.io/ws/v3/3fe9b03bd8374639809addf2164f7287',
   contractsAddressesOverride,
+  // Only override in dev
+  earliestBlockForDelegationOverride: IS_DEV ? 0 : undefined,
 };
+
+export const configs: IConfig = configsObject;
