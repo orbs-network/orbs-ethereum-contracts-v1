@@ -37,22 +37,22 @@ function validateInput() {
     }
 
     if (!ethereumConnectionURL) {
-        throw("missing env variable NETWORK_URL_ON_ETHEREUM");
+        throw new Error("missing env variable NETWORK_URL_ON_ETHEREUM");
     }
 
     if (!erc20ContractAddress) {
-        throw("missing env variable ERC20_CONTRACT_ADDRESS");
+        throw new Error("missing env variable ERC20_CONTRACT_ADDRESS");
     }
 
     if (!votingContractAddress) {
-        throw("missing env variable VOTING_CONTRACT_ADDRESS");
+        throw new Error("missing env variable VOTING_CONTRACT_ADDRESS");
     }
 
     if (process.env.PACE_ETHEREUM) {
         console.log(`reset value of pace in ethereum to ${process.env.PACE_ETHEREUM}\n`);
         paceEthereum = parseInt(process.env.PACE_ETHEREUM);
         if (paceEthereum < 100 && paceEthereum % 100 !== 0) {
-            throw("PACE_ETHEREUM must be a multiplier of 100");
+            throw new Error("PACE_ETHEREUM must be a multiplier of 100");
         }
     }
 
@@ -214,7 +214,7 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-        slack.sendSlack(`Mirror ended with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
+        slack.sendSlack(`Mirror ended with message \n${e.message}\nPlease check Jenkins!`).finally(() => {
             console.error(e);
             process.exit(-4);
         }

@@ -180,7 +180,7 @@ main()
     .then(() => {
         console.log('\x1b[36m%s\x1b[0m', "\n\nDone!!\n");
     }).catch(e => {
-        slack.sendSlack(`Process ended with message '${JSON.stringify(e.message)}', check Jenkins!`).finally(() => {
+        slack.sendSlack(`Process ended with message: \n${e.message}\nPlease check Jenkins!`).finally(() => {
             console.error(e);
             process.exit(-4);
         }
