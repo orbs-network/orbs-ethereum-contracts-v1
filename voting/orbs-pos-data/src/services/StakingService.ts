@@ -15,6 +15,7 @@ import { STAKING_CONTRACT_ADDRESS } from '../contracts-adresses';
 import { IStakingService, IUnstakingStatus, StakingServiceEventCallback } from '../interfaces/IStakingService';
 import { getUnsubscribePromise } from '../utils/erc20EventsUtils';
 import { ITypedEventData, TUnsubscribeFunction } from './contractsTypes/contractTypes';
+import stakingContractJSON from '../contracts/StakingContract.json';
 
 /**
  * It just so happens that all of the staking related events have the same signature.
@@ -35,7 +36,7 @@ export class StakingService implements IStakingService {
 
   constructor(private web3: Web3, address: string = STAKING_CONTRACT_ADDRESS) {
     this.stakingContractAddress = address;
-    this.stakingContract = new this.web3.eth.Contract(IStakingContractABI as AbiItem[], this.stakingContractAddress);
+    this.stakingContract = new this.web3.eth.Contract(stakingContractJSON as AbiItem[], this.stakingContractAddress);
   }
 
   // CONFIG //
