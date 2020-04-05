@@ -150,7 +150,7 @@ contract('OrbsSubscriptions', (accounts) => {
         { from: owner });
 
       expect(await subscMock.orbs.call()).to.eql(token.address);
-      expect(await subscMock.validators.call()).to.eql(validators.address);
+      expect(await subscMock.participants.call()).to.eql(validators.address);
       expect((await subscMock.minimalMonthlySubscription.call()).toNumber()).to.be.equal(minimalMonthlySubscription);
     });
 

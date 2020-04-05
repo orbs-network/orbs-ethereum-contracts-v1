@@ -1,0 +1,38 @@
+{
+  "name": "pos-v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": " ",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test",
+    "coverage": "solidity-coverage",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate --reset",
+    "version": "truffle --version",
+    "start-ganache": "mkdir -p _out && ganache-cli -p 7545 -i 5777 -a 100 > _out/ganache.log"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "2.3.0",
+    "bn.js": "^5.1.1",
+    "chai": "^4.2.0",
+    "chai-bn": "^0.2.0",
+    "lodash": "^4.17.15",
+    "truffle": "5.0.36",
+    "truffle-hdwallet-provider": "^1.0.3",
+    "truffle-typings": "^1.0.8",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.4",
+    "web3-eth-contract": "^1.2.6"
+  },
+  "devDependencies": {
+    "ganache-cli": "6.2.3",
+    "mocha-junit-reporter": "^1.18.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "solidity-coverage": "^0.5.11"
+  }
+}
