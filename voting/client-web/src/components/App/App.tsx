@@ -48,12 +48,19 @@ const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
   const remoteService: IRemoteService = new RemoteService(configs.orbsAuditNodeEndpoint);
   // TODO : FUTURE: O.L : This method of signaling no meta-mask is too fragile and unclear, change it to be like staking wallet
   const metamask = ethereumProvider ? new MetamaskService(web3) : undefined;
-  const stakingService = new StakingService(web3, configs.contractsAddressesOverride.stakingContract);
+  const stakingService = new StakingService(web3, configs?.contractsAddressesOverride?.stakingContract);
   const orbsClient = BuildOrbsClient();
   const orbsClientService: IOrbsClientService = new OrbsClientService(orbsClient);
-  const guardiansService = new GuardiansService(web3, orbsClientService, configs.contractsAddressesOverride, {
-    earliestBlockForDelegation: configs.earliestBlockForDelegationOverride,
-  });
+  const guardiansService = new GuardiansService(
+    web3,
+    orbsClientService,
+    configs?.contractsAddressesOverride,
+    configs.earliestBlockForDelegationOverride
+      ? {
+          earliestBlockForDelegation: configs.earliestBlockForDelegationOverride,
+        }
+      : undefined,
+  );
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
