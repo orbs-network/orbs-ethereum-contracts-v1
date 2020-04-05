@@ -1,6 +1,6 @@
 {
   "name": "orbs-pos-data",
-  "version": "6.6.0",
+  "version": "6.7.0",
   "description": "",
   "main": "dist/orbs-pos-data.js",
   "browser": "dist/orbs-pos-data-web.js",
