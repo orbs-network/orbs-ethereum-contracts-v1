@@ -1,6 +1,6 @@
 {
   "name": "orbs-pos-data",
-  "version": "6.8.0",
+  "version": "6.9.0",
   "description": "",
   "main": "dist/orbs-pos-data.js",
   "browser": "dist/orbs-pos-data-web.js",
@@ -16,7 +16,8 @@
     "dev": "webpack-dev-server -w",
     "contracts": "./scripts/generate-contracts-abi.ts",
     "test": "jest",
-    "test-watch": "jest --watchAll"
+    "test-watch": "jest --watchAll",
+    "npm_release": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
