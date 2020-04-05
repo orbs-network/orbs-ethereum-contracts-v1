@@ -94,6 +94,22 @@ export const resources: Resource = {
       'Manually Delegate Your Stake': '手動でステークを委任する',
       Cancel: 'キャンセル',
       'Display ORBS in metamask': 'ORBSをメタマスクに表示',
+
+      // *************************
+      // Well formatted messages
+      // *************************
+      // Rewards table
+      delegatorNonStakedOrbs: 'デリゲータの未ステーキングORBS',
+      delegatorStakedOrbs: 'デリゲータのステーキング済みORBS',
+
+      // Alerts
+      alert_stakingWithoutGuardian:
+        '注意：このアドレスは既にORBSをステーキングしていますが、まだガーディアンを選択していないため、リワードが発生していません',
+      alert_notParticipating: '通知：このアドレスにORBSは入っていますが、ステーキングされていません',
+      action_goToTetra: '{{tetraLink}}を参照',
+      action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
+        'ORBSのステーキングとガーディアンの選択は{{tetraLink}}を参照',
+      text_tetraName: 'Tetra',
     },
   },
   en: {
