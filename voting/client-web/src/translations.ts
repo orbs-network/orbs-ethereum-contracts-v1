@@ -248,16 +248,16 @@ export const resources: Resource = {
       // *************************
 
       // Rewards table
-      delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
-      delegatorStakedOrbs: 'Delegator’s stacked ORBS',
+      delegatorNonStakedOrbs: '스테이킹하고 있지 않는 ORBS',
+      delegatorStakedOrbs: '스테이킹 참여 중인 ORBS',
 
       // Alerts
       alert_stakingWithoutGuardian:
-        'Warning - this address has staked ORBS but no selected Guardian. No rewards will be accumulated',
-      alert_notParticipating: 'Notice : This address has ORBS but none of them are staked',
-      action_goToTetra: 'Go to {{tetraLink}}',
+        '주의 - 이 주소는 스테이킹에 하고 있지만 가디언에게 위임하지 않았습니다. 이 경우, 리워드가 적립되지 않습니다',
+      alert_notParticipating: '알림: 이 주소는 ORBS를 보유하고 있지만 스테이킹하고 있지 않습니다',
+      action_goToTetra: '{{tetraLink}}로 이동',
       action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
-        'You can stake your ORBS and select a guardian with {{tetraLink}}',
+        '{{tetraLink}}에서 ORBS스테이킹과 가디언위임 선택이 가능합니다',
       text_tetraName: 'Tetra',
     },
   },
