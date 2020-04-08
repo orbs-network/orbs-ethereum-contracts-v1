@@ -23,4 +23,4 @@ export const MainnetContractsAddresses: IOrbsPosContractsAddresses = {
   erc20Contract: '0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA',
 };
 
-export const STAKING_CONTRACT_ADDRESS = '0x0cD370eDcBbD783815a7f45beeA559b47D39de15';
+export const STAKING_CONTRACT_ADDRESS = '0x01D59Af68E2dcb44e04C50e05F62E7043F2656C3';
