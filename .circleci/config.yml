@@ -1,11 +1,11 @@
 version: 2
 jobs:
-# asb-e2e:
-#   machine: true
-#   steps:
-#     - checkout
-#     - run: ./.circleci/asb.sh
-#
+  # asb-e2e:
+  #   machine: true
+  #   steps:
+  #     - checkout
+  #     - run: ./.circleci/asb.sh
+  #
   voting-orbs-tests:
     docker:
       - image: circleci/golang:1.12.9
@@ -86,7 +86,7 @@ workflows:
       - voting-solidity-tests
       - voting-orbs-tests
       - voting-client-tests
-      - voting-e2e
+      #- voting-e2e
   subscription:
     jobs:
       - subscription-solidity-tests
@@ -105,5 +105,5 @@ workflows:
     jobs:
       # tests that integrate with orbs-network-go
       - voting-orbs-tests
-      - voting-e2e
+      #- voting-e2e
       - subscription-e2e
