@@ -201,6 +201,14 @@ async function main() {
         // use input numbers
     }
 
+    let nextElectionBlock = await orbs.getNextElectionsBlockNumber();
+    if (endBlock > nextElectionBlock) { // don't try to mirror events past the election - less errors when mirror runs just before election
+        if (verbose) {
+            console.log('\x1b[34m%s\x1b[0m', `Adjusting end block to not be after current election (end block changed from ${endBlock} to ${nextElectionBlock})`);
+        }
+        endBlock = nextElectionBlock;
+    }
+
     console.log('\x1b[34m%s\x1b[0m', `Going to look for events between blocks ${startBlock}-${endBlock}`);
     await iterateOverEvents(orbs, startBlock, endBlock, paceEthereum);
     if (verbose) {

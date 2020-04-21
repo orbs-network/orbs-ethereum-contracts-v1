@@ -22,7 +22,7 @@ class Orbs {
 
         this.name = name;
         this.signer = OrbsClientSdk.createAccount();
-        this.client = new OrbsClientSdk.Client(url, vChainId, OrbsClientSdk.NetworkType.NETWORK_TYPE_TEST_NET);
+        this.client = new OrbsClientSdk.Client(url, vChainId, OrbsClientSdk.NetworkType.NETWORK_TYPE_TEST_NET, new OrbsClientSdk.LocalSigner(this.signer));
         this.helpers = OrbsClientSdk;
     }
 
@@ -58,6 +58,10 @@ class Orbs {
         return Number(await this.queryResult("getNumberOfElections"));
     }
 
+    async getNextElectionsBlockNumber() {
+        return Number(await this.queryResult("getCurrentElectionBlockNumber"));
+    }
+
     async getTotalStake() {
         return Number(await this.queryResult("getTotalStake"));
     }
@@ -86,13 +90,13 @@ class Orbs {
         }
     }
 
-    transact(methodName, ...args) {
-        const [t] = this.client.createTransaction(this.signer.publicKey, this.signer.privateKey, this.name, methodName, args);
+    async transact(methodName, ...args) {
+        const [t] = await this.client.createTransaction(this.name, methodName, args);
         return this.client.sendTransaction(t);
     }
 
-    query(methodName, ...args) {
-        const q = this.client.createQuery(this.signer.publicKey, this.name, methodName, args);
+    async query(methodName, ...args) {
+        const q = await this.client.createQuery(this.name, methodName, args);
         return this.client.sendQuery(q);
     }
 

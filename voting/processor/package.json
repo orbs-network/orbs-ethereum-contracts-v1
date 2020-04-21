@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@slack/web-api": "5.0.1",
-    "lodash": "^4.17.13",
-    "orbs-client-sdk": "0.0.6",
+    "@slack/web-api": "^5.8.0",
+    "lodash": "^4.17.15",
+    "orbs-client-sdk": "^2.4.0",
     "typedarray-to-buffer": "3.1.5",
     "web3": "1.0.0-beta.55",
     "yaeti": "0.0.6"
