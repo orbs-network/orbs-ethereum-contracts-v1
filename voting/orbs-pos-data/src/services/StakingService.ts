@@ -81,7 +81,9 @@ export class StakingService implements IStakingService {
     let cooldownEndTimeNumber = Number(result.cooldownEndTime);
 
     // DEV_NOTE : NaN means that the given stake owner has no "active" cooldown process.
-    if (typeof cooldownAmountBigInt != 'bigint' || Number.isNaN(cooldownEndTimeNumber)) {
+    // DEV_NOTE : We have removed the check for "typeof cooldownAmountBigInt != 'bigint'" in order to support polyfills
+    //            of Bigint.
+    if (Number.isNaN(cooldownEndTimeNumber)) {
       cooldownAmountBigInt = BigInt(0);
       cooldownEndTimeNumber = 0;
     }
