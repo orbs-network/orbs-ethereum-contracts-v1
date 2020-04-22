@@ -37,7 +37,7 @@ export class EthereumClientService implements IEthereumClientService {
       addresses.validatorsContract,
     );
     this.validatorsRegistryContract = new this.web3.eth.Contract(
-      validatorsRegistryContractJSON.abi,
+      validatorsRegistryContractJSON.abi as AbiItem[],
       addresses.validatorsRegistryContract,
     );
     this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addresses.erc20Contract);
