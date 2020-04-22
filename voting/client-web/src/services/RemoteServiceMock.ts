@@ -1,4 +1,5 @@
 import { IRemoteService } from './IRemoteService';
+import { IElectedValidatorData } from './IValidatorData';
 
 export class RemoteServiceMock implements IRemoteService {
   constructor(private guardians, private validators) {}
@@ -19,7 +20,15 @@ export class RemoteServiceMock implements IRemoteService {
     return Promise.resolve([]);
   }
   getElectedValidatorData() {
-    return Promise.resolve({});
+    const mockElectedValidatorData: IElectedValidatorData = {
+      ipAddress: '',
+      name: '',
+      orbsAddress: '',
+      stake: 0,
+      website: '',
+    };
+
+    return Promise.resolve(mockElectedValidatorData);
   }
   getRewards() {
     return Promise.resolve({});

@@ -68,7 +68,7 @@ const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classe
               )}
             </TableCell>
             <TableCell
-              padding='dense'
+              size='small'
               className={classes.cell}
               component='th'
               scope='row'
@@ -79,17 +79,17 @@ const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classe
             <TableCell padding='none'>
               <CopyAddressButton address={address} />
             </TableCell>
-            <TableCell padding='dense' className={classes.cell} data-testid={`validator-${address}-address`}>
+            <TableCell size='small' className={classes.cell} data-testid={`validator-${address}-address`}>
               <Tooltip title={address} placement='top-start' enterDelay={200}>
                 <span>{address}</span>
               </Tooltip>
             </TableCell>
-            <TableCell padding='dense' className={classes.cell} data-testid={`validator-${address}-orbsAddress`}>
+            <TableCell size='small' className={classes.cell} data-testid={`validator-${address}-orbsAddress`}>
               <Tooltip title={validators[address].orbsAddress} placement='top-start' enterDelay={200}>
                 <span>{validators[address].orbsAddress}</span>
               </Tooltip>
             </TableCell>
-            <TableCell padding='dense' className={classes.cell}>
+            <TableCell size='small' className={classes.cell}>
               <Link
                 data-testid={`validator-${address}-url`}
                 href={validators[address].url}
@@ -101,7 +101,7 @@ const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classe
                 {validators[address].url}
               </Link>
             </TableCell>
-            <TableCell padding='dense' className={classes.cell}>
+            <TableCell size='small' className={classes.cell}>
               {validators[address].votesAgainst}%
             </TableCell>
           </TableRow>

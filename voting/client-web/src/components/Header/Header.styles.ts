@@ -17,10 +17,10 @@ export const HeaderStyles = theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 8}px`,
+    padding: `${theme.spacing(2)}px ${theme.spacing(8)}px`,
   },
   displayInMetamaskButton: {
-    marginRight: `${theme.spacing.unit * 3}px`,
+    marginRight: `${theme.spacing(3)}px`,
   },
   movedDown: {
     paddingTop: 48,

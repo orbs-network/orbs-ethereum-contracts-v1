@@ -9,7 +9,7 @@
 import React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter as Router } from 'react-router-dom';
-import i18n from 'i18next';
+import i18n, { Resource } from 'i18next';
 import { PreLangBasenameProvider } from './PreLangBasenameContext';
 import { initReactI18next } from 'react-i18next';
 
@@ -18,7 +18,7 @@ function getForcedLanguage() {
   return langMatch ? langMatch[1] : '';
 }
 
-function setupI18n(resources: i18n.Resource) {
+function setupI18n(resources: Resource) {
   i18n
     .use(initReactI18next) // passes i18n down to react-i18next
     .init({
@@ -33,7 +33,7 @@ function setupI18n(resources: i18n.Resource) {
 
 interface IProps {
   preLangBasename?: string;
-  resources: i18n.Resource;
+  resources: Resource;
 }
 
 export const LangRouter: React.FC<IProps> = ({ children, resources, preLangBasename = '' }) => {

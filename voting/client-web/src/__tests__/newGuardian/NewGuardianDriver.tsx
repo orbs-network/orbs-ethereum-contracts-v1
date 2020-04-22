@@ -8,42 +8,49 @@
 
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { render, waitForElement } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { ApiContext } from '../../services/ApiContext';
 import { IMetamask } from '../../services/IMetamask';
 import { IRemoteService } from '../../services/IRemoteService';
 import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
 import { RemoteServiceMock } from '../../services/RemoteServiceMock';
-import { GuardiansPage } from './GuardiansPage';
+import { NewGuardian } from '../../components/NewGuardian/NewGuardian';
 
-export class GuardiansDriver {
-  private renderResult;
+export class NewGuardianDriver {
   public remoteService: IRemoteService;
   public metaMask: IMetamask;
+  private renderResult;
 
-  constructor(data) {
-    this.remoteService = new RemoteServiceMock({}, data);
+  constructor() {
+    this.remoteService = new RemoteServiceMock({}, {});
     this.metaMask = new MetamaskServiceMock();
   }
 
-  chooseValidator(address) {
-    const el = this.renderResult.getByTestId(`validator-${address}-checkbox`);
-    if (el !== null) {
-      el.querySelector('input').click();
-    }
+  setName(name) {
+    const { getByTestId } = this.renderResult;
+    const nameInput = getByTestId('name').querySelector('input');
+    return fireEvent.change(nameInput, { target: { value: name } });
+  }
+
+  setWebsite(url) {
+    const { getByTestId } = this.renderResult;
+    const websiteInput = getByTestId('website').querySelector('input');
+    return fireEvent.change(websiteInput, { target: { value: url } });
+  }
+
+  submit() {
+    const { getByTestId } = this.renderResult;
+    return getByTestId('submit').click();
   }
 
   async render() {
     this.renderResult = render(
       <Router>
         <ApiContext.Provider value={{ remoteService: this.remoteService, metamask: this.metaMask }}>
-          <GuardiansPage />
+          <NewGuardian />
         </ApiContext.Provider>
       </Router>,
     );
-    const validatorsList = this.renderResult.getByTestId('validators-list');
-    await waitForElement(() => validatorsList.children.length);
-
     return this.renderResult;
   }
 }

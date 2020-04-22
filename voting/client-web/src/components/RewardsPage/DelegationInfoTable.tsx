@@ -6,13 +6,14 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { VoteChip } from '../VoteChip/VoteChip';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import { useTranslation } from 'react-i18next';
+import { useBoolean } from 'react-hanger';
 
 const formatTimestamp = timestamp =>
   new Date(timestamp).toLocaleString('en-gb', {
@@ -27,35 +28,68 @@ const formatTimestamp = timestamp =>
     second: 'numeric',
   });
 
-export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
+// TODO : FUTRUE : O.L : Fix types
+interface IProps {
+  delegatorInfo: any;
+  guardianInfo: any;
+  delegatorStakingInfo: { stakedOrbs: number };
+}
+
+export const DelegationInfoTable = React.memo<IProps>(props => {
+  const { delegatorInfo, delegatorStakingInfo, guardianInfo } = props;
+
   const { t } = useTranslation();
-  let delegatorBalance: string;
-  let delegatedTo: string;
-  let delegationBlockNumber: string;
-  let delegationTimestamp: string;
-  const delegationType = delegatorInfo.delegationType;
-  if (delegationType === 'Not-Delegated') {
-    delegatorBalance = '-';
-    delegatedTo = '-';
-    delegationBlockNumber = '-';
-    delegationTimestamp = '-';
-  } else {
-    delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
-    delegatedTo = delegatorInfo.delegatedTo;
-    delegationBlockNumber = (delegatorInfo.delegationBlockNumber || 0).toLocaleString();
-    delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
-  }
+
+  // DEV_NOTE : This huge memo could be broken
+  const { delegationType, delegatorBalance, delegatedTo, delegationBlockNumber, delegationTimestamp } = useMemo<{
+    delegationType: string;
+    delegatorBalance: string;
+    delegatedTo: string;
+    delegationBlockNumber: string;
+    delegationTimestamp: string;
+  }>(() => {
+    let delegatorBalance: string;
+    let delegatedTo: string;
+    let delegationBlockNumber: string;
+    let delegationTimestamp: string;
+
+    const delegationType = delegatorInfo.delegationType;
+
+    if (delegationType === 'Not-Delegated') {
+      delegatorBalance = '-';
+      delegatedTo = '-';
+      delegationBlockNumber = '-';
+      delegationTimestamp = '-';
+    } else {
+      delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
+      delegatedTo = delegatorInfo.delegatedTo;
+      delegationBlockNumber = (delegatorInfo.delegationBlockNumber || 0).toLocaleString();
+      delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
+    }
+
+    return {
+      delegationType,
+      delegatorBalance,
+      delegatedTo,
+      delegationBlockNumber,
+      delegationTimestamp,
+    };
+  }, [delegatorInfo]);
 
   return (
-    <Table padding='none'>
+    <Table>
       <TableBody>
         <TableRow>
           <TableCell>{t('Delegated To')}</TableCell>
           <TableCell align='right'>{delegatedTo}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>{t(`Delegator's ORBS Balance`)}</TableCell>
+          <TableCell>{t(`delegatorNonStakedOrbs`)}</TableCell>
           <TableCell align='right'>{delegatorBalance}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>{t(`delegatorStakedOrbs`)}</TableCell>
+          <TableCell align='right'>{delegatorStakingInfo.stakedOrbs}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
@@ -92,4 +126,4 @@ export const DelegationInfoTable = ({ delegatorInfo, guardianInfo }) => {
       </TableBody>
     </Table>
   );
-};
+});

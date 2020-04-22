@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Table from '@material-ui/core/Table';
 import Tooltip from '@material-ui/core/Tooltip';
 import TableRow from '@material-ui/core/TableRow';
@@ -15,6 +15,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
+import { IElectedValidatorData } from '../../services/IValidatorData';
 
 const styles = () => ({
   table: {
@@ -26,8 +27,27 @@ const styles = () => ({
   },
 });
 
-const ValidatorsListImpl = ({ validators, classes }) => {
+const ValidatorsListImpl = ({
+  validators,
+  shouldSort,
+  classes,
+}: {
+  validators: Array<IElectedValidatorData>;
+  shouldSort?: boolean;
+  classes;
+}) => {
   const { t } = useTranslation();
+
+  const validatorsInOrder = useMemo(() => {
+    const validatorsClone = [...validators];
+
+    if (shouldSort) {
+      return validatorsClone.sort((a, b) => b.stake - a.stake);
+    } else {
+      return validatorsClone;
+    }
+  }, [shouldSort, validators]);
+
   return (
     <Table className={classes.table}>
       <TableHead>
@@ -45,24 +65,31 @@ const ValidatorsListImpl = ({ validators, classes }) => {
         </TableRow>
       </TableHead>
       <TableBody data-testid='validators-list'>
-        {Object.keys(validators).map(id => (
-          <TableRow data-testid={`validator-${id}`} key={id}>
-            <TableCell className={classes.cell} component='th' scope='row' data-testid={`validator-${id}-name`}>
-              {validators[id].name}
-            </TableCell>
-            <TableCell className={classes.cell} data-testid={`validator-${id}-address`}>
-              <Tooltip title={id} placement='top-start' enterDelay={200}>
-                <span>{id}</span>
-              </Tooltip>
-            </TableCell>
-            <TableCell className={classes.cell} data-testid={`validator-${id}-orbs-address`}>
-              <Tooltip title={validators[id].orbsAddress} placement='top-start' enterDelay={200}>
-                <span>{validators[id].orbsAddress}</span>
-              </Tooltip>
-            </TableCell>
-            <TableCell>{validators[id].stake.toLocaleString()} ORBS</TableCell>
-          </TableRow>
-        ))}
+        {validatorsInOrder.map(electedValidatorData => {
+          const keyId = electedValidatorData.orbsAddress;
+
+          return (
+            <TableRow
+              data-testid={`validator-${electedValidatorData.orbsAddress}`}
+              key={electedValidatorData.orbsAddress}
+            >
+              <TableCell className={classes.cell} component='th' scope='row' data-testid={`validator-${keyId}-name`}>
+                {electedValidatorData.name}
+              </TableCell>
+              <TableCell className={classes.cell} data-testid={`validator-${keyId}-address`}>
+                <Tooltip title={keyId} placement='top-start' enterDelay={200}>
+                  <span>{keyId}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell className={classes.cell} data-testid={`validator-${keyId}-orbs-address`}>
+                <Tooltip title={electedValidatorData.orbsAddress} placement='top-start' enterDelay={200}>
+                  <span>{electedValidatorData.orbsAddress}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell>{electedValidatorData.stake.toLocaleString()} ORBS</TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );

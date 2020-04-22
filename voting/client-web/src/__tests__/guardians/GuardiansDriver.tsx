@@ -8,29 +8,42 @@
 
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { render } from '@testing-library/react';
+import { render, waitForElement } from '@testing-library/react';
 import { ApiContext } from '../../services/ApiContext';
 import { IMetamask } from '../../services/IMetamask';
 import { IRemoteService } from '../../services/IRemoteService';
 import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
 import { RemoteServiceMock } from '../../services/RemoteServiceMock';
-import { DelegatorsPage } from './DelegatorsPage';
+import { GuardiansPage } from '../../components/Guardrians/GuardiansPage';
 
-export class DelegatorsDriver {
+export class GuardiansDriver {
+  private renderResult;
   public remoteService: IRemoteService;
   public metaMask: IMetamask;
 
   constructor(data) {
-    this.remoteService = new RemoteServiceMock(data, {});
+    this.remoteService = new RemoteServiceMock({}, data);
     this.metaMask = new MetamaskServiceMock();
   }
-  render() {
-    return render(
+
+  chooseValidator(address) {
+    const el = this.renderResult.getByTestId(`validator-${address}-checkbox`);
+    if (el !== null) {
+      el.querySelector('input').click();
+    }
+  }
+
+  async render() {
+    this.renderResult = render(
       <Router>
         <ApiContext.Provider value={{ remoteService: this.remoteService, metamask: this.metaMask }}>
-          <DelegatorsPage />
+          <GuardiansPage />
         </ApiContext.Provider>
       </Router>,
     );
+    const validatorsList = this.renderResult.getByTestId('validators-list');
+    await waitForElement(() => validatorsList.children.length);
+
+    return this.renderResult;
   }
 }

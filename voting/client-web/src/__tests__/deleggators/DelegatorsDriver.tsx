@@ -8,49 +8,29 @@
 
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ApiContext } from '../../services/ApiContext';
 import { IMetamask } from '../../services/IMetamask';
 import { IRemoteService } from '../../services/IRemoteService';
 import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
 import { RemoteServiceMock } from '../../services/RemoteServiceMock';
-import { NewGuardian } from './NewGuardian';
+import { DelegatorsPage } from '../../components/DelegatorsPage/DelegatorsPage';
 
-export class NewGuardianDriver {
+export class DelegatorsDriver {
   public remoteService: IRemoteService;
   public metaMask: IMetamask;
-  private renderResult;
 
-  constructor() {
-    this.remoteService = new RemoteServiceMock({}, {});
+  constructor(data) {
+    this.remoteService = new RemoteServiceMock(data, {});
     this.metaMask = new MetamaskServiceMock();
   }
-
-  setName(name) {
-    const { getByTestId } = this.renderResult;
-    const nameInput = getByTestId('name').querySelector('input');
-    return fireEvent.change(nameInput, { target: { value: name } });
-  }
-
-  setWebsite(url) {
-    const { getByTestId } = this.renderResult;
-    const websiteInput = getByTestId('website').querySelector('input');
-    return fireEvent.change(websiteInput, { target: { value: url } });
-  }
-
-  submit() {
-    const { getByTestId } = this.renderResult;
-    return getByTestId('submit').click();
-  }
-
-  async render() {
-    this.renderResult = render(
+  render() {
+    return render(
       <Router>
         <ApiContext.Provider value={{ remoteService: this.remoteService, metamask: this.metaMask }}>
-          <NewGuardian />
+          <DelegatorsPage />
         </ApiContext.Provider>
       </Router>,
     );
-    return this.renderResult;
   }
 }

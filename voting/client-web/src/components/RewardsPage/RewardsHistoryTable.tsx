@@ -21,7 +21,7 @@ export const RewardsHistoryTable = ({ rewardsHistory }) => {
 
   const totalAmount = rewardsHistory.reduce((prev, cur) => prev + cur.amount, 0);
   return (
-    <Table padding='none'>
+    <Table>
       <TableHead>
         <TableRow>
           <TableCell>{t('Distribution Event')}</TableCell>

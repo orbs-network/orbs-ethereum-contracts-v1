@@ -1,6 +1,7 @@
-import i18n from 'i18next';
+/* eslint-disable @typescript-eslint/camelcase */
+import i18n, { Resource } from 'i18next';
 
-export const resources: i18n.Resource = {
+export const resources: Resource = {
   jp: {
     translation: {
       fontFamily: 'Meiryo,Hiragino Kaku Gothic ProN,MS PGothic,sans-serif',
@@ -93,6 +94,22 @@ export const resources: i18n.Resource = {
       'Manually Delegate Your Stake': '手動でステークを委任する',
       Cancel: 'キャンセル',
       'Display ORBS in metamask': 'ORBSをメタマスクに表示',
+
+      // *************************
+      // Well formatted messages
+      // *************************
+      // Rewards table
+      delegatorNonStakedOrbs: 'デリゲータの未ステーキングORBS',
+      delegatorStakedOrbs: 'デリゲータのステーキング済みORBS',
+
+      // Alerts
+      alert_stakingWithoutGuardian:
+        '注意：このアドレスは既にORBSをステーキングしていますが、まだガーディアンを選択していないため、リワードが発生していません',
+      alert_notParticipating: '通知：このアドレスにORBSは入っていますが、ステーキングされていません',
+      action_goToTetra: '{{tetraLink}}を参照',
+      action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
+        'ORBSのステーキングとガーディアンの選択は{{tetraLink}}を参照',
+      text_tetraName: 'Tetra',
     },
   },
   en: {
@@ -111,6 +128,23 @@ export const resources: i18n.Resource = {
         'Validators run Orbs network. They participate in the block creation and validation and maintain the state and block history. Validators are skilled professionals, capable of maintaining their node security, availability and connectivity and providing the required quality of service.',
       'Manual Delegation Description':
         'You can delegate your stake to anyone. They will need to delegate\ntheir own stake & your stake to a guardian. Only stake delegated to a\nvoting guardian will be rewarded.',
+
+      // *************************
+      // Well formatted messages
+      // *************************
+
+      // Rewards table
+      delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
+      delegatorStakedOrbs: 'Delegator’s stacked ORBS',
+
+      // Alerts
+      alert_stakingWithoutGuardian:
+        'Warning - this address has staked ORBS but no selected Guardian. No rewards will be accumulated',
+      alert_notParticipating: 'Notice : This address has ORBS but none of them are staked',
+      action_goToTetra: 'Go to {{tetraLink}}',
+      action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
+        'You can stake your ORBS and select a guardian with {{tetraLink}}',
+      text_tetraName: 'Tetra',
     },
   },
   ko: {
@@ -208,6 +242,23 @@ export const resources: i18n.Resource = {
       'Manually Delegate Your Stake': '직접 수동으로 위임하기',
       Cancel: '취소하기',
       'Display ORBS in metamask': '메타마스크에 있는 ORBS 표시',
+
+      // *************************
+      // Well formatted messages
+      // *************************
+
+      // Rewards table
+      delegatorNonStakedOrbs: '스테이킹하고 있지 않는 ORBS',
+      delegatorStakedOrbs: '스테이킹 참여 중인 ORBS',
+
+      // Alerts
+      alert_stakingWithoutGuardian:
+        '주의 - 이 주소는 스테이킹에 하고 있지만 가디언에게 위임하지 않았습니다. 이 경우, 리워드가 적립되지 않습니다',
+      alert_notParticipating: '알림: 이 주소는 ORBS를 보유하고 있지만 스테이킹하고 있지 않습니다',
+      action_goToTetra: '{{tetraLink}}로 이동',
+      action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
+        '{{tetraLink}}에서 ORBS스테이킹과 가디언위임 선택이 가능합니다',
+      text_tetraName: 'Tetra',
     },
   },
 };
