@@ -65,7 +65,7 @@ export class GuardiansService implements IGuardiansService {
     const addressesToUse = addresses ? addresses : MainnetContractsAddresses;
     this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], addressesToUse.votingContract);
     this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addressesToUse.erc20Contract);
-    this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addressesToUse.guardiansContract);
+    this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi as AbiItem[], addressesToUse.guardiansContract);
 
     this.earliestBlockForDelegation = !isNil(options.earliestBlockForDelegation)
       ? options.earliestBlockForDelegation
