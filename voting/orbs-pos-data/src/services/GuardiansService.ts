@@ -59,12 +59,13 @@ export class GuardiansService implements IGuardiansService {
   constructor(
     private web3: Web3,
     private orbsClientService: IOrbsClientService,
-    addresses: Partial<IOrbsPosContractsAddresses> = MainnetContractsAddresses,
+    addresses: Partial<IOrbsPosContractsAddresses> = null,
     options: Partial<IGuardianServiceOptions> = {},
   ) {
-    this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], addresses.votingContract);
-    this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addresses.erc20Contract);
-    this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addresses.guardiansContract);
+    const addressesToUse = addresses ? addresses : MainnetContractsAddresses;
+    this.votingContract = new this.web3.eth.Contract(votingContractJSON.abi as AbiItem[], addressesToUse.votingContract);
+    this.erc20Contract = new this.web3.eth.Contract(erc20ContactAbi as AbiItem[], addressesToUse.erc20Contract);
+    this.guardiansContract = new this.web3.eth.Contract(guardiansContractJSON.abi, addressesToUse.guardiansContract);
 
     this.earliestBlockForDelegation = !isNil(options.earliestBlockForDelegation)
       ? options.earliestBlockForDelegation
