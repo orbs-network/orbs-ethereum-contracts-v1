@@ -1,6 +1,6 @@
-# Orbs POS Data
+# Orbs PoS Data V1
 
-A library that provides a simple way to read data about the Orbs POS, like Guardians, rewards, etc.
+A library that provides a simple way to read data about the Orbs PoS V1, like Guardians, rewards, etc.
 
 ## Installation
 
