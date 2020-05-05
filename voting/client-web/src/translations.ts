@@ -135,7 +135,7 @@ export const resources: Resource = {
 
       // Rewards table
       delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
-      delegatorStakedOrbs: 'Delegator’s stacked ORBS',
+      delegatorStakedOrbs: 'Delegator’s staked ORBS',
 
       // Alerts
       alert_stakingWithoutGuardian:
