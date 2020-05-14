@@ -184,7 +184,7 @@ async function main() {
         if (verbose) {
             console.log('\x1b[35m%s\x1b[0m', `reading guardians events in this period`);
         }
-        let guardiansMap = await guardians.read(web3, guardiansContract, votingContract, tokenContract, currentElectionBlock, votingValidityPeriod);
+        let guardiansMap = await guardians.read(web3, guardiansContract, votingContract, tokenContract, stakingContract, currentElectionBlock, votingValidityPeriod);
         guardians.writeToFile(guardiansMap, filenamePrefix, currentElectionBlock);
 
         if (verbose) {
