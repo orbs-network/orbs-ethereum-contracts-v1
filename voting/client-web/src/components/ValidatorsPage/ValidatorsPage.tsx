@@ -12,24 +12,40 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useApi } from '../../services/ApiContext';
-import { ValidatorsList } from './ValidatorsList';
+import { IElectedValidatorDataWithAddress, ValidatorsList } from './ValidatorsList';
 import { IElectedValidatorData } from '../../services/IValidatorData';
 
 const styles = () => ({});
 
 const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
-  const [selectedValidatorsDataList, setSelectedValidatorsDataList] = useState<Array<IElectedValidatorData>>([]);
+  const [selectedValidatorsDataList, setSelectedValidatorsDataList] = useState<Array<IElectedValidatorDataWithAddress>>(
+    [],
+  );
   const { remoteService, metamask } = useApi();
+
+  const readAndAugmentElectedValidatorData = useCallback(
+    async (address: string) => {
+      const electedValidatorData = await remoteService.getElectedValidatorData(address);
+
+      const electedValidatorDataWithAddress: IElectedValidatorDataWithAddress = {
+        ...electedValidatorData,
+        ethereumAddress: address,
+      };
+
+      return electedValidatorDataWithAddress;
+    },
+    [remoteService],
+  );
 
   const readValidatorsData = useCallback(
     async (addresses: Array<string>) => {
-      const promises = addresses.map(address => remoteService.getElectedValidatorData(address));
+      const promises = addresses.map(address => readAndAugmentElectedValidatorData(address));
 
       const electedValidatorData = await Promise.all(promises);
 
       return electedValidatorData;
     },
-    [remoteService],
+    [readAndAugmentElectedValidatorData],
   );
 
   const fetchElectedValidators = useCallback(async () => {

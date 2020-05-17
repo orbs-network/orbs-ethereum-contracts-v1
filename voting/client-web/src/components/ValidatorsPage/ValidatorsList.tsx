@@ -17,6 +17,10 @@ import { withStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { IElectedValidatorData } from '../../services/IValidatorData';
 
+export interface IElectedValidatorDataWithAddress extends IElectedValidatorData {
+  ethereumAddress: string;
+}
+
 const styles = () => ({
   table: {
     tableLayout: 'fixed' as any,
@@ -32,7 +36,7 @@ const ValidatorsListImpl = ({
   shouldSort,
   classes,
 }: {
-  validators: Array<IElectedValidatorData>;
+  validators: Array<IElectedValidatorDataWithAddress>;
   shouldSort?: boolean;
   classes;
 }) => {
@@ -78,7 +82,7 @@ const ValidatorsListImpl = ({
               </TableCell>
               <TableCell className={classes.cell} data-testid={`validator-${keyId}-address`}>
                 <Tooltip title={keyId} placement='top-start' enterDelay={200}>
-                  <span>{keyId}</span>
+                  <span>{electedValidatorData.ethereumAddress}</span>
                 </Tooltip>
               </TableCell>
               <TableCell className={classes.cell} data-testid={`validator-${keyId}-orbs-address`}>
