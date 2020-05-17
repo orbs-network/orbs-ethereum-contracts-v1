@@ -16,6 +16,7 @@ import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { IElectedValidatorData } from '../../services/IValidatorData';
+import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
 
 export interface IElectedValidatorDataWithAddress extends IElectedValidatorData {
   ethereumAddress: string;
@@ -59,9 +60,13 @@ const ValidatorsListImpl = ({
           <TableCell style={{ width: '20%' }} className={classes.cell}>
             {t('Name')}
           </TableCell>
+
+          <TableCell style={{ width: '2%' }} className={classes.cell} />
           <TableCell style={{ width: '35%' }} className={classes.cell}>
             {t('Ethereum Address')}
           </TableCell>
+
+          <TableCell style={{ width: '2%' }} className={classes.cell} />
           <TableCell style={{ width: '35%' }} className={classes.cell}>
             {t('Orbs Address')}
           </TableCell>
@@ -80,10 +85,17 @@ const ValidatorsListImpl = ({
               <TableCell className={classes.cell} component='th' scope='row' data-testid={`validator-${keyId}-name`}>
                 {electedValidatorData.name}
               </TableCell>
+              <TableCell padding='none'>
+                <CopyAddressButton address={electedValidatorData.ethereumAddress} />
+              </TableCell>
               <TableCell className={classes.cell} data-testid={`validator-${keyId}-address`}>
                 <Tooltip title={keyId} placement='top-start' enterDelay={200}>
                   <span>{electedValidatorData.ethereumAddress}</span>
                 </Tooltip>
+              </TableCell>
+
+              <TableCell padding='none'>
+                <CopyAddressButton address={electedValidatorData.orbsAddress} />
               </TableCell>
               <TableCell className={classes.cell} data-testid={`validator-${keyId}-orbs-address`}>
                 <Tooltip title={electedValidatorData.orbsAddress} placement='top-start' enterDelay={200}>
