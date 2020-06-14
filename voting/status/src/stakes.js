@@ -21,10 +21,13 @@ function parseStake(web3, str) {
 }
 
 async function readOne(address, web3, tokenContract, stakingContract, stateBlock) {
-    let stakeV1 = await tokenContract.methods.balanceOf(address).call({}, stateBlock).then(balanceStr => parseStake(web3, balanceStr));
+    let stakeV1 = 0;
     let stakeV2 = 0;
     if (stateBlock > 9831680) { // this is contract creation block
         stakeV2 = await stakingContract.methods.getStakeBalanceOf(address).call({}, stateBlock).then(balanceStr => parseStake(web3, balanceStr));
+    }
+    if (stateBlock <= 10368900) { // this is cut-off for V1(no lock) staking
+        stakeV1 = await tokenContract.methods.balanceOf(address).call({}, stateBlock).then(balanceStr => parseStake(web3, balanceStr));
     }
     var stakeSum = stakeV1 + stakeV2;
     return stakeSum;
