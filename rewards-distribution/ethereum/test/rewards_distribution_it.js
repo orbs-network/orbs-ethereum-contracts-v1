@@ -15,11 +15,6 @@ const {expectRevert} = require('./assertExtensions');
 const {RewardsClient} = require('../client/RewardsClient');
 
 const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
-const OrbsRewardsDistributionForStaking = artifacts.require('./OrbsRewardsDistributionForStaking');
-
-const StakingContract = artifacts.require('./StakingContract');
-
-const ERC20 = artifacts.require('./TestingERC20');
 
 const Driver = require('./driver');
 

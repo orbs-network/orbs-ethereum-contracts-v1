@@ -14,12 +14,7 @@ const expect = chai.expect;
 const {expectRevert} = require('./assertExtensions');
 const {RewardsClient} = require('../client/RewardsClient');
 
-const OrbsRewardsDistribution = artifacts.require('./OrbsRewardsDistribution');
 const OrbsRewardsDistributionForStaking = artifacts.require('./OrbsRewardsDistributionForStaking');
-
-const StakingContract = artifacts.require('./StakingContract');
-
-const ERC20 = artifacts.require('./TestingERC20');
 
 const Driver = require('./driver');
 
@@ -119,11 +114,13 @@ contract('OrbsRewardsDistribution', accounts => {
         expect(await (rewards.isOwner({from: newOwner}))).to.be.true;
     });
 
-    it('fails to deploy contract with zero ERC20 instance', async () => {
+    it('fails to deploy contract with zero ERC20 or staking instances', async () => {
         const d = await Driver.newWithContractsForStaking(owner);
 
         const zeroAddress = web3.utils.padLeft("0x0", 40);
-        const error = await expectRevert(OrbsRewardsDistribution.new(zeroAddress, {from: owner}));
+        let error = await expectRevert(OrbsRewardsDistributionForStaking.new(d.staking.address, zeroAddress, {from: owner}));
+        expect(error).to.have.property("reason", "Address must not be 0!");
+        error = await expectRevert(OrbsRewardsDistributionForStaking.new(zeroAddress, d.erc20.address, {from: owner}));
         expect(error).to.have.property("reason", "Address must not be 0!");
     });
 
