@@ -15,7 +15,7 @@
     "csv-parse": "^4.4.3",
     "openzeppelin-solidity": "2.0.1",
     "truffle": "5.0.24",
-    "truffle-hdwallet-provider": "^1.0.3"
+    "truffle-hdwallet-provider": "^1.0.17"
   },
   "devDependencies": {
     "bn.js": "^4.11.8",

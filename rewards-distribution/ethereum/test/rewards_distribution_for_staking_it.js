@@ -32,7 +32,7 @@ contract('OrbsRewardsDistribution', accounts => {
     describe('integration test - full flow', () => {
         it('integration test - distributes rewards specified in rewards report', async () => {
             console.log("init driver and deploying contracts...");
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
             let totalGasUsed = 0;
 
             const rewardsClient = new RewardsClient(d.getRewardsContract());
@@ -75,7 +75,7 @@ contract('OrbsRewardsDistribution', accounts => {
             console.log("checking balances...");
             expect(await d.balanceOfContract()).to.be.bignumber.equal(new BN(0));
             rewardsSuperset.map(async (reward) => {
-                expect(await d.balanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
+                expect(await d.getStakeBalanceOf(reward.address)).to.be.bignumber.equal(new BN(reward.amount));
             });
 
             // check events
@@ -96,7 +96,7 @@ contract('OrbsRewardsDistribution', accounts => {
     });
 
     it('deploys contract successfully with ERC20 instance', async () => {
-        const d = await Driver.newWithContracts(owner);
+        const d = await Driver.newWithContractsForStaking(owner);
 
         const rewards = d.getRewardsContract();
         expect(rewards).to.exist;
@@ -104,7 +104,7 @@ contract('OrbsRewardsDistribution', accounts => {
     });
 
     it('is Ownable', async () => {
-        const d = await Driver.newWithContracts(owner);
+        const d = await Driver.newWithContractsForStaking(owner);
 
         const rewards = d.getRewardsContract();
         expect(rewards).to.exist;
@@ -120,7 +120,7 @@ contract('OrbsRewardsDistribution', accounts => {
     });
 
     it('fails to deploy contract with zero ERC20 instance', async () => {
-        const d = await Driver.newWithContracts(owner);
+        const d = await Driver.newWithContractsForStaking(owner);
 
         const zeroAddress = web3.utils.padLeft("0x0", 40);
         const error = await expectRevert(OrbsRewardsDistribution.new(zeroAddress, {from: owner}));
@@ -128,7 +128,7 @@ contract('OrbsRewardsDistribution', accounts => {
     });
 
     it('is not payable', async () => {
-        const d = await Driver.newWithContracts(owner);
+        const d = await Driver.newWithContractsForStaking(owner);
         const rewards = d.getRewardsContract();
 
         await expectRevert(web3.eth.sendTransaction({
@@ -141,7 +141,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe('announceDistributionEvent', () => {
         it('succeeds for new distributions but fails for ongoing distributions', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.announceDistributionEvent(distributionEvent);
             await expectRevert(d.announceDistributionEvent(distributionEvent)); // second announcment fails
@@ -153,7 +153,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it('succeeds only for owner', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await expectRevert(d.announceDistributionEvent(distributionEvent, undefined, {from: nonOwner})); // send by non owner
 
@@ -161,7 +161,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it('emits RewardsDistributionAnnounced event', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             const result = await d.announceDistributionEvent(distributionEvent);
 
@@ -176,7 +176,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it('records batches under the provided distribution name', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.announceDistributionEvent(distributionEvent);
 
@@ -185,14 +185,14 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it('fails when no batch hash is declared', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             const error = await expectRevert(d.announceDistributionEvent(distributionEvent, []));
             expect(error).to.have.property("reason", "at least one batch must be announced");
         });
 
         it('fails for zero batch hash', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             const zeroHash = web3.utils.leftPad("0x0", 64);
             const error = await expectRevert(d.announceDistributionEvent(distributionEvent, [zeroHash]));
@@ -202,7 +202,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe('abortDistributionEvent', () => {
         it('emits RewardsDistributionAborted event', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.announceDistributionEvent(distributionEvent);
             const result = await d.abortDistributionEvent(distributionEvent);
@@ -218,7 +218,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it('deletes all pending batches', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.announceDistributionEvent(distributionEvent);
 
@@ -232,7 +232,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it('fails if distribution event is not currently ongoing', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             const error = await expectRevert(d.abortDistributionEvent(distributionEvent));
             expect(error).to.have.property('reason', "distribution event is not currently ongoing")
@@ -241,7 +241,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe("executeCommittedBatch", () => {
         it("distributes orbs and logs RewardDistributed events for each recipient", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
@@ -251,7 +251,7 @@ contract('OrbsRewardsDistribution', accounts => {
             // check balances
             expect(await d.balanceOfContract()).to.be.bignumber.equal(new BN(0));
             d.batches[0].map(async (aReward) => {
-                expect(await d.balanceOf(aReward.address)).to.be.bignumber.equal(new BN(aReward.amount));
+                expect(await d.getStakeBalanceOf(aReward.address)).to.be.bignumber.equal(new BN(aReward.amount));
             });
 
             // check events
@@ -264,7 +264,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("emits RewardsDistributionCompleted event", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getTotalAmount());
 
@@ -281,7 +281,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("emits RewardsBatchExecuted events", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getTotalAmount());
 
@@ -297,7 +297,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("emits RewardDistributed events", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getTotalAmount());
 
@@ -317,7 +317,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("supports processing batches out of order", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getTotalAmount());
 
@@ -327,7 +327,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("fails if distributionEvent or was not announced, but succeeds otherwise", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
@@ -338,7 +338,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("fails if batch or was not announced at exact position", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
@@ -352,7 +352,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("fails if batch array lengths dont match", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
@@ -364,7 +364,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("fails for an empty batch", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             // TODO - instead of violating encapsulation use builder pattern to replace batch
 
@@ -381,7 +381,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("fails for zero-address recipient", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             // TODO - instead of violating encapsulation use builder pattern to replace batch
             const firstBatch = d.batches[0];
@@ -399,7 +399,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("succeeds for zero amount", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             // TODO - instead of violating encapsulation use builder pattern to replace batch
             const firstBatch = d.batches[0];
@@ -416,7 +416,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("distributes each batch only once", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getTotalAmount() * 2); // provide enough for two payments
 
@@ -428,7 +428,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("removes the batch hash from pending batches", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getTotalAmount() * 2);
 
@@ -448,7 +448,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe("distributeRewards", () => {
         it('succeeds only for assigned rewards-distributor', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
@@ -459,7 +459,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("distributes orbs and logs RewardDistributed events for each recipient", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
             await d.setRewardsDistributor(rewardsDistributor);
@@ -469,7 +469,7 @@ contract('OrbsRewardsDistribution', accounts => {
             // check balances
             expect(await d.balanceOfContract()).to.be.bignumber.equal(new BN(0));
             d.batches[0].map(async (aReward) => {
-                expect(await d.balanceOf(aReward.address)).to.be.bignumber.equal(new BN(aReward.amount));
+                expect(await d.getStakeBalanceOf(aReward.address)).to.be.bignumber.equal(new BN(aReward.amount));
             });
 
             // check events
@@ -482,7 +482,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("emits RewardDistributed events", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getTotalAmount());
             await d.setRewardsDistributor(rewardsDistributor);
@@ -501,7 +501,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("fails if batch array lengths dont match", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
             await d.setRewardsDistributor(rewardsDistributor);
@@ -512,7 +512,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("fails for zero recipient", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             // TODO - instead of violating encapsulation use builder pattern to replace batch
             const firstBatch = d.batches[0];
@@ -529,7 +529,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("succeeds for zero amount", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             // TODO - instead of violating encapsulation use builder pattern to replace batch
             const firstBatch = d.batches[0];
@@ -547,7 +547,7 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe("drainOrbs", () => {
         it('succeeds only for owner', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await d.assignTokenToContract(d.getBatchAmount(0));
 
@@ -556,7 +556,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it('transfers orbs to owner', async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             const amount = 1000000000;
             await d.assignTokenToContract(amount);
@@ -570,12 +570,12 @@ contract('OrbsRewardsDistribution', accounts => {
 
     describe("defines rewards distributor role", () => {
         it("rewards distributor initializes to 0 address", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
             expect(await d.rewards.rewardsDistributor()).to.be.equal("0x0000000000000000000000000000000000000000");
         });
 
         it("only owner can assign a rewards distributor", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             await expectRevert(d.rewards.reassignRewardsDistributor(accounts[6], {from: nonOwner}));
             await d.rewards.reassignRewardsDistributor(accounts[6], {from: owner});
@@ -592,7 +592,7 @@ contract('OrbsRewardsDistribution', accounts => {
         });
 
         it("emits event", async () => {
-            const d = await Driver.newWithContracts(owner);
+            const d = await Driver.newWithContractsForStaking(owner);
 
             const currentDistributor = accounts[5];
             await d.rewards.reassignRewardsDistributor(currentDistributor, {from: owner})

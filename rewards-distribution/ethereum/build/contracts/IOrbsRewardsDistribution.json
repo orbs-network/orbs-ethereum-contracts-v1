@@ -261,21 +261,21 @@
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/ethereum/contracts/IOrbsRewardsDistribution.sol",
     "exportedSymbols": {
       "IOrbsRewardsDistribution": [
-        105
+        1605
       ]
     },
-    "id": 106,
+    "id": 1606,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1,
+        "id": 1501,
         "literals": [
           "solidity",
           "0.4",
           ".26"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:0"
+        "src": "0:23:6"
       },
       {
         "baseContracts": [],
@@ -283,9 +283,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 105,
+        "id": 1605,
         "linearizedBaseContracts": [
-          105
+          1605
         ],
         "name": "IOrbsRewardsDistribution",
         "nodeType": "ContractDefinition",
@@ -293,21 +293,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 9,
+            "id": 1509,
             "name": "RewardDistributed",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8,
+              "id": 1508,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3,
+                  "id": 1503,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9,
-                  "src": "91:24:0",
+                  "scope": 1509,
+                  "src": "91:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -315,10 +315,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 2,
+                    "id": 1502,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "91:6:0",
+                    "src": "91:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -329,12 +329,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5,
+                  "id": 1505,
                   "indexed": true,
                   "name": "recipient",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9,
-                  "src": "117:25:0",
+                  "scope": 1509,
+                  "src": "117:25:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -342,10 +342,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4,
+                    "id": 1504,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "117:7:0",
+                    "src": "117:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -356,12 +356,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 7,
+                  "id": 1507,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9,
-                  "src": "144:14:0",
+                  "scope": 1509,
+                  "src": "144:14:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -369,10 +369,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6,
+                    "id": 1506,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "144:7:0",
+                    "src": "144:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -382,28 +382,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "90:69:0"
+              "src": "90:69:6"
             },
-            "src": "67:93:0"
+            "src": "67:93:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 18,
+            "id": 1518,
             "name": "RewardsDistributionAnnounced",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 17,
+              "id": 1517,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11,
+                  "id": 1511,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 18,
-                  "src": "201:24:0",
+                  "scope": 1518,
+                  "src": "201:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -411,10 +411,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 10,
+                    "id": 1510,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "201:6:0",
+                    "src": "201:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -425,12 +425,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 14,
+                  "id": 1514,
                   "indexed": false,
                   "name": "batchHash",
                   "nodeType": "VariableDeclaration",
-                  "scope": 18,
-                  "src": "227:19:0",
+                  "scope": 1518,
+                  "src": "227:19:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -439,19 +439,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 12,
+                      "id": 1512,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "227:7:0",
+                      "src": "227:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 13,
+                    "id": 1513,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "227:9:0",
+                    "src": "227:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -462,12 +462,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 16,
+                  "id": 1516,
                   "indexed": false,
                   "name": "batchCount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 18,
-                  "src": "248:18:0",
+                  "scope": 1518,
+                  "src": "248:18:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -475,10 +475,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 15,
+                    "id": 1515,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "248:7:0",
+                    "src": "248:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -488,28 +488,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "200:67:0"
+              "src": "200:67:6"
             },
-            "src": "166:102:0"
+            "src": "166:102:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 26,
+            "id": 1526,
             "name": "RewardsBatchExecuted",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 25,
+              "id": 1525,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 20,
+                  "id": 1520,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 26,
-                  "src": "300:24:0",
+                  "scope": 1526,
+                  "src": "300:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -517,10 +517,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 19,
+                    "id": 1519,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "300:6:0",
+                    "src": "300:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -531,12 +531,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 22,
+                  "id": 1522,
                   "indexed": false,
                   "name": "batchHash",
                   "nodeType": "VariableDeclaration",
-                  "scope": 26,
-                  "src": "326:17:0",
+                  "scope": 1526,
+                  "src": "326:17:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -544,10 +544,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 21,
+                    "id": 1521,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "326:7:0",
+                    "src": "326:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -558,12 +558,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 24,
+                  "id": 1524,
                   "indexed": false,
                   "name": "batchIndex",
                   "nodeType": "VariableDeclaration",
-                  "scope": 26,
-                  "src": "345:18:0",
+                  "scope": 1526,
+                  "src": "345:18:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -571,10 +571,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 23,
+                    "id": 1523,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "345:7:0",
+                    "src": "345:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -584,28 +584,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "299:65:0"
+              "src": "299:65:6"
             },
-            "src": "273:92:0"
+            "src": "273:92:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 36,
+            "id": 1536,
             "name": "RewardsDistributionAborted",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 35,
+              "id": 1535,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 28,
+                  "id": 1528,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 36,
-                  "src": "403:24:0",
+                  "scope": 1536,
+                  "src": "403:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -613,10 +613,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 27,
+                    "id": 1527,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "403:6:0",
+                    "src": "403:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -627,12 +627,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 31,
+                  "id": 1531,
                   "indexed": false,
                   "name": "abortedBatchHashes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 36,
-                  "src": "429:28:0",
+                  "scope": 1536,
+                  "src": "429:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -641,19 +641,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 29,
+                      "id": 1529,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "429:7:0",
+                      "src": "429:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 30,
+                    "id": 1530,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "429:9:0",
+                    "src": "429:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -664,12 +664,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 34,
+                  "id": 1534,
                   "indexed": false,
                   "name": "abortedBatchIndices",
                   "nodeType": "VariableDeclaration",
-                  "scope": 36,
-                  "src": "459:29:0",
+                  "scope": 1536,
+                  "src": "459:29:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -678,19 +678,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 32,
+                      "id": 1532,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "459:7:0",
+                      "src": "459:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 33,
+                    "id": 1533,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "459:9:0",
+                    "src": "459:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -700,28 +700,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "402:87:0"
+              "src": "402:87:6"
             },
-            "src": "370:120:0"
+            "src": "370:120:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 40,
+            "id": 1540,
             "name": "RewardsDistributionCompleted",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 39,
+              "id": 1539,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 38,
+                  "id": 1538,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 40,
-                  "src": "530:24:0",
+                  "scope": 1540,
+                  "src": "530:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -729,10 +729,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 37,
+                    "id": 1537,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "530:6:0",
+                    "src": "530:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -742,28 +742,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "529:26:0"
+              "src": "529:26:6"
             },
-            "src": "495:61:0"
+            "src": "495:61:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 46,
+            "id": 1546,
             "name": "RewardsDistributorReassigned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 45,
+              "id": 1545,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 42,
+                  "id": 1542,
                   "indexed": true,
                   "name": "previousRewardsDistributor",
                   "nodeType": "VariableDeclaration",
-                  "scope": 46,
-                  "src": "597:42:0",
+                  "scope": 1546,
+                  "src": "597:42:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -771,10 +771,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 41,
+                    "id": 1541,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "597:7:0",
+                    "src": "597:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -785,12 +785,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 44,
+                  "id": 1544,
                   "indexed": true,
                   "name": "newRewardsDistributor",
                   "nodeType": "VariableDeclaration",
-                  "scope": 46,
-                  "src": "641:37:0",
+                  "scope": 1546,
+                  "src": "641:37:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -798,10 +798,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 43,
+                    "id": 1543,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "641:7:0",
+                    "src": "641:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -811,14 +811,14 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "596:83:0"
+              "src": "596:83:6"
             },
-            "src": "562:118:0"
+            "src": "562:118:6"
           },
           {
             "body": null,
             "documentation": null,
-            "id": 54,
+            "id": 1554,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -826,16 +826,16 @@
             "name": "announceDistributionEvent",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 52,
+              "id": 1552,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48,
+                  "id": 1548,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54,
-                  "src": "721:24:0",
+                  "scope": 1554,
+                  "src": "721:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -843,10 +843,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 47,
+                    "id": 1547,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "721:6:0",
+                    "src": "721:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -857,11 +857,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 51,
+                  "id": 1551,
                   "name": "batchHashes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54,
-                  "src": "747:21:0",
+                  "scope": 1554,
+                  "src": "747:21:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -870,19 +870,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 49,
+                      "id": 1549,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "747:7:0",
+                      "src": "747:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 50,
+                    "id": 1550,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "747:9:0",
+                    "src": "747:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -892,17 +892,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "720:49:0"
+              "src": "720:49:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 53,
+              "id": 1553,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "778:0:0"
+              "src": "778:0:6"
             },
-            "scope": 105,
-            "src": "686:93:0",
+            "scope": 1605,
+            "src": "686:93:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -910,7 +910,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 59,
+            "id": 1559,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -918,16 +918,16 @@
             "name": "abortDistributionEvent",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 57,
+              "id": 1557,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 56,
+                  "id": 1556,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 59,
-                  "src": "816:24:0",
+                  "scope": 1559,
+                  "src": "816:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -935,10 +935,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 55,
+                    "id": 1555,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "816:6:0",
+                    "src": "816:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -948,17 +948,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "815:26:0"
+              "src": "815:26:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 58,
+              "id": 1558,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "850:0:0"
+              "src": "850:0:6"
             },
-            "scope": 105,
-            "src": "784:67:0",
+            "scope": 1605,
+            "src": "784:67:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -966,7 +966,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 72,
+            "id": 1572,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -974,16 +974,16 @@
             "name": "executeCommittedBatch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 70,
+              "id": 1570,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61,
+                  "id": 1561,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "888:24:0",
+                  "scope": 1572,
+                  "src": "888:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -991,10 +991,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 60,
+                    "id": 1560,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "888:6:0",
+                    "src": "888:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1005,11 +1005,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 64,
+                  "id": 1564,
                   "name": "recipients",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "914:20:0",
+                  "scope": 1572,
+                  "src": "914:20:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1018,19 +1018,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 62,
+                      "id": 1562,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "914:7:0",
+                      "src": "914:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 63,
+                    "id": 1563,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "914:9:0",
+                    "src": "914:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -1041,11 +1041,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 67,
+                  "id": 1567,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "936:17:0",
+                  "scope": 1572,
+                  "src": "936:17:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1054,19 +1054,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 65,
+                      "id": 1565,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "936:7:0",
+                      "src": "936:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 66,
+                    "id": 1566,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "936:9:0",
+                    "src": "936:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -1077,11 +1077,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 69,
+                  "id": 1569,
                   "name": "batchIndex",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "955:18:0",
+                  "scope": 1572,
+                  "src": "955:18:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1089,10 +1089,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 68,
+                    "id": 1568,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "955:7:0",
+                    "src": "955:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1102,17 +1102,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "887:87:0"
+              "src": "887:87:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 71,
+              "id": 1571,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "983:0:0"
+              "src": "983:0:6"
             },
-            "scope": 105,
-            "src": "857:127:0",
+            "scope": 1605,
+            "src": "857:127:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1120,7 +1120,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 83,
+            "id": 1583,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1128,16 +1128,16 @@
             "name": "distributeRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 81,
+              "id": 1581,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 74,
+                  "id": 1574,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 83,
-                  "src": "1017:24:0",
+                  "scope": 1583,
+                  "src": "1017:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1145,10 +1145,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 73,
+                    "id": 1573,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1017:6:0",
+                    "src": "1017:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1159,11 +1159,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 77,
+                  "id": 1577,
                   "name": "recipients",
                   "nodeType": "VariableDeclaration",
-                  "scope": 83,
-                  "src": "1043:20:0",
+                  "scope": 1583,
+                  "src": "1043:20:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1172,19 +1172,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 75,
+                      "id": 1575,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1043:7:0",
+                      "src": "1043:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 76,
+                    "id": 1576,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1043:9:0",
+                    "src": "1043:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -1195,11 +1195,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 80,
+                  "id": 1580,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 83,
-                  "src": "1065:17:0",
+                  "scope": 1583,
+                  "src": "1065:17:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1208,19 +1208,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 78,
+                      "id": 1578,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1065:7:0",
+                      "src": "1065:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 79,
+                    "id": 1579,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1065:9:0",
+                    "src": "1065:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -1230,17 +1230,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1016:67:0"
+              "src": "1016:67:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 82,
+              "id": 1582,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1092:0:0"
+              "src": "1092:0:6"
             },
-            "scope": 105,
-            "src": "990:103:0",
+            "scope": 1605,
+            "src": "990:103:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1248,7 +1248,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 94,
+            "id": 1594,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1256,16 +1256,16 @@
             "name": "getPendingBatches",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 86,
+              "id": 1586,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 85,
+                  "id": 1585,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 94,
-                  "src": "1126:24:0",
+                  "scope": 1594,
+                  "src": "1126:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1273,10 +1273,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 84,
+                    "id": 1584,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1126:6:0",
+                    "src": "1126:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1286,20 +1286,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1125:26:0"
+              "src": "1125:26:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 93,
+              "id": 1593,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 89,
+                  "id": 1589,
                   "name": "pendingBatchHashes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 94,
-                  "src": "1175:28:0",
+                  "scope": 1594,
+                  "src": "1175:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1308,19 +1308,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 87,
+                      "id": 1587,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1175:7:0",
+                      "src": "1175:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 88,
+                    "id": 1588,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1175:9:0",
+                    "src": "1175:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -1331,11 +1331,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 92,
+                  "id": 1592,
                   "name": "pendingBatchIndices",
                   "nodeType": "VariableDeclaration",
-                  "scope": 94,
-                  "src": "1205:29:0",
+                  "scope": 1594,
+                  "src": "1205:29:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1344,19 +1344,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 90,
+                      "id": 1590,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1205:7:0",
+                      "src": "1205:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 91,
+                    "id": 1591,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1205:9:0",
+                    "src": "1205:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -1366,10 +1366,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1174:61:0"
+              "src": "1174:61:6"
             },
-            "scope": 105,
-            "src": "1099:137:0",
+            "scope": 1605,
+            "src": "1099:137:6",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -1377,7 +1377,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 99,
+            "id": 1599,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1385,16 +1385,16 @@
             "name": "reassignRewardsDistributor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 97,
+              "id": 1597,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 96,
+                  "id": 1596,
                   "name": "_newRewardsDistributor",
                   "nodeType": "VariableDeclaration",
-                  "scope": 99,
-                  "src": "1277:30:0",
+                  "scope": 1599,
+                  "src": "1277:30:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1402,10 +1402,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 95,
+                    "id": 1595,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1277:7:0",
+                    "src": "1277:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -1415,17 +1415,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1276:32:0"
+              "src": "1276:32:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 98,
+              "id": 1598,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1317:0:0"
+              "src": "1317:0:6"
             },
-            "scope": 105,
-            "src": "1241:77:0",
+            "scope": 1605,
+            "src": "1241:77:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -1433,7 +1433,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 104,
+            "id": 1604,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -1441,23 +1441,23 @@
             "name": "isRewardsDistributor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 100,
+              "id": 1600,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1352:2:0"
+              "src": "1352:2:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 103,
+              "id": 1603,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 102,
+                  "id": 1602,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 104,
-                  "src": "1373:4:0",
+                  "scope": 1604,
+                  "src": "1373:4:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1465,10 +1465,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 101,
+                    "id": 1601,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1373:4:0",
+                    "src": "1373:4:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1478,40 +1478,40 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1372:6:0"
+              "src": "1372:6:6"
             },
-            "scope": 105,
-            "src": "1323:56:0",
+            "scope": 1605,
+            "src": "1323:56:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 106,
-        "src": "26:1355:0"
+        "scope": 1606,
+        "src": "26:1355:6"
       }
     ],
-    "src": "0:1381:0"
+    "src": "0:1381:6"
   },
   "legacyAST": {
     "absolutePath": "/Users/ron/work/src/github.com/orbs-network/orbs-ethereum-contracts/rewards-distribution/ethereum/contracts/IOrbsRewardsDistribution.sol",
     "exportedSymbols": {
       "IOrbsRewardsDistribution": [
-        105
+        1605
       ]
     },
-    "id": 106,
+    "id": 1606,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1,
+        "id": 1501,
         "literals": [
           "solidity",
           "0.4",
           ".26"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:0"
+        "src": "0:23:6"
       },
       {
         "baseContracts": [],
@@ -1519,9 +1519,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 105,
+        "id": 1605,
         "linearizedBaseContracts": [
-          105
+          1605
         ],
         "name": "IOrbsRewardsDistribution",
         "nodeType": "ContractDefinition",
@@ -1529,21 +1529,21 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 9,
+            "id": 1509,
             "name": "RewardDistributed",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 8,
+              "id": 1508,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3,
+                  "id": 1503,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9,
-                  "src": "91:24:0",
+                  "scope": 1509,
+                  "src": "91:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1551,10 +1551,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 2,
+                    "id": 1502,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "91:6:0",
+                    "src": "91:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1565,12 +1565,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 5,
+                  "id": 1505,
                   "indexed": true,
                   "name": "recipient",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9,
-                  "src": "117:25:0",
+                  "scope": 1509,
+                  "src": "117:25:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1578,10 +1578,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4,
+                    "id": 1504,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "117:7:0",
+                    "src": "117:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -1592,12 +1592,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 7,
+                  "id": 1507,
                   "indexed": false,
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9,
-                  "src": "144:14:0",
+                  "scope": 1509,
+                  "src": "144:14:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1605,10 +1605,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 6,
+                    "id": 1506,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "144:7:0",
+                    "src": "144:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1618,28 +1618,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "90:69:0"
+              "src": "90:69:6"
             },
-            "src": "67:93:0"
+            "src": "67:93:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 18,
+            "id": 1518,
             "name": "RewardsDistributionAnnounced",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 17,
+              "id": 1517,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11,
+                  "id": 1511,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 18,
-                  "src": "201:24:0",
+                  "scope": 1518,
+                  "src": "201:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1647,10 +1647,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 10,
+                    "id": 1510,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "201:6:0",
+                    "src": "201:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1661,12 +1661,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 14,
+                  "id": 1514,
                   "indexed": false,
                   "name": "batchHash",
                   "nodeType": "VariableDeclaration",
-                  "scope": 18,
-                  "src": "227:19:0",
+                  "scope": 1518,
+                  "src": "227:19:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1675,19 +1675,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 12,
+                      "id": 1512,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "227:7:0",
+                      "src": "227:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 13,
+                    "id": 1513,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "227:9:0",
+                    "src": "227:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -1698,12 +1698,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 16,
+                  "id": 1516,
                   "indexed": false,
                   "name": "batchCount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 18,
-                  "src": "248:18:0",
+                  "scope": 1518,
+                  "src": "248:18:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1711,10 +1711,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 15,
+                    "id": 1515,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "248:7:0",
+                    "src": "248:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1724,28 +1724,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "200:67:0"
+              "src": "200:67:6"
             },
-            "src": "166:102:0"
+            "src": "166:102:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 26,
+            "id": 1526,
             "name": "RewardsBatchExecuted",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 25,
+              "id": 1525,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 20,
+                  "id": 1520,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 26,
-                  "src": "300:24:0",
+                  "scope": 1526,
+                  "src": "300:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1753,10 +1753,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 19,
+                    "id": 1519,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "300:6:0",
+                    "src": "300:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1767,12 +1767,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 22,
+                  "id": 1522,
                   "indexed": false,
                   "name": "batchHash",
                   "nodeType": "VariableDeclaration",
-                  "scope": 26,
-                  "src": "326:17:0",
+                  "scope": 1526,
+                  "src": "326:17:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1780,10 +1780,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 21,
+                    "id": 1521,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "326:7:0",
+                    "src": "326:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1794,12 +1794,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 24,
+                  "id": 1524,
                   "indexed": false,
                   "name": "batchIndex",
                   "nodeType": "VariableDeclaration",
-                  "scope": 26,
-                  "src": "345:18:0",
+                  "scope": 1526,
+                  "src": "345:18:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1807,10 +1807,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 23,
+                    "id": 1523,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "345:7:0",
+                    "src": "345:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1820,28 +1820,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "299:65:0"
+              "src": "299:65:6"
             },
-            "src": "273:92:0"
+            "src": "273:92:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 36,
+            "id": 1536,
             "name": "RewardsDistributionAborted",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 35,
+              "id": 1535,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 28,
+                  "id": 1528,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 36,
-                  "src": "403:24:0",
+                  "scope": 1536,
+                  "src": "403:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1849,10 +1849,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 27,
+                    "id": 1527,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "403:6:0",
+                    "src": "403:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1863,12 +1863,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 31,
+                  "id": 1531,
                   "indexed": false,
                   "name": "abortedBatchHashes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 36,
-                  "src": "429:28:0",
+                  "scope": 1536,
+                  "src": "429:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1877,19 +1877,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 29,
+                      "id": 1529,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "429:7:0",
+                      "src": "429:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 30,
+                    "id": 1530,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "429:9:0",
+                    "src": "429:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -1900,12 +1900,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 34,
+                  "id": 1534,
                   "indexed": false,
                   "name": "abortedBatchIndices",
                   "nodeType": "VariableDeclaration",
-                  "scope": 36,
-                  "src": "459:29:0",
+                  "scope": 1536,
+                  "src": "459:29:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1914,19 +1914,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 32,
+                      "id": 1532,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "459:7:0",
+                      "src": "459:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 33,
+                    "id": 1533,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "459:9:0",
+                    "src": "459:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -1936,28 +1936,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "402:87:0"
+              "src": "402:87:6"
             },
-            "src": "370:120:0"
+            "src": "370:120:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 40,
+            "id": 1540,
             "name": "RewardsDistributionCompleted",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 39,
+              "id": 1539,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 38,
+                  "id": 1538,
                   "indexed": false,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 40,
-                  "src": "530:24:0",
+                  "scope": 1540,
+                  "src": "530:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1965,10 +1965,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 37,
+                    "id": 1537,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "530:6:0",
+                    "src": "530:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -1978,28 +1978,28 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "529:26:0"
+              "src": "529:26:6"
             },
-            "src": "495:61:0"
+            "src": "495:61:6"
           },
           {
             "anonymous": false,
             "documentation": null,
-            "id": 46,
+            "id": 1546,
             "name": "RewardsDistributorReassigned",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 45,
+              "id": 1545,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 42,
+                  "id": 1542,
                   "indexed": true,
                   "name": "previousRewardsDistributor",
                   "nodeType": "VariableDeclaration",
-                  "scope": 46,
-                  "src": "597:42:0",
+                  "scope": 1546,
+                  "src": "597:42:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2007,10 +2007,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 41,
+                    "id": 1541,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "597:7:0",
+                    "src": "597:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -2021,12 +2021,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 44,
+                  "id": 1544,
                   "indexed": true,
                   "name": "newRewardsDistributor",
                   "nodeType": "VariableDeclaration",
-                  "scope": 46,
-                  "src": "641:37:0",
+                  "scope": 1546,
+                  "src": "641:37:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2034,10 +2034,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 43,
+                    "id": 1543,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "641:7:0",
+                    "src": "641:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -2047,14 +2047,14 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "596:83:0"
+              "src": "596:83:6"
             },
-            "src": "562:118:0"
+            "src": "562:118:6"
           },
           {
             "body": null,
             "documentation": null,
-            "id": 54,
+            "id": 1554,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2062,16 +2062,16 @@
             "name": "announceDistributionEvent",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 52,
+              "id": 1552,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48,
+                  "id": 1548,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54,
-                  "src": "721:24:0",
+                  "scope": 1554,
+                  "src": "721:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2079,10 +2079,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 47,
+                    "id": 1547,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "721:6:0",
+                    "src": "721:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -2093,11 +2093,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 51,
+                  "id": 1551,
                   "name": "batchHashes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54,
-                  "src": "747:21:0",
+                  "scope": 1554,
+                  "src": "747:21:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2106,19 +2106,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 49,
+                      "id": 1549,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "747:7:0",
+                      "src": "747:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 50,
+                    "id": 1550,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "747:9:0",
+                    "src": "747:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -2128,17 +2128,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "720:49:0"
+              "src": "720:49:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 53,
+              "id": 1553,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "778:0:0"
+              "src": "778:0:6"
             },
-            "scope": 105,
-            "src": "686:93:0",
+            "scope": 1605,
+            "src": "686:93:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2146,7 +2146,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 59,
+            "id": 1559,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2154,16 +2154,16 @@
             "name": "abortDistributionEvent",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 57,
+              "id": 1557,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 56,
+                  "id": 1556,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 59,
-                  "src": "816:24:0",
+                  "scope": 1559,
+                  "src": "816:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2171,10 +2171,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 55,
+                    "id": 1555,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "816:6:0",
+                    "src": "816:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -2184,17 +2184,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "815:26:0"
+              "src": "815:26:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 58,
+              "id": 1558,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "850:0:0"
+              "src": "850:0:6"
             },
-            "scope": 105,
-            "src": "784:67:0",
+            "scope": 1605,
+            "src": "784:67:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2202,7 +2202,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 72,
+            "id": 1572,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2210,16 +2210,16 @@
             "name": "executeCommittedBatch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 70,
+              "id": 1570,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 61,
+                  "id": 1561,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "888:24:0",
+                  "scope": 1572,
+                  "src": "888:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2227,10 +2227,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 60,
+                    "id": 1560,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "888:6:0",
+                    "src": "888:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -2241,11 +2241,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 64,
+                  "id": 1564,
                   "name": "recipients",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "914:20:0",
+                  "scope": 1572,
+                  "src": "914:20:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2254,19 +2254,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 62,
+                      "id": 1562,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "914:7:0",
+                      "src": "914:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 63,
+                    "id": 1563,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "914:9:0",
+                    "src": "914:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -2277,11 +2277,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 67,
+                  "id": 1567,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "936:17:0",
+                  "scope": 1572,
+                  "src": "936:17:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2290,19 +2290,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 65,
+                      "id": 1565,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "936:7:0",
+                      "src": "936:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 66,
+                    "id": 1566,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "936:9:0",
+                    "src": "936:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -2313,11 +2313,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 69,
+                  "id": 1569,
                   "name": "batchIndex",
                   "nodeType": "VariableDeclaration",
-                  "scope": 72,
-                  "src": "955:18:0",
+                  "scope": 1572,
+                  "src": "955:18:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2325,10 +2325,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 68,
+                    "id": 1568,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "955:7:0",
+                    "src": "955:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -2338,17 +2338,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "887:87:0"
+              "src": "887:87:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 71,
+              "id": 1571,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "983:0:0"
+              "src": "983:0:6"
             },
-            "scope": 105,
-            "src": "857:127:0",
+            "scope": 1605,
+            "src": "857:127:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2356,7 +2356,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 83,
+            "id": 1583,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2364,16 +2364,16 @@
             "name": "distributeRewards",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 81,
+              "id": 1581,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 74,
+                  "id": 1574,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 83,
-                  "src": "1017:24:0",
+                  "scope": 1583,
+                  "src": "1017:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2381,10 +2381,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 73,
+                    "id": 1573,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1017:6:0",
+                    "src": "1017:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -2395,11 +2395,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 77,
+                  "id": 1577,
                   "name": "recipients",
                   "nodeType": "VariableDeclaration",
-                  "scope": 83,
-                  "src": "1043:20:0",
+                  "scope": 1583,
+                  "src": "1043:20:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2408,19 +2408,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 75,
+                      "id": 1575,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1043:7:0",
+                      "src": "1043:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "id": 76,
+                    "id": 1576,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1043:9:0",
+                    "src": "1043:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
                       "typeString": "address[]"
@@ -2431,11 +2431,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 80,
+                  "id": 1580,
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
-                  "scope": 83,
-                  "src": "1065:17:0",
+                  "scope": 1583,
+                  "src": "1065:17:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2444,19 +2444,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 78,
+                      "id": 1578,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1065:7:0",
+                      "src": "1065:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 79,
+                    "id": 1579,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1065:9:0",
+                    "src": "1065:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -2466,17 +2466,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1016:67:0"
+              "src": "1016:67:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 82,
+              "id": 1582,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1092:0:0"
+              "src": "1092:0:6"
             },
-            "scope": 105,
-            "src": "990:103:0",
+            "scope": 1605,
+            "src": "990:103:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2484,7 +2484,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 94,
+            "id": 1594,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -2492,16 +2492,16 @@
             "name": "getPendingBatches",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 86,
+              "id": 1586,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 85,
+                  "id": 1585,
                   "name": "distributionEvent",
                   "nodeType": "VariableDeclaration",
-                  "scope": 94,
-                  "src": "1126:24:0",
+                  "scope": 1594,
+                  "src": "1126:24:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2509,10 +2509,10 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 84,
+                    "id": 1584,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1126:6:0",
+                    "src": "1126:6:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -2522,20 +2522,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1125:26:0"
+              "src": "1125:26:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 93,
+              "id": 1593,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 89,
+                  "id": 1589,
                   "name": "pendingBatchHashes",
                   "nodeType": "VariableDeclaration",
-                  "scope": 94,
-                  "src": "1175:28:0",
+                  "scope": 1594,
+                  "src": "1175:28:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2544,19 +2544,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 87,
+                      "id": 1587,
                       "name": "bytes32",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1175:7:0",
+                      "src": "1175:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "id": 88,
+                    "id": 1588,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1175:9:0",
+                    "src": "1175:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
                       "typeString": "bytes32[]"
@@ -2567,11 +2567,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 92,
+                  "id": 1592,
                   "name": "pendingBatchIndices",
                   "nodeType": "VariableDeclaration",
-                  "scope": 94,
-                  "src": "1205:29:0",
+                  "scope": 1594,
+                  "src": "1205:29:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2580,19 +2580,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 90,
+                      "id": 1590,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "1205:7:0",
+                      "src": "1205:7:6",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 91,
+                    "id": 1591,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "1205:9:0",
+                    "src": "1205:9:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -2602,10 +2602,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1174:61:0"
+              "src": "1174:61:6"
             },
-            "scope": 105,
-            "src": "1099:137:0",
+            "scope": 1605,
+            "src": "1099:137:6",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -2613,7 +2613,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 99,
+            "id": 1599,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2621,16 +2621,16 @@
             "name": "reassignRewardsDistributor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 97,
+              "id": 1597,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 96,
+                  "id": 1596,
                   "name": "_newRewardsDistributor",
                   "nodeType": "VariableDeclaration",
-                  "scope": 99,
-                  "src": "1277:30:0",
+                  "scope": 1599,
+                  "src": "1277:30:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2638,10 +2638,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 95,
+                    "id": 1595,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1277:7:0",
+                    "src": "1277:7:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -2651,17 +2651,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1276:32:0"
+              "src": "1276:32:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 98,
+              "id": 1598,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1317:0:0"
+              "src": "1317:0:6"
             },
-            "scope": 105,
-            "src": "1241:77:0",
+            "scope": 1605,
+            "src": "1241:77:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
@@ -2669,7 +2669,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 104,
+            "id": 1604,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -2677,23 +2677,23 @@
             "name": "isRewardsDistributor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 100,
+              "id": 1600,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1352:2:0"
+              "src": "1352:2:6"
             },
             "payable": false,
             "returnParameters": {
-              "id": 103,
+              "id": 1603,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 102,
+                  "id": 1602,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 104,
-                  "src": "1373:4:0",
+                  "scope": 1604,
+                  "src": "1373:4:6",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -2701,10 +2701,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 101,
+                    "id": 1601,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1373:4:0",
+                    "src": "1373:4:6",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -2714,20 +2714,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1372:6:0"
+              "src": "1372:6:6"
             },
-            "scope": 105,
-            "src": "1323:56:0",
+            "scope": 1605,
+            "src": "1323:56:6",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 106,
-        "src": "26:1355:0"
+        "scope": 1606,
+        "src": "26:1355:6"
       }
     ],
-    "src": "0:1381:0"
+    "src": "0:1381:6"
   },
   "compiler": {
     "name": "solc",
@@ -2735,7 +2735,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-01T14:51:05.792Z",
+  "updatedAt": "2020-06-18T08:18:48.377Z",
   "devdoc": {
     "methods": {}
   },
