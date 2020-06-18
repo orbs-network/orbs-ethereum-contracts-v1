@@ -92,7 +92,7 @@ contract OrbsRewardsDistributionForStaking is Ownable, IOrbsRewardsDistribution 
         uint256 batchSize = _recipients.length;
         require(batchSize == _amounts.length, "array length mismatch");
 
-        address[] memory tempRecipientArr = new address[]();
+        address[] memory tempRecipientArr = new address[](1);
         uint256[] memory tempAmountArr = new uint256[](1);
 
         for (uint256 i = 0; i < batchSize; i++) {
