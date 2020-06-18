@@ -36,6 +36,7 @@ voting/orbs/mergetool
 
 subscription/ethereum/build/
 
+rewards-distribution/ethereum/build/
 
 **/node_modules/
 # **/build/
