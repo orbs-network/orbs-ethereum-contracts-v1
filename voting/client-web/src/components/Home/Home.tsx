@@ -43,6 +43,16 @@ const HomeImpl = ({ classes }) => {
                 <Typography variant='body1' gutterBottom color='textPrimary'>
                   {section.text}
                 </Typography>
+
+                {!section.text2 ? null : (
+                  <>
+                    <br />
+                    <Typography variant='body1' gutterBottom color='textPrimary'>
+                      {section.text2}
+                    </Typography>
+                  </>
+                )}
+
                 <ul className={classes.links}>
                   {section.links.map((link, idx) => (
                     <li key={idx} className={classes.link}>
