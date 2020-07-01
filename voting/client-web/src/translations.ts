@@ -99,9 +99,9 @@ export const resources: Resource = {
 
       // Participation
       text_delegatorDescriptionMain:
-        'ORBSトークンホルダーとして、投票権を信頼するガーディアンに委任してOrbsユニバースに参加することは、参加者自身の判断のもとで行われます。委任いただくことにより、信頼性の高いバリデータがネットワークを運営することに繋がり、ネットワークのセキュリティに寄与することになります。委任は一度しておけば、他のガーディアンに変えない限り、継続的に有効です。委任は、一般的なイーサリアムウォレットを利用して、簡単なイーサリアムトランザクションをするだけで行われます。方法はいくつかあり、参加者にとって最も簡単な方法をご選択いただけます。',
+        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
       text_delegatorDescriptionTetra:
-        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice. ',
+        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
       linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
 
       // Rewards table
@@ -139,9 +139,9 @@ export const resources: Resource = {
 
       // Participation
       text_delegatorDescriptionMain:
-        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
+        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
       text_delegatorDescriptionTetra:
-        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice. ',
+        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
       linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
 
       // Rewards table
@@ -258,9 +258,9 @@ export const resources: Resource = {
 
       // Participation
       text_delegatorDescriptionMain:
-        'ORBS 토큰 홀더로서, 투표권을 신뢰하는 가디언에게 위임하여 Orbs 생태계에 참여하는 것은 본인의 책임하에 이루어집니다. 위임함으로써 믿을만한 밸리데이터 그룹이 네트워크를 운영하게 하여 네트워크 보안에 기여하게 됩니다.\n위임작업은 한 번만 해두면 다른 가디언으로 바꾸지 않는 한 계속 유효합니다. 위임작업은 표준 이더리움 지갑을 이용하여 간단한 이더리움 트랜잭션만으로 이루어집니다. 위임하는 여러 방법들이 있지만, 여러분에게 가장 쉬운 방법을 선택하세요.',
+        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
       text_delegatorDescriptionTetra:
-        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice. ',
+        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
       linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
 
       // Rewards table
