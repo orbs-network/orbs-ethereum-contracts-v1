@@ -43,6 +43,7 @@ const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classe
           <TableCell style={{ width: '20%' }} className={classes.cell}>
             {t('Ethereum Address')}
           </TableCell>
+          <TableCell style={{ width: '2%' }} className={classes.cell} />
           <TableCell style={{ width: '20%' }} className={classes.cell}>
             {t('Orbs Address')}
           </TableCell>
@@ -83,6 +84,10 @@ const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classe
               <Tooltip title={address} placement='top-start' enterDelay={200}>
                 <span>{address}</span>
               </Tooltip>
+            </TableCell>
+
+            <TableCell padding='none'>
+              <CopyAddressButton address={validators[address].orbsAddress} />
             </TableCell>
             <TableCell size='small' className={classes.cell} data-testid={`validator-${address}-orbsAddress`}>
               <Tooltip title={validators[address].orbsAddress} placement='top-start' enterDelay={200}>
