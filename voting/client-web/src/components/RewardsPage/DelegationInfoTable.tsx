@@ -89,7 +89,7 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
         </TableRow>
         <TableRow>
           <TableCell>{t(`delegatorStakedOrbs`)}</TableCell>
-          <TableCell align='right'>{delegatorStakingInfo.stakedOrbs}</TableCell>
+          <TableCell align='right'>{delegatorStakingInfo.stakedOrbs?.toLocaleString()}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
