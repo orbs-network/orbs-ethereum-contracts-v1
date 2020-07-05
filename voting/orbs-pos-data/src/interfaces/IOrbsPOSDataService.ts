@@ -14,7 +14,16 @@ export interface IOrbsPOSDataService {
   readValidators(): Promise<string[]>;
   readValidatorInfo(validatorAddress: string): Promise<IValidatorInfo>;
   readTotalParticipatingTokens(): Promise<bigint>;
+
+  /**
+   * // TODO : ON_MAJOR_RELEASE : Remove this function
+   * @deprecated Please use the 'OrbsRewardsService'
+   */
   readRewards(address: string): Promise<IRewards>;
+  /**
+   * // TODO : ON_MAJOR_RELEASE : Remove this function
+   * @deprecated Please use the 'OrbsRewardsService'
+   */
   readRewardsHistory(address: string): Promise<IRewardsDistributionEvent[]>;
   readUpcomingElectionBlockNumber(): Promise<number>;
   readEffectiveElectionBlockNumber(): Promise<number>;

@@ -4,3 +4,4 @@ export { StakingService } from './services/StakingService';
 export { GuardiansService } from './services/GuardiansService';
 export { OrbsTokenService } from './services/OrbsTokenService';
 export { OrbsClientService } from './services/OrbsClientService';
+export { OrbsRewardsService } from './services/OrbsRewardsService';

@@ -5,4 +5,6 @@ export { IStakingService } from './interfaces/IStakingService';
 export { IGuardiansService } from './interfaces/IGuardiansService';
 export { IOrbsTokenService } from './interfaces/IOrbsTokenService';
 export { IOrbsClientService } from './interfaces/IOrbsClientService';
+export { IOrbsRewardsService } from './interfaces/IOrbsRewardsService';
+export { IRewardsDistributionEvent } from './interfaces/IRewardsDistributionEvent';
 export { IOrbsPosContractsAddresses } from './contracts-adresses';
