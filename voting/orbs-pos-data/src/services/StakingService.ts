@@ -36,7 +36,7 @@ export class StakingService implements IStakingService {
 
   constructor(private web3: Web3, address: string = STAKING_CONTRACT_ADDRESS) {
     this.stakingContractAddress = address;
-    this.stakingContract = new this.web3.eth.Contract(stakingContractJSON as AbiItem[], this.stakingContractAddress);
+    this.stakingContract = new this.web3.eth.Contract(stakingContractJSON.abi as AbiItem[], this.stakingContractAddress);
   }
 
   // CONFIG //

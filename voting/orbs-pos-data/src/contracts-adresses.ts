@@ -8,7 +8,14 @@
 export interface IOrbsPosContractsAddresses {
   guardiansContract: string;
   votingContract: string;
+  /**
+   * The original contract, used for distributing orbs directly to balances
+   */
   orbsRewardsDistributionContract: string;
+  /**
+   * The newer contract, used for distributing orbs directly into the staking contract
+   */
+  orbsRewardsDistributionForStakingContract: string;
   validatorsContract: string;
   validatorsRegistryContract: string;
   erc20Contract: string;
@@ -18,6 +25,7 @@ export const MainnetContractsAddresses: IOrbsPosContractsAddresses = {
   guardiansContract: '0xD64B1BF6fCAb5ADD75041C89F61816c2B3d5E711',
   votingContract: '0x30f855afb78758Aa4C2dc706fb0fA3A98c865d2d',
   orbsRewardsDistributionContract: '0xb2969e54668394bcA9B8AF61bC39B92754b7A7a0',
+  orbsRewardsDistributionForStakingContract: '0xB52daF3f853bF570814d6AeA1ec7BFF30339BD0c',
   validatorsContract: '0x240fAa45557c61B6959162660E324Bb90984F00f',
   validatorsRegistryContract: '0x56A6895FD37f358c17cbb3F14A864ea5Fe871F0a',
   erc20Contract: '0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA',
