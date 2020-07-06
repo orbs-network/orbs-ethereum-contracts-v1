@@ -24,6 +24,7 @@ import { RouteProps } from 'react-router';
 import { ICommonPageProps } from '../../types/pageTypes';
 import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
 import { renderToString } from 'react-dom/server';
+import { IRewardsDistributionEvent } from 'orbs-pos-data';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -66,10 +67,10 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
   const { t } = useTranslation();
   const showNoSelectedGuardianError = useBoolean(false);
   const showAddressNotParticipatingAlert = useBoolean(false);
-  const { remoteService, stakingService, guardiansService } = useApi();
+  const { remoteService, stakingService, guardiansService, orbsRewardsService } = useApi();
   const [formAddress, setFormAddress] = useState('');
   const [rewards, setRewards] = useState({});
-  const [rewardsHistory, setRewardsHistory] = useState([]);
+  const [distributionsHistory, setDistributionsHistory] = useState<IRewardsDistributionEvent[]>([]);
   const [delegatorInfo, setDelegatorInfo] = useState<object>({});
   const [delegatorStakingInfo, setDelegatorStakingInfo] = useState<IDelegatorStakingInfo>({
     stakedOrbs: 0,
@@ -83,9 +84,13 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
   const fetchRewards = useCallback(async address => remoteService.getRewards(address).then(setRewards), [
     remoteService,
   ]);
-  const fetchRewardsHistory = useCallback(address => remoteService.getRewardsHistory(address).then(setRewardsHistory), [
-    remoteService,
-  ]);
+  const fetchRewardsHistory = useCallback(
+    address =>
+      orbsRewardsService
+        .readRewardsDistributionsHistory(address)
+        .then(distributionsHistory => setDistributionsHistory(distributionsHistory)),
+    [orbsRewardsService],
+  );
 
   const fetchDelegationInfo = useCallback(
     async address => {
@@ -255,7 +260,7 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Distributed')}
         </Typography>
-        <RewardsHistoryTable rewardsHistory={rewardsHistory} />
+        <RewardsHistoryTable distributionsHistory={distributionsHistory} />
       </section>
 
       <section className={classes.section}>
