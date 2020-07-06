@@ -10,8 +10,6 @@ export const resources: Resource = {
         'Orbsのユニークな特徴の一つは、ネットワークの管理を他の分散型ネットワーク上で実行しているという点です。この設計があるがため、ネットワークオペレータが自分自身に投票することを防止することができます。これらの権限の分離は、すべてのPoSの投票と委任に外部から分散された保証を提供することに繋がります。',
       'Participation Instructions Content2':
         'これを実現するために、ガーディアンへの投票権委任と、ガーディアンによるバリデータの投票は、標準イーサリアムウォレットを用いたイーサリアムネットワーク上のスマートコントラクトに管理されます。',
-      'Delegators Description':
-        'ORBSトークンホルダーとして、投票権を信頼するガーディアンに委任してOrbsユニバースに参加することは、参加者自身の判断のもとで行われます。委任いただくことにより、信頼性の高いバリデータがネットワークを運営することに繋がり、ネットワークのセキュリティに寄与することになります。委任は一度しておけば、他のガーディアンに変えない限り、継続的に有効です。委任は、一般的なイーサリアムウォレットを利用して、簡単なイーサリアムトランザクションをするだけで行われます。方法はいくつかあり、参加者にとって最も簡単な方法をご選択いただけます。',
       'Guardians Description':
         '誰でもガーディアンになってバリデータに投票することができます。ガーディアンは、バリデータを評価し、ノード操作を監視し、ネットワークの監査を実行する重要な役割を担っています。ガーディアンになることは、責任と努力が必要です。',
       'Validators Description':
@@ -98,6 +96,14 @@ export const resources: Resource = {
       // *************************
       // Well formatted messages
       // *************************
+
+      // Participation
+      text_delegatorDescriptionMain:
+        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
+      text_delegatorDescriptionTetra:
+        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
+      linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
+
       // Rewards table
       delegatorNonStakedOrbs: 'デリゲータの未ステーキングORBS',
       delegatorStakedOrbs: 'デリゲータのステーキング済みORBS',
@@ -120,8 +126,6 @@ export const resources: Resource = {
         'One of the unique features of Orbs, is that the administration of the\nnetwork’s institutes is performed on another decentralized network. With\nthis architecture, we can avoid letting network operators execute the\nprocedures for their own election. This separation of powers provides an\nexternal decentralized guarantee to all PoS votes and delegations.',
       'Participation Instructions Content2':
         'To make this possible, delegation of voting power to guardians, and\nvoting on validators by the guardians are managed by smart contracts on\nthe Ethereum network using standard Ethereum wallets.',
-      'Delegators Description':
-        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of validators is running the network.\nDelegation only needs to be performed once and remains valid unless modified to a different Guardian. Delegation takes place by making a simple Ethereum transaction using a standard Ethereum wallet. There are multiple ways to delegate, choose the easiest one for you:',
       'Guardians Description':
         'Anyone can become an active Guardian and participate in the daily voting to approve Validators. Guardians are key players that review validators, monitor their operations and audit the network. Being a Guardian requires commitment and effort.',
       'Validators Description':
@@ -132,6 +136,13 @@ export const resources: Resource = {
       // *************************
       // Well formatted messages
       // *************************
+
+      // Participation
+      text_delegatorDescriptionMain:
+        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
+      text_delegatorDescriptionTetra:
+        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
+      linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
 
       // Rewards table
       delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
@@ -155,8 +166,6 @@ export const resources: Resource = {
         'Orbs의 고유 기능 중 하나는, 네트워크 기관 관리가 다른 탈중앙 네트워크에서 수행된다는 점입니다. 이 설계를 바탕으로, 네트워크 운영자가 자기 자신에게 투표하는 것을 방지할 수 있습니다. 이러한 권한의 분리는 모든 PoS 투표와 위임에 대한 외부의 분산된 보증을 제공합니다.',
       'Participation Instructions Content2':
         '이를 실현하기 위해서, 가디언에게로의 투표권 위임과,  밸리데이터에 대한 가디언의 투표는 표준 이더리움 지갑을 이용한 이더리움 네트워크에서의 스마트 컨트랙트로 관리됩니다.',
-      'Delegators Description':
-        'ORBS 토큰 홀더로서, 투표권을 신뢰하는 가디언에게 위임하여 Orbs 생태계에 참여하는 것은 본인의 책임하에 이루어집니다. 위임함으로써 믿을만한 밸리데이터 그룹이 네트워크를 운영하게 하여 네트워크 보안에 기여하게 됩니다.\n위임작업은 한 번만 해두면 다른 가디언으로 바꾸지 않는 한 계속 유효합니다. 위임작업은 표준 이더리움 지갑을 이용하여 간단한 이더리움 트랜잭션만으로 이루어집니다. 위임하는 여러 방법들이 있지만, 여러분에게 가장 쉬운 방법을 선택하세요.',
       'Guardians Description':
         '누구나 가디언이 되어 밸리데이터에게 매일 투표할 수 있습니다. 가디언은 밸리데이터를 확인하고 노드 운영을 감시하고 네트워크 감사를 수행하는 핵심 역할을 맡고 있습니다. 가디언이 되는 것에는 헌신과 노력이 필요합니다.',
       'Validators Description':
@@ -246,6 +255,13 @@ export const resources: Resource = {
       // *************************
       // Well formatted messages
       // *************************
+
+      // Participation
+      text_delegatorDescriptionMain:
+        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
+      text_delegatorDescriptionTetra:
+        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
+      linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
 
       // Rewards table
       delegatorNonStakedOrbs: '스테이킹하고 있지 않는 ORBS',

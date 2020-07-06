@@ -2,21 +2,26 @@ export const content = t => [
   {
     title: t('Delegators'),
     links: [
+      // {
+      //   url: 'https://www.orbs.com/delegation-instructions-with-metamask/',
+      //   title: t('Delegating using Metamask'),
+      // },
+      // {
+      //   url: 'https://www.orbs.com/delegating-with-transfer/',
+      //   title: t('Delegating by sending 0.07 ORBS directly'),
+      // },
+      // {
+      //   url: 'https://www.orbs.com/delegating-using-mycrypto/',
+      //   title: t('Delegating using MyCrypto'),
+      // },
       {
-        url: 'https://www.orbs.com/delegation-instructions-with-metamask/',
-        title: t('Delegating using Metamask'),
-      },
-      {
-        url: 'https://www.orbs.com/delegating-with-transfer/',
-        title: t('Delegating by sending 0.07 ORBS directly'),
-      },
-      {
-        url: 'https://www.orbs.com/delegating-using-mycrypto/',
-        title: t('Delegating using MyCrypto'),
+        url: 'https://www.orbs.com/tetra-orbs-staking-wallet-tutorial/',
+        title: t('linkText_tetraWalletTutorial'),
       },
     ],
     imageUrl: 'https://www.orbs.com/wp-content/uploads/2019/03/Orbs-Telescope.png',
-    text: t('Delegators Description'),
+    text: t('text_delegatorDescriptionMain'),
+    text2: t('text_delegatorDescriptionTetra'),
     cta: {
       label: t('Delegate'),
       url: '/delegator',
