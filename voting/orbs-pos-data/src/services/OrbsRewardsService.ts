@@ -6,16 +6,27 @@ import { IOrbsPosContractsAddresses, MainnetContractsAddresses } from '../contra
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import orbsRewardsDistributionContractJSON from '../contracts/OrbsRewardsDistribution.json';
+import orbsRewardsDistributionForStakingContractJSON from '../contracts/OrbsRewardsDistributionForStaking.json';
 import { ORBS_TDE_ETHEREUM_BLOCK } from './consts';
 import { IOrbsClientService } from '../interfaces/IOrbsClientService';
 
 export class OrbsRewardsService implements IOrbsRewardsService{
   private orbsRewardsDistributionContract: Contract;
+  private orbsRewardsDistributionForStakingContract: Contract;
 
-  constructor(private web3: Web3, private orbsClientService: IOrbsClientService, orbsRewardsDistributionContract: string = MainnetContractsAddresses.orbsRewardsDistributionContract) {
+  constructor(private web3: Web3,
+              private orbsClientService: IOrbsClientService,
+              orbsRewardsDistributionContractAddress: string = MainnetContractsAddresses.orbsRewardsDistributionContract,
+              orbsRewardsDistributionForStakingContractAddress: string = MainnetContractsAddresses.orbsRewardsDistributionForStakingContract
+  ) {
     this.orbsRewardsDistributionContract = new this.web3.eth.Contract(
       orbsRewardsDistributionContractJSON.abi as AbiItem[],
-      orbsRewardsDistributionContract
+      orbsRewardsDistributionContractAddress
+    );
+
+    this.orbsRewardsDistributionForStakingContract = new this.web3.eth.Contract(
+      orbsRewardsDistributionForStakingContractJSON.abi as AbiItem[],
+      orbsRewardsDistributionForStakingContractAddress
     );
   }
 
@@ -41,8 +52,11 @@ export class OrbsRewardsService implements IOrbsRewardsService{
     };
 
     const events = await this.orbsRewardsDistributionContract.getPastEvents('RewardDistributed', options);
+    const eventsForStaking = await this.orbsRewardsDistributionForStakingContract.getPastEvents('RewardDistributed', options);
 
-    const readRewards = events.map(log => {
+    const allEvents = [...events, ...eventsForStaking];
+
+    const readRewards = allEvents.map(log => {
       return {
         distributionEvent: log.returnValues.distributionEvent as string,
         amount: BigInt(log.returnValues.amount),

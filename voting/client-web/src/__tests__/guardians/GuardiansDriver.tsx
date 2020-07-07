@@ -16,6 +16,8 @@ import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
 import { RemoteServiceMock } from '../../services/RemoteServiceMock';
 import { GuardiansPage } from '../../components/Guardrians/GuardiansPage';
 
+// TODO : FUTURE (After Beta) : Fix tests
+
 export class GuardiansDriver {
   private renderResult;
   public remoteService: IRemoteService;

@@ -26,7 +26,14 @@ import { Main } from '../Main/Main';
 import { AppStyles } from './App.style';
 import { ThemeProvider } from './ThemeProvider';
 import { configs } from '../../config';
-import { GuardiansService, IOrbsClientService, OrbsClientService, StakingService } from 'orbs-pos-data';
+import {
+  GuardiansService,
+  IOrbsClientService,
+  IOrbsRewardsService,
+  OrbsClientService,
+  OrbsRewardsService,
+  StakingService,
+} from 'orbs-pos-data';
 import { BuildOrbsClient } from '../../services/OrbsClientFactory';
 
 interface IProps extends WithStyles<typeof AppStyles> {
@@ -51,6 +58,7 @@ const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
   const stakingService = new StakingService(web3, configs?.contractsAddressesOverride?.stakingContract);
   const orbsClient = BuildOrbsClient();
   const orbsClientService: IOrbsClientService = new OrbsClientService(orbsClient);
+  const orbsRewardsService: IOrbsRewardsService = new OrbsRewardsService(web3, orbsClientService);
   const guardiansService = new GuardiansService(
     web3,
     orbsClientService,
@@ -66,7 +74,9 @@ const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
       <QueryParamProvider ReactRouterRoute={Route}>
         <ThemeProvider>
-          <ApiContext.Provider value={{ remoteService, metamask, stakingService, guardiansService }}>
+          <ApiContext.Provider
+            value={{ remoteService, metamask, stakingService, guardiansService, orbsRewardsService }}
+          >
             <CssBaseline />
             <div
               className={classNames({

@@ -15,11 +15,22 @@ import TableFooter from '@material-ui/core/TableFooter';
 import { useTranslation } from 'react-i18next';
 import { TableHead, Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
+import { IRewardsDistributionEvent } from 'orbs-pos-data';
+import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
 
-export const RewardsHistoryTable = ({ rewardsHistory }) => {
+interface IProps {
+  distributionsHistory: IRewardsDistributionEvent[];
+}
+
+// export const RewardsHistoryTable = ({ rewardsHistory }) => {
+export const RewardsHistoryTable = React.memo<IProps>(({ distributionsHistory }) => {
   const { t } = useTranslation();
 
-  const totalAmount = rewardsHistory.reduce((prev, cur) => prev + cur.amount, 0);
+  const totalAmount = distributionsHistory.reduce((prev, cur) => {
+    const fullOrbs = fullOrbsFromWeiOrbs(cur.amount);
+    return prev + fullOrbs;
+  }, 0);
+
   return (
     <Table>
       <TableHead>
@@ -30,7 +41,8 @@ export const RewardsHistoryTable = ({ rewardsHistory }) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {rewardsHistory.map((r, idx) => {
+        {distributionsHistory.map((r, idx) => {
+          const amount = r.amount ? fullOrbsFromWeiOrbs(r.amount) : 0;
           return (
             <TableRow key={idx}>
               <TableCell>{r.distributionEvent}</TableCell>
@@ -44,7 +56,7 @@ export const RewardsHistoryTable = ({ rewardsHistory }) => {
                   {r.transactionHash}
                 </Link>
               </TableCell>
-              <TableCell align='right'>{(r.amount || 0).toLocaleString()} ORBS</TableCell>
+              <TableCell align='right'>{amount.toLocaleString()} ORBS</TableCell>
             </TableRow>
           );
         })}
@@ -58,4 +70,4 @@ export const RewardsHistoryTable = ({ rewardsHistory }) => {
       </TableFooter>
     </Table>
   );
-};
+});
