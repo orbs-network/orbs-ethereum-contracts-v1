@@ -20,7 +20,6 @@ import { useApi } from '../../services/ApiContext';
 import { DelegationInfoTable } from './DelegationInfoTable';
 import { RewardsTable } from './RewardsTable';
 import { useQueryParam, StringParam } from 'use-query-params';
-import { ICommonPageProps } from '../../types/pageTypes';
 import { renderToString } from 'react-dom/server';
 import { useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
 import { observer } from 'mobx-react';
@@ -116,6 +115,9 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     guardianInfo,
     hasActiveDelegation,
   } = addressData;
+  const relevantGuardianInfo = isGuardian
+    ? guardiansStore.guardiansList.find(g => g.address.toLowerCase() === queryAddress?.toLowerCase())
+    : guardianInfo;
 
   const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
   const hasStakedOrbs = stakingInfo.stakedOrbs > 0;
@@ -142,8 +144,9 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
       return;
     }
 
+    // DEV_NOTE : O.L :  Guardians always have themselves as their selected Guardian.
     // Do we have staked ORBS but no guardian selected ?
-    if (hasStakedOrbs && !hasSelectedGuardian) {
+    if (!isGuardian && hasStakedOrbs && !hasSelectedGuardian) {
       showNoSelectedGuardianError.setTrue();
     } else {
       showNoSelectedGuardianError.setFalse();
@@ -162,6 +165,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     hasStakedOrbs,
     hasSelectedGuardian,
     hasUnstakedOrbs,
+    isGuardian,
   ]);
 
   const tetraUrl = 'https://tetra.com';
@@ -243,7 +247,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
           delegatorAddress={queryAddress || ''}
           delegatorStakingInfo={stakingInfo}
           delegatorInfo={delegatorInfo}
-          guardianInfo={guardianInfo}
+          guardianInfo={relevantGuardianInfo}
           isAGuardian={isGuardian}
         />
       </section>

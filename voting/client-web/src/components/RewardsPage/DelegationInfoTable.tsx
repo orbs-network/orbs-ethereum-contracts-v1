@@ -13,10 +13,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import { useTranslation } from 'react-i18next';
-import { useBoolean } from 'react-hanger';
 import { TStakingInfo } from './rewardsPageHooks';
 import { TCurrentDelegationInfo } from '../../services/IRemoteService';
-import { IGuardianData } from '../../services/IGuardianData';
 
 const formatTimestamp = timestamp =>
   new Date(timestamp).toLocaleString('en-gb', {
@@ -61,7 +59,7 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
     let delegationBlockNumber: string;
     let delegationTimestamp: string;
 
-    const delegationType = delegatorInfo.delegationType;
+    let delegationType = delegatorInfo.delegationType;
 
     if (delegationType === 'Not-Delegated') {
       delegatorBalance = '-';
@@ -80,6 +78,7 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
       delegatedTo = delegatorAddress;
       delegationBlockNumber = '-';
       delegationTimestamp = '-';
+      delegationType = 'Self (Guardian)';
     }
 
     return {
@@ -109,8 +108,8 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
           <TableCell align='right'>
-            {guardianInfo['voted'] === true || guardianInfo['voted'] === false ? (
-              <VoteChip value={guardianInfo['voted']} />
+            {guardianInfo.voted === true || guardianInfo.voted === false ? (
+              <VoteChip value={guardianInfo.voted} />
             ) : (
               '-'
             )}
@@ -119,8 +118,8 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
         <TableRow>
           <TableCell>{t('Guardian voted for next elections')}</TableCell>
           <TableCell align='right'>
-            {guardianInfo['hasEligibleVote'] === true || guardianInfo['hasEligibleVote'] === false ? (
-              <VoteChip value={guardianInfo['hasEligibleVote']} />
+            {guardianInfo.hasEligibleVote === true || guardianInfo.hasEligibleVote === false ? (
+              <VoteChip value={guardianInfo.hasEligibleVote} />
             ) : (
               '-'
             )}
