@@ -13,10 +13,16 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
 import { useTranslation } from 'react-i18next';
+import { TRewardsSummary } from '../../services/IRemoteService';
 
-export const RewardsTable = ({ rewards }) => {
+interface IProps {
+  rewardsSummary: TRewardsSummary;
+}
+
+export const RewardsTable = React.memo<IProps>(props => {
+  const { rewardsSummary } = props;
   const { t } = useTranslation();
-  const { delegatorReward = 0, guardianReward = 0, validatorReward = 0 } = rewards;
+  const { delegatorReward = 0, guardianReward = 0, validatorReward = 0 } = rewardsSummary;
   const totalReward = delegatorReward + guardianReward + validatorReward;
   return (
     <Table>
@@ -42,4 +48,4 @@ export const RewardsTable = ({ rewards }) => {
       </TableFooter>
     </Table>
   );
-};
+});

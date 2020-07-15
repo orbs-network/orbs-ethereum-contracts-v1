@@ -14,6 +14,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import { useTranslation } from 'react-i18next';
 import { useBoolean } from 'react-hanger';
+import { TStakingInfo } from './rewardsPageHooks';
 
 const formatTimestamp = timestamp =>
   new Date(timestamp).toLocaleString('en-gb', {
@@ -32,7 +33,7 @@ const formatTimestamp = timestamp =>
 interface IProps {
   delegatorInfo: any;
   guardianInfo: any;
-  delegatorStakingInfo: { stakedOrbs: number };
+  delegatorStakingInfo: TStakingInfo;
 }
 
 export const DelegationInfoTable = React.memo<IProps>(props => {
