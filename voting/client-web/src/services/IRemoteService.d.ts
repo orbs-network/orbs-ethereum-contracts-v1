@@ -11,6 +11,14 @@ export type TCurrentDelegationInfo = {
   delegatorBalance: number;
 };
 
+// DEV_NOTE : O.L : This type is inferred from returned values.
+//                  we should create proper types.
+export type TRewardsSummary = {
+  delegatorReward: number;
+  guardianReward: number;
+  validatorReward: number;
+};
+
 export interface IRemoteService {
   getGuardians(): Promise<string[]>;
   getGuardianData(address: string): Promise<IGuardianData>;
@@ -18,7 +26,7 @@ export interface IRemoteService {
   getElectedValidators(): Promise<string[]>;
   getValidatorData(address: string): Promise<IValidatorData>;
   getElectedValidatorData(address: string): Promise<IElectedValidatorData>;
-  getRewards(address: string): Promise<any>;
+  getRewards(address: string): Promise<TRewardsSummary>;
   getRewardsHistory(address: string): Promise<any>;
   getTotalParticipatingTokens(): Promise<string>;
   getUpcomingElectionBlockNumber(): Promise<string>;

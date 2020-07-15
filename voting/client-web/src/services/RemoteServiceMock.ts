@@ -1,4 +1,4 @@
-import { IRemoteService, TCurrentDelegationInfo } from './IRemoteService';
+import { IRemoteService, TCurrentDelegationInfo, TRewardsSummary } from './IRemoteService';
 import { IElectedValidatorData } from './IValidatorData';
 
 export class RemoteServiceMock implements IRemoteService {
@@ -31,7 +31,9 @@ export class RemoteServiceMock implements IRemoteService {
     return Promise.resolve(mockElectedValidatorData);
   }
   getRewards() {
-    return Promise.resolve({});
+    // TODO : O.L : We only added the 'as type' to appease TS, we should check if the test is still valid.
+    const mock: TRewardsSummary = {} as TRewardsSummary;
+    return Promise.resolve(mock);
   }
   getRewardsHistory(address: string) {
     return Promise.resolve([]);
