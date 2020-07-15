@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { IOrbsRewardsService, IRewardsDistributionEvent, IStakingService } from 'orbs-pos-data';
+import { IGuardianInfo, IOrbsRewardsService, IRewardsDistributionEvent, IStakingService } from 'orbs-pos-data';
 import { useEffect } from 'react';
 import { useBoolean, useStateful } from 'react-hanger';
 import { useApi } from '../../services/ApiContext';
 import { IRemoteService, TCurrentDelegationInfo, TRewardsSummary } from '../../services/IRemoteService';
 import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
+import { IGuardianData } from '../../services/IGuardianData';
 
 export type TStakingInfo = {
   stakedOrbs: number;
@@ -13,7 +14,7 @@ export type TStakingInfo = {
 export type TCompleteAddressInfoForRewardsPage = {
   hasActiveDelegation: boolean;
   delegatorInfo: TCurrentDelegationInfo;
-  guardianInfo?: any;
+  guardianInfo?: IGuardianInfo;
   stakingInfo: TStakingInfo;
   rewardsSummary: TRewardsSummary;
   distributionsHistory: IRewardsDistributionEvent[];
@@ -32,7 +33,13 @@ const emptyObject: TCompleteAddressInfoForRewardsPage = {
   stakingInfo: {
     stakedOrbs: 0,
   },
-  guardianInfo: {},
+  guardianInfo: {
+    website: '',
+    hasEligibleVote: false,
+    name: '',
+    stakePercent: 0,
+    voted: false,
+  },
   rewardsSummary: {
     validatorReward: 0,
     guardianReward: 0,
@@ -77,11 +84,17 @@ const fetchRewardsHistory = async (address: string, orbsRewardsService: IOrbsRew
 
 const fetchDelegationAndGuardianInfo = async (address: string, remoteService: IRemoteService) => {
   const delegatorInfo = await remoteService.getCurrentDelegationInfo(address);
-  let guardianInfo: any;
+  let guardianInfo: IGuardianInfo;
   let hasActiveDelegation: boolean;
 
   if (delegatorInfo.delegationType === 'Not-Delegated') {
-    guardianInfo = {};
+    guardianInfo = {
+      website: '',
+      hasEligibleVote: false,
+      name: '',
+      stakePercent: 0,
+      voted: false,
+    };
     hasActiveDelegation = false;
   } else {
     guardianInfo = await remoteService.getGuardianData(delegatorInfo.delegatedTo);

@@ -15,6 +15,8 @@ import TableCell from '@material-ui/core/TableCell';
 import { useTranslation } from 'react-i18next';
 import { useBoolean } from 'react-hanger';
 import { TStakingInfo } from './rewardsPageHooks';
+import { TCurrentDelegationInfo } from '../../services/IRemoteService';
+import { IGuardianData } from '../../services/IGuardianData';
 
 const formatTimestamp = timestamp =>
   new Date(timestamp).toLocaleString('en-gb', {
@@ -31,9 +33,10 @@ const formatTimestamp = timestamp =>
 
 // TODO : FUTRUE : O.L : Fix types
 interface IProps {
-  delegatorInfo: any;
+  delegatorInfo: TCurrentDelegationInfo;
   guardianInfo: any;
   delegatorStakingInfo: TStakingInfo;
+  isAGuardian?: boolean;
 }
 
 export const DelegationInfoTable = React.memo<IProps>(props => {

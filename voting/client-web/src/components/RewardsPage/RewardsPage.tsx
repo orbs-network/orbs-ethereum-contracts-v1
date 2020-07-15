@@ -23,6 +23,8 @@ import { useQueryParam, StringParam } from 'use-query-params';
 import { ICommonPageProps } from '../../types/pageTypes';
 import { renderToString } from 'react-dom/server';
 import { useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
+import { observer } from 'mobx-react';
+import { useGuardiansStore } from '../../Store/storeHooks';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -55,9 +57,11 @@ const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 type TDelegationTypes = 'Not-Delegated' | 'Transfer';
 const NOT_DELEGATED: TDelegationTypes = 'Not-Delegated';
 
-export const RewardsPage = React.memo<ICommonPageProps>(() => {
+export const RewardsPage = observer<React.FunctionComponent>(() => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const guardiansStore = useGuardiansStore();
 
   // Display flags
   const showNoSelectedGuardianError = useBoolean(false);
@@ -68,6 +72,9 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
 
   // Page state
   const [queryAddress, setQueryAddress] = useQueryParam('address', StringParam);
+
+  // Account in question state
+  const isGuardian = guardiansStore.isGuardian(queryAddress || '');
 
   // Form state & functions
   const [formAddress, setFormAddress] = useState('');
@@ -181,7 +188,7 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
       <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Rewards & Delegation Info')}
       </Typography>
-
+      {/* TODO : O.L : We might want to add a UX indicator that the account is a guardian */}
       <FormControl className={classes.form} variant='standard' margin='normal'>
         <TextField
           required

@@ -1,5 +1,6 @@
 import { IGuardianData } from './IGuardianData';
 import { IElectedValidatorData, IValidatorData } from './IValidatorData';
+import { IGuardianInfo } from 'orbs-pos-data';
 
 // DEV_NOTE : O.L : This type is inferred from returned values.
 //                  we should create proper types.
@@ -21,7 +22,7 @@ export type TRewardsSummary = {
 
 export interface IRemoteService {
   getGuardians(): Promise<string[]>;
-  getGuardianData(address: string): Promise<IGuardianData>;
+  getGuardianData(address: string): Promise<IGuardianInfo>;
   getValidators(): Promise<string[]>;
   getElectedValidators(): Promise<string[]>;
   getValidatorData(address: string): Promise<IValidatorData>;

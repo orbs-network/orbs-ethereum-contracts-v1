@@ -22,6 +22,10 @@ export class GuardiansStore {
     return this.guardiansList.map(g => g.address.toLowerCase());
   }
 
+  public isGuardian(address: string): boolean {
+    return this.guardiansAddresses.includes(address.toLowerCase());
+  }
+
   constructor(private guardiansService: IGuardiansService) {
     this.guardiansList.clear();
   }
