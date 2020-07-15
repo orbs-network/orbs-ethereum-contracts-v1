@@ -1,0 +1,67 @@
+import { observable, action, reaction, IReactionDisposer, computed, toJS } from 'mobx';
+
+import { IOrbsPOSDataService, IGuardianInfo, IGuardiansService } from 'orbs-pos-data';
+import { PromiEvent, TransactionReceipt } from 'web3-core';
+
+export type TGuardianInfoExtended = IGuardianInfo & { address: string };
+
+export interface IGuardiansStoreState {
+  guardiansList: TGuardianInfoExtended[];
+  totalParticipatingTokens: bigint;
+}
+
+export type TGuardiansStore = IGuardiansStoreState;
+
+export class GuardiansStore {
+  @observable public doneLoading = false;
+  @observable public errorLoading = false;
+  @observable public guardiansList: TGuardianInfoExtended[];
+
+  @computed get guardiansAddresses(): string[] {
+    return this.guardiansList.map(g => g.address.toLowerCase());
+  }
+
+  constructor(private guardiansService: IGuardiansService) {
+    this.guardiansList = [];
+  }
+
+  async init() {
+    try {
+      this.setDoneLoading(false);
+      const guardiansAddresses = await this.guardiansService.readGuardiansList(0, 100);
+      const promises = guardiansAddresses.map(guardianAddress =>
+        this.guardiansService.readGuardianInfo(guardianAddress),
+      );
+      const guardiansInfo = await Promise.all(promises);
+      const guardiansInfoExtended = guardiansInfo.map((g, idx) => ({ ...g, address: guardiansAddresses[idx] }));
+      this.setGuardiansList(guardiansInfoExtended);
+
+      this.setDoneLoading(true);
+    } catch (e) {
+      this.failLoadingProcess(e);
+      console.error('Error while initialising Guardians store', e);
+    }
+  }
+
+  // ****  Complex setters ****
+  private failLoadingProcess(error: Error) {
+    this.setErrorLoading(true);
+    this.setDoneLoading(true);
+  }
+
+  // ****  Observables setter actions ****
+  @action('setGuardiansList')
+  private setGuardiansList(guardians: TGuardianInfoExtended[]) {
+    this.guardiansList = guardians;
+  }
+
+  @action('setDoneLoading')
+  private setDoneLoading(doneLoading: boolean) {
+    this.doneLoading = doneLoading;
+  }
+
+  @action('setErrorLoading')
+  private setErrorLoading(errorLoading: boolean) {
+    this.errorLoading = errorLoading;
+  }
+}
