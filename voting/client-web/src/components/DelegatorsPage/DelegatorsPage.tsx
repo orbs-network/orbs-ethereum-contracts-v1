@@ -16,19 +16,13 @@ import { normalizeUrl } from '../../services/urls';
 import { DelegationStatusDialog } from '../DelegationStatusDialog/DelegationStatusDialog';
 import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
 import { GuardiansList } from './GuardiansList';
+import { useGuardiansStore } from '../../Store/storeHooks';
+import { observer } from 'mobx-react';
 
-export const DelegatorsPage = () => {
+// TODO : O.L : Add loading indicator
+export const DelegatorsPage = observer(() => {
   const { remoteService, metamask } = useApi();
-  const [guardians, setGuardians] = useState({} as {
-    [address: string]: {
-      address: string;
-      name: string;
-      url: string;
-      stake: number;
-      hasEligibleVote: boolean;
-      currentVote: string[];
-    };
-  });
+  const guardiansStore = useGuardiansStore();
 
   const [manualDelegationDialogState, setManualDelegationDialogState] = useState(false);
 
@@ -47,25 +41,6 @@ export const DelegatorsPage = () => {
     setTotalParticipatingTokens(Number(totalParticipatingTokens).toLocaleString());
   };
 
-  const fetchGuardian = async address => {
-    const data = await remoteService.getGuardianData(address);
-    guardians[address] = {
-      address,
-      name: data['name'],
-      url: normalizeUrl(data['website']),
-      stake: data['stake'],
-      hasEligibleVote: data['hasEligibleVote'],
-      currentVote: data['currentVote'],
-    };
-    setGuardians(Object.assign({}, guardians));
-  };
-
-  const fetchGuardians = async () => {
-    const addresses = await remoteService.getGuardians();
-    await Promise.all(addresses.map(address => fetchGuardian(address)));
-    console.table(Object.values(guardians).map(g => ({ name: g.name, currentVote: g.currentVote.toString() })));
-  };
-
   const fetchDelegatedTo = async () => {
     if (metamask) {
       const address = await metamask.getCurrentAddress();
@@ -74,9 +49,9 @@ export const DelegatorsPage = () => {
     }
   };
 
+  // TODO : Fix this loading
   useEffect(() => {
     fetchTotalParticipatingTokens();
-    fetchGuardians();
     fetchDelegatedTo();
     fetchUpcomingElectionsBlockNumber();
   }, []);
@@ -144,10 +119,11 @@ export const DelegatorsPage = () => {
         </Typography>
       </div>
 
+      {guardiansStore.doneLoading}
       <GuardiansList
         delegatedTo={delegatedTo}
         enableDelegation={metamask !== undefined}
-        guardians={guardians}
+        guardians={guardiansStore.guardiansList}
         onSelect={setDelegationCandidate}
       />
 
@@ -172,4 +148,4 @@ export const DelegatorsPage = () => {
       </div>
     </>
   );
-};
+});

@@ -9,18 +9,19 @@
 import { Checkbox } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
 import Link from '@material-ui/core/Link';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
 import { VoteChip } from '../VoteChip/VoteChip';
+import { TGuardianInfoExtended } from '../../Store/GuardiansStore';
 
-const styles = () => ({
+const useStyles = makeStyles(theme => ({
   table: {
     marginBottom: 30,
     tableLayout: 'fixed' as any,
@@ -33,16 +34,28 @@ const styles = () => ({
     width: 70,
     backgroundColor: blue[700],
   },
-});
+}));
+
+interface IProps {
+  enableDelegation: boolean;
+  onSelect: (guardianAddress: string) => void;
+  guardians: TGuardianInfoExtended[];
+  delegatedTo: string;
+}
 
 const asPercent = (num: number) =>
   (num * 100).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + '%';
 
-const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, delegatedTo }) => {
+export const GuardiansList = React.memo<IProps>(props => {
+  const { enableDelegation, onSelect, guardians, delegatedTo } = props;
+  const classes = useStyles();
   const { t } = useTranslation();
   const [candidate, setCandidate] = useState(delegatedTo);
-  const sortedGuardians = Object.values(guardians as object);
-  sortedGuardians.sort((a, b) => b.stake - a.stake);
+
+  const sortedGuardians = useMemo(() => {
+    return [...guardians].sort((a, b) => b.stakePercent - a.stakePercent);
+  }, [guardians]);
+
   return (
     <Table className={classes.table}>
       <TableHead>
@@ -68,12 +81,12 @@ const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, del
       </TableHead>
       <TableBody data-testid='guardians-list'>
         {sortedGuardians.map(guardian => (
-          <TableRow data-testid={`guardian-${guardian['address']}`} key={guardian['address']}>
+          <TableRow data-testid={`guardian-${guardian.address}`} key={guardian.address}>
             <TableCell padding='none' className={classes.cell}>
               {enableDelegation && (
                 <Checkbox
-                  checked={guardian['address'] === candidate}
-                  value={guardian['address']}
+                  checked={guardian.address === candidate}
+                  value={guardian.address}
                   onChange={ev => {
                     setCandidate(ev.target.value);
                     onSelect(ev.target.value);
@@ -86,37 +99,35 @@ const GuardiansListImpl = ({ enableDelegation, onSelect, guardians, classes, del
               className={classes.cell}
               component='th'
               scope='row'
-              data-testid={`guardian-${guardian['address']}-name`}
+              data-testid={`guardian-${guardian.address}-name`}
             >
-              {guardian['name']}
+              {guardian.name}
             </TableCell>
             <TableCell padding='none'>
-              <CopyAddressButton address={guardian['address']} />
+              <CopyAddressButton address={guardian.address} />
             </TableCell>
-            <TableCell size='small' className={classes.cell} data-testid={`guardian-${guardian['address']}-address`}>
-              {guardian['address']}
+            <TableCell size='small' className={classes.cell} data-testid={`guardian-${guardian.address}-address`}>
+              {guardian.address}
             </TableCell>
             <TableCell size='small' className={classes.cell}>
               <Link
-                data-testid={`guardian-${guardian['address']}-url`}
-                href={guardian['url']}
+                data-testid={`guardian-${guardian.address}-url`}
+                href={guardian.website}
                 target='_blank'
                 rel='noopener noreferrer'
                 color='secondary'
                 variant='body1'
               >
-                {guardian['url']}
+                {guardian.website}
               </Link>
             </TableCell>
-            <TableCell size='small'>{asPercent(guardian['stake'])}</TableCell>
+            <TableCell size='small'>{asPercent(guardian.stakePercent)}</TableCell>
             <TableCell size='small' className={classes.cell}>
-              <VoteChip value={guardian['hasEligibleVote']} />
+              <VoteChip value={guardian.hasEligibleVote} />
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
   );
-};
-
-export const GuardiansList = withStyles(styles)(GuardiansListImpl);
+});

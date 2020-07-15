@@ -1,4 +1,4 @@
-import { observable, action, reaction, IReactionDisposer, computed, toJS } from 'mobx';
+import { observable, action, reaction, IReactionDisposer, computed, toJS, IObservableArray } from 'mobx';
 
 import { IOrbsPOSDataService, IGuardianInfo, IGuardiansService } from 'orbs-pos-data';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
@@ -15,14 +15,14 @@ export type TGuardiansStore = IGuardiansStoreState;
 export class GuardiansStore {
   @observable public doneLoading = false;
   @observable public errorLoading = false;
-  @observable public guardiansList: TGuardianInfoExtended[];
+  @observable public guardiansList: IObservableArray<TGuardianInfoExtended> = observable([]);
 
   @computed get guardiansAddresses(): string[] {
     return this.guardiansList.map(g => g.address.toLowerCase());
   }
 
   constructor(private guardiansService: IGuardiansService) {
-    this.guardiansList = [];
+    this.guardiansList.clear();
   }
 
   async init() {
@@ -32,6 +32,7 @@ export class GuardiansStore {
       const promises = guardiansAddresses.map(guardianAddress =>
         this.guardiansService.readGuardianInfo(guardianAddress),
       );
+
       const guardiansInfo = await Promise.all(promises);
       const guardiansInfoExtended = guardiansInfo.map((g, idx) => ({ ...g, address: guardiansAddresses[idx] }));
       this.setGuardiansList(guardiansInfoExtended);
@@ -52,7 +53,7 @@ export class GuardiansStore {
   // ****  Observables setter actions ****
   @action('setGuardiansList')
   private setGuardiansList(guardians: TGuardianInfoExtended[]) {
-    this.guardiansList = guardians;
+    this.guardiansList.replace(guardians);
   }
 
   @action('setDoneLoading')
