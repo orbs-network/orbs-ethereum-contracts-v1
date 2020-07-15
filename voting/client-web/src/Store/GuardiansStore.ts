@@ -2,6 +2,7 @@ import { observable, action, reaction, IReactionDisposer, computed, toJS, IObser
 
 import { IOrbsPOSDataService, IGuardianInfo, IGuardiansService } from 'orbs-pos-data';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
+import { normalizeUrl } from '../services/urls';
 
 export type TGuardianInfoExtended = IGuardianInfo & { address: string };
 
@@ -31,7 +32,9 @@ export class GuardiansStore {
       const guardiansAddresses = await this.guardiansService.readGuardiansList(0, 100);
       const promises = guardiansAddresses.map(guardianAddress =>
         this.guardiansService.readGuardianInfo(guardianAddress).then(guardian => {
-          const guardianInfoExtended: TGuardianInfoExtended = { ...guardian, address: guardianAddress };
+          // DEV_NOTE : We override the 'website' value that returns to enforce 'http'/'https' at its beginning
+          const website = normalizeUrl(guardian.website);
+          const guardianInfoExtended: TGuardianInfoExtended = { ...guardian, website, address: guardianAddress };
           this.addGuardianToList(guardianInfoExtended);
         }),
       );

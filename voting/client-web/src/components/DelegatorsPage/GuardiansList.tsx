@@ -59,6 +59,7 @@ export const GuardiansList = observer<React.FunctionComponent<IProps>>(props => 
   const length = guardians.length;
   const sortedGuardians = useMemo(() => {
     const i = length;
+    // TODO : Add a tie-breaker of 'did vote'
     return [...guardians].sort((a, b) => b.stakePercent - a.stakePercent);
   }, [guardians, length]);
 
