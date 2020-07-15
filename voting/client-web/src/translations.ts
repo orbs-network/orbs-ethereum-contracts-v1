@@ -99,10 +99,10 @@ export const resources: Resource = {
 
       // Participation
       text_delegatorDescriptionMain:
-        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
+        'ORBSトークン保有者は、任意で信頼するガーディアンに投票権を委任することで、Orbsユニバースに参加できます。より多くの方が参加することで、ネットワークの安全性が担保されます。初期設定がされれば、あとは自動的に委任の効力が継続します。',
       text_delegatorDescriptionTetra:
-        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
-      linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
+        'TETRAはOrbs独自のステーキング・ウォレットで、ORBSトークン保有者が簡単にガーディアンを選択肢、ステーキングできるように設計されています。',
+      linkText_tetraWalletTutorial: 'Tetraウォレットのガイド',
 
       // Rewards table
       delegatorNonStakedOrbs: 'デリゲータの未ステーキングORBS',
@@ -258,10 +258,10 @@ export const resources: Resource = {
 
       // Participation
       text_delegatorDescriptionMain:
-        'As an ORBS token holder, it is your responsibility to participate in the Orbs Universe by delegating your voting power to a Guardian you trust. This contributes to the network security by making sure a trustworthy group of Validators is running the network. Delegation only needs to be performed once and remains valid unless modified to a different Guardian.',
+        'ORBS 토큰을 가지고 있으시다면, 신뢰하는 가디언에게 보팅파워를 위임하여 오브스 유니버스에 참여할 책임이 있습니다. 이를 통해 밸리데이터가 네트워크를 운영하는데 있어서 신뢰성을 더해주어 네트워크 보안에 기여하게 됩니다. 한 번 위임하면 다른 가디언으로 바꿀때까지 계속 유요합니다.',
       text_delegatorDescriptionTetra:
-        'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
-      linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
+        'TETRA는 오브스 전용 스테이킹 지갑입니다. ORBS 홀더는 쉽게 가디언을 선택하고 스테이킹할 수 있습니다.',
+      linkText_tetraWalletTutorial: 'Tetra 사용설명',
 
       // Rewards table
       delegatorNonStakedOrbs: '스테이킹하고 있지 않는 ORBS',
