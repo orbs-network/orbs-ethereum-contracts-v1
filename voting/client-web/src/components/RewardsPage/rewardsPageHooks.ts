@@ -3,22 +3,30 @@ import { IOrbsRewardsService, IRewardsDistributionEvent, IStakingService } from 
 import { useEffect } from 'react';
 import { useBoolean, useStateful } from 'react-hanger';
 import { useApi } from '../../services/ApiContext';
-import { IRemoteService, TRewardsSummary } from '../../services/IRemoteService';
+import { IRemoteService, TCurrentDelegationInfo, TRewardsSummary } from '../../services/IRemoteService';
 import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
 
 export type TCompleteAddressInfoForRewardsPage = {
-  distributionsHistory: IRewardsDistributionEvent[];
-  // TODO : Break this to parts
-  dng: any;
+  hasActiveDelegation: boolean;
+  delegatorInfo: TCurrentDelegationInfo;
+  guardianInfo?: any;
   staking: {
     stakedOrbs: number;
   };
   rewardsSummary: TRewardsSummary;
+  distributionsHistory: IRewardsDistributionEvent[];
 };
 
 const emptyObject: TCompleteAddressInfoForRewardsPage = {
   distributionsHistory: [],
-  dng: {},
+  delegatorInfo: {
+    delegatedTo: '',
+    delegationBlockNumber: 0,
+    delegationTimestamp: 0,
+    delegationType: '',
+    delegatorBalance: 0,
+  },
+  hasActiveDelegation: false,
   staking: {
     stakedOrbs: 0,
   },
@@ -104,9 +112,13 @@ const readCompleteDataForAddress = async (
   const staking = await fetchStakingInfo(address, stakingService);
   const rewardsSummary = await fetchRewardsSummary(address, remoteService);
 
+  const { hasActiveDelegation, guardianInfo, delegatorInfo } = delegationAndGuardianInfo;
+
   const addressData: TCompleteAddressInfoForRewardsPage = {
     distributionsHistory: rewardsHistory,
-    dng: delegationAndGuardianInfo,
+    delegatorInfo,
+    guardianInfo,
+    hasActiveDelegation,
     staking,
     rewardsSummary,
   };
