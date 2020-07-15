@@ -33,14 +33,18 @@ const formatTimestamp = timestamp =>
 
 // TODO : FUTRUE : O.L : Fix types
 interface IProps {
+  // Props of delegator
+  delegatorAddress: string;
   delegatorInfo: TCurrentDelegationInfo;
-  guardianInfo: any;
   delegatorStakingInfo: TStakingInfo;
   isAGuardian?: boolean;
+
+  // Props of Delegatee (Guardian)
+  guardianInfo: any;
 }
 
 export const DelegationInfoTable = React.memo<IProps>(props => {
-  const { delegatorInfo, delegatorStakingInfo, guardianInfo } = props;
+  const { delegatorAddress, delegatorInfo, delegatorStakingInfo, guardianInfo, isAGuardian } = props;
 
   const { t } = useTranslation();
 
@@ -71,6 +75,13 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
       delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
     }
 
+    // DEV_NOTE : Guardians always 'delegate' to themself
+    if (isAGuardian) {
+      delegatedTo = delegatorAddress;
+      delegationBlockNumber = '-';
+      delegationTimestamp = '-';
+    }
+
     return {
       delegationType,
       delegatorBalance,
@@ -78,7 +89,7 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
       delegationBlockNumber,
       delegationTimestamp,
     };
-  }, [delegatorInfo]);
+  }, [delegatorAddress, delegatorInfo, isAGuardian]);
 
   return (
     <Table>

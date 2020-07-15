@@ -234,14 +234,17 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
         <RewardsHistoryTable distributionsHistory={distributionsHistory} />
       </section>
 
+      {/* TODO : Add a new section that is aimed for Guardians */}
       <section className={classes.section}>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
         </Typography>
         <DelegationInfoTable
+          delegatorAddress={queryAddress || ''}
           delegatorStakingInfo={stakingInfo}
           delegatorInfo={delegatorInfo}
           guardianInfo={guardianInfo}
+          isAGuardian={isGuardian}
         />
       </section>
 
