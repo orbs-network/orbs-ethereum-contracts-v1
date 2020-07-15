@@ -1,19 +1,26 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { IOrbsRewardsService, IRewardsDistributionEvent } from 'orbs-pos-data';
+import { IOrbsRewardsService, IRewardsDistributionEvent, IStakingService } from 'orbs-pos-data';
 import { useEffect } from 'react';
 import { useBoolean, useStateful } from 'react-hanger';
 import { useApi } from '../../services/ApiContext';
 import { IRemoteService } from '../../services/IRemoteService';
+import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
 
 export type TCompleteAddressInfoForRewardsPage = {
   distributionsHistory: IRewardsDistributionEvent[];
   // TODO : Break this to parts
   dng: any;
+  staking: {
+    stakedOrbs: number;
+  };
 };
 
 const emptyObject: TCompleteAddressInfoForRewardsPage = {
   distributionsHistory: [],
   dng: {},
+  staking: {
+    stakedOrbs: 0,
+  },
 };
 
 export type TUseCompleteAddressInfoForRewardsPage = (
@@ -24,15 +31,15 @@ export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRew
   const errorLoading = useBoolean(false);
   const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyObject);
 
-  const { orbsRewardsService, remoteService } = useApi();
+  const { orbsRewardsService, remoteService, stakingService } = useApi();
 
   useEffect(() => {
     if (address) {
-      readCompleteDataForAddress(address, orbsRewardsService, remoteService)
+      readCompleteDataForAddress(address, orbsRewardsService, remoteService, stakingService)
         .then(addressData.setValue)
         .catch(errorLoading.setTrue);
     }
-  }, [address, addressData.setValue, errorLoading.setTrue, orbsRewardsService, remoteService]);
+  }, [address, addressData.setValue, errorLoading.setTrue, orbsRewardsService, remoteService, stakingService]);
 
   if (!address) {
     return {
@@ -67,17 +74,28 @@ const fetchDelegationAndGuardianInfo = async (address: string, remoteService: IR
   return { delegatorInfo, guardianInfo, hasActiveDelegation };
 };
 
+const fetchStakingInfo = async (address: string, stakingService: IStakingService) => {
+  const stakedOrbsInWeiOrbs = await stakingService.readStakeBalanceOf(address);
+  const fullStakedOrbs = fullOrbsFromWeiOrbs(stakedOrbsInWeiOrbs);
+  return {
+    stakedOrbs: fullStakedOrbs,
+  };
+};
+
 const readCompleteDataForAddress = async (
   address: string,
   orbsRewardsService: IOrbsRewardsService,
   remoteService: IRemoteService,
+  stakingService: IStakingService,
 ) => {
   const rewardsHistory = await fetchRewardsHistory(address, orbsRewardsService);
   const delegationAndGuardianInfo = await fetchDelegationAndGuardianInfo(address, remoteService);
+  const staking = await fetchStakingInfo(address, stakingService);
 
   const addressData: TCompleteAddressInfoForRewardsPage = {
     distributionsHistory: rewardsHistory,
     dng: delegationAndGuardianInfo,
+    staking,
   };
 
   return addressData;
