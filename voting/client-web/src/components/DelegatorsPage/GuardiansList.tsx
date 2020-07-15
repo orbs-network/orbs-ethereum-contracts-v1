@@ -20,6 +20,9 @@ import { useTranslation } from 'react-i18next';
 import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
 import { VoteChip } from '../VoteChip/VoteChip';
 import { TGuardianInfoExtended } from '../../Store/GuardiansStore';
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
+import { IReactComponent } from 'mobx-react/dist/types/IReactComponent';
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -46,15 +49,18 @@ interface IProps {
 const asPercent = (num: number) =>
   (num * 100).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + '%';
 
-export const GuardiansList = React.memo<IProps>(props => {
+export const GuardiansList = observer<React.FunctionComponent<IProps>>(props => {
   const { enableDelegation, onSelect, guardians, delegatedTo } = props;
   const classes = useStyles();
   const { t } = useTranslation();
   const [candidate, setCandidate] = useState(delegatedTo);
 
+  // TODO : O.L : We use 'length' to force a re-render when the array update, find a better solution.
+  const length = guardians.length;
   const sortedGuardians = useMemo(() => {
+    const i = length;
     return [...guardians].sort((a, b) => b.stakePercent - a.stakePercent);
-  }, [guardians]);
+  }, [guardians, length]);
 
   return (
     <Table className={classes.table}>

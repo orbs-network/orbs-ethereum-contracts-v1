@@ -12,7 +12,6 @@ import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useApi } from '../../services/ApiContext';
-import { normalizeUrl } from '../../services/urls';
 import { DelegationStatusDialog } from '../DelegationStatusDialog/DelegationStatusDialog';
 import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
 import { GuardiansList } from './GuardiansList';

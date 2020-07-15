@@ -30,12 +30,16 @@ export class GuardiansStore {
       this.setDoneLoading(false);
       const guardiansAddresses = await this.guardiansService.readGuardiansList(0, 100);
       const promises = guardiansAddresses.map(guardianAddress =>
-        this.guardiansService.readGuardianInfo(guardianAddress),
+        this.guardiansService.readGuardianInfo(guardianAddress).then(guardian => {
+          const guardianInfoExtended: TGuardianInfoExtended = { ...guardian, address: guardianAddress };
+          this.addGuardianToList(guardianInfoExtended);
+        }),
       );
 
-      const guardiansInfo = await Promise.all(promises);
-      const guardiansInfoExtended = guardiansInfo.map((g, idx) => ({ ...g, address: guardiansAddresses[idx] }));
-      this.setGuardiansList(guardiansInfoExtended);
+      // TODO : O.L : Decide how to handle error in loading
+      // const guardiansInfo = await Promise.all(promises);
+      // const guardiansInfoExtended = guardiansInfo.map((g, idx) => ({ ...g, address: guardiansAddresses[idx] }));
+      // this.setGuardiansList(guardiansInfoExtended);
 
       this.setDoneLoading(true);
     } catch (e) {
@@ -54,6 +58,11 @@ export class GuardiansStore {
   @action('setGuardiansList')
   private setGuardiansList(guardians: TGuardianInfoExtended[]) {
     this.guardiansList.replace(guardians);
+  }
+
+  @action('addGuardianToList')
+  private addGuardianToList(guardian: TGuardianInfoExtended) {
+    this.guardiansList.push(guardian);
   }
 
   @action('setDoneLoading')
