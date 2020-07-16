@@ -5,6 +5,8 @@ import { configureMobx, getStores } from '../../Store/storesInitialization';
 import { buildServices } from '../../services/Services';
 import Web3 from 'web3';
 import { Provider } from 'mobx-react';
+import { ApiContext } from '../../services/ApiContext';
+import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 
 configureMobx();
 
@@ -19,13 +21,17 @@ if (ethereumProvider) {
 }
 
 const services = buildServices(web3, ethereumProvider);
-const { guardiansService } = services;
+const { orbsRewardsService, metamask, remoteService, guardiansService, stakingService } = services;
 const stores = getStores(guardiansService);
 
 export const AppWrapper = React.memo(props => {
   return (
     <Provider {...services} {...stores}>
-      <App configs={configs} />
+      <ApiContext.Provider value={{ remoteService, metamask, stakingService, guardiansService, orbsRewardsService }}>
+        <StylesProvider injectFirst>
+          <App configs={configs} />
+        </StylesProvider>
+      </ApiContext.Provider>
     </Provider>
   );
 });

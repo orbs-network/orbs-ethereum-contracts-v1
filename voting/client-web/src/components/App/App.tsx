@@ -12,25 +12,60 @@ import { Route } from 'react-router-dom';
 import classNames from 'classnames';
 import { WithStyles } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { LangRouter } from '../multi-lang/LangRouter';
 import { IConfig } from '../../config';
 import { ApiContext } from '../../services/ApiContext';
 import { resources } from '../../translations';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
-import { AppStyles } from './App.style';
 import { ThemeProvider } from './ThemeProvider';
 import { useServices } from '../../services/ServicesHooks';
 
-interface IProps extends WithStyles<typeof AppStyles> {
+interface IProps {
   configs: IConfig;
 }
 
-const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
-  const services = useServices();
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    backgroundColor: '#06142e',
+    backgroundRepeat: 'repeat-y',
+    backgroundImage: 'url(https://www.orbs.com/wp-content/uploads/2019/02/technology-background1.png)',
+    backgroundAttachment: 'scroll',
+    backgroundPosition: 'top center',
+    minHeight: '100vh',
+  },
+  glass: {
+    backgroundColor: 'black',
+    width: '100%',
+    height: '100%',
+    opacity: 0.7,
+    zIndex: 100000,
+    position: 'absolute' as any,
+    top: 0,
+    left: 0,
+  },
+  glassLabel: {
+    width: '100%',
+    height: '100%',
+    zIndex: 100001,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute' as any,
+    top: 0,
+    left: 0,
+  },
+  blurred: {
+    filter: 'blur(2px)',
+  },
+}));
 
-  const { orbsRewardsService, metamask, remoteService, guardiansService, stakingService } = services;
+export const App = React.memo<IProps>(props => {
+  const classes = useStyles();
+  const { configs } = props;
+  const services = useServices();
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
@@ -38,24 +73,19 @@ const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
         <ThemeProvider>
           {/* DEV_NOTE : O.L : This provider is the old-form manual provider */}
           {/* TODO : O.L: Change all services to use the standard provider and hooks */}
-          <ApiContext.Provider
-            value={{ remoteService, metamask, stakingService, guardiansService, orbsRewardsService }}
+
+          <CssBaseline />
+          <div
+            className={classNames({
+              [classes.root]: true,
+            })}
+            data-testid='container'
           >
-            <CssBaseline />
-            <div
-              className={classNames({
-                [classes.root]: true,
-              })}
-              data-testid='container'
-            >
-              <Header />
-              <Main />
-            </div>
-          </ApiContext.Provider>
+            <Header />
+            <Main />
+          </div>
         </ThemeProvider>
       </QueryParamProvider>
     </LangRouter>
   );
-};
-
-export const App = withStyles(AppStyles)(AppImpl);
+});

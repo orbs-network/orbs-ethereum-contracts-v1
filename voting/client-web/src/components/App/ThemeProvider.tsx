@@ -11,6 +11,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppTheme } from './App.theme';
 
+// TODO : ORL : Break this apart if not re-building
 export const ThemeProvider: React.FC = ({ children }) => {
   const { t } = useTranslation();
   return <MuiThemeProvider theme={AppTheme(t('fontFamily'))}>{children}</MuiThemeProvider>;
