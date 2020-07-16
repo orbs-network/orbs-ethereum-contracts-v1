@@ -17,6 +17,7 @@ import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegati
 import { GuardiansList } from './GuardiansList';
 import { useGuardiansStore } from '../../Store/storeHooks';
 import { observer } from 'mobx-react';
+import { Page } from '../structure/Page';
 
 // TODO : O.L : Add loading indicator
 export const DelegatorsPage = observer(() => {
@@ -71,8 +72,9 @@ export const DelegatorsPage = observer(() => {
 
   const { t } = useTranslation();
 
-  const centerContent = {
+  const centerContent: React.CSSProperties = {
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '15px',
@@ -90,7 +92,7 @@ export const DelegatorsPage = observer(() => {
   );
 
   return (
-    <>
+    <Page>
       <header style={centerContent}>
         <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
           {t('Guardians List')}
@@ -145,6 +147,6 @@ export const DelegatorsPage = observer(() => {
           </Button>
         )}
       </div>
-    </>
+    </Page>
   );
 });
