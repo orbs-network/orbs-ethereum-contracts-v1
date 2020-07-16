@@ -9,22 +9,16 @@
 import React from 'react';
 import { QueryParamProvider } from 'use-query-params';
 import { Route } from 'react-router-dom';
-import classNames from 'classnames';
-import { WithStyles } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { LangRouter } from '../multi-lang/LangRouter';
 import { IConfig } from '../../config';
-import { ApiContext } from '../../services/ApiContext';
 import { resources } from '../../translations';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
 import { ThemeProvider } from './ThemeProvider';
-import { useServices } from '../../services/ServicesHooks';
 
-interface IProps {
-  configs: IConfig;
-}
+interface IProps {}
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +28,8 @@ const useStyles = makeStyles(theme => ({
     backgroundImage: 'url(https://www.orbs.com/wp-content/uploads/2019/02/technology-background1.png)',
     backgroundAttachment: 'scroll',
     backgroundPosition: 'top center',
-    minHeight: '100vh',
+    // minHeight: '100vh',
+    height: '100%',
   },
   glass: {
     backgroundColor: 'black',
@@ -64,8 +59,6 @@ const useStyles = makeStyles(theme => ({
 
 export const App = React.memo<IProps>(props => {
   const classes = useStyles();
-  const { configs } = props;
-  const services = useServices();
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
@@ -75,13 +68,8 @@ export const App = React.memo<IProps>(props => {
           {/* TODO : O.L: Change all services to use the standard provider and hooks */}
 
           <CssBaseline />
-          <div
-            className={classNames({
-              [classes.root]: true,
-            })}
-            data-testid='container'
-          >
-            <Header />
+          <Header />
+          <div className={classes.root} data-testid='container'>
             <Main />
           </div>
         </ThemeProvider>

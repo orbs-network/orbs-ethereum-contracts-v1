@@ -8,20 +8,58 @@
 
 import AppBar from '@material-ui/core/AppBar';
 import Link from '@material-ui/core/Link';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import classNames from 'classnames';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 import { ReadOnlyBanner } from '../ReadOnlyBanner/ReadOnlyBanner';
-import { HeaderStyles, HOVER_COLOR } from './Header.styles';
 import { Languages } from './languages';
 import logo from './logo-white.svg';
 import { Button } from '@material-ui/core';
 import { useApi } from '../../services/ApiContext';
 
-const HeaderImpl = ({ classes }) => {
+export const HOVER_COLOR = '#16faff';
+
+const useStyles = makeStyles(theme => ({
+  logo: {
+    width: 70,
+  },
+  nav: {
+    display: 'inherit',
+  },
+  toolbar: {
+    justifyContent: 'space-between',
+  },
+  headerButtonsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    padding: `${theme.spacing(2)}px ${theme.spacing(8)}px`,
+  },
+  displayInMetamaskButton: {
+    marginRight: `${theme.spacing(3)}px`,
+  },
+  movedDown: {
+    paddingTop: 48,
+  },
+  link: {
+    color: '#ffffffb3',
+    marginLeft: 30,
+    transition: 'color 0.4s ease-in-out',
+    '&:hover': {
+      color: HOVER_COLOR,
+    },
+  },
+}));
+
+// const HeaderImpl = ({ classes }) => {
+export const Header = React.memo(props => {
+  const classes = useStyles();
   const { t } = useTranslation();
   const { metamask } = useApi();
   const hasMetamask = useMemo(() => !!metamask, [metamask]);
@@ -45,7 +83,9 @@ const HeaderImpl = ({ classes }) => {
       })}
       data-testid='header'
     >
+      {/* MetaMask banner */}
       <ReadOnlyBanner isOpen={isNoMetamaskBannerOpen} closeBanner={hideMetaMaskBanner} />
+
       <div className={classes.headerButtonsContainer}>
         {metamask && (
           <Button
@@ -85,6 +125,4 @@ const HeaderImpl = ({ classes }) => {
       </Toolbar>
     </AppBar>
   );
-};
-
-export const Header = withStyles(HeaderStyles)(HeaderImpl);
+});

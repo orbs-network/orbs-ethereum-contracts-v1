@@ -29,7 +29,7 @@ export const AppWrapper = React.memo(props => {
     <Provider {...services} {...stores}>
       <ApiContext.Provider value={{ remoteService, metamask, stakingService, guardiansService, orbsRewardsService }}>
         <StylesProvider injectFirst>
-          <App configs={configs} />
+          <App />
         </StylesProvider>
       </ApiContext.Provider>
     </Provider>
