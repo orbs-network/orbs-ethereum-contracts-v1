@@ -24,25 +24,39 @@ import { HEADER_HEIGHT_REM } from '../App/ThemeProvider';
 export const HOVER_COLOR = '#16faff';
 
 const useStyles = makeStyles(theme => ({
+  appBar: {
+    paddingTop: '0.5rem',
+    paddingBottom: '0.5rem',
+    boxSizing: 'border-box',
+    height: `${HEADER_HEIGHT_REM}rem`,
+    zIndex: theme.zIndex.drawer + 1,
+    // padding: `${theme.spacing(2)}px ${theme.spacing(8)}px`,
+    // padding: theme.spacing(1),
+  },
   logo: {
     width: 70,
   },
   nav: {
     display: 'inherit',
+    flexWrap: 'wrap',
   },
   toolbar: {
+    paddingRight: 0,
+    paddingLeft: 0,
+    // marginRight: 'auto',
+    // marginLeft: 'auto',
+    margin: 'auto',
+    width: '90%',
+    maxWidth: '90%',
     justifyContent: 'space-between',
   },
   headerButtonsContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-  },
-  appBar: {
-    boxSizing: 'border-box',
-    height: `${HEADER_HEIGHT_REM}rem`,
-    zIndex: theme.zIndex.drawer + 1,
-    padding: `${theme.spacing(2)}px ${theme.spacing(8)}px`,
+    margin: 'auto',
+    width: '90%',
+    maxWidth: '90%',
   },
   displayInMetamaskButton: {
     marginRight: `${theme.spacing(3)}px`,
