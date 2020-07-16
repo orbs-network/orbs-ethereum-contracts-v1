@@ -13,7 +13,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import { useTranslation } from 'react-i18next';
-import { useBoolean } from 'react-hanger';
+import { TStakingInfo } from './rewardsPageHooks';
+import { TCurrentDelegationInfo } from '../../services/IRemoteService';
 
 const formatTimestamp = timestamp =>
   new Date(timestamp).toLocaleString('en-gb', {
@@ -30,13 +31,18 @@ const formatTimestamp = timestamp =>
 
 // TODO : FUTRUE : O.L : Fix types
 interface IProps {
-  delegatorInfo: any;
+  // Props of delegator
+  delegatorAddress: string;
+  delegatorInfo: TCurrentDelegationInfo;
+  delegatorStakingInfo: TStakingInfo;
+  isAGuardian?: boolean;
+
+  // Props of Delegatee (Guardian)
   guardianInfo: any;
-  delegatorStakingInfo: { stakedOrbs: number };
 }
 
 export const DelegationInfoTable = React.memo<IProps>(props => {
-  const { delegatorInfo, delegatorStakingInfo, guardianInfo } = props;
+  const { delegatorAddress, delegatorInfo, delegatorStakingInfo, guardianInfo, isAGuardian } = props;
 
   const { t } = useTranslation();
 
@@ -53,7 +59,7 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
     let delegationBlockNumber: string;
     let delegationTimestamp: string;
 
-    const delegationType = delegatorInfo.delegationType;
+    let delegationType = delegatorInfo.delegationType;
 
     if (delegationType === 'Not-Delegated') {
       delegatorBalance = '-';
@@ -67,6 +73,14 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
       delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
     }
 
+    // DEV_NOTE : Guardians always 'delegate' to themself
+    if (isAGuardian) {
+      delegatedTo = delegatorAddress;
+      delegationBlockNumber = '-';
+      delegationTimestamp = '-';
+      delegationType = 'Self (Guardian)';
+    }
+
     return {
       delegationType,
       delegatorBalance,
@@ -74,7 +88,7 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
       delegationBlockNumber,
       delegationTimestamp,
     };
-  }, [delegatorInfo]);
+  }, [delegatorAddress, delegatorInfo, isAGuardian]);
 
   return (
     <Table>
@@ -94,8 +108,8 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
         <TableRow>
           <TableCell>{t('Guardian voted in previous elections')}</TableCell>
           <TableCell align='right'>
-            {guardianInfo['voted'] === true || guardianInfo['voted'] === false ? (
-              <VoteChip value={guardianInfo['voted']} />
+            {guardianInfo.voted === true || guardianInfo.voted === false ? (
+              <VoteChip value={guardianInfo.voted} />
             ) : (
               '-'
             )}
@@ -104,8 +118,8 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
         <TableRow>
           <TableCell>{t('Guardian voted for next elections')}</TableCell>
           <TableCell align='right'>
-            {guardianInfo['hasEligibleVote'] === true || guardianInfo['hasEligibleVote'] === false ? (
-              <VoteChip value={guardianInfo['hasEligibleVote']} />
+            {guardianInfo.hasEligibleVote === true || guardianInfo.hasEligibleVote === false ? (
+              <VoteChip value={guardianInfo.hasEligibleVote} />
             ) : (
               '-'
             )}

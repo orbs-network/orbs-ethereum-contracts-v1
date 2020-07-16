@@ -8,7 +8,6 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { App } from './components/App/App';
-import { configs } from './config';
+import { AppWrapper } from './components/App/AppWrapper';
 
-ReactDOM.render(<App configs={configs} />, document.getElementById('root'));
+ReactDOM.render(<AppWrapper />, document.getElementById('root'));

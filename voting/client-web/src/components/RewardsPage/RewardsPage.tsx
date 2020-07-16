@@ -20,11 +20,10 @@ import { useApi } from '../../services/ApiContext';
 import { DelegationInfoTable } from './DelegationInfoTable';
 import { RewardsTable } from './RewardsTable';
 import { useQueryParam, StringParam } from 'use-query-params';
-import { RouteProps } from 'react-router';
-import { ICommonPageProps } from '../../types/pageTypes';
-import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
 import { renderToString } from 'react-dom/server';
-import { IRewardsDistributionEvent } from 'orbs-pos-data';
+import { useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
+import { observer } from 'mobx-react';
+import { useGuardiansStore } from '../../Store/storeHooks';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -47,11 +46,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-interface IDelegatorStakingInfo {
-  stakedOrbs: number;
-  selectedGuardianAddress: string;
-}
-
 const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 // TODO : C.F.H : We need to have the unstaked orbs balance (now, if thee address has no delgation, we will not get its balance neither)
@@ -62,82 +56,42 @@ const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000';
 type TDelegationTypes = 'Not-Delegated' | 'Transfer';
 const NOT_DELEGATED: TDelegationTypes = 'Not-Delegated';
 
-export const RewardsPage = React.memo<ICommonPageProps>(() => {
+export const RewardsPage = observer<React.FunctionComponent>(() => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const guardiansStore = useGuardiansStore();
+
+  // Display flags
   const showNoSelectedGuardianError = useBoolean(false);
   const showAddressNotParticipatingAlert = useBoolean(false);
-  const { remoteService, stakingService, guardiansService, orbsRewardsService } = useApi();
-  const [formAddress, setFormAddress] = useState('');
-  const [rewards, setRewards] = useState({});
-  const [distributionsHistory, setDistributionsHistory] = useState<IRewardsDistributionEvent[]>([]);
-  const [delegatorInfo, setDelegatorInfo] = useState<object>({});
-  const [delegatorStakingInfo, setDelegatorStakingInfo] = useState<IDelegatorStakingInfo>({
-    stakedOrbs: 0,
-    selectedGuardianAddress: EMPTY_ADDRESS,
-  });
-  const [guardianInfo, setGuardianInfo] = useState({});
-  const [electionBlock, setElectionBlock] = useState('0');
 
+  // Api service, should be removed
+  const { remoteService } = useApi();
+
+  // Page state
   const [queryAddress, setQueryAddress] = useQueryParam('address', StringParam);
 
-  const fetchRewards = useCallback(async address => remoteService.getRewards(address).then(setRewards), [
-    remoteService,
-  ]);
-  const fetchRewardsHistory = useCallback(
-    address =>
-      orbsRewardsService
-        .readRewardsDistributionsHistory(address)
-        .then(distributionsHistory => setDistributionsHistory(distributionsHistory)),
-    [orbsRewardsService],
-  );
+  // Account in question state
+  const isGuardian = guardiansStore.isGuardian(queryAddress || '');
 
-  const fetchDelegationInfo = useCallback(
-    async address => {
-      const delegatorInfo: any = await remoteService.getCurrentDelegationInfo(address);
-      setDelegatorInfo(delegatorInfo);
+  // Form state & functions
+  const [formAddress, setFormAddress] = useState('');
+  const submitHandler = useCallback(async () => {
+    setQueryAddress(formAddress, 'pushIn');
+  }, [setQueryAddress, formAddress]);
 
-      if (delegatorInfo.delegationType === 'Not-Delegated') {
-        setGuardianInfo({});
-      } else {
-        const guardianData = await remoteService.getGuardianData(delegatorInfo['delegatedTo']);
-        setGuardianInfo(guardianData);
-      }
-    },
-    [remoteService],
-  );
-
-  const fetchStakingInfoForAddress = useCallback(
-    async address => {
-      const stakedOrbsInWeiOrbs = await stakingService.readStakeBalanceOf(address);
-      const selectedGuardianAddress = await guardiansService.readSelectedGuardianAddress(address);
-      const fullStakedOrbs = fullOrbsFromWeiOrbs(stakedOrbsInWeiOrbs);
-
-      setDelegatorStakingInfo({ stakedOrbs: fullStakedOrbs, selectedGuardianAddress });
-    },
-    [stakingService, guardiansService],
-  );
-
-  const fetchAllDataForAddress = useCallback(
-    async (accountAddress: string) => {
-      fetchRewards(accountAddress);
-      fetchRewardsHistory(accountAddress);
-      fetchDelegationInfo(accountAddress);
-      fetchStakingInfoForAddress(accountAddress).catch(e => console.error('Error fetching staking info', e));
-    },
-    [fetchRewards, fetchRewardsHistory, fetchDelegationInfo, fetchStakingInfoForAddress],
-  );
-
+  // General Eco-system state & functions
+  const [electionBlock, setElectionBlock] = useState('0');
   const fetchEffectiveElectionBlock = useCallback(
     () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock),
     [remoteService],
   );
 
-  const submitHandler = useCallback(async () => {
-    setQueryAddress(formAddress, 'pushIn');
-  }, [setQueryAddress, formAddress]);
+  // Account specific State
+  const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress);
 
-  // Updates rewards data based on the query address param
+  // Updates the form's address and the effective election block when query-address change
   useEffect(() => {
     async function asyncInnerFunction() {
       await fetchEffectiveElectionBlock();
@@ -147,23 +101,35 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
       }
 
       setFormAddress(queryAddress);
-
-      await fetchAllDataForAddress(queryAddress);
     }
 
     asyncInnerFunction();
-  }, [fetchAllDataForAddress, fetchEffectiveElectionBlock, queryAddress]);
+  }, [fetchEffectiveElectionBlock, queryAddress]);
 
-  const hasUnstakedOrbs = (delegatorInfo as any).delegatorBalance > 0;
-  const hasStakedOrbs = delegatorStakingInfo.stakedOrbs > 0;
+  const { addressData, errorLoading } = completeAddressData;
+  const {
+    stakingInfo,
+    distributionsHistory,
+    rewardsSummary,
+    delegatorInfo,
+    guardianInfo,
+    hasActiveDelegation,
+  } = addressData;
+  const relevantGuardianInfo = isGuardian
+    ? guardiansStore.guardiansList.find(g => g.address.toLowerCase() === queryAddress?.toLowerCase())
+    : guardianInfo;
+
+  const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
+  const hasStakedOrbs = stakingInfo.stakedOrbs > 0;
   // DEV_NOTE : 'delegatorStakingInfo' requires being on the right network, 'delegatorInfo' does not, so for now we
   //             will use them both as our flag
-  const isDelegatedGuardianAddressValidByStakingInfo = delegatorStakingInfo.selectedGuardianAddress !== EMPTY_ADDRESS;
-  const isDelegatedGuardianAddressValidByDelegatorInfo = (delegatorInfo as any).delegatedTo !== EMPTY_ADDRESS;
+  // const isDelegatedGuardianAddressValidByStakingInfo = stakingInfo.selectedGuardianAddress !== EMPTY_ADDRESS;
+  const isDelegatedGuardianAddressValidByDelegatorInfo = delegatorInfo.delegatedTo !== EMPTY_ADDRESS;
   const isDelegatedGuardianAddressValid =
-    isDelegatedGuardianAddressValidByStakingInfo || isDelegatedGuardianAddressValidByDelegatorInfo;
+    // isDelegatedGuardianAddressValidByStakingInfo || isDelegatedGuardianAddressValidByDelegatorInfo;
+    isDelegatedGuardianAddressValidByDelegatorInfo;
 
-  const hasDelegatedGuardian = (delegatorInfo as any).delegationType !== NOT_DELEGATED;
+  const hasDelegatedGuardian = delegatorInfo.delegationType !== NOT_DELEGATED;
 
   const hasAddress = !!queryAddress;
   const hasSelectedGuardian = hasDelegatedGuardian && isDelegatedGuardianAddressValid;
@@ -178,8 +144,9 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
       return;
     }
 
+    // DEV_NOTE : O.L :  Guardians always have themselves as their selected Guardian.
     // Do we have staked ORBS but no guardian selected ?
-    if (hasStakedOrbs && !hasSelectedGuardian) {
+    if (!isGuardian && hasStakedOrbs && !hasSelectedGuardian) {
       showNoSelectedGuardianError.setTrue();
     } else {
       showNoSelectedGuardianError.setFalse();
@@ -191,7 +158,15 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
     } else {
       showAddressNotParticipatingAlert.setFalse();
     }
-  }, [showNoSelectedGuardianError, showAddressNotParticipatingAlert, hasAddress, hasStakedOrbs, hasSelectedGuardian]);
+  }, [
+    showNoSelectedGuardianError,
+    showAddressNotParticipatingAlert,
+    hasAddress,
+    hasStakedOrbs,
+    hasSelectedGuardian,
+    hasUnstakedOrbs,
+    isGuardian,
+  ]);
 
   const tetraUrl = 'https://tetra.com';
 
@@ -217,7 +192,7 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
       <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Rewards & Delegation Info')}
       </Typography>
-
+      {/* TODO : O.L : We might want to add a UX indicator that the account is a guardian */}
       <FormControl className={classes.form} variant='standard' margin='normal'>
         <TextField
           required
@@ -238,14 +213,14 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
       {showNoSelectedGuardianError.value && (
         <Alert className={classes.alert} severity='error'>
           <Typography>{t('alert_stakingWithoutGuardian')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }}></Typography>
+          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
         </Alert>
       )}
 
       {showAddressNotParticipatingAlert.value && (
         <Alert className={classes.alert} severity='info'>
           <Typography>{t('alert_notParticipating')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }}></Typography>
+          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
         </Alert>
       )}
 
@@ -253,7 +228,7 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Rewards')}
         </Typography>
-        <RewardsTable rewards={rewards} />
+        <RewardsTable rewardsSummary={rewardsSummary} />
       </section>
 
       <section className={classes.section}>
@@ -263,14 +238,17 @@ export const RewardsPage = React.memo<ICommonPageProps>(() => {
         <RewardsHistoryTable distributionsHistory={distributionsHistory} />
       </section>
 
+      {/* TODO : Add a new section that is aimed for Guardians */}
       <section className={classes.section}>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
         </Typography>
         <DelegationInfoTable
-          delegatorStakingInfo={delegatorStakingInfo}
+          delegatorAddress={queryAddress || ''}
+          delegatorStakingInfo={stakingInfo}
           delegatorInfo={delegatorInfo}
-          guardianInfo={guardianInfo}
+          guardianInfo={relevantGuardianInfo}
+          isAGuardian={isGuardian}
         />
       </section>
 
