@@ -19,15 +19,17 @@ import { HEADER_HEIGHT_REM, ThemeProvider } from './ThemeProvider';
 
 const useStyles = makeStyles(theme => ({
   rootApp: {
-    display: 'flex',
     backgroundColor: '#06142e',
     backgroundRepeat: 'repeat-y',
     backgroundImage: 'url(https://www.orbs.com/wp-content/uploads/2019/02/technology-background1.png)',
     backgroundAttachment: 'scroll',
     backgroundPosition: 'top center',
-    // minHeight: '100vh',
-    height: '100%',
-    // height: `calc(100% - ${HEADER_HEIGHT_REM}rem)`,
+    minHeight: `calc(100% - ${HEADER_HEIGHT_REM}rem)`,
+
+    // Center the content
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   headerSeparator: {
     height: `${HEADER_HEIGHT_REM}rem`,

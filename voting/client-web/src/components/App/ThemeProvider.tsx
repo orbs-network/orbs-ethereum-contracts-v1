@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { MuiThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppTheme } from './App.theme';
