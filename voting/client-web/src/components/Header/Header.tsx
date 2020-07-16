@@ -19,6 +19,7 @@ import { Languages } from './languages';
 import logo from './logo-white.svg';
 import { Button } from '@material-ui/core';
 import { useApi } from '../../services/ApiContext';
+import { HEADER_HEIGHT_REM } from '../App/ThemeProvider';
 
 export const HOVER_COLOR = '#16faff';
 
@@ -38,6 +39,8 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-end',
   },
   appBar: {
+    boxSizing: 'border-box',
+    height: `${HEADER_HEIGHT_REM}rem`,
     zIndex: theme.zIndex.drawer + 1,
     padding: `${theme.spacing(2)}px ${theme.spacing(8)}px`,
   },
@@ -57,7 +60,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-// const HeaderImpl = ({ classes }) => {
+// TODO : O.L : Fix the snackbar hiding the header
 export const Header = React.memo(props => {
   const classes = useStyles();
   const { t } = useTranslation();

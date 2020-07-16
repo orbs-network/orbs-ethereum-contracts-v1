@@ -12,16 +12,13 @@ import { Route } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import { LangRouter } from '../multi-lang/LangRouter';
-import { IConfig } from '../../config';
 import { resources } from '../../translations';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
-import { ThemeProvider } from './ThemeProvider';
-
-interface IProps {}
+import { HEADER_HEIGHT_REM, ThemeProvider } from './ThemeProvider';
 
 const useStyles = makeStyles(theme => ({
-  root: {
+  rootApp: {
     display: 'flex',
     backgroundColor: '#06142e',
     backgroundRepeat: 'repeat-y',
@@ -30,6 +27,10 @@ const useStyles = makeStyles(theme => ({
     backgroundPosition: 'top center',
     // minHeight: '100vh',
     height: '100%',
+    // height: `calc(100% - ${HEADER_HEIGHT_REM}rem)`,
+  },
+  headerSeparator: {
+    height: `${HEADER_HEIGHT_REM}rem`,
   },
   glass: {
     backgroundColor: 'black',
@@ -57,19 +58,17 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const App = React.memo<IProps>(props => {
+export const App = React.memo(props => {
   const classes = useStyles();
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
       <QueryParamProvider ReactRouterRoute={Route}>
         <ThemeProvider>
-          {/* DEV_NOTE : O.L : This provider is the old-form manual provider */}
-          {/* TODO : O.L: Change all services to use the standard provider and hooks */}
-
           <CssBaseline />
           <Header />
-          <div className={classes.root} data-testid='container'>
+          <div className={classes.headerSeparator} />
+          <div className={classes.rootApp} data-testid='container'>
             <Main />
           </div>
         </ThemeProvider>
