@@ -16,7 +16,7 @@ import TableHead from '@material-ui/core/TableHead';
 import { withStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { IElectedValidatorData } from '../../services/IValidatorData';
-import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
+import { CopyAddressButton } from '../../components/CopyAddressButton/CopyAddressButton';
 
 export interface IElectedValidatorDataWithAddress extends IElectedValidatorData {
   ethereumAddress: string;

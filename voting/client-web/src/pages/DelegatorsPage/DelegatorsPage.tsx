@@ -12,12 +12,12 @@ import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useApi } from '../../services/ApiContext';
-import { DelegationStatusDialog } from '../DelegationStatusDialog/DelegationStatusDialog';
-import { ManualDelegationDialog } from '../ManualDelegationDialog/ManualDelegationDialog';
+import { DelegationStatusDialog } from '../../components/DelegationStatusDialog/DelegationStatusDialog';
+import { ManualDelegationDialog } from '../../components/ManualDelegationDialog/ManualDelegationDialog';
 import { GuardiansList } from './GuardiansList';
 import { useGuardiansStore } from '../../Store/storeHooks';
 import { observer } from 'mobx-react';
-import { Page } from '../structure/Page';
+import { Page } from '../../components/structure/Page';
 
 // TODO : O.L : Add loading indicator
 export const DelegatorsPage = observer(() => {

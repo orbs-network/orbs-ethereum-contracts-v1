@@ -9,13 +9,13 @@
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Route, RouteProps, Switch } from 'react-router-dom';
-import { DelegatorsPage } from '../DelegatorsPage/DelegatorsPage';
+import { DelegatorsPage } from '../../pages/DelegatorsPage/DelegatorsPage';
 import { GuardiansPage } from '../Guardrians/GuardiansPage';
 import { Home } from '../Home/Home';
 import { NewGuardian } from '../NewGuardian/NewGuardian';
 import { NewValidator } from '../NewValidator/NewValidator';
-import { RewardsPage } from '../RewardsPage/RewardsPage';
-import { ValidatorsPage } from '../ValidatorsPage/ValidatorsPage';
+import { RewardsPage } from '../../pages/RewardsPage/RewardsPage';
+import { ValidatorsPage } from '../../pages/ValidatorsPage/ValidatorsPage';
 
 const useStyles = makeStyles(theme => ({
   content: {

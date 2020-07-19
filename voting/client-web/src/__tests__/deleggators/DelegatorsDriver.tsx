@@ -14,7 +14,7 @@ import { IMetamask } from '../../services/IMetamask';
 import { IRemoteService } from '../../services/IRemoteService';
 import { MetamaskServiceMock } from '../../services/MetamaskServiceMock';
 import { RemoteServiceMock } from '../../services/RemoteServiceMock';
-import { DelegatorsPage } from '../../components/DelegatorsPage/DelegatorsPage';
+import { DelegatorsPage } from '../../pages/DelegatorsPage/DelegatorsPage';
 
 export class DelegatorsDriver {
   public remoteService: IRemoteService;
