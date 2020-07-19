@@ -8,7 +8,7 @@ import { HOVER_COLOR } from './Header';
 import { useLinkDescriptors } from './links';
 import { useBoolean } from 'react-hanger';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   menuButton: {
     // marginRight: theme.spacing(2),
   },
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const MenuPopup = React.memo(props => {
+export const MenuPopup = React.memo((props) => {
   const classes = useStyles();
   const linkDescriptors = useLinkDescriptors();
   console.log('Render menu');
@@ -73,7 +73,7 @@ export const MenuPopup = React.memo(props => {
   const id = value ? 'links-popover-menu' : undefined;
 
   return (
-    <div style={{ border: '1px solid red' }}>
+    <div>
       <IconButton onClick={handleClick} className={classes.menuButton} color='inherit' aria-label='menu'>
         <MenuIcon />
       </IconButton>

@@ -271,16 +271,17 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
         />
       </PageSection>
 
-      {/*<section className={classes.section}>*/}
-      {/*  <Typography display={'inline'} variant='subtitle1' color='textSecondary'>*/}
-      {/*    {'* '}*/}
-      {/*    {t('The information above corresponds to elections at block number')}*/}
-      {/*    {': '}*/}
-      {/*  </Typography>*/}
-      {/*  <Typography display={'inline'} variant='subtitle1' color='secondary'>*/}
-      {/*    {parseInt(electionBlock, 10).toLocaleString()}*/}
-      {/*  </Typography>*/}
-      {/*</section>*/}
+      <br />
+      <section className={classes.section}>
+        <Typography display={'inline'} variant='subtitle1' color='textSecondary'>
+          {'* '}
+          {t('The information above corresponds to elections at block number')}
+          {': '}
+        </Typography>
+        <Typography display={'inline'} variant='subtitle1' color='secondary'>
+          {parseInt(electionBlock, 10).toLocaleString()}
+        </Typography>
+      </section>
     </Page>
   );
 });
