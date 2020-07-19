@@ -12,9 +12,12 @@ import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import Typography from '@material-ui/core/Typography';
 import { useTranslation } from 'react-i18next';
 import { TStakingInfo } from './rewardsPageHooks';
 import { TCurrentDelegationInfo } from '../../services/IRemoteService';
+import { TableContainer, useMediaQuery } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 
 const formatTimestamp = (timestamp) =>
   new Date(timestamp).toLocaleString('en-gb', {
@@ -90,54 +93,75 @@ export const DelegationInfoTable = React.memo<IProps>((props) => {
     };
   }, [delegatorAddress, delegatorInfo, isAGuardian]);
 
+  // DEV_NOTE : This is a hack to mamk the "table" looks better with all of
+  //            the content visible in mobile (without the need to scroll for) because of the
+  //            long address.
+  const theme = useTheme();
+  const smallerThanSmall = useMediaQuery(theme.breakpoints.down('xs'));
+  const contentCellAlignment = smallerThanSmall ? 'left' : 'right';
+
   return (
-    <Table>
-      <TableBody>
-        <TableRow>
-          <TableCell>{t('Delegated To')}</TableCell>
-          <TableCell align='right'>{delegatedTo}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{t(`delegatorNonStakedOrbs`)}</TableCell>
-          <TableCell align='right'>{delegatorBalance}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{t(`delegatorStakedOrbs`)}</TableCell>
-          <TableCell align='right'>{delegatorStakingInfo.stakedOrbs?.toLocaleString()}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{t('Guardian voted in previous elections')}</TableCell>
-          <TableCell align='right'>
-            {guardianInfo.voted === true || guardianInfo.voted === false ? (
-              <VoteChip value={guardianInfo.voted} />
-            ) : (
-              '-'
-            )}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{t('Guardian voted for next elections')}</TableCell>
-          <TableCell align='right'>
-            {guardianInfo.hasEligibleVote === true || guardianInfo.hasEligibleVote === false ? (
-              <VoteChip value={guardianInfo.hasEligibleVote} />
-            ) : (
-              '-'
-            )}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{t('Delegation method')}</TableCell>
-          <TableCell align='right'>{delegationType}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{t('Delegation block number')}</TableCell>
-          <TableCell align='right'>{delegationBlockNumber}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{t('Delegation timestamp')}</TableCell>
-          <TableCell align='right'>{delegationTimestamp}</TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
+    <TableContainer>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>{t('Delegated To')}</TableCell>
+            <TableCell align='right'>
+              <Typography
+                noWrap
+                style={{
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                }}
+              >
+                {delegatedTo}
+              </Typography>
+            </TableCell>
+            {/*<TableCell align='right'></TableCell>*/}
+          </TableRow>
+          <TableRow>
+            <TableCell>{t(`delegatorNonStakedOrbs`)}</TableCell>
+            <TableCell align={contentCellAlignment}>{delegatorBalance}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{t(`delegatorStakedOrbs`)}</TableCell>
+            <TableCell align={contentCellAlignment}>{delegatorStakingInfo.stakedOrbs?.toLocaleString()}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{t('Guardian voted in previous elections')}</TableCell>
+            <TableCell align={contentCellAlignment}>
+              {guardianInfo.voted === true || guardianInfo.voted === false ? (
+                <VoteChip value={guardianInfo.voted} />
+              ) : (
+                '-'
+              )}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{t('Guardian voted for next elections')}</TableCell>
+            <TableCell align={contentCellAlignment}>
+              {guardianInfo.hasEligibleVote === true || guardianInfo.hasEligibleVote === false ? (
+                <VoteChip value={guardianInfo.hasEligibleVote} />
+              ) : (
+                '-'
+              )}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{t('Delegation method')}</TableCell>
+            <TableCell align={contentCellAlignment}>{delegationType}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{t('Delegation block number')}</TableCell>
+            <TableCell align={contentCellAlignment}>{delegationBlockNumber}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{t('Delegation timestamp')}</TableCell>
+            <TableCell align={contentCellAlignment}>{delegationTimestamp}</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 });
