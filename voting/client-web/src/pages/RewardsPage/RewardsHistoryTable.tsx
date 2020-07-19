@@ -6,7 +6,8 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import MaterialTable, { Column, MTableBody } from 'material-table';
 import Table from '@material-ui/core/Table';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,57 +18,90 @@ import { TableHead, Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { IRewardsDistributionEvent } from 'orbs-pos-data';
 import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
+import { TABLE_ICONS } from '../../components/tables/TableIcons';
 
 interface IProps {
   distributionsHistory: IRewardsDistributionEvent[];
 }
 
-// export const RewardsHistoryTable = ({ rewardsHistory }) => {
-export const RewardsHistoryTable = React.memo<IProps>(({ distributionsHistory }) => {
+export const RewardsHistoryTable = React.memo<IProps>((props) => {
   const { t } = useTranslation();
+  const { distributionsHistory } = props;
 
   const totalAmount = distributionsHistory.reduce((prev, cur) => {
     const fullOrbs = fullOrbsFromWeiOrbs(cur.amount);
     return prev + fullOrbs;
   }, 0);
 
-  return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>{t('Distribution Event')}</TableCell>
-          <TableCell>{t('Transaction Hash')}</TableCell>
-          <TableCell align='right'>{t('Amount')}</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {distributionsHistory.map((r, idx) => {
-          const amount = r.amount ? fullOrbsFromWeiOrbs(r.amount) : 0;
+  const COLUMNS = useMemo<Column<IRewardsDistributionEvent>[]>(() => {
+    return [
+      {
+        title: t('Distribution Event'),
+        field: 'distributionEvent',
+        align: 'left',
+        type: 'string',
+        width: 'min-content',
+      },
+      {
+        title: t('Transaction Hash'),
+        field: 'transactionHash',
+        render: (data, type) => {
           return (
-            <TableRow key={idx}>
-              <TableCell>{r.distributionEvent}</TableCell>
-              <TableCell>
-                <Link
-                  color='secondary'
-                  target='_blank'
-                  rel='noopener'
-                  href={`https://etherscan.io/tx/${r.transactionHash}`}
-                >
-                  {r.transactionHash}
-                </Link>
-              </TableCell>
-              <TableCell align='right'>{amount.toLocaleString()} ORBS</TableCell>
-            </TableRow>
+            <Link
+              color='secondary'
+              target='_blank'
+              rel='noopener'
+              href={`https://etherscan.io/tx/${data.transactionHash}`}
+            >
+              {data.transactionHash}
+            </Link>
           );
-        })}
-      </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell>{t('Total Distributed')}</TableCell>
-          <TableCell />
-          <TableCell align='right'>{(totalAmount || 0).toLocaleString()} ORBS</TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
+        },
+      },
+      {
+        title: t('Amount'),
+        align: 'right',
+        width: 'min-content',
+        field: 'amount',
+        render: (data, type) => {
+          const amount = data.amount ? fullOrbsFromWeiOrbs(data.amount) : 0;
+          return `${amount.toLocaleString()} ORBS`;
+        },
+      },
+    ];
+  }, [t]);
+
+  return (
+    <MaterialTable
+      components={{
+        //  DEV_NOTE : Remove 'Paper'
+        Container: (containerProps) => containerProps.children,
+        // DEV_NOTE : Allows footer
+        Body: (props) => (
+          <>
+            <MTableBody {...props} />
+            <TableFooter style={{ width: '100%' }}>
+              <TableRow>
+                <TableCell>{t('Total Distributed')}</TableCell>
+                <TableCell />
+                <TableCell align='right'>{(totalAmount || 0).toLocaleString()} ORBS</TableCell>
+              </TableRow>
+            </TableFooter>
+          </>
+        ),
+      }}
+      style={{ backgroundColor: 'rgba(0,0,0, 0)' }}
+      icons={TABLE_ICONS}
+      columns={COLUMNS}
+      data={distributionsHistory}
+      options={{
+        headerStyle: {
+          backgroundColor: 'rgba(0,0,0,0)',
+        },
+        search: false,
+        showTitle: false,
+        paging: false,
+      }}
+    />
   );
 });
