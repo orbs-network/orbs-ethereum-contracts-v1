@@ -7,7 +7,7 @@
  */
 
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
@@ -16,8 +16,8 @@ import { Link } from 'react-router-dom';
 import { useApi } from '../../services/ApiContext';
 import { normalizeUrl } from '../../services/urls';
 import { get, save } from '../../services/vote-storage';
-import { GuardiansPageStyles } from './GuardiansPage.styles';
-import { ValidatorsList } from './ValidatorsList';
+import { TValidatorForListTemp, ValidatorsList } from './ValidatorsList';
+import { Page } from '../structure/Page';
 
 const ReadOnlyVoteButton = () => {
   const { t } = useTranslation();
@@ -57,16 +57,17 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-const GuardiansPageImpl = ({ classes }: { classes: any }) => {
+
+const useStyles = makeStyles((theme) => ({  voteButton: {
+    textAlign: 'center' as any,
+    margin: '30px 0',
+  },
+}));
+export const GuardiansPage = React.memo(props => {
+  const classes = useStyles();
   const { remoteService, metamask } = useApi();
   const [validators, setValidators] = useState({} as {
-    [address: string]: {
-      checked: boolean;
-      name: string;
-      url: string;
-      orbsAddress: string;
-      votesAgainst: string;
-    };
+    [address: string]: TValidatorForListTemp;
   });
 
   const [lastVote, setLastVote] = useState<string[]>([]);
@@ -75,6 +76,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
   const fetchValidator = async (address, checked) => {
     const data = await remoteService.getValidatorData(address);
     validators[address] = {
+      address,
       checked,
       name: data['name'],
       url: normalizeUrl(data['website']),
@@ -153,7 +155,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
   }, []);
 
   return (
-    <>
+    <Page>
       <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Validators List')}
       </Typography>
@@ -201,8 +203,6 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
           {t('You have not voted yet')}
         </Typography>
       )}
-    </>
+    </Page>
   );
-};
-
-export const GuardiansPage = withStyles(GuardiansPageStyles)(GuardiansPageImpl);
+});
