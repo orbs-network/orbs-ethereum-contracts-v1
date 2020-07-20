@@ -15,7 +15,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import React, { useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CopyAddressButton } from '../../components/CopyAddressButton/CopyAddressButton';
 import { VoteChip } from '../../components/VoteChip/VoteChip';
@@ -23,8 +23,11 @@ import { TGuardianInfoExtended } from '../../Store/GuardiansStore';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { IReactComponent } from 'mobx-react/dist/types/IReactComponent';
+import { CommonTable } from '../../components/tables/CommonTable';
+import { Column } from 'material-table';
+import { IRewardsDistributionEvent } from 'orbs-pos-data';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   table: {
     marginBottom: 30,
     tableLayout: 'fixed' as any,
@@ -49,7 +52,7 @@ interface IProps {
 const asPercent = (num: number) =>
   (num * 100).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + '%';
 
-export const GuardiansList = observer<React.FunctionComponent<IProps>>(props => {
+export const GuardiansList = observer<React.FunctionComponent<IProps>>((props) => {
   const { enableDelegation, onSelect, guardians, delegatedTo } = props;
   const classes = useStyles();
   const { t } = useTranslation();
@@ -63,78 +66,72 @@ export const GuardiansList = observer<React.FunctionComponent<IProps>>(props => 
     return [...guardians].sort((a, b) => b.stakePercent - a.stakePercent);
   }, [guardians, length]);
 
-  return (
-    <Table className={classes.table}>
-      <TableHead>
-        <TableRow>
-          <TableCell style={{ width: '65px' }} className={classes.cell} padding='checkbox' />
-          <TableCell style={{ width: '30%' }} className={classes.cell}>
-            {t('Name')}
-          </TableCell>
-          <TableCell style={{ width: '4%' }} />
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
-            {t('Address')}
-          </TableCell>
-          <TableCell style={{ width: '25%' }} className={classes.cell}>
-            {t('Website')}
-          </TableCell>
-          <TableCell style={{ width: '10%' }} className={classes.cell}>
-            {t('% in last election')}
-          </TableCell>
-          <TableCell style={{ width: '13%' }} className={classes.cell}>
-            {t('Voted for next elections')}
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody data-testid='guardians-list'>
-        {sortedGuardians.map(guardian => (
-          <TableRow data-testid={`guardian-${guardian.address}`} key={guardian.address}>
-            <TableCell padding='none' className={classes.cell}>
-              {enableDelegation && (
-                <Checkbox
-                  checked={guardian.address === candidate}
-                  value={guardian.address}
-                  onChange={ev => {
-                    setCandidate(ev.target.value);
-                    onSelect(ev.target.value);
-                  }}
-                />
-              )}
-            </TableCell>
-            <TableCell
-              padding='none'
-              className={classes.cell}
-              component='th'
-              scope='row'
-              data-testid={`guardian-${guardian.address}-name`}
-            >
-              {guardian.name}
-            </TableCell>
-            <TableCell padding='none'>
-              <CopyAddressButton address={guardian.address} />
-            </TableCell>
-            <TableCell size='small' className={classes.cell} data-testid={`guardian-${guardian.address}-address`}>
-              {guardian.address}
-            </TableCell>
-            <TableCell size='small' className={classes.cell}>
-              <Link
-                data-testid={`guardian-${guardian.address}-url`}
-                href={guardian.website}
-                target='_blank'
-                rel='noopener noreferrer'
-                color='secondary'
-                variant='body1'
-              >
-                {guardian.website}
-              </Link>
-            </TableCell>
-            <TableCell size='small'>{asPercent(guardian.stakePercent)}</TableCell>
-            <TableCell size='small' className={classes.cell}>
-              <VoteChip value={guardian.hasEligibleVote} />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+  const handleGuardianCheckboxChange = useCallback(
+    (ev: ChangeEvent<HTMLInputElement>) => {
+      setCandidate(ev.target.value);
+      onSelect(ev.target.value);
+    },
+    [onSelect],
   );
+
+  const COLUMNS = useMemo<Column<TGuardianInfoExtended>[]>(() => {
+    return [
+      {
+        render: (guardian) =>
+          enableDelegation && (
+            <Checkbox
+              checked={guardian.address === candidate}
+              value={guardian.address}
+              onChange={handleGuardianCheckboxChange}
+            />
+          ),
+        type: 'boolean',
+        sorting: false,
+        cellStyle: { padding: 0 },
+      },
+      {
+        title: t('name'),
+        field: 'name',
+        type: 'string',
+      },
+      {
+        render: (guardian) => <CopyAddressButton address={guardian.address} />,
+        width: 'min-content',
+        type: 'boolean',
+        sorting: false,
+        cellStyle: { padding: 0 },
+      },
+      {
+        title: t('address'),
+        field: 'address',
+      },
+      {
+        title: t('website'),
+        field: 'website',
+        render: (guardian) => (
+          <Link
+            data-testid={`guardian-${guardian.address}-url`}
+            href={guardian.website}
+            target='_blank'
+            rel='noopener noreferrer'
+            color='secondary'
+            variant='body1'
+          >
+            {guardian.website}
+          </Link>
+        ),
+      },
+      {
+        title: t('% in last election'),
+        field: 'stakePercent',
+        render: (guardian) => asPercent(guardian.stakePercent),
+      },
+      {
+        title: t('Voted for next elections'),
+        field: 'hasEligibleVote',
+        render: (guardian) => <VoteChip value={guardian.hasEligibleVote} />,
+      },
+    ];
+  }, [candidate, enableDelegation, handleGuardianCheckboxChange, t]);
+  return <CommonTable columns={COLUMNS} data={sortedGuardians} options={{ padding: 'dense' }} />;
 });
