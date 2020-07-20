@@ -57,18 +57,20 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-
-const useStyles = makeStyles((theme) => ({  voteButton: {
+const useStyles = makeStyles((theme) => ({
+  voteButton: {
     textAlign: 'center' as any,
     margin: '30px 0',
   },
 }));
-export const GuardiansPage = React.memo(props => {
+export const GuardiansPage = React.memo((props) => {
   const classes = useStyles();
   const { remoteService, metamask } = useApi();
-  const [validators, setValidators] = useState({} as {
-    [address: string]: TValidatorForListTemp;
-  });
+  const [validators, setValidators] = useState(
+    {} as {
+      [address: string]: TValidatorForListTemp;
+    },
+  );
 
   const [lastVote, setLastVote] = useState<string[]>([]);
   const [selectionDisabled, setSelectionDisabled] = useState(false);
@@ -92,11 +94,11 @@ export const GuardiansPage = React.memo(props => {
     if (metamask && isMetamaskActive()) {
       const from = await metamask.getCurrentAddress();
       const validatorsInStorage = get(from);
-      validatorsInState.forEach(address => {
+      validatorsInState.forEach((address) => {
         fetchValidator(address, validatorsInStorage.indexOf(address) > -1);
       });
     } else {
-      validatorsInState.forEach(address => fetchValidator(address, false));
+      validatorsInState.forEach((address) => fetchValidator(address, false));
     }
   };
 
@@ -116,7 +118,7 @@ export const GuardiansPage = React.memo(props => {
   const commitVote = async () => {
     if (metamask) {
       const from = await metamask.getCurrentAddress();
-      const stagedValidators = Object.keys(validators).filter(address => validators[address].checked);
+      const stagedValidators = Object.keys(validators).filter((address) => validators[address].checked);
       const receipt = await metamask.voteOut(stagedValidators);
       save(from, stagedValidators);
       fetchLastVote();
@@ -147,7 +149,7 @@ export const GuardiansPage = React.memo(props => {
 
   const isMetamaskActive = () => window.ethereum._metamask.isEnabled();
 
-  const hasSomebodySelected = () => Object.keys(validators).some(address => validators[address].checked);
+  const hasSomebodySelected = () => Object.keys(validators).some((address) => validators[address].checked);
 
   useEffect(() => {
     fetchValidators();
@@ -172,7 +174,7 @@ export const GuardiansPage = React.memo(props => {
         disableAll={selectionDisabled}
         readOnly={!metamask}
         validators={validators}
-        onToggle={address => toggleCheck(address)}
+        onToggle={(address) => toggleCheck(address)}
       />
       <div className={classes.voteButton}>
         {metamask ? (
@@ -192,7 +194,7 @@ export const GuardiansPage = React.memo(props => {
         <Typography variant='body1' color='textPrimary'>
           {t('Your most recent vote was against')}
           {':'}
-          {lastVote.map(address => (
+          {lastVote.map((address) => (
             <Typography style={{ lineHeight: 1.7 }} variant='overline' key={address} color='textSecondary'>
               {address}
             </Typography>

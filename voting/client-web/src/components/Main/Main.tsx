@@ -16,8 +16,9 @@ import { NewGuardian } from '../NewGuardian/NewGuardian';
 import { NewValidator } from '../NewValidator/NewValidator';
 import { RewardsPage } from '../../pages/RewardsPage/RewardsPage';
 import { ValidatorsPage } from '../../pages/ValidatorsPage/ValidatorsPage';
+import { useNoMetaMaskSnackbar } from '../ReadOnlyBanner/readOnlyBannerHooks';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   content: {
     // flexGrow: 1,
     maxWidth: '90%',
@@ -27,8 +28,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const Main = React.memo(props => {
+export const Main = React.memo((props) => {
   const classes = useStyles();
+  useNoMetaMaskSnackbar();
   return (
     <main className={classes.content} data-testid='main'>
       <Switch>

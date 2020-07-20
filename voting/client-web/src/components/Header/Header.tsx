@@ -25,7 +25,7 @@ import { useLinkDescriptors } from './links';
 
 export const HOVER_COLOR = '#16faff';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   appBar: {
     paddingTop: '0.5rem',
     paddingBottom: '0.5rem',
@@ -77,13 +77,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // TODO : O.L : Fix the snackbar hiding the header
-export const Header = React.memo(props => {
+export const Header = React.memo((props) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { metamask } = useApi();
-  const hasMetamask = useMemo(() => !!metamask, [metamask]);
-  const [isNoMetamaskBannerOpen, setIsMetamaskBannerOpen] = useState(!hasMetamask);
-  const hideMetaMaskBanner = useCallback(() => setIsMetamaskBannerOpen(false), [setIsMetamaskBannerOpen]);
+  // const hasMetamask = useMemo(() => !!metamask, [metamask]);
+  // const [isNoMetamaskBannerOpen, setIsMetamaskBannerOpen] = useState(!hasMetamask);
+  // const hideMetaMaskBanner = useCallback(() => setIsMetamaskBannerOpen(false), [setIsMetamaskBannerOpen]);
 
   const theme = useTheme();
   const smallerThanSmall = useMediaQuery(theme.breakpoints.down('xs'));
@@ -123,12 +123,12 @@ export const Header = React.memo(props => {
       position='fixed'
       className={classNames({
         [classes.appBar]: true,
-        [classes.movedDown]: isNoMetamaskBannerOpen, // Add header padding so the banner will not hide the content
+        // [classes.movedDown]: isNoMetamaskBannerOpen, // Add header padding so the banner will not hide the content
       })}
       data-testid='header'
     >
       {/* MetaMask banner */}
-      <ReadOnlyBanner isOpen={isNoMetamaskBannerOpen} closeBanner={hideMetaMaskBanner} />
+      {/*<ReadOnlyBanner isOpen={isNoMetamaskBannerOpen} closeBanner={hideMetaMaskBanner} />*/}
 
       <div className={classes.headerButtonsContainer}>
         {metamask && !smallerThanSmall && (

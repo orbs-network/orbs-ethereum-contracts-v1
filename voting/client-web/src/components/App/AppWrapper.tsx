@@ -7,6 +7,7 @@ import Web3 from 'web3';
 import { Provider } from 'mobx-react';
 import { ApiContext } from '../../services/ApiContext';
 import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
+import { SnackbarProvider } from 'notistack';
 
 configureMobx();
 
@@ -24,7 +25,7 @@ const services = buildServices(web3, ethereumProvider);
 const { orbsRewardsService, metamask, remoteService, guardiansService, stakingService } = services;
 const stores = getStores(guardiansService);
 
-export const AppWrapper = React.memo(props => {
+export const AppWrapper = React.memo((props) => {
   return (
     <Provider {...services} {...stores}>
       <ApiContext.Provider value={{ remoteService, metamask, stakingService, guardiansService, orbsRewardsService }}>

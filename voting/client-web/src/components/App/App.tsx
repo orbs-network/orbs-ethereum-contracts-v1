@@ -6,7 +6,7 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { QueryParamProvider } from 'use-query-params';
 import { Route } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,8 +16,10 @@ import { resources } from '../../translations';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
 import { HEADER_HEIGHT_REM, ThemeProvider } from './ThemeProvider';
+import { useNoMetaMaskSnackbar } from '../ReadOnlyBanner/readOnlyBannerHooks';
+import { SnackbarProvider } from 'notistack';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   rootApp: {
     backgroundColor: '#06142e',
     backgroundRepeat: 'repeat-y',
@@ -60,19 +62,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const App = React.memo(props => {
+export const App = React.memo((props) => {
   const classes = useStyles();
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
       <QueryParamProvider ReactRouterRoute={Route}>
         <ThemeProvider>
-          <CssBaseline />
-          <Header />
-          <div className={classes.headerSeparator} />
-          <div className={classes.rootApp} data-testid='container'>
-            <Main />
-          </div>
+          <SnackbarProvider maxSnack={3}>
+            <CssBaseline />
+            <Header />
+            <div className={classes.headerSeparator} />
+            <div className={classes.rootApp} data-testid='container'>
+              <Main />
+            </div>
+          </SnackbarProvider>
         </ThemeProvider>
       </QueryParamProvider>
     </LangRouter>

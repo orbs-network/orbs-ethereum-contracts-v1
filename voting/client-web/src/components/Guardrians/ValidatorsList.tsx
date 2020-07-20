@@ -35,8 +35,7 @@ export type TValidatorForListTemp = {
   url: string;
   orbsAddress: string;
   votesAgainst: string;
-}
-
+};
 
 interface IProps {
   disableAll: boolean;
@@ -56,14 +55,15 @@ export const ValidatorsList = React.memo<IProps>((props) => {
         type: 'boolean',
         sorting: false,
         cellStyle: { padding: 0 },
-        render: validator => (!readOnly && (
-          <Checkbox
-            disabled={!validator.checked && disableAll}
-            data-testid={`validator-${validator.address}-checkbox`}
-            value={validator.checked}
-            onChange={() => onToggle(validator.address)}
-          />
-        )),
+        render: (validator) =>
+          !readOnly && (
+            <Checkbox
+              disabled={!validator.checked && disableAll}
+              data-testid={`validator-${validator.address}-checkbox`}
+              value={validator.checked}
+              onChange={() => onToggle(validator.address)}
+            />
+          ),
       },
       {
         title: t('name'),
@@ -72,12 +72,12 @@ export const ValidatorsList = React.memo<IProps>((props) => {
       {
         sorting: false,
         cellStyle: { padding: 0 },
-        render: validator => <CopyAddressButton address={validator.address}/>,
+        render: (validator) => <CopyAddressButton address={validator.address} />,
       },
       {
         title: t('Ethereum Address'),
         field: 'address',
-        render: validator => (
+        render: (validator) => (
           <Tooltip title={validator.address} placement='top-start' enterDelay={200}>
             <span>{validator.address}</span>
           </Tooltip>
@@ -86,12 +86,12 @@ export const ValidatorsList = React.memo<IProps>((props) => {
       {
         sorting: false,
         cellStyle: { padding: 0 },
-        render: validator => (<CopyAddressButton address={validator.orbsAddress}/>),
+        render: (validator) => <CopyAddressButton address={validator.orbsAddress} />,
       },
       {
         title: t('Orbs Address'),
         field: 'orbsAddress',
-        render: validator => (
+        render: (validator) => (
           <Tooltip title={validator.orbsAddress} placement='top-start' enterDelay={200}>
             <span>{validator.orbsAddress}</span>
           </Tooltip>
@@ -100,7 +100,7 @@ export const ValidatorsList = React.memo<IProps>((props) => {
       {
         title: t('Website'),
         field: 'url',
-        render: validator => (
+        render: (validator) => (
           <Link
             data-testid={`validator-${validator.address}-url`}
             href={validator.url}
@@ -110,17 +110,16 @@ export const ValidatorsList = React.memo<IProps>((props) => {
             variant='body1'
           >
             {validator.url}
-          </Link>),
+          </Link>
+        ),
       },
       {
         title: t('Last election votes against (%)'),
         field: 'votesAgainst',
-        render: validator => (`${validator.votesAgainst}%`)
+        render: (validator) => `${validator.votesAgainst}%`,
       },
     ];
   }, [t]);
 
-  return (
-    <CommonTable data={Object.values(validators)} columns={COLUMNS}/>
-  );
+  return <CommonTable data={Object.values(validators)} columns={COLUMNS} />;
 });
