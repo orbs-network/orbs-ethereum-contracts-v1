@@ -9,7 +9,7 @@
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useApi } from '../../services/ApiContext';
 import { DelegationStatusDialog } from '../../components/DelegationStatusDialog/DelegationStatusDialog';
@@ -31,39 +31,42 @@ export const DelegatorsPage = observer(() => {
   const [delegationCandidate, setDelegationCandidate] = useState('');
   const [upcomingElectionsBlockNumber, setUpcomingElectionsBlockNumber] = useState('');
 
-  const fetchUpcomingElectionsBlockNumber = async () => {
+  const fetchUpcomingElectionsBlockNumber = useCallback(async () => {
     const res = await remoteService.getUpcomingElectionBlockNumber();
     setUpcomingElectionsBlockNumber(Number(res).toLocaleString());
-  };
+  }, [remoteService]);
 
-  const fetchTotalParticipatingTokens = async () => {
+  const fetchTotalParticipatingTokens = useCallback(async () => {
     const totalParticipatingTokens = await remoteService.getTotalParticipatingTokens();
     setTotalParticipatingTokens(Number(totalParticipatingTokens).toLocaleString());
-  };
+  }, [remoteService]);
 
-  const fetchDelegatedTo = async () => {
+  const fetchDelegatedTo = useCallback(async () => {
     if (metamask) {
       const address = await metamask.getCurrentAddress();
       const res = await remoteService.getCurrentDelegation(address);
       setDelegatedTo(res);
     }
-  };
+  }, [metamask, remoteService]);
 
   // TODO : Fix this loading
   useEffect(() => {
     fetchTotalParticipatingTokens();
     fetchDelegatedTo();
     fetchUpcomingElectionsBlockNumber();
-  }, []);
+  }, [fetchDelegatedTo, fetchTotalParticipatingTokens, fetchUpcomingElectionsBlockNumber]);
 
-  const delegate = async candidate => {
-    if (metamask) {
-      const receipt = await metamask.delegate(candidate);
-      fetchDelegatedTo();
-    }
-  };
+  const delegate = useCallback(
+    async (candidateAddress) => {
+      if (metamask) {
+        const receipt = await metamask.delegate(candidateAddress);
+        fetchDelegatedTo();
+      }
+    },
+    [fetchDelegatedTo, metamask],
+  );
 
-  const manualDelegateHandler = address => {
+  const manualDelegateHandler = (address) => {
     delegate(address);
     setTimeout(() => {
       setManualDelegationDialogState(false);
