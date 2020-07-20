@@ -13,10 +13,13 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { IElectedValidatorData } from '../../services/IValidatorData';
 import { CopyAddressButton } from '../../components/CopyAddressButton/CopyAddressButton';
+import { Column } from 'material-table';
+import { TGuardianInfoExtended } from '../../Store/GuardiansStore';
+import { CommonTable } from '../../components/tables/CommonTable';
 
 export interface IElectedValidatorDataWithAddress extends IElectedValidatorData {
   ethereumAddress: string;
@@ -32,16 +35,25 @@ const styles = () => ({
   },
 });
 
-const ValidatorsListImpl = ({
-  validators,
-  shouldSort,
-  classes,
-}: {
+interface IProps {
   validators: Array<IElectedValidatorDataWithAddress>;
   shouldSort?: boolean;
-  classes;
-}) => {
+}
+
+const useStyles = makeStyles((theme) => ({
+  table: {
+    tableLayout: 'fixed' as any,
+  },
+  cell: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+}));
+
+export const ValidatorsList = React.memo<IProps>((props) => {
+  const classes = useStyles();
   const { t } = useTranslation();
+  const { shouldSort, validators } = props;
 
   const validatorsInOrder = useMemo(() => {
     const validatorsClone = [...validators];
@@ -53,62 +65,45 @@ const ValidatorsListImpl = ({
     }
   }, [shouldSort, validators]);
 
-  return (
-    <Table className={classes.table}>
-      <TableHead>
-        <TableRow>
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
-            {t('Name')}
-          </TableCell>
+  const COLUMNS = useMemo<Column<IElectedValidatorDataWithAddress>[]>(() => {
+    return [
+      {
+        title: t('Name'),
+        field: 'name',
+        width: 'fit-content',
+      },
+      {
+        type: 'boolean',
+        sorting: false,
+        cellStyle: { padding: 0 },
+        render: (validator) => <CopyAddressButton address={validator.ethereumAddress} />,
+      },
+      {
+        title: t('Ethereum Address'),
+        field: 'ethereumAddress',
+        render: (validator) => (
+          <Tooltip title={validator.ethereumAddress} placement='top-start' enterDelay={200}>
+            <span>{validator.ethereumAddress}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        type: 'boolean',
+        sorting: false,
+        cellStyle: { padding: 0 },
+        render: (validator) => <CopyAddressButton address={validator.orbsAddress} />,
+      },
+      {
+        title: t('Orbs Address'),
+        field: 'orbsAddress',
+      },
+      {
+        title: t('Stake'),
+        field: 'stake',
+        render: (validator) => `${validator.stake.toLocaleString()} ORBS`,
+      },
+    ];
+  }, [t]);
 
-          <TableCell style={{ width: '2%' }} className={classes.cell} />
-          <TableCell style={{ width: '35%' }} className={classes.cell}>
-            {t('Ethereum Address')}
-          </TableCell>
-
-          <TableCell style={{ width: '2%' }} className={classes.cell} />
-          <TableCell style={{ width: '35%' }} className={classes.cell}>
-            {t('Orbs Address')}
-          </TableCell>
-          <TableCell style={{ width: '10%' }}>{t('Stake')}</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody data-testid='validators-list'>
-        {validatorsInOrder.map(electedValidatorData => {
-          const keyId = electedValidatorData.orbsAddress;
-
-          return (
-            <TableRow
-              data-testid={`validator-${electedValidatorData.orbsAddress}`}
-              key={electedValidatorData.orbsAddress}
-            >
-              <TableCell className={classes.cell} component='th' scope='row' data-testid={`validator-${keyId}-name`}>
-                {electedValidatorData.name}
-              </TableCell>
-              <TableCell padding='none'>
-                <CopyAddressButton address={electedValidatorData.ethereumAddress} />
-              </TableCell>
-              <TableCell className={classes.cell} data-testid={`validator-${keyId}-address`}>
-                <Tooltip title={keyId} placement='top-start' enterDelay={200}>
-                  <span>{electedValidatorData.ethereumAddress}</span>
-                </Tooltip>
-              </TableCell>
-
-              <TableCell padding='none'>
-                <CopyAddressButton address={electedValidatorData.orbsAddress} />
-              </TableCell>
-              <TableCell className={classes.cell} data-testid={`validator-${keyId}-orbs-address`}>
-                <Tooltip title={electedValidatorData.orbsAddress} placement='top-start' enterDelay={200}>
-                  <span>{electedValidatorData.orbsAddress}</span>
-                </Tooltip>
-              </TableCell>
-              <TableCell>{electedValidatorData.stake.toLocaleString()} ORBS</TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
-  );
-};
-
-export const ValidatorsList = withStyles(styles)(ValidatorsListImpl);
+  return <CommonTable data={validatorsInOrder} columns={COLUMNS} />;
+});
