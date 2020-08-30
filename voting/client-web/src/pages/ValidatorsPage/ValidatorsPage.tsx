@@ -39,7 +39,7 @@ const ValidatorsPageImpl = ({ classes }: { classes: any }) => {
 
   const readValidatorsData = useCallback(
     async (addresses: Array<string>) => {
-      const promises = addresses.map(address => readAndAugmentElectedValidatorData(address));
+      const promises = addresses.map((address) => readAndAugmentElectedValidatorData(address));
 
       const electedValidatorData = await Promise.all(promises);
 

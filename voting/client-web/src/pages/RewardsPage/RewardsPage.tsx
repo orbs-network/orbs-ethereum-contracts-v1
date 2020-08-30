@@ -27,7 +27,7 @@ import { Page } from '../../components/structure/Page';
 import { PageSection } from '../../components/structure/PageSection';
 import { RewardsHistoryTable } from './RewardsHistoryTable';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form: {
     display: 'flex',
     flexDirection: 'row',
@@ -121,7 +121,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     hasActiveDelegation,
   } = addressData;
   const relevantGuardianInfo = isGuardian
-    ? guardiansStore.guardiansList.find(g => g.address.toLowerCase() === queryAddress?.toLowerCase())
+    ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
     : guardianInfo;
 
   const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
@@ -209,7 +209,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
             className={classes.input}
             placeholder={t('Enter the address')}
             value={formAddress}
-            onChange={ev => setFormAddress(ev.target.value)}
+            onChange={(ev) => setFormAddress(ev.target.value)}
             label={'Address'}
             margin='normal'
             variant='standard'
