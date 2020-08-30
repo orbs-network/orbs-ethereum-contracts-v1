@@ -25,7 +25,7 @@ import { useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
 import { observer } from 'mobx-react';
 import { useGuardiansStore } from '../../Store/storeHooks';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form: {
     display: 'flex',
     flexDirection: 'row',
@@ -116,7 +116,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     hasActiveDelegation,
   } = addressData;
   const relevantGuardianInfo = isGuardian
-    ? guardiansStore.guardiansList.find(g => g.address.toLowerCase() === queryAddress?.toLowerCase())
+    ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
     : guardianInfo;
 
   const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
@@ -199,7 +199,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
           className={classes.input}
           placeholder={t('Enter the address')}
           value={formAddress}
-          onChange={ev => setFormAddress(ev.target.value)}
+          onChange={(ev) => setFormAddress(ev.target.value)}
           margin='normal'
           variant='standard'
         />

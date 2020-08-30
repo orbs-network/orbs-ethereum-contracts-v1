@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { TStakingInfo } from './rewardsPageHooks';
 import { TCurrentDelegationInfo } from '../../services/IRemoteService';
 
-const formatTimestamp = timestamp =>
+const formatTimestamp = (timestamp) =>
   new Date(timestamp).toLocaleString('en-gb', {
     hour12: false,
     timeZone: 'UTC',
@@ -41,7 +41,7 @@ interface IProps {
   guardianInfo: any;
 }
 
-export const DelegationInfoTable = React.memo<IProps>(props => {
+export const DelegationInfoTable = React.memo<IProps>((props) => {
   const { delegatorAddress, delegatorInfo, delegatorStakingInfo, guardianInfo, isAGuardian } = props;
 
   const { t } = useTranslation();
@@ -54,7 +54,7 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
     delegationBlockNumber: string;
     delegationTimestamp: string;
   }>(() => {
-    let delegatorBalance: string;
+    const delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
     let delegatedTo: string;
     let delegationBlockNumber: string;
     let delegationTimestamp: string;
@@ -62,12 +62,12 @@ export const DelegationInfoTable = React.memo<IProps>(props => {
     let delegationType = delegatorInfo.delegationType;
 
     if (delegationType === 'Not-Delegated') {
-      delegatorBalance = '-';
+      // delegatorBalance = '-';
       delegatedTo = '-';
       delegationBlockNumber = '-';
       delegationTimestamp = '-';
     } else {
-      delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
+      // delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
       delegatedTo = delegatorInfo.delegatedTo;
       delegationBlockNumber = (delegatorInfo.delegationBlockNumber || 0).toLocaleString();
       delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
