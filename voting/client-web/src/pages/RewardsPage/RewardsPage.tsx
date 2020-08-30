@@ -14,7 +14,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import { useBoolean } from 'react-hanger';
-import { RewardsHistoryTable } from './RewardsHistoryTable';
 import { useTranslation } from 'react-i18next';
 import { useApi } from '../../services/ApiContext';
 import { DelegationInfoTable } from './DelegationInfoTable';
@@ -24,19 +23,25 @@ import { renderToString } from 'react-dom/server';
 import { useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
 import { observer } from 'mobx-react';
 import { useGuardiansStore } from '../../Store/storeHooks';
+import { Page } from '../../components/structure/Page';
+import { PageSection } from '../../components/structure/PageSection';
+import { RewardsHistoryTable } from './RewardsHistoryTable';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   form: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'baseline',
-    width: '60%',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    // width: '60%',
   },
   input: {
-    flexGrow: 1,
+    width: '30rem',
+    // flexGrow: 1,
   },
   submit: {
-    marginLeft: 30,
+    // marginLeft: 30,
   },
   section: {
     marginTop: `${theme.spacing(8)}px`,
@@ -116,7 +121,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     hasActiveDelegation,
   } = addressData;
   const relevantGuardianInfo = isGuardian
-    ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
+    ? guardiansStore.guardiansList.find(g => g.address.toLowerCase() === queryAddress?.toLowerCase())
     : guardianInfo;
 
   const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
@@ -187,28 +192,35 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     ),
   });
 
+  // TODO : O.L : RESP : ADWR : Fix alignment.
+  // TODO : O.L : RESP : ADWR : Fix dimension-shifting-after-data-load.
+
   return (
-    <>
-      <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
-        {t('Rewards & Delegation Info')}
-      </Typography>
-      {/* TODO : O.L : We might want to add a UX indicator that the account is a guardian */}
-      <FormControl className={classes.form} variant='standard' margin='normal'>
-        <TextField
-          required
-          className={classes.input}
-          placeholder={t('Enter the address')}
-          value={formAddress}
-          onChange={(ev) => setFormAddress(ev.target.value)}
-          margin='normal'
-          variant='standard'
-        />
-        <div className={classes.submit}>
-          <Button onClick={submitHandler} variant='outlined'>
-            {t('Submit')}
-          </Button>
-        </div>
-      </FormControl>
+    <Page>
+      {/* Title & input */}
+      <PageSection>
+        <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
+          {t('Rewards & Delegation Info')}
+        </Typography>
+        {/* TODO : O.L : We might want to add a UX indicator that the account is a guardian */}
+        <FormControl className={classes.form} variant='standard' margin='normal'>
+          <TextField
+            required
+            className={classes.input}
+            placeholder={t('Enter the address')}
+            value={formAddress}
+            onChange={ev => setFormAddress(ev.target.value)}
+            label={'Address'}
+            margin='normal'
+            variant='standard'
+          />
+          <div className={classes.submit}>
+            <Button onClick={submitHandler} variant='outlined'>
+              {t('Submit')}
+            </Button>
+          </div>
+        </FormControl>
+      </PageSection>
 
       {showNoSelectedGuardianError.value && (
         <Alert className={classes.alert} severity='error'>
@@ -224,22 +236,29 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
         </Alert>
       )}
 
-      <section className={classes.section}>
+      <br />
+
+      <PageSection>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Rewards')}
         </Typography>
         <RewardsTable rewardsSummary={rewardsSummary} />
-      </section>
+      </PageSection>
 
-      <section className={classes.section}>
+      <br />
+
+      <PageSection>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Distributed')}
         </Typography>
+        <br />
         <RewardsHistoryTable distributionsHistory={distributionsHistory} />
-      </section>
+      </PageSection>
+
+      <br />
 
       {/* TODO : Add a new section that is aimed for Guardians */}
-      <section className={classes.section}>
+      <PageSection>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
         </Typography>
@@ -250,8 +269,9 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
           guardianInfo={relevantGuardianInfo}
           isAGuardian={isGuardian}
         />
-      </section>
+      </PageSection>
 
+      <br />
       <section className={classes.section}>
         <Typography display={'inline'} variant='subtitle1' color='textSecondary'>
           {'* '}
@@ -262,6 +282,6 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
           {parseInt(electionBlock, 10).toLocaleString()}
         </Typography>
       </section>
-    </>
+    </Page>
   );
 });

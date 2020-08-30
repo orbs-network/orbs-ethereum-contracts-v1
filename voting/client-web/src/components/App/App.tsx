@@ -6,56 +6,79 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { QueryParamProvider } from 'use-query-params';
 import { Route } from 'react-router-dom';
-import classNames from 'classnames';
-import { WithStyles } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { LangRouter } from '../multi-lang/LangRouter';
-import { IConfig } from '../../config';
-import { ApiContext } from '../../services/ApiContext';
 import { resources } from '../../translations';
 import { Header } from '../Header/Header';
 import { Main } from '../Main/Main';
-import { AppStyles } from './App.style';
-import { ThemeProvider } from './ThemeProvider';
-import { useServices } from '../../services/ServicesHooks';
+import { HEADER_HEIGHT_REM, ThemeProvider } from './ThemeProvider';
+import { useNoMetaMaskSnackbar } from '../ReadOnlyBanner/readOnlyBannerHooks';
+import { SnackbarProvider } from 'notistack';
 
-interface IProps extends WithStyles<typeof AppStyles> {
-  configs: IConfig;
-}
+const useStyles = makeStyles((theme) => ({
+  rootApp: {
+    backgroundColor: '#06142e',
+    backgroundRepeat: 'repeat-y',
+    backgroundImage: 'url(https://www.orbs.com/wp-content/uploads/2019/02/technology-background1.png)',
+    backgroundAttachment: 'scroll',
+    backgroundPosition: 'top center',
+    minHeight: `calc(100% - ${HEADER_HEIGHT_REM}rem)`,
 
-const AppImpl: React.FC<IProps> = ({ configs, classes }) => {
-  const services = useServices();
+    // Center the content
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  headerSeparator: {
+    height: `${HEADER_HEIGHT_REM}rem`,
+  },
+  glass: {
+    backgroundColor: 'black',
+    width: '100%',
+    height: '100%',
+    opacity: 0.7,
+    zIndex: 100000,
+    position: 'absolute' as any,
+    top: 0,
+    left: 0,
+  },
+  glassLabel: {
+    width: '100%',
+    height: '100%',
+    zIndex: 100001,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute' as any,
+    top: 0,
+    left: 0,
+  },
+  blurred: {
+    filter: 'blur(2px)',
+  },
+}));
 
-  const { orbsRewardsService, metamask, remoteService, guardiansService, stakingService } = services;
+export const App = React.memo((props) => {
+  const classes = useStyles();
 
   return (
     <LangRouter preLangBasename={process.env.PUBLIC_URL} resources={resources}>
       <QueryParamProvider ReactRouterRoute={Route}>
         <ThemeProvider>
-          {/* DEV_NOTE : O.L : This provider is the old-form manual provider */}
-          {/* TODO : O.L: Change all services to use the standard provider and hooks */}
-          <ApiContext.Provider
-            value={{ remoteService, metamask, stakingService, guardiansService, orbsRewardsService }}
-          >
+          <SnackbarProvider maxSnack={3}>
             <CssBaseline />
-            <div
-              className={classNames({
-                [classes.root]: true,
-              })}
-              data-testid='container'
-            >
-              <Header />
+            <Header />
+            <div className={classes.headerSeparator} />
+            <div className={classes.rootApp} data-testid='container'>
               <Main />
             </div>
-          </ApiContext.Provider>
+          </SnackbarProvider>
         </ThemeProvider>
       </QueryParamProvider>
     </LangRouter>
   );
-};
-
-export const App = withStyles(AppStyles)(AppImpl);
+});

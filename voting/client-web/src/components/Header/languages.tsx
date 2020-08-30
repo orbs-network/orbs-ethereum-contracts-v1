@@ -22,7 +22,8 @@ const styles = () => ({
     justifyContent: 'flex-end',
   },
   item: {
-    padding: '0 10px',
+    // padding: '0 10px',
+    paddingInlineStart: '20px',
     '&:hover': {
       opacity: 0.8,
     },

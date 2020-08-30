@@ -7,7 +7,7 @@
  */
 
 import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
@@ -16,8 +16,8 @@ import { Link } from 'react-router-dom';
 import { useApi } from '../../services/ApiContext';
 import { normalizeUrl } from '../../services/urls';
 import { get, save } from '../../services/vote-storage';
-import { GuardiansPageStyles } from './GuardiansPage.styles';
-import { ValidatorsList } from './ValidatorsList';
+import { TValidatorForListTemp, ValidatorsList } from './ValidatorsList';
+import { Page } from '../structure/Page';
 
 const ReadOnlyVoteButton = () => {
   const { t } = useTranslation();
@@ -57,17 +57,20 @@ const LeaveEveryoneButton = ({ onVote, disabled }) => {
   );
 };
 
-const GuardiansPageImpl = ({ classes }: { classes: any }) => {
+const useStyles = makeStyles((theme) => ({
+  voteButton: {
+    textAlign: 'center' as any,
+    margin: '30px 0',
+  },
+}));
+export const GuardiansPage = React.memo((props) => {
+  const classes = useStyles();
   const { remoteService, metamask } = useApi();
-  const [validators, setValidators] = useState({} as {
-    [address: string]: {
-      checked: boolean;
-      name: string;
-      url: string;
-      orbsAddress: string;
-      votesAgainst: string;
-    };
-  });
+  const [validators, setValidators] = useState(
+    {} as {
+      [address: string]: TValidatorForListTemp;
+    },
+  );
 
   const [lastVote, setLastVote] = useState<string[]>([]);
   const [selectionDisabled, setSelectionDisabled] = useState(false);
@@ -75,6 +78,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
   const fetchValidator = async (address, checked) => {
     const data = await remoteService.getValidatorData(address);
     validators[address] = {
+      address,
       checked,
       name: data['name'],
       url: normalizeUrl(data['website']),
@@ -90,11 +94,11 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
     if (metamask && isMetamaskActive()) {
       const from = await metamask.getCurrentAddress();
       const validatorsInStorage = get(from);
-      validatorsInState.forEach(address => {
+      validatorsInState.forEach((address) => {
         fetchValidator(address, validatorsInStorage.indexOf(address) > -1);
       });
     } else {
-      validatorsInState.forEach(address => fetchValidator(address, false));
+      validatorsInState.forEach((address) => fetchValidator(address, false));
     }
   };
 
@@ -114,7 +118,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
   const commitVote = async () => {
     if (metamask) {
       const from = await metamask.getCurrentAddress();
-      const stagedValidators = Object.keys(validators).filter(address => validators[address].checked);
+      const stagedValidators = Object.keys(validators).filter((address) => validators[address].checked);
       const receipt = await metamask.voteOut(stagedValidators);
       save(from, stagedValidators);
       fetchLastVote();
@@ -145,7 +149,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
 
   const isMetamaskActive = () => window.ethereum._metamask.isEnabled();
 
-  const hasSomebodySelected = () => Object.keys(validators).some(address => validators[address].checked);
+  const hasSomebodySelected = () => Object.keys(validators).some((address) => validators[address].checked);
 
   useEffect(() => {
     fetchValidators();
@@ -153,7 +157,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
   }, []);
 
   return (
-    <>
+    <Page>
       <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
         {t('Validators List')}
       </Typography>
@@ -170,7 +174,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
         disableAll={selectionDisabled}
         readOnly={!metamask}
         validators={validators}
-        onToggle={address => toggleCheck(address)}
+        onToggle={(address) => toggleCheck(address)}
       />
       <div className={classes.voteButton}>
         {metamask ? (
@@ -190,7 +194,7 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
         <Typography variant='body1' color='textPrimary'>
           {t('Your most recent vote was against')}
           {':'}
-          {lastVote.map(address => (
+          {lastVote.map((address) => (
             <Typography style={{ lineHeight: 1.7 }} variant='overline' key={address} color='textSecondary'>
               {address}
             </Typography>
@@ -201,8 +205,6 @@ const GuardiansPageImpl = ({ classes }: { classes: any }) => {
           {t('You have not voted yet')}
         </Typography>
       )}
-    </>
+    </Page>
   );
-};
-
-export const GuardiansPage = withStyles(GuardiansPageStyles)(GuardiansPageImpl);
+});

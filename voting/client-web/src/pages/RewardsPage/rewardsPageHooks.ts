@@ -51,7 +51,7 @@ export type TUseCompleteAddressInfoForRewardsPage = (
   address?: string,
 ) => { addressData: TCompleteAddressInfoForRewardsPage; errorLoading: boolean };
 
-export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRewardsPage = address => {
+export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRewardsPage = (address) => {
   const errorLoading = useBoolean(false);
   const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyObject);
 

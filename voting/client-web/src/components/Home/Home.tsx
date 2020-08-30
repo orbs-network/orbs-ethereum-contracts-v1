@@ -7,28 +7,98 @@
  */
 
 import Link from '@material-ui/core/Link';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 import { content } from './content';
-import { HomeStyles } from './Home.styles';
+import { Page } from '../structure/Page';
 
-const HomeImpl = ({ classes }) => {
+// DEV_NOTE : O.L : The responsiveness here is achieved with idea from https://heydonworks.com/article/the-flexbox-holy-albatross/
+
+const useStyles = makeStyles(theme => ({
+  explanations: {
+    // TODO : O.L : Check if we really need hard-coded value
+    maxWidth: '49em',
+  },
+  article: {
+    // marginTop: 90,
+    marginTop: theme.spacing(10),
+    maxWidth: '100%',
+  },
+  section: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyItems: 'center',
+    '--multiplier': 'calc(40rem - 100%)',
+    '--margin': '1rem',
+    // margin: 'calc(var(--margin) * -1)',
+
+    // marginBottom: 20,
+    overflowX: 'hidden',
+    '& > *': {
+      maxWidth: '100%',
+      // minWidth: '33%',
+      flexGrow: 1,
+      flexBasis: 'calc(var(--multiplier) * 999)',
+    },
+  },
+  imageBlock: {
+    marginRight: 'auto',
+    marginLeft: 'auto',
+    // minWidth: 'minmax(242px, 30%)',
+    // minWidth: 'calc(242px -(var(--margin) * 2)',
+    minWidth: '242px',
+  },
+  textBlock: {
+    // minWidth: 'calc(65% -(var(--margin) * 2)',
+    minWidth: '65%',
+  },
+  image: {
+    maxWidth: '100%',
+  },
+  division: {
+    border: '1px solid #192a44',
+    margin: '70px 0',
+  },
+  links: {
+    color: 'white',
+    paddingLeft: 16,
+  },
+  link: {
+    lineHeight: '1.8em',
+  },
+  ctaButton: {
+    display: 'inline-block',
+    background: '#16faff',
+    border: 0,
+    borderRadius: '100px',
+    padding: '.8em 1.6em',
+    '&:hover': {
+      opacity: 0.9,
+    },
+  },
+}));
+
+export const Home = React.memo(props => {
+  const classes = useStyles();
   const { t } = useTranslation();
+
   const translatedContent = content(t);
   return (
-    <>
-      <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
+    <Page>
+      <Typography variant='h2' gutterBottom color='textPrimary'>
         {t('Participation Instructions')}
       </Typography>
       <Typography className={classes.explanations} variant='body1' gutterBottom color='textPrimary'>
         {t('Participation Instructions Content1')}
       </Typography>
+      <br />
       <Typography className={classes.explanations} variant='body1' gutterBottom color='textPrimary'>
         {t('Participation Instructions Content2')}
       </Typography>
+
       <article className={classes.article}>
         {translatedContent.map((section, idx) => (
           <React.Fragment key={section.title}>
@@ -36,7 +106,7 @@ const HomeImpl = ({ classes }) => {
               <div className={classes.imageBlock}>
                 <img className={classes.image} src={section.imageUrl} alt={section.title} />
               </div>
-              <div>
+              <div className={classes.textBlock}>
                 <Typography variant='h4' gutterBottom color='textPrimary'>
                   {section.title}
                 </Typography>
@@ -74,12 +144,11 @@ const HomeImpl = ({ classes }) => {
                 </Link>
               </div>
             </section>
+            {/* TODO : O.L : Understand the purpose of this line */}
             {idx === translatedContent.length - 1 ? null : <hr className={classes.division} />}
           </React.Fragment>
         ))}
       </article>
-    </>
+    </Page>
   );
-};
-
-export const Home = withStyles(HomeStyles)(HomeImpl);
+});

@@ -6,22 +6,33 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Route, RouteProps, Switch } from 'react-router-dom';
-import { DelegatorsPage } from '../DelegatorsPage/DelegatorsPage';
+import { DelegatorsPage } from '../../pages/DelegatorsPage/DelegatorsPage';
 import { GuardiansPage } from '../Guardrians/GuardiansPage';
 import { Home } from '../Home/Home';
 import { NewGuardian } from '../NewGuardian/NewGuardian';
 import { NewValidator } from '../NewValidator/NewValidator';
-import { RewardsPage } from '../RewardsPage/RewardsPage';
-import { ValidatorsPage } from '../ValidatorsPage/ValidatorsPage';
-import { MainStyles } from './Main.style';
+import { RewardsPage } from '../../pages/RewardsPage/RewardsPage';
+import { ValidatorsPage } from '../../pages/ValidatorsPage/ValidatorsPage';
+import { useNoMetaMaskSnackbar } from '../ReadOnlyBanner/readOnlyBannerHooks';
 
-const MainImpl = ({ classes }) => {
+const useStyles = makeStyles((theme) => ({
+  content: {
+    // flexGrow: 1,
+    maxWidth: '90%',
+    boxSizing: 'border-box',
+    padding: theme.spacing(1),
+    // overflow: 'hidden',
+  },
+}));
+
+export const Main = React.memo((props) => {
+  const classes = useStyles();
+  useNoMetaMaskSnackbar();
   return (
     <main className={classes.content} data-testid='main'>
-      <div className={classes.toolbar} />
       <Switch>
         <Route exact path='/' component={Home} />
         <Route exact path='/delegator' component={(props: RouteProps) => <DelegatorsPage />} />
@@ -33,6 +44,4 @@ const MainImpl = ({ classes }) => {
       </Switch>
     </main>
   );
-};
-
-export const Main = withStyles(MainStyles)(MainImpl);
+});

@@ -8,46 +8,130 @@
 
 import AppBar from '@material-ui/core/AppBar';
 import Link from '@material-ui/core/Link';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import classNames from 'classnames';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 import { ReadOnlyBanner } from '../ReadOnlyBanner/ReadOnlyBanner';
-import { HeaderStyles, HOVER_COLOR } from './Header.styles';
 import { Languages } from './languages';
 import logo from './logo-white.svg';
-import { Button } from '@material-ui/core';
+import { Button, IconButton, useMediaQuery } from '@material-ui/core';
 import { useApi } from '../../services/ApiContext';
+import { HEADER_HEIGHT_REM } from '../App/ThemeProvider';
+import { MenuPopup } from './MenuPopup';
+import { useLinkDescriptors } from './links';
 
-const HeaderImpl = ({ classes }) => {
+export const HOVER_COLOR = '#16faff';
+
+const useStyles = makeStyles((theme) => ({
+  appBar: {
+    paddingTop: '0.5rem',
+    paddingBottom: '0.5rem',
+    boxSizing: 'border-box',
+    height: `${HEADER_HEIGHT_REM}rem`,
+    zIndex: theme.zIndex.drawer + 1,
+    // padding: `${theme.spacing(2)}px ${theme.spacing(8)}px`,
+    // padding: theme.spacing(1),
+  },
+  logo: {
+    width: 70,
+  },
+  nav: {
+    display: 'inherit',
+    flexWrap: 'wrap',
+  },
+  toolbar: {
+    paddingRight: 0,
+    paddingLeft: 0,
+    // marginRight: 'auto',
+    // marginLeft: 'auto',
+    margin: 'auto',
+    width: '90%',
+    maxWidth: '90%',
+    justifyContent: 'space-between',
+  },
+  headerButtonsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    margin: 'auto',
+    width: '90%',
+    maxWidth: '90%',
+  },
+  displayInMetamaskButton: {
+    marginRight: `${theme.spacing(3)}px`,
+  },
+  movedDown: {
+    paddingTop: 48,
+  },
+  link: {
+    color: '#ffffffb3',
+    marginLeft: 30,
+    transition: 'color 0.4s ease-in-out',
+    '&:hover': {
+      color: HOVER_COLOR,
+    },
+  },
+}));
+
+// TODO : O.L : Fix the snackbar hiding the header
+export const Header = React.memo((props) => {
+  const classes = useStyles();
   const { t } = useTranslation();
   const { metamask } = useApi();
-  const hasMetamask = useMemo(() => !!metamask, [metamask]);
-  const [isNoMetamaskBannerOpen, setIsMetamaskBannerOpen] = useState(!hasMetamask);
-  const hideMetaMaskBanner = useCallback(() => setIsMetamaskBannerOpen(false), [setIsMetamaskBannerOpen]);
+  // const hasMetamask = useMemo(() => !!metamask, [metamask]);
+  // const [isNoMetamaskBannerOpen, setIsMetamaskBannerOpen] = useState(!hasMetamask);
+  // const hideMetaMaskBanner = useCallback(() => setIsMetamaskBannerOpen(false), [setIsMetamaskBannerOpen]);
 
-  const links = [
-    { label: t('Home'), url: '/' },
-    { label: t('Guardians'), url: '/delegator' },
-    { label: t('Validators'), url: '/guardian' },
-    { label: t('Elected Validators'), url: '/validator' },
-    { label: t('Rewards'), url: '/reward' },
-  ];
+  const theme = useTheme();
+  const smallerThanSmall = useMediaQuery(theme.breakpoints.down('xs'));
+  const linkDescriptors = useLinkDescriptors();
+
+  // C.F.H : add proper menu for smaller screens
+
+  const menuLinks = useMemo(() => {
+    return linkDescriptors.map(({ label, url }, idx) => (
+      <Link
+        // @ts-ignore
+        component={NavLink}
+        key={idx}
+        exact={true}
+        className={classes.link}
+        activeStyle={{ color: HOVER_COLOR }}
+        underline='none'
+        to={url}
+        variant='h6'
+        noWrap
+      >
+        {label}
+      </Link>
+    ));
+  }, [classes.link, linkDescriptors]);
+
+  const menu = useMemo(() => {
+    if (smallerThanSmall) {
+      return <MenuPopup />;
+    } else {
+      return <nav className={classes.nav}>{menuLinks}</nav>;
+    }
+  }, [classes.nav, menuLinks, smallerThanSmall]);
 
   return (
     <AppBar
       position='fixed'
       className={classNames({
         [classes.appBar]: true,
-        [classes.movedDown]: isNoMetamaskBannerOpen, // Add header padding so the banner will not hide the content
+        // [classes.movedDown]: isNoMetamaskBannerOpen, // Add header padding so the banner will not hide the content
       })}
       data-testid='header'
     >
-      <ReadOnlyBanner isOpen={isNoMetamaskBannerOpen} closeBanner={hideMetaMaskBanner} />
+      {/* MetaMask banner */}
+      {/*<ReadOnlyBanner isOpen={isNoMetamaskBannerOpen} closeBanner={hideMetaMaskBanner} />*/}
+
       <div className={classes.headerButtonsContainer}>
-        {metamask && (
+        {metamask && !smallerThanSmall && (
           <Button
             size='small'
             variant='outlined'
@@ -64,27 +148,8 @@ const HeaderImpl = ({ classes }) => {
         <NavLink to='/'>
           <img className={classes.logo} src={logo} alt='Orbs' />
         </NavLink>
-        <nav className={classes.nav}>
-          {links.map(({ label, url }, idx) => (
-            <Link
-              // @ts-ignore
-              component={NavLink}
-              key={idx}
-              exact={true}
-              className={classes.link}
-              activeStyle={{ color: HOVER_COLOR }}
-              underline='none'
-              to={url}
-              variant='h6'
-              noWrap
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
+        {menu}
       </Toolbar>
     </AppBar>
   );
-};
-
-export const Header = withStyles(HeaderStyles)(HeaderImpl);
+});

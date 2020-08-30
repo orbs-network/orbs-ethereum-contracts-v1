@@ -18,8 +18,9 @@ import { TRewardsSummary } from '../../services/IRemoteService';
 interface IProps {
   rewardsSummary: TRewardsSummary;
 }
+// TODO : O.L : This table is "responsive" due to having little details, make it really responsive.
 
-export const RewardsTable = React.memo<IProps>(props => {
+export const RewardsTable = React.memo<IProps>((props) => {
   const { rewardsSummary } = props;
   const { t } = useTranslation();
   const { delegatorReward = 0, guardianReward = 0, validatorReward = 0 } = rewardsSummary;

@@ -6,20 +6,18 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import React from 'react';
-import Link from '@material-ui/core/Link';
-import Table from '@material-ui/core/Table';
-import Tooltip from '@material-ui/core/Tooltip';
-import Checkbox from '@material-ui/core/Checkbox';
-import TableRow from '@material-ui/core/TableRow';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import { withStyles } from '@material-ui/core/styles';
-import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
+import React, { useMemo } from 'react';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
+import { CommonTable } from '../tables/CommonTable';
+import { Column } from 'material-table';
+import { TGuardianInfoExtended } from '../../Store/GuardiansStore';
+import { Checkbox, Link, Tooltip } from '@material-ui/core';
+import { CopyAddressButton } from '../CopyAddressButton/CopyAddressButton';
 
-const styles = () => ({
+const styles = () => ({});
+
+const useStyles = makeStyles((theme) => ({
   table: {
     tableLayout: 'fixed' as any,
   },
@@ -27,93 +25,101 @@ const styles = () => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
-});
+}));
 
-const ValidatorsListImpl = ({ disableAll, readOnly, onToggle, validators, classes }) => {
-  const { t } = useTranslation();
-  return (
-    <Table className={classes.table}>
-      <TableHead>
-        <TableRow>
-          <TableCell style={{ width: '40px' }} className={classes.cell} padding='checkbox' />
-          <TableCell style={{ width: '25%' }} className={classes.cell}>
-            {t('Name')}
-          </TableCell>
-          <TableCell style={{ width: '2%' }} className={classes.cell} />
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
-            {t('Ethereum Address')}
-          </TableCell>
-          <TableCell style={{ width: '2%' }} className={classes.cell} />
-          <TableCell style={{ width: '20%' }} className={classes.cell}>
-            {t('Orbs Address')}
-          </TableCell>
-          <TableCell style={{ width: '25%' }} className={classes.cell}>
-            {t('Website')}
-          </TableCell>
-          <TableCell style={{ width: '10%' }} className={classes.cell}>
-            {t('Last election votes against (%)')}
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody data-testid='validators-list'>
-        {Object.keys(validators).map(address => (
-          <TableRow data-testid={`validator-${address}`} key={address}>
-            <TableCell className={classes.cell} padding='none'>
-              {!readOnly && (
-                <Checkbox
-                  disabled={!validators[address].checked && disableAll}
-                  data-testid={`validator-${address}-checkbox`}
-                  defaultChecked={validators[address].checked}
-                  onChange={() => onToggle(address)}
-                />
-              )}
-            </TableCell>
-            <TableCell
-              size='small'
-              className={classes.cell}
-              component='th'
-              scope='row'
-              data-testid={`validator-${address}-name`}
-            >
-              {validators[address].name}
-            </TableCell>
-            <TableCell padding='none'>
-              <CopyAddressButton address={address} />
-            </TableCell>
-            <TableCell size='small' className={classes.cell} data-testid={`validator-${address}-address`}>
-              <Tooltip title={address} placement='top-start' enterDelay={200}>
-                <span>{address}</span>
-              </Tooltip>
-            </TableCell>
-
-            <TableCell padding='none'>
-              <CopyAddressButton address={validators[address].orbsAddress} />
-            </TableCell>
-            <TableCell size='small' className={classes.cell} data-testid={`validator-${address}-orbsAddress`}>
-              <Tooltip title={validators[address].orbsAddress} placement='top-start' enterDelay={200}>
-                <span>{validators[address].orbsAddress}</span>
-              </Tooltip>
-            </TableCell>
-            <TableCell size='small' className={classes.cell}>
-              <Link
-                data-testid={`validator-${address}-url`}
-                href={validators[address].url}
-                target='_blank'
-                rel='noopener noreferrer'
-                color='secondary'
-                variant='body1'
-              >
-                {validators[address].url}
-              </Link>
-            </TableCell>
-            <TableCell size='small' className={classes.cell}>
-              {validators[address].votesAgainst}%
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+// TODO : This was constructed for quick responsive fix,  re-consider this type.
+export type TValidatorForListTemp = {
+  address: string;
+  checked: boolean;
+  name: string;
+  url: string;
+  orbsAddress: string;
+  votesAgainst: string;
 };
 
-export const ValidatorsList = withStyles(styles)(ValidatorsListImpl);
+interface IProps {
+  disableAll: boolean;
+  readOnly: boolean;
+  onToggle: (address: string) => void;
+  validators: { [address: string]: TValidatorForListTemp };
+}
+
+export const ValidatorsList = React.memo<IProps>((props) => {
+  const classes = useStyles();
+  const { t } = useTranslation();
+  const { disableAll, readOnly, onToggle, validators } = props;
+
+  const COLUMNS = useMemo<Column<TValidatorForListTemp>[]>(() => {
+    return [
+      {
+        type: 'boolean',
+        sorting: false,
+        cellStyle: { padding: 0 },
+        render: (validator) =>
+          !readOnly && (
+            <Checkbox
+              disabled={!validator.checked && disableAll}
+              data-testid={`validator-${validator.address}-checkbox`}
+              value={validator.checked}
+              onChange={() => onToggle(validator.address)}
+            />
+          ),
+      },
+      {
+        title: t('name'),
+        field: 'name',
+      },
+      {
+        sorting: false,
+        cellStyle: { padding: 0 },
+        render: (validator) => <CopyAddressButton address={validator.address} />,
+      },
+      {
+        title: t('Ethereum Address'),
+        field: 'address',
+        render: (validator) => (
+          <Tooltip title={validator.address} placement='top-start' enterDelay={200}>
+            <span>{validator.address}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        sorting: false,
+        cellStyle: { padding: 0 },
+        render: (validator) => <CopyAddressButton address={validator.orbsAddress} />,
+      },
+      {
+        title: t('Orbs Address'),
+        field: 'orbsAddress',
+        render: (validator) => (
+          <Tooltip title={validator.orbsAddress} placement='top-start' enterDelay={200}>
+            <span>{validator.orbsAddress}</span>
+          </Tooltip>
+        ),
+      },
+      {
+        title: t('Website'),
+        field: 'url',
+        render: (validator) => (
+          <Link
+            data-testid={`validator-${validator.address}-url`}
+            href={validator.url}
+            target='_blank'
+            rel='noopener noreferrer'
+            color='secondary'
+            variant='body1'
+          >
+            {validator.url}
+          </Link>
+        ),
+      },
+      {
+        title: t('Last election votes against (%)'),
+        field: 'votesAgainst',
+        render: (validator) => `${validator.votesAgainst}%`,
+      },
+    ];
+  }, [t]);
+
+  return <CommonTable data={Object.values(validators)} columns={COLUMNS} />;
+});

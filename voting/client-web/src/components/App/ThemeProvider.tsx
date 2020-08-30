@@ -6,11 +6,15 @@
  * The above notice should be included in all copies or substantial portions of the software.
  */
 
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { MuiThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppTheme } from './App.theme';
 
+// DEV_NOTE : O.L : Temp solution for header sizing and buffering
+export const HEADER_HEIGHT_REM = 8;
+
+// TODO : ORL : Break this apart if not re-building
 export const ThemeProvider: React.FC = ({ children }) => {
   const { t } = useTranslation();
   return <MuiThemeProvider theme={AppTheme(t('fontFamily'))}>{children}</MuiThemeProvider>;
