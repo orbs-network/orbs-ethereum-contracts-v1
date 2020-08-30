@@ -17,7 +17,7 @@ import { Page } from '../structure/Page';
 
 // DEV_NOTE : O.L : The responsiveness here is achieved with idea from https://heydonworks.com/article/the-flexbox-holy-albatross/
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   explanations: {
     // TODO : O.L : Check if we really need hard-coded value
     maxWidth: '49em',
@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const Home = React.memo(props => {
+export const Home = React.memo((props) => {
   const classes = useStyles();
   const { t } = useTranslation();
 

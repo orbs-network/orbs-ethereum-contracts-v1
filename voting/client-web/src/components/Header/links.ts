@@ -17,7 +17,7 @@ export type TLinkDescriptor = {
 export const useLinkDescriptors = () => {
   const { t } = useTranslation();
   const linkDescriptors = useMemo<TLinkDescriptor[]>(() => {
-    return links.map(link => ({ url: link.url, label: t(link.translationKey) }));
+    return links.map((link) => ({ url: link.url, label: t(link.translationKey) }));
   }, [t]);
 
   return linkDescriptors;
