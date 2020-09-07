@@ -301,8 +301,13 @@ async function readHistoryRewardsFromFile(participationMap, guardianMap, blockNu
 
     let counter = 0;
     for await (const line of rl) {
-        let fixname = line.split('"'); // code to remove name of guardian because it can contains a comma
-        let fixedLine = fixname[0] + fixname[2];
+        let fixname = line.split('"'); // code to remove comma from name of guardian
+        if (fixname[1] && fixname[1].length > 0) {
+            fixname[1] = fixname[1].replace(/,/gi, '');
+            fixname[1] = fixname[1] + fixname[2];
+        }
+
+        let fixedLine = fixname[0] + fixname[1];
 
         let parts = fixedLine.split(',');
         if (parts.length < 5) {
