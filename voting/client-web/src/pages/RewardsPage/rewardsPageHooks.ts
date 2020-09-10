@@ -1,11 +1,19 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { IGuardianInfo, IOrbsRewardsService, IRewardsDistributionEvent, IStakingService } from 'orbs-pos-data';
+import {
+  IGuardianInfo,
+  IGuardiansService,
+  IOrbsRewardsService,
+  IRewardsDistributionEvent,
+  IStakingService,
+} from 'orbs-pos-data';
 import { useEffect } from 'react';
 import { useBoolean, useStateful } from 'react-hanger';
 import { useApi } from '../../services/ApiContext';
 import { IRemoteService, TCurrentDelegationInfo, TRewardsSummary } from '../../services/IRemoteService';
 import { fullOrbsFromWeiOrbs } from '../../cryptoUtils/unitConverter';
 import { IGuardianData } from '../../services/IGuardianData';
+import { useGuardiansStore } from '../../Store/storeHooks';
+import { useGuardiansService } from '../../services/ServicesHooks';
 
 export type TStakingInfo = {
   stakedOrbs: number;
@@ -54,16 +62,25 @@ export type TUseCompleteAddressInfoForRewardsPage = (
 export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRewardsPage = (address) => {
   const errorLoading = useBoolean(false);
   const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyObject);
+  const guardianService = useGuardiansService();
 
   const { orbsRewardsService, remoteService, stakingService } = useApi();
 
   useEffect(() => {
     if (address) {
-      readCompleteDataForAddress(address, orbsRewardsService, remoteService, stakingService)
+      readCompleteDataForAddress(address, orbsRewardsService, remoteService, stakingService, guardianService)
         .then(addressData.setValue)
         .catch(errorLoading.setTrue);
     }
-  }, [address, addressData.setValue, errorLoading.setTrue, orbsRewardsService, remoteService, stakingService]);
+  }, [
+    address,
+    addressData.setValue,
+    errorLoading.setTrue,
+    guardianService,
+    orbsRewardsService,
+    remoteService,
+    stakingService,
+  ]);
 
   if (!address) {
     return {
@@ -82,7 +99,11 @@ const fetchRewardsHistory = async (address: string, orbsRewardsService: IOrbsRew
   return await orbsRewardsService.readRewardsDistributionsHistory(address);
 };
 
-const fetchDelegationAndGuardianInfo = async (address: string, remoteService: IRemoteService) => {
+const fetchDelegationAndGuardianInfo = async (
+  address: string,
+  remoteService: IRemoteService,
+  guardiansService: IGuardiansService,
+) => {
   const delegatorInfo = await remoteService.getCurrentDelegationInfo(address);
   let guardianInfo: IGuardianInfo;
   let hasActiveDelegation: boolean;
@@ -97,7 +118,8 @@ const fetchDelegationAndGuardianInfo = async (address: string, remoteService: IR
     };
     hasActiveDelegation = false;
   } else {
-    guardianInfo = await remoteService.getGuardianData(delegatorInfo.delegatedTo);
+    guardianInfo = await guardiansService.readGuardianInfo(delegatorInfo.delegatedTo);
+    console.log({ guardianInfo });
     hasActiveDelegation = true;
   }
 
@@ -122,9 +144,10 @@ const readCompleteDataForAddress = async (
   orbsRewardsService: IOrbsRewardsService,
   remoteService: IRemoteService,
   stakingService: IStakingService,
+  guardiansService: IGuardiansService,
 ) => {
   const rewardsHistory = await fetchRewardsHistory(address, orbsRewardsService);
-  const delegationAndGuardianInfo = await fetchDelegationAndGuardianInfo(address, remoteService);
+  const delegationAndGuardianInfo = await fetchDelegationAndGuardianInfo(address, remoteService, guardiansService);
   const stakingInfo = await fetchStakingInfo(address, stakingService);
   const rewardsSummary = await fetchRewardsSummary(address, remoteService);
 
