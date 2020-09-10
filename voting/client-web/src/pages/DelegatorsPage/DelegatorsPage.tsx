@@ -111,6 +111,7 @@ export const DelegatorsPage = observer(() => {
             target='_blank'
             rel='noopener'
             href={`//etherscan.io/block/countdown/${upcomingElectionsBlockNumber}`}
+            style={{ marginRight: '1rem' }}
           >
             {upcomingElectionsBlockNumber}
           </Link>
