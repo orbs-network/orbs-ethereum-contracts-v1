@@ -73,7 +73,8 @@ export const DelegationInfoTable = React.memo<IProps>((props) => {
       // delegatorBalance = `${(delegatorInfo.delegatorBalance || 0).toLocaleString()} ORBS`;
       delegatedTo = delegatorInfo.delegatedTo;
       delegationBlockNumber = (delegatorInfo.delegationBlockNumber || 0).toLocaleString();
-      delegationTimestamp = formatTimestamp(delegatorInfo['delegationTimestamp']);
+      delegationTimestamp =
+        delegatorInfo['delegationTimestamp'] != 0 ? formatTimestamp(delegatorInfo['delegationTimestamp']) : '--';
     }
 
     // DEV_NOTE : Guardians always 'delegate' to themself
