@@ -16,7 +16,7 @@
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
     "notistack": "^0.9.17",
-    "orbs-pos-data": "^6.19.0",
+    "orbs-pos-data": "^6.20.0",
     "query-string": "^6.11.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -27,7 +27,7 @@
     "react-scripts": "3.4.0",
     "ts-jest": "^25.2.1",
     "use-query-params": "^0.6.0",
-    "web3": "1.2.9"
+    "web3": "1.2.11"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.1.1",
