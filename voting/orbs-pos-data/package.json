@@ -1,6 +1,6 @@
 {
   "name": "orbs-pos-data",
-  "version": "6.19.0",
+  "version": "6.20.0",
   "description": "",
   "main": "dist/orbs-pos-data.js",
   "browser": "dist/orbs-pos-data-web.js",
@@ -35,8 +35,8 @@
     "eventemitter3": "^4.0.0",
     "orbs-client-sdk": "^2.5.0",
     "orbs-staking-contract": "^0.2.0",
-    "web3": "^1.2.9",
-    "web3-core-promievent": "^1.2.9"
+    "web3": "^1.2.11",
+    "web3-core-promievent": "^1.2.11"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

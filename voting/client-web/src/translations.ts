@@ -111,6 +111,8 @@ export const resources: Resource = {
       // Alerts
       alert_stakingWithoutGuardian:
         '注意：このアドレスは既にORBSをステーキングしていますが、まだガーディアンを選択していないため、リワードが発生していません',
+      alert_delegatingToNonGuardian:
+        'Warning - this address is delegating to an address that does not belong to a Guardian. No rewards will be accumulated',
       alert_notParticipating: '通知：このアドレスにORBSは入っていますが、ステーキングされていません',
       action_goToTetra: '{{tetraLink}}を参照',
       action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
@@ -151,6 +153,8 @@ export const resources: Resource = {
       // Alerts
       alert_stakingWithoutGuardian:
         'Warning - this address has staked ORBS but no selected Guardian. No rewards will be accumulated',
+      alert_delegatingToNonGuardian:
+        'Warning - this address is delegating to an address that does not belong to a Guardian. No rewards will be accumulated',
       alert_notParticipating: 'Notice : This address has ORBS but none of them are staked',
       action_goToTetra: 'Go to {{tetraLink}}',
       action_youCanStakeYourORBSAndSelectAGuardianWithTetra:
@@ -270,6 +274,8 @@ export const resources: Resource = {
       // Alerts
       alert_stakingWithoutGuardian:
         '주의 - 이 주소는 스테이킹에 하고 있지만 가디언에게 위임하지 않았습니다. 이 경우, 리워드가 적립되지 않습니다',
+      alert_delegatingToNonGuardian:
+        'Warning - this address is delegating to an address that does not belong to a Guardian. No rewards will be accumulated',
       alert_notParticipating: '알림: 이 주소는 ORBS를 보유하고 있지만 스테이킹하고 있지 않습니다',
       action_goToTetra: '{{tetraLink}}로 이동',
       action_youCanStakeYourORBSAndSelectAGuardianWithTetra:

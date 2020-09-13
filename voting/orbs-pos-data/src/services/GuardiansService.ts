@@ -84,12 +84,14 @@ export class GuardiansService implements IGuardiansService {
 
   // READ //
   async readSelectedGuardianAddress(accountAddress: string): Promise<string> {
-    let info: IDelegationData = await this.getCurrentDelegationByDelegate(accountAddress);
-    if (info.delegatedTo === NOT_DELEGATED) {
-      info = await this.getCurrentDelegationByTransfer(accountAddress);
+    let delegationAddress: string = await this.readCurrentDelegationAddressFromContract(accountAddress);
+
+    if (delegationAddress === NOT_DELEGATED) {
+      const info = await this.getCurrentDelegationByTransfer(accountAddress);
+      delegationAddress = info.delegatedTo;
     }
 
-    return info.delegatedTo;
+    return delegationAddress;
   }
 
   async readDelegationInfo(address: string): Promise<IDelegationInfo> {
@@ -190,10 +192,21 @@ export class GuardiansService implements IGuardiansService {
     };
   }
 
-  private async getCurrentDelegationByDelegate(address: string): Promise<IDelegationData> {
+  private async readCurrentDelegationAddressFromContract(address: string): Promise<string> {
     const from = address;
 
     let currentDelegation = await this.votingContract.methods.getCurrentDelegation(from).call({ from });
+
+    return currentDelegation;
+  }
+
+  /**
+   * Reads the full data about the selected guardian from the delegation contract.
+   * DEV_NOTE : Uses events.
+   * @param address
+   */
+  private async getCurrentDelegationByDelegate(address: string): Promise<IDelegationData> {
+    let currentDelegation = await this.readCurrentDelegationAddressFromContract(address)
 
     if (currentDelegation === NOT_DELEGATED) {
       return {
