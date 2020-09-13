@@ -69,6 +69,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
 
   // Display flags
   const showNoSelectedGuardianError = useBoolean(false);
+  const showDelegatingToANonGuardianAlert = useBoolean(false);
   const showAddressNotParticipatingAlert = useBoolean(false);
 
   // Api service, should be removed
@@ -119,6 +120,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     delegatorInfo,
     guardianInfo,
     hasActiveDelegation,
+    delegatingToValidGuardian,
   } = addressData;
   const relevantGuardianInfo = isGuardian
     ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
@@ -163,6 +165,13 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     } else {
       showAddressNotParticipatingAlert.setFalse();
     }
+
+    // Do we have d delegation to someone who is not a guardian ?
+    if (hasActiveDelegation && !delegatingToValidGuardian) {
+      showDelegatingToANonGuardianAlert.setTrue();
+    } else {
+      showDelegatingToANonGuardianAlert.setFalse();
+    }
   }, [
     showNoSelectedGuardianError,
     showAddressNotParticipatingAlert,
@@ -171,6 +180,9 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     hasSelectedGuardian,
     hasUnstakedOrbs,
     isGuardian,
+    hasActiveDelegation,
+    delegatingToValidGuardian,
+    showDelegatingToANonGuardianAlert,
   ]);
 
   const tetraUrl = 'https://tetra.com';
@@ -225,6 +237,13 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
       {showNoSelectedGuardianError.value && (
         <Alert className={classes.alert} severity='error'>
           <Typography>{t('alert_stakingWithoutGuardian')}</Typography> <br /> <br />{' '}
+          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
+        </Alert>
+      )}
+
+      {showDelegatingToANonGuardianAlert.value && (
+        <Alert className={classes.alert} severity='error'>
+          <Typography>{t('alert_delegatingToNonGuardian')}</Typography> <br /> <br />{' '}
           <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
         </Alert>
       )}

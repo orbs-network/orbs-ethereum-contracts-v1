@@ -21,6 +21,7 @@ export type TStakingInfo = {
 
 export type TCompleteAddressInfoForRewardsPage = {
   hasActiveDelegation: boolean;
+  delegatingToValidGuardian: boolean;
   delegatorInfo: TCurrentDelegationInfo;
   guardianInfo?: IGuardianInfo;
   stakingInfo: TStakingInfo;
@@ -38,6 +39,7 @@ const emptyObject: TCompleteAddressInfoForRewardsPage = {
     delegatorBalance: 0,
   },
   hasActiveDelegation: false,
+  delegatingToValidGuardian: false,
   stakingInfo: {
     stakedOrbs: 0,
   },
@@ -182,13 +184,14 @@ const readCompleteDataForAddress = async (
   const stakingInfo = await fetchStakingInfo(address, stakingService);
   const rewardsSummary = await fetchRewardsSummary(address, remoteService);
 
-  const { hasActiveDelegation, guardianInfo, delegatorInfo } = delegationAndGuardianInfo;
+  const { hasActiveDelegation, guardianInfo, delegatorInfo, delegatingToValidGuardian } = delegationAndGuardianInfo;
 
   const addressData: TCompleteAddressInfoForRewardsPage = {
     distributionsHistory: rewardsHistory,
     delegatorInfo,
     guardianInfo,
     hasActiveDelegation,
+    delegatingToValidGuardian,
     stakingInfo,
     rewardsSummary,
   };
