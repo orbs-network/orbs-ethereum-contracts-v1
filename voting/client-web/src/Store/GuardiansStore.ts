@@ -19,7 +19,7 @@ export class GuardiansStore {
   @observable public guardiansList: IObservableArray<TGuardianInfoExtended> = observable([]);
 
   @computed get guardiansAddresses(): string[] {
-    return this.guardiansList.map(g => g.address.toLowerCase());
+    return this.guardiansList.map((g) => g.address.toLowerCase());
   }
 
   public isGuardian(address: string): boolean {
@@ -34,8 +34,8 @@ export class GuardiansStore {
     try {
       this.setDoneLoading(false);
       const guardiansAddresses = await this.guardiansService.readGuardiansList(0, 100);
-      const promises = guardiansAddresses.map(guardianAddress =>
-        this.guardiansService.readGuardianInfo(guardianAddress).then(guardian => {
+      const promises = guardiansAddresses.map((guardianAddress) =>
+        this.guardiansService.readGuardianInfo(guardianAddress).then((guardian) => {
           // DEV_NOTE : We override the 'website' value that returns to enforce 'http'/'https' at its beginning
           const website = normalizeUrl(guardian.website);
           const guardianInfoExtended: TGuardianInfoExtended = { ...guardian, website, address: guardianAddress };

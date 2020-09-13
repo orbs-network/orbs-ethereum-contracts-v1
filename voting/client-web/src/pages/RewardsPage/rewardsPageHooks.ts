@@ -63,12 +63,20 @@ export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRew
   const errorLoading = useBoolean(false);
   const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyObject);
   const guardianService = useGuardiansService();
+  const guardiansStore = useGuardiansStore();
 
   const { orbsRewardsService, remoteService, stakingService } = useApi();
 
   useEffect(() => {
     if (address) {
-      readCompleteDataForAddress(address, orbsRewardsService, remoteService, stakingService, guardianService)
+      readCompleteDataForAddress(
+        address,
+        orbsRewardsService,
+        remoteService,
+        stakingService,
+        guardianService,
+        guardiansStore.guardiansAddresses,
+      )
         .then(addressData.setValue)
         .catch(errorLoading.setTrue);
     }
@@ -77,6 +85,7 @@ export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRew
     addressData.setValue,
     errorLoading.setTrue,
     guardianService,
+    guardiansStore.guardiansAddresses,
     orbsRewardsService,
     remoteService,
     stakingService,
@@ -103,27 +112,43 @@ const fetchDelegationAndGuardianInfo = async (
   address: string,
   remoteService: IRemoteService,
   guardiansService: IGuardiansService,
+  validGuardianAddresses: string[],
 ) => {
   const delegatorInfo = await remoteService.getCurrentDelegationInfo(address);
-  let guardianInfo: IGuardianInfo;
+  // Initialize with empty data
+  let guardianInfo: IGuardianInfo = {
+    website: '',
+    hasEligibleVote: false,
+    name: '',
+    stakePercent: 0,
+    voted: false,
+  };
   let hasActiveDelegation: boolean;
+  let delegatingToValidGuardian = false;
 
   if (delegatorInfo.delegationType === 'Not-Delegated') {
-    guardianInfo = {
-      website: '',
-      hasEligibleVote: false,
-      name: '',
-      stakePercent: 0,
-      voted: false,
-    };
     hasActiveDelegation = false;
   } else {
-    guardianInfo = await guardiansService.readGuardianInfo(delegatorInfo.delegatedTo);
-    console.log({ guardianInfo });
+    const guardianAddress = delegatorInfo.delegatedTo;
+
+    // DEV_NOTE : O.L : This check was added after an edge case where a delegator was found delegating to a Guardian that
+    //                  has left.
+    delegatingToValidGuardian = validGuardianAddresses.includes(guardianAddress.toLowerCase());
+
+    if (delegatingToValidGuardian) {
+      try {
+        guardianInfo = await guardiansService.readGuardianInfo(delegatorInfo.delegatedTo);
+      } catch (e) {
+        console.warn(`Failed reading guardian {${delegatorInfo.delegatedTo} info`);
+      }
+    } else {
+      console.warn(`Delegating to a non-guardian address of ${guardianAddress}`);
+    }
+
     hasActiveDelegation = true;
   }
 
-  return { delegatorInfo, guardianInfo, hasActiveDelegation };
+  return { delegatorInfo, guardianInfo, hasActiveDelegation, delegatingToValidGuardian };
 };
 
 const fetchStakingInfo = async (address: string, stakingService: IStakingService) => {
@@ -145,9 +170,15 @@ const readCompleteDataForAddress = async (
   remoteService: IRemoteService,
   stakingService: IStakingService,
   guardiansService: IGuardiansService,
+  validGuardianAddresses: string[],
 ) => {
   const rewardsHistory = await fetchRewardsHistory(address, orbsRewardsService);
-  const delegationAndGuardianInfo = await fetchDelegationAndGuardianInfo(address, remoteService, guardiansService);
+  const delegationAndGuardianInfo = await fetchDelegationAndGuardianInfo(
+    address,
+    remoteService,
+    guardiansService,
+    validGuardianAddresses,
+  );
   const stakingInfo = await fetchStakingInfo(address, stakingService);
   const rewardsSummary = await fetchRewardsSummary(address, remoteService);
 
