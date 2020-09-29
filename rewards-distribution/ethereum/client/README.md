@@ -6,7 +6,8 @@ Used as an infrastructure to distribute rewards, it will
 * Distribute after batches has been set up
 
 In order to use it, you will first need to
-* Have the address of a deployed `OrbsRewardsDistribution` contract. The mainnet address is [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
+* Have the address of a deployed `OrbsRewardsDistribution` contract. The mainnet address is [0xB52daF3f853bF570814d6AeA1ec7BFF30339BD0c](https://etherscan.io/address/0xb52daf3f853bf570814d6aea1ec7bff30339bd0c)
+   -- Previous distribution contract (non-staking) was at [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
 * Have a csv file with the distribution details
 * Have the distribution event name
 * Create a new wallet (mnemonic) for executing the batches
@@ -20,8 +21,10 @@ In order to use it, you will first need to
   * To set up the varilables, run:
     * `export MAINNET_SECRET="a b c ..."` - replace a b c ... with the mnemonic
     * `export MAINNET_URL=https://[ethereum_node_address]` - replace [ethereum_node_address] with the url you got from infura
-* Working in batches of 50, a full batch will cost ~1.1M gas - at 5 gwei this will be about 0.3 ETH for 30-35 batches of 50 size (or 1500-1700 address to distribute to)
-* When registering the batches use a very high gas limit of 1.5M gas
+* Working in batches of 50, a full batch will cost ~2.2M gas - at 5 gwei this will be about 0.3 ETH for 30-35 batches of 50 size (or 1500-1700 address to distribute to)
+  -- at 200 gwei a single batch will cost about 0.5 ETH, so for 20 txns it's 10 ETH
+* When registering the batches ('announceDistributionEvent') use a high gas limit of 1M gas
+* When sending the batches ('executeCommittedBatch') use a high gas limit of 2.5M gas
 
 
 
