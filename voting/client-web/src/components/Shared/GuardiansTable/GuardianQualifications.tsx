@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import { Guardian } from '../../../services/v2/orbsNodeService/systemState';
 import { Icon, SvgIcon, Tooltip, Typography } from '@material-ui/core';
 import { ICommitteeMemberData } from '../../../services/v2/orbsNodeService/OrbsNodeTypes';
-// import { ReactComponent as GuardianShield } from './assets/guardian_normal.svg';
-// import { ReactComponent as CommitteeGuardianShield } from './assets/guardian_committee.svg';
-// import { ReactComponent as CertifiedCommitteeGuardianShield } from './assets/guardian_commitee_certified.svg';
+import { ReactComponent as GuardianShield } from './assets/guardian_normal.svg';
+import { ReactComponent as CommitteeGuardianShield } from './assets/guardian_committee.svg';
+import { ReactComponent as CertifiedCommitteeGuardianShield } from './assets/guardian_commitee_certified.svg';
 import Moment from 'moment';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
@@ -26,11 +26,11 @@ export const GuardianQualifications = React.memo<IProps>((props) => {
   const { guardian, committeeMembershipData } = props;
   const classes = useStyles();
 
-  // const SelectedIcon = committeeMembershipData
-  //   ? guardian.IsCertified
-  //     ? CertifiedCommitteeGuardianShield
-  //     : CommitteeGuardianShield
-  //   : GuardianShield;
+  const SelectedIcon = committeeMembershipData
+    ? guardian.IsCertified
+      ? CertifiedCommitteeGuardianShield
+      : CommitteeGuardianShield
+    : GuardianShield;
 
   return (
     <Tooltip
@@ -41,7 +41,7 @@ export const GuardianQualifications = React.memo<IProps>((props) => {
       placement={'right'}
     >
       <div style={{ height: '3rem', width: '3rem', position: 'relative', cursor: 'pointer' }}>
-        {/*<SvgIcon component={SelectedIcon} viewBox='0 0 40.371 47.178' style={{ height: '100%', width: '100%' }} />*/}
+        <SvgIcon component={SelectedIcon} viewBox='0 0 40.371 47.178' style={{ height: '100%', width: '100%' }} />
         {/*{committeeMembershipData ? 'In committee' : null}*/}
         {/*{guardian.IsCertified ? 'Certified' : null}*/}
         {/*<Typography*/}
