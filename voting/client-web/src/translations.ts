@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import i18n, { Resource } from 'i18next';
 
 export const resources: Resource = {
