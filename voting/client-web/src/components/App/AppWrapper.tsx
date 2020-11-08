@@ -22,8 +22,8 @@ if (ethereumProvider) {
 }
 
 const services = buildServices(web3, ethereumProvider);
-const { orbsRewardsService, metamask, remoteService, guardiansService, stakingService } = services;
-const stores = getStores(guardiansService);
+const { orbsRewardsService, metamask, remoteService, guardiansService, stakingService, orbsNodeService } = services;
+const stores = getStores(guardiansService, orbsNodeService);
 
 export const AppWrapper = React.memo((props) => {
   return (
