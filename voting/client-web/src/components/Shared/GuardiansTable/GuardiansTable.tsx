@@ -18,7 +18,7 @@ import { EMPTY_ADDRESS } from '../sharedConstants';
 import IconButton from '@material-ui/core/IconButton';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import { ReactComponent as GlobeIcon } from '../../../assets/globe.svg';
+// import { ReactComponent as GlobeIcon } from '../../../assets/globe.svg';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { TABLE_ICONS } from '../tables/TableIcons';
 import { Guardian } from '../../../services/v2/orbsNodeService/systemState';
@@ -175,6 +175,7 @@ export const GuardiansTable = React.memo<IProps>((props) => {
     () => guardians.slice().sort((a, b) => compareGuardiansBySelectedAndThenStake(a, b, selectedGuardian)),
     [guardians, selectedGuardian],
   );
+  console.log('SOrted Guardians', sortedGuardians);
 
   console.log({ committeeMembers: toJS(committeeMembers) });
 
@@ -249,7 +250,7 @@ export const GuardiansTable = React.memo<IProps>((props) => {
               target='_blank'
               rel='noopener noreferrer'
             >
-              <SvgIcon component={GlobeIcon} />
+              {/*<SvgIcon component={GlobeIcon} />*/}
             </a>
           </Tooltip>
         ),
