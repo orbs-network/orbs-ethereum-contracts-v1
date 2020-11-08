@@ -17,6 +17,8 @@ import { RemoteService } from './RemoteService';
 import { configs } from '../config';
 import { MetamaskService } from './MetamaskService';
 import { IMetamask } from './IMetamask';
+import { IOrbsNodeService } from './v2/orbsNodeService/IOrbsNodeService';
+import { OrbsNodeService } from './v2/orbsNodeService/OrbsNodeService';
 
 export interface IServices {
   remoteService: IRemoteService;
@@ -24,6 +26,7 @@ export interface IServices {
   metamask?: IMetamask;
   stakingService: IStakingService;
   orbsRewardsService: IOrbsRewardsService;
+  orbsNodeService: IOrbsNodeService;
 }
 
 export function buildServices(web3: Web3, ethereumProvider: any): IServices {
@@ -51,6 +54,7 @@ export function buildServices(web3: Web3, ethereumProvider: any): IServices {
     metamask,
     stakingService,
     orbsRewardsService,
+    orbsNodeService: new OrbsNodeService(),
   };
 
   return services;
