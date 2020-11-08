@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 
 const links = [
-  { translationKey: 'Home', url: '/' },
+  // { translationKey: 'Home', url: '/' },
   { translationKey: 'Guardians', url: '/delegator' },
-  { translationKey: 'Validators', url: '/guardian' },
-  { translationKey: 'Elected Validators', url: '/validator' },
+  // { translationKey: 'Validators', url: '/guardian' },
+  // { translationKey: 'Elected Validators', url: '/validator' },
   { translationKey: 'Rewards', url: '/reward' },
 ];
 
