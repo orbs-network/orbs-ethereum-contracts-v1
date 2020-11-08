@@ -2,6 +2,7 @@ import React from 'react';
 import { MobXProviderContext } from 'mobx-react';
 import { IStores } from './stores';
 import { GuardiansStore } from './GuardiansStore';
+import { OrbsNodeStore } from './OrbsNodeStore';
 
 export function useStores(): IStores {
   // @ts-ignore
@@ -10,4 +11,8 @@ export function useStores(): IStores {
 
 export function useGuardiansStore(): GuardiansStore {
   return useStores().guardiansStore;
+}
+
+export function useOrbsNodeStore(): OrbsNodeStore {
+  return useStores().orbsNodeStore;
 }

@@ -141,6 +141,7 @@ export class OrbsNodeStore {
 
   @action('setSystemState')
   private setSystemState(systemState: SystemState) {
+    console.log('Setting system state');
     this.systemState = systemState;
   }
 
