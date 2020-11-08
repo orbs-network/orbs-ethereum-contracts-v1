@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define,@typescript-eslint/interface-name-prefix */
 import _ from 'lodash';
 // import { fetchJson, isStaleTime, getCurrentClockTime } from '../helpers';
 import { SystemState, VirtualChain, Service, Guardians, HealthLevel, Guardian } from '../systemState';

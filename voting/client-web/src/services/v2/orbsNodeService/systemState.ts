@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/interface-name-prefix,@typescript-eslint/no-inferrable-types */
 export class SystemState {
   TimeSeconds = 0; // UTC seconds
   Timestamp: string = '';
