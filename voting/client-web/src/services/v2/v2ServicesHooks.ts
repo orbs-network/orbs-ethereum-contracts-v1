@@ -1,6 +1,6 @@
 import { IStakingRewardsService } from '@orbs-network/contracts-js';
 import { Guardian } from './orbsNodeService/systemState';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function useGuardiansDelegatorsCut(
   guardians: Guardian[],
@@ -26,7 +26,7 @@ export function useGuardiansDelegatorsCut(
 
     read().then((obj) => {
       setGuardianAddressToDelegatorsCut(obj);
-    });
+    }).catch(e => console.error(`Failed reading delegators share : ${e}`));
   }, [guardians, stakingRewardsService]);
 
   return guardianAddressToDelegatorsCut;

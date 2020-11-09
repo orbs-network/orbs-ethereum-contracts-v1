@@ -9,7 +9,7 @@ import { IOrbsPosContractsAddresses } from 'orbs-pos-data';
  */
 type TSupportedNets = 'local' | 'ropsten' | 'mainnet';
 // @ts-ignore
-const ethereumNetwork: TSupportedNets = process.env.ETHEREUM_NETWORK;
+const ethereumNetwork: TSupportedNets = process.env.REACT_APP_ETHEREUM_NETWORK;
 
 const IS_DEV =
   // @ts-ignore
@@ -56,7 +56,7 @@ const configsObject: IConfig = {
 if (SHOULD_OVERRIDE_WITH_LOCAL_ADDRESS) {
   const addresses = require('./local/addresses.json');
 
-  configsObject.v2ContractsAddressesOverride.stakingRewardsContactAddress = addresses.stakingRewardsContract;
+  configsObject.v2ContractsAddressesOverride.stakingRewardsContactAddress = addresses.stakingRewards;
 }
 
 export const configs: IConfig = configsObject;

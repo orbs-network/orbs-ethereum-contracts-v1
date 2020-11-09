@@ -19,12 +19,15 @@ import { useGuardiansStore, useOrbsNodeStore } from '../../Store/storeHooks';
 import { observer } from 'mobx-react';
 import { Page } from '../../components/structure/Page';
 import { GuardiansTable } from '../../components/Shared/GuardiansTable/GuardiansTable';
+import { useGuardiansDelegatorsCut } from '../../services/v2/v2ServicesHooks';
+import { useOrbsStakingRewardsService } from '../../services/ServicesHooks';
 
 // TODO : O.L : Add loading indicator
 export const DelegatorsPage = observer(() => {
   const { remoteService, metamask } = useApi();
   const guardiansStore = useGuardiansStore();
   const orbsNodeStore = useOrbsNodeStore();
+  const stakingRewardsService = useOrbsStakingRewardsService();
 
   const [manualDelegationDialogState, setManualDelegationDialogState] = useState(false);
 
@@ -68,6 +71,9 @@ export const DelegatorsPage = observer(() => {
     [fetchDelegatedTo, metamask],
   );
 
+  const guardianAddressToDelegatorsCut = useGuardiansDelegatorsCut(orbsNodeStore.guardians, stakingRewardsService);
+
+
   const manualDelegateHandler = (address) => {
     delegate(address);
     setTimeout(() => {
@@ -98,20 +104,20 @@ export const DelegatorsPage = observer(() => {
 
   return (
     <Page>
-      <header style={centerContent}>
-        <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
-          {t('Guardians List')}
-        </Typography>
-        <DelegationStatusDialog remoteService={remoteService} />
-      </header>
+      {/*<header style={centerContent}>*/}
+      {/*  <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>*/}
+      {/*    {t('Guardians List')}*/}
+      {/*  </Typography>*/}
+      {/*  <DelegationStatusDialog remoteService={remoteService} />*/}
+      {/*</header>*/}
 
-      <div style={centerContent}>
-        <Typography variant='body1' gutterBottom color='textPrimary'>
-          {t('Participating stake')}
-          {': '}
-          {totalParticipatingTokens} ORBS
-        </Typography>
-      </div>
+      {/*<div style={centerContent}>*/}
+      {/*  <Typography variant='body1' gutterBottom color='textPrimary'>*/}
+      {/*    {t('Participating stake')}*/}
+      {/*    {': '}*/}
+      {/*    {totalParticipatingTokens} ORBS*/}
+      {/*  </Typography>*/}
+      {/*</div>*/}
 
       {guardiansStore.doneLoading}
       {!orbsNodeStore.doneLoading && <Typography>{t('Loading')}...</Typography>}
@@ -123,7 +129,7 @@ export const DelegatorsPage = observer(() => {
           onGuardianSelect={() => null}
           committeeMembers={orbsNodeStore.committeeMembers}
           // guardiansToDelegatorsCut={guardianAddressToDelegatorsCut}
-          guardiansToDelegatorsCut={{}}
+          guardiansToDelegatorsCut={guardianAddressToDelegatorsCut}
         />
       )}
     </Page>

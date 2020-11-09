@@ -57,6 +57,7 @@ export function buildServices(web3: Web3, ethereumProvider: any): IServices {
     stakingService,
     orbsRewardsService,
     orbsNodeService: new OrbsNodeService(),
+    // @ts-ignore
     stakingRewardsService: new StakingRewardsService(web3, configs.v2ContractsAddressesOverride.stakingRewardsContactAddress),
   };
 
