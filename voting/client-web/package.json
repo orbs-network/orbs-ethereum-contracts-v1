@@ -8,6 +8,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
+    "@orbs-network/contracts-js": "0.0.35",
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "eslint": "^7.13.0",
@@ -60,7 +61,7 @@
   },
   "scripts": {
     "prestart": "node ./harness.js",
-    "postinstall": "npm run contracts:prod",
+    "postinstall": "npm run contracts:prod && npm run mkd",
     "start": "react-scripts start",
     "start-localProd": "REACT_APP_FORCE_PROD=true react-scripts start",
     "build": "react-scripts build",
@@ -73,7 +74,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build --repo git@github.com:orbs-network/voting.git",
     "contracts:local": "./scripts/update-contracts-info.js",
-    "contracts:prod": "./scripts/copy-contracts.sh"
+    "contracts:prod": "./scripts/copy-contracts.sh",
+    "mkd": "mkdir -p ./src/local && mkdir -p ./ganache-env/_out"
   },
   "prettier": {
     "trailingComma": "all",
