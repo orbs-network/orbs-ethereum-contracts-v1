@@ -19,6 +19,7 @@ import { MetamaskService } from './MetamaskService';
 import { IMetamask } from './IMetamask';
 import { IOrbsNodeService } from './v2/orbsNodeService/IOrbsNodeService';
 import { OrbsNodeService } from './v2/orbsNodeService/OrbsNodeService';
+import { IStakingRewardsService, StakingRewardsService } from '@orbs-network/contracts-js';
 
 export interface IServices {
   remoteService: IRemoteService;
@@ -26,6 +27,7 @@ export interface IServices {
   metamask?: IMetamask;
   stakingService: IStakingService;
   orbsRewardsService: IOrbsRewardsService;
+  stakingRewardsService: IStakingRewardsService;
   orbsNodeService: IOrbsNodeService;
 }
 
@@ -55,6 +57,7 @@ export function buildServices(web3: Web3, ethereumProvider: any): IServices {
     stakingService,
     orbsRewardsService,
     orbsNodeService: new OrbsNodeService(),
+    stakingRewardsService: new StakingRewardsService(web3, configs.v2ContractsAddressesOverride.stakingRewardsContactAddress),
   };
 
   return services;
