@@ -7,9 +7,15 @@ import { IOrbsPosContractsAddresses } from 'orbs-pos-data';
  * This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
  * The above notice should be included in all copies or substantial portions of the software.
  */
+type TSupportedNets = 'local' | 'ropsten' | 'mainnet';
+// @ts-ignore
+const ethereumNetwork: TSupportedNets = process.env.ETHEREUM_NETWORK;
+
 const IS_DEV =
   // @ts-ignore
   process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging' && !process.env.REACT_APP_FORCE_PROD;
+
+const SHOULD_OVERRIDE_WITH_LOCAL_ADDRESS = IS_DEV || ethereumNetwork === 'local';
 
 ////////////// CONFIG VARIABLES ///////////////
 
@@ -23,6 +29,9 @@ export interface IConfig {
   orbsAuditNodeEndpoint: string;
   ETHEREUM_PROVIDER_WS: string;
   contractsAddressesOverride: Partial<IOrbsPosContractsAddresses & { stakingContract: string }> | undefined;
+  v2ContractsAddressesOverride: {
+    stakingRewardsContactAddress?: string;
+  }
   earliestBlockForDelegationOverride?: number;
 }
 
@@ -41,6 +50,13 @@ const configsObject: IConfig = {
   contractsAddressesOverride,
   // Only override in dev
   earliestBlockForDelegationOverride: IS_DEV ? 0 : undefined,
+  v2ContractsAddressesOverride: {},
 };
+
+if (SHOULD_OVERRIDE_WITH_LOCAL_ADDRESS) {
+  const addresses = require('./local/addresses.json');
+
+  configsObject.v2ContractsAddressesOverride.stakingRewardsContactAddress = addresses.stakingRewardsContract;
+}
 
 export const configs: IConfig = configsObject;
