@@ -134,8 +134,8 @@ const GuardianQualificationsTooltip = React.memo<{
       return (
         <>
           {/*<Typography className={classes.textField}>Registered since: </Typography>*/}
-          <Typography className={classes.textValue}>
-            {Moment.unix(guardian.RegistrationTime).utc().format('DD/MM/YYYY')}
+          <Typography className={classes.textValue} color={'secondary'}>
+            Registered since {Moment.unix(guardian.RegistrationTime).utc().format('DD/MM/YYYY')}
           </Typography>
           <br />
         </>
