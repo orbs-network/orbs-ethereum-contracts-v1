@@ -4,6 +4,7 @@ import { IGuardiansService, IOrbsRewardsService, IStakingService } from 'orbs-po
 import { IServices } from './Services';
 import { IRemoteService } from './IRemoteService';
 import { IMetamask } from './IMetamask';
+import { IStakingRewardsService } from '@orbs-network/contracts-js';
 
 export function useServices(): IServices {
   return React.useContext(MobXProviderContext) as IServices;
@@ -27,4 +28,8 @@ export function useStakingService(): IStakingService {
 
 export function useOrbsRewardsServiceService(): IOrbsRewardsService {
   return useServices().orbsRewardsService;
+}
+
+export function useOrbsStakingRewardsService(): IStakingRewardsService {
+  return useServices().stakingRewardsService;
 }
