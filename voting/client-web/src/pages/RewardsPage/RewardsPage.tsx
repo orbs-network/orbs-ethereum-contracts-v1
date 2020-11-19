@@ -9,7 +9,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
@@ -64,6 +64,7 @@ const NOT_DELEGATED: TDelegationTypes = 'Not-Delegated';
 export const RewardsPage = observer<React.FunctionComponent>(() => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const guardiansStore = useGuardiansStore();
 
@@ -185,7 +186,8 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     showDelegatingToANonGuardianAlert,
   ]);
 
-  const tetraUrl = 'https://tetra.com';
+  const tetraUrl = 'https://staking.orbs.network';
+  const tetraV1Url = 'https://staking-v1.orbs.network';
 
   // TODO : Find a better way to combine the translations with changing order links
   const goToTetraLinkInnerHtml = t('action_goToTetra', {
@@ -200,6 +202,19 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     tetraLink: renderToString(
       <a style={{ color: 'inherit' }} target={'_blank'} rel={'noopener noreferrer'} href={tetraUrl}>
         {t('text_tetraName')}
+      </a>,
+    ),
+  });
+
+  const toChangeDelegationPleaseUseTetraV1InnerHtml = t('message_toChangeDelegationsUseV1Tetra', {
+    tetraLink: renderToString(
+      <a
+        style={{ color: theme.palette.secondary.main }}
+        target={'_blank'}
+        rel={'noopener noreferrer'}
+        href={tetraV1Url}
+      >
+        {t('concept_tetraV1')}
       </a>,
     ),
   });
@@ -280,7 +295,16 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
       <PageSection>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
+          {' - '}
+          {t('message_orbsWillTransitionToV2On')}
         </Typography>
+        <Typography
+          variant='h6'
+          component='h4'
+          gutterBottom
+          color='textPrimary'
+          dangerouslySetInnerHTML={{ __html: toChangeDelegationPleaseUseTetraV1InnerHtml }}
+        />
         <DelegationInfoTable
           delegatorAddress={queryAddress || ''}
           delegatorStakingInfo={stakingInfo}

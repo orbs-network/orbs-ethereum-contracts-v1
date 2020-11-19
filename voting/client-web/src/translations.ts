@@ -104,6 +104,12 @@ export const resources: Resource = {
         'TETRAはOrbs独自のステーキング・ウォレットで、ORBSトークン保有者が簡単にガーディアンを選択肢、ステーキングできるように設計されています。',
       linkText_tetraWalletTutorial: 'Tetraウォレットのガイド',
 
+      // Rewards page
+      // TODO : TRANSLATIONs : ADD
+      message_orbsWillTransitionToV2On: 'Orbs will transition to V2 on Nov 30',
+      message_toChangeDelegationsUseV1Tetra: 'To change your V1 Delegation please use {{tetraLink}}',
+      concept_tetraV1: 'Tetra V1',
+
       // Rewards table
       delegatorNonStakedOrbs: 'デリゲータの未ステーキングORBS',
       delegatorStakedOrbs: 'デリゲータのステーキング済みORBS',
@@ -145,6 +151,11 @@ export const resources: Resource = {
       text_delegatorDescriptionTetra:
         'TETRA is Orbs’ dedicated staking wallet, from which any ORBS holder can easily stake tokens with a Guardian of their choice.',
       linkText_tetraWalletTutorial: 'Tetra wallet Tutorial',
+
+      // Rewards page
+      message_orbsWillTransitionToV2On: 'Orbs will transition to V2 on Nov 30',
+      message_toChangeDelegationsUseV1Tetra: 'To change your V1 Delegation please use {{tetraLink}}',
+      concept_tetraV1: 'Tetra V1',
 
       // Rewards table
       delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
@@ -266,6 +277,12 @@ export const resources: Resource = {
       text_delegatorDescriptionTetra:
         'TETRA는 오브스 전용 스테이킹 지갑입니다. ORBS 홀더는 쉽게 가디언을 선택하고 스테이킹할 수 있습니다.',
       linkText_tetraWalletTutorial: 'Tetra 사용설명',
+
+      // Rewards Page
+      // TODO : TRANSLATIONs : ADD
+      message_orbsWillTransitionToV2On: 'Orbs will transition to V2 on Nov 30',
+      message_toChangeDelegationsUseV1Tetra: 'To change your V1 Delegation please use {{tetraLink}}',
+      concept_tetraV1: 'Tetra V1',
 
       // Rewards table
       delegatorNonStakedOrbs: '스테이킹하고 있지 않는 ORBS',
