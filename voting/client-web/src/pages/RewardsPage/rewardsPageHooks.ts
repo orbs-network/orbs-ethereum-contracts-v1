@@ -116,7 +116,6 @@ const fetchDelegationAndGuardianInfo = async (
   guardiansService: IGuardiansService,
   validGuardianAddresses: string[],
 ) => {
-  const delegatorInfo = await remoteService.getCurrentDelegationInfo(address);
   // Initialize with empty data
   let guardianInfo: IGuardianInfo = {
     website: '',
@@ -127,6 +126,23 @@ const fetchDelegationAndGuardianInfo = async (
   };
   let hasActiveDelegation: boolean;
   let delegatingToValidGuardian = false;
+
+  let delegatorInfo: TCurrentDelegationInfo;
+
+  // DEV_NOTE : O.L : This 'graceful failure' was added for the extraction of all v1 data.
+  //                  There was one address that always got 500 response.
+  try {
+    delegatorInfo = await remoteService.getCurrentDelegationInfo(address);
+  } catch (e) {
+    console.error(`WARNING: Could not get delegation info for ${address}`);
+    delegatorInfo = {
+      delegatorBalance:0.0,
+      delegationType:"Not-Delegated",
+      delegatedTo:"0x0000000000000000000000000000000000000000",
+      delegationBlockNumber: 0,
+      delegationTimestamp: 0,
+    }
+  }
 
   if (delegatorInfo.delegationType === 'Not-Delegated') {
     hasActiveDelegation = false;
@@ -151,7 +167,7 @@ const fetchDelegationAndGuardianInfo = async (
   }
 
   return { delegatorInfo, guardianInfo, hasActiveDelegation, delegatingToValidGuardian };
-};
+}
 
 const fetchStakingInfo = async (address: string, stakingService: IStakingService) => {
   const stakedOrbsInWeiOrbs = await stakingService.readStakeBalanceOf(address);
@@ -166,7 +182,7 @@ const fetchRewardsSummary = async (address: string, remoteService: IRemoteServic
   return rewardsSummary;
 };
 
-const readCompleteDataForAddress = async (
+export const readCompleteDataForAddress = async (
   address: string,
   orbsRewardsService: IOrbsRewardsService,
   remoteService: IRemoteService,
@@ -174,6 +190,7 @@ const readCompleteDataForAddress = async (
   guardiansService: IGuardiansService,
   validGuardianAddresses: string[],
 ) => {
+  // console.log(JSON.stringify(validGuardianAddresses));
   const rewardsHistory = await fetchRewardsHistory(address, orbsRewardsService);
   const delegationAndGuardianInfo = await fetchDelegationAndGuardianInfo(
     address,
@@ -186,7 +203,8 @@ const readCompleteDataForAddress = async (
 
   const { hasActiveDelegation, guardianInfo, delegatorInfo, delegatingToValidGuardian } = delegationAndGuardianInfo;
 
-  const addressData: TCompleteAddressInfoForRewardsPage = {
+  const addressData: TCompleteAddressInfoForRewardsPage & { address: string } = {
+    address,
     distributionsHistory: rewardsHistory,
     delegatorInfo,
     guardianInfo,

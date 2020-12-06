@@ -12,6 +12,7 @@
     "classnames": "^2.2.6",
     "i18next": "^19.3.3",
     "ip-address": "^6.2.0",
+    "lodash": "^4.17.20",
     "material-table": "^1.65.0",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
@@ -26,6 +27,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.0",
     "ts-jest": "^25.2.1",
+    "ts-retry-promise": "^0.6.0",
     "use-query-params": "^0.6.0",
     "web3": "1.2.11"
   },
@@ -35,6 +37,7 @@
     "@types/chance": "^1.0.9",
     "@types/ip-address": "^5.8.2",
     "@types/jest": "^25.1.4",
+    "@types/lodash": "^4.14.165",
     "@types/node": "^13.9.2",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
