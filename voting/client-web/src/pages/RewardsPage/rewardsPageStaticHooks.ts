@@ -2,8 +2,9 @@ import { useBoolean, useStateful } from 'react-hanger';
 import { useGuardiansService } from '../../services/ServicesHooks';
 import { useGuardiansStore } from '../../Store/storeHooks';
 import { useApi } from '../../services/ApiContext';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
+  emptyCompleteAddressInfoForRewardsPage,
   readCompleteDataForAddress,
   TCompleteAddressInfoForRewardsPage,
   TUseCompleteAddressInfoForRewardsPage,
@@ -11,13 +12,34 @@ import {
 import { useQuery } from 'react-query';
 
 export const useCompleteAddressInfoForRewardsPageFromStaticData = (address) => {
+  // const staticDataForAddress = useStateful<TCompleteAddressInfoForRewardsPage>(emptyCompleteAddressInfoForRewardsPage);
+
   const hasActiveDelegation = useHasActiveDelegation(address);
   const  delegatingToValidGuardian = useIsDelegatingToValidGuardian(address);
 
   console.log({hasActiveDelegation})
   console.log({delegatingToValidGuardian})
 
-  return null;
+  const staticDataForAddress = useMemo(() => {
+      const clonedData: TCompleteAddressInfoForRewardsPage = {...emptyCompleteAddressInfoForRewardsPage};
+
+      clonedData.hasActiveDelegation = hasActiveDelegation ?? false;
+      clonedData.delegatingToValidGuardian = delegatingToValidGuardian ?? false;
+
+      return clonedData;
+  }, [hasActiveDelegation, delegatingToValidGuardian,]);
+
+  // useEffect(() => {
+  //   const clonedData: TCompleteAddressInfoForRewardsPage = {...staticDataForAddress.value};
+  //
+  //   clonedData.hasActiveDelegation = hasActiveDelegation ?? false;
+  //   clonedData.delegatingToValidGuardian = delegatingToValidGuardian ?? false;
+  //
+  //   staticDataForAddress.setValue(clonedData);
+  // }, [hasActiveDelegation, delegatingToValidGuardian, staticDataForAddress]);
+
+  console.log({staticDataForAddress})
+  return staticDataForAddress;
 
   // const errorLoading = useBoolean(false);
   // const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyObject);
