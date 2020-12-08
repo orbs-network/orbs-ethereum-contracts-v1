@@ -1,4 +1,4 @@
-import allAddressesThatEverHeldOrbs from './all_addresses_that_ever_held_orbs.json';
+import allAddressesThatEverHeldOrbs from './input/all_addresses_that_ever_held_orbs.json';
 import { readCompleteDataForAddress, TCompleteAddressInfoForRewardsPage } from '../rewardsPageHooks';
 // import { buildServices } from '../../../services/Services';
 import Web3 from 'web3';

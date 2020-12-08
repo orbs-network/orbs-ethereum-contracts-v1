@@ -29,6 +29,9 @@ export type TCompleteAddressInfoForRewardsPage = {
   distributionsHistory: IRewardsDistributionEvent[];
 };
 
+// DEV_NOTE : O.L : This was added for the V1 state preserving
+export type TCompleteAddressInfoForRewardsPageWithAddress = TCompleteAddressInfoForRewardsPage & { address: string };
+
 const emptyObject: TCompleteAddressInfoForRewardsPage = {
   distributionsHistory: [],
   delegatorInfo: {
