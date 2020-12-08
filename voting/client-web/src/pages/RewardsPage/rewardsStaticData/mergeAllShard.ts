@@ -3,7 +3,7 @@ import { TCompleteAddressInfoForRewardsPageWithAddress } from '../rewardsPageHoo
 import _ from 'lodash';
 
 function main() {
-  const baseDir = './output/shards/withLastElections';
+  const baseDir = './output/shards/withoutLastElection';
   // Listing files
   const files = fs.readdirSync(baseDir);
   const unifiedArray: Array<TCompleteAddressInfoForRewardsPageWithAddress> = [];
@@ -21,7 +21,7 @@ function main() {
         const previousEntry = map.get(singleDataEntry.address);
 
         if (!_.isEqual(previousEntry, singleDataEntry)) {
-          console.warn(`Found un-equal pairs for ${singleDataEntry.address}!!!`);
+          console.error(`****** Found un-equal pairs for ${singleDataEntry.address}!!! ******`);
         }
 
       } else {
