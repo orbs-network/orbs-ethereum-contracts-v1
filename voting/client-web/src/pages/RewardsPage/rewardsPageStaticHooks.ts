@@ -6,25 +6,22 @@ import { useEffect, useMemo } from 'react';
 import {
   emptyCompleteAddressInfoForRewardsPage,
   readCompleteDataForAddress,
-  TCompleteAddressInfoForRewardsPage,
+  TCompleteAddressInfoForRewardsPage, TStakingInfo,
   TUseCompleteAddressInfoForRewardsPage,
 } from './rewardsPageHooks';
 import { useQuery } from 'react-query';
 import { IDelegationInfo } from 'orbs-pos-data/dist/interfaces/IDelegationInfo';
-import { TCurrentDelegationInfo } from '../../services/IRemoteService';
-import { IRewardsDistributionEvent } from 'orbs-pos-data';
+import { TCurrentDelegationInfo, TRewardsSummary } from '../../services/IRemoteService';
+import { IGuardianInfo, IRewardsDistributionEvent } from 'orbs-pos-data';
 
 export const useCompleteAddressInfoForRewardsPageFromStaticData = (address) => {
-  // const staticDataForAddress = useStateful<TCompleteAddressInfoForRewardsPage>(emptyCompleteAddressInfoForRewardsPage);
-
   const hasActiveDelegation = useHasActiveDelegation(address);
   const delegatingToValidGuardian = useIsDelegatingToValidGuardian(address);
   const delegatorInfo = useStaticDelegatorInfo(address);
   const distributionHistory = useStaticDistributionHistory(address);
-
-  console.log({ hasActiveDelegation });
-  console.log({ delegatingToValidGuardian });
-  console.log({ delegatorInfo });
+  const guardianInfo = useStaticGuardianInfo(address);
+  const rewardsSummary = useStaticRewardsSummary(address);
+  const stakingInfo = useStaticStakingInfo(address);
 
   const staticDataForAddress = useMemo(() => {
     const clonedData: TCompleteAddressInfoForRewardsPage = { ...emptyCompleteAddressInfoForRewardsPage };
@@ -33,64 +30,14 @@ export const useCompleteAddressInfoForRewardsPageFromStaticData = (address) => {
     clonedData.delegatingToValidGuardian = delegatingToValidGuardian ?? false;
     clonedData.delegatorInfo = delegatorInfo ? delegatorInfo : clonedData.delegatorInfo;
     clonedData.distributionsHistory = distributionHistory ? distributionHistory : clonedData.distributionsHistory;
+    clonedData.guardianInfo = guardianInfo ? guardianInfo : clonedData.guardianInfo;
+    clonedData.rewardsSummary = rewardsSummary ? rewardsSummary : clonedData.rewardsSummary;
+    clonedData.stakingInfo = stakingInfo ? stakingInfo : clonedData.stakingInfo;
 
     return clonedData;
-  }, [hasActiveDelegation, delegatingToValidGuardian, delegatorInfo, distributionHistory]);
+  }, [hasActiveDelegation, delegatingToValidGuardian, delegatorInfo, distributionHistory, guardianInfo, rewardsSummary, stakingInfo]);
 
-  // useEffect(() => {
-  //   const clonedData: TCompleteAddressInfoForRewardsPage = {...staticDataForAddress.value};
-  //
-  //   clonedData.hasActiveDelegation = hasActiveDelegation ?? false;
-  //   clonedData.delegatingToValidGuardian = delegatingToValidGuardian ?? false;
-  //
-  //   staticDataForAddress.setValue(clonedData);
-  // }, [hasActiveDelegation, delegatingToValidGuardian, staticDataForAddress]);
-
-  console.log({ staticDataForAddress });
   return staticDataForAddress;
-
-  // const errorLoading = useBoolean(false);
-  // const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyObject);
-  // const guardianService = useGuardiansService();
-  // const guardiansStore = useGuardiansStore();
-
-  // const { orbsRewardsService, remoteService, stakingService } = useApi();
-
-  // useEffect(() => {
-  //   if (address) {
-  //     readCompleteDataForAddress(
-  //       address,
-  //       orbsRewardsService,
-  //       remoteService,
-  //       stakingService,
-  //       guardianService,
-  //       guardiansStore.guardiansAddresses,
-  //     )
-  //       .then(addressData.setValue)
-  //       .catch(errorLoading.setTrue);
-  //   }
-  // }, [
-  //   address,
-  //   addressData.setValue,
-  //   errorLoading.setTrue,
-  //   guardianService,
-  //   guardiansStore.guardiansAddresses,
-  //   orbsRewardsService,
-  //   remoteService,
-  //   stakingService,
-  // ]);
-  //
-  // if (!address) {
-  //   return {
-  //     addressData: emptyObject,
-  //     errorLoading: false,
-  //   };
-  // }
-  //
-  // return {
-  //   addressData: addressData.value,
-  //   errorLoading: errorLoading.value,
-  // };
 };
 
 const useHasActiveDelegation = (address: string) => {
@@ -212,3 +159,88 @@ const useStaticDistributionHistory = (address: string) => {
     return distributionHistoryRecord[address];
   }
 };
+
+const useStaticGuardianInfo = (address: string) => {
+  const { isLoading, error, data } = useQuery('guardianInfoMap', () =>
+    fetch('/staticRewardsData/guardianInfoMap.json').then(async (res) => {
+      // console.log({ res });
+      const jsonRes = await res.json();
+      // console.log({jsonRes})
+
+      return jsonRes;
+    }),
+  );
+
+  if (error) {
+    console.error('Has error !' + error);
+  }
+
+  if (isLoading) {
+    // console.log('Hook is loading');
+    return null;
+  }
+
+  if (data) {
+    const guardianInfoRecord: Record<string, IGuardianInfo> = data;
+    // console.log('Has data');
+
+    return guardianInfoRecord[address];
+  }
+};
+
+const useStaticRewardsSummary = (address: string) => {
+  const { isLoading, error, data } = useQuery('rewardsSummaryMap', () =>
+    fetch('/staticRewardsData/rewardsSummaryMap.json').then(async (res) => {
+      // console.log({ res });
+      const jsonRes = await res.json();
+      // console.log({jsonRes})
+
+      return jsonRes;
+    }),
+  );
+
+  if (error) {
+    console.error('Has error !' + error);
+  }
+
+  if (isLoading) {
+    // console.log('Hook is loading');
+    return null;
+  }
+
+  if (data) {
+    const rewardsSummaryRecord: Record<string, TRewardsSummary> = data;
+    // console.log('Has data');
+
+    return rewardsSummaryRecord[address];
+  }
+};
+
+const useStaticStakingInfo = (address: string) => {
+  const { isLoading, error, data } = useQuery('stakingInfoMap', () =>
+    fetch('/staticRewardsData/stakingInfoMap.json').then(async (res) => {
+      // console.log({ res });
+      const jsonRes = await res.json();
+      // console.log({jsonRes})
+
+      return jsonRes;
+    }),
+  );
+
+  if (error) {
+    console.error('Has error !' + error);
+  }
+
+  if (isLoading) {
+    // console.log('Hook is loading');
+    return null;
+  }
+
+  if (data) {
+    const stakingInfoRecord: Record<string, TStakingInfo> = data;
+    // console.log('Has data');
+
+    return stakingInfoRecord[address];
+  }
+};
+

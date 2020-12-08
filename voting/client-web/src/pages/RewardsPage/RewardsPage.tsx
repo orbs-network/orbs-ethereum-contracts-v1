@@ -101,8 +101,6 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   // const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
   const completeAddressDataFromStatic = useCompleteAddressInfoForRewardsPageFromStaticData(queryAddress || undefined);
 
-  console.log({ completeAddressDataFromStatic });
-
   // Updates the form's address and the effective election block when query-address change
   useEffect(() => {
     async function asyncInnerFunction() {
