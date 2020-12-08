@@ -35,8 +35,8 @@ export const Main = React.memo((props) => {
     <main className={classes.content} data-testid='main'>
       <Switch>
         {/*<Route exact path='/' component={Home} />*/}
-        <Route exact path='/' component={DelegatorsPage} />
-        <Route exact path='/delegator' component={(props: RouteProps) => <DelegatorsPage />} />
+        <Route exact path='/' component={(props: RouteProps) => <RewardsPage {...props} />} />
+        {/*<Route exact path='/delegator' component={(props: RouteProps) => <DelegatorsPage />} />*/}
         {/*<Route exact path='/guardian' component={(props: RouteProps) => <GuardiansPage {...props} />} />*/}
         {/*<Route exact path='/validator' component={(props: RouteProps) => <ValidatorsPage {...props} />} />*/}
         <Route exact path='/reward' component={(props: RouteProps) => <RewardsPage {...props} />} />
