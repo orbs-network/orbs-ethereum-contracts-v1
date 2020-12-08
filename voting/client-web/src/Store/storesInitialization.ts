@@ -24,12 +24,12 @@ export function getStores(guardiansService: IGuardiansService, orbsNodeService: 
   // Create stores instances + Hydrate the stores
 
   const stores: IStores = {
-    guardiansStore: new GuardiansStore(guardiansService),
-    orbsNodeStore: new OrbsNodeStore(orbsNodeService),
+    // guardiansStore: new GuardiansStore(guardiansService),
+    // orbsNodeStore: new OrbsNodeStore(orbsNodeService),
   };
 
   // TODO : O.L : add proper handling of errors here
-  stores.guardiansStore.init();
+  // stores.guardiansStore.init();
 
   return stores;
 }

@@ -4,6 +4,6 @@ import { OrbsNodeStore } from './OrbsNodeStore';
 import { GuardiansStore } from './GuardiansStore';
 
 interface IStores {
-  guardiansStore: GuardiansStore;
-  orbsNodeStore: OrbsNodeStore;
+  // guardiansStore: GuardiansStore;
+  // orbsNodeStore: OrbsNodeStore;
 }

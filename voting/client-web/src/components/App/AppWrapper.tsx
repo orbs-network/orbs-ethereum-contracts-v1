@@ -8,6 +8,7 @@ import { Provider } from 'mobx-react';
 import { ApiContext } from '../../services/ApiContext';
 import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
 import { SnackbarProvider } from 'notistack';
+import { queryCache, ReactQueryCacheProvider } from 'react-query';
 
 configureMobx();
 
@@ -27,6 +28,7 @@ const stores = getStores(guardiansService, orbsNodeService);
 
 export const AppWrapper = React.memo((props) => {
   return (
+    <ReactQueryCacheProvider queryCache={queryCache}>
     <Provider {...services} {...stores}>
       <ApiContext.Provider value={{ remoteService, metamask, stakingService, guardiansService, orbsRewardsService }}>
         <StylesProvider injectFirst>
@@ -34,5 +36,6 @@ export const AppWrapper = React.memo((props) => {
         </StylesProvider>
       </ApiContext.Provider>
     </Provider>
+    </ReactQueryCacheProvider>
   );
 });

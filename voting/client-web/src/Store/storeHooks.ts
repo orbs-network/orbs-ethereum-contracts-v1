@@ -10,9 +10,13 @@ export function useStores(): IStores {
 }
 
 export function useGuardiansStore(): GuardiansStore {
-  return useStores().guardiansStore;
+  // return useStores().guardiansStore;
+  // @ts-ignore
+  return null;
 }
 
 export function useOrbsNodeStore(): OrbsNodeStore {
-  return useStores().orbsNodeStore;
+  // return useStores().orbsNodeStore;
+  // @ts-ignore
+  return null;
 }

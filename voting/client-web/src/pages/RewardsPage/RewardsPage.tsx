@@ -20,12 +20,15 @@ import { DelegationInfoTable } from './DelegationInfoTable';
 import { RewardsTable } from './RewardsTable';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { renderToString } from 'react-dom/server';
-import { useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
+import {
+  emptyCompleteAddressInfoForRewardsPage,
+  useCompleteAddressInfoForRewardsPage,
+} from './rewardsPageHooks';
 import { observer } from 'mobx-react';
-import { useGuardiansStore } from '../../Store/storeHooks';
 import { Page } from '../../components/structure/Page';
 import { PageSection } from '../../components/structure/PageSection';
 import { RewardsHistoryTable } from './RewardsHistoryTable';
+import { useCompleteAddressInfoForRewardsPageFromStaticData } from './rewardsPageStaticHooks';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -66,8 +69,6 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const guardiansStore = useGuardiansStore();
-
   // Display flags
   const showNoSelectedGuardianError = useBoolean(false);
   const showDelegatingToANonGuardianAlert = useBoolean(false);
@@ -80,7 +81,8 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   const [queryAddress, setQueryAddress] = useQueryParam('address', StringParam);
 
   // Account in question state
-  const isGuardian = guardiansStore.isGuardian(queryAddress || '');
+  // const isGuardian = guardiansStore.isGuardian(queryAddress || '');
+  const isGuardian = false;
 
   // Form state & functions
   const [formAddress, setFormAddress] = useState('');
@@ -89,20 +91,24 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   }, [setQueryAddress, formAddress]);
 
   // General Eco-system state & functions
+  // DEV_NOTE : HARD_CODED to the snapshot block
+  // TODO : ORL : Add this
   const [electionBlock, setElectionBlock] = useState('0');
-  const fetchEffectiveElectionBlock = useCallback(
-    () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock),
-    [remoteService],
-  );
+  // const fetchEffectiveElectionBlock = useCallback(
+  //   () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock),
+  //   [remoteService],
+  // );
 
   // Account specific State
-  const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
+  // const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
+  // const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
+  const completeAddressDataFromStatic = useCompleteAddressInfoForRewardsPageFromStaticData(queryAddress || undefined);
+
+  console.log({completeAddressDataFromStatic})
 
   // Updates the form's address and the effective election block when query-address change
   useEffect(() => {
     async function asyncInnerFunction() {
-      await fetchEffectiveElectionBlock();
-
       if (!queryAddress) {
         return;
       }
@@ -111,9 +117,12 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     }
 
     asyncInnerFunction();
-  }, [fetchEffectiveElectionBlock, queryAddress]);
+  }, [queryAddress]);
 
-  const { addressData, errorLoading } = completeAddressData;
+  // const { addressData, errorLoading } = completeAddressData;
+  // const { addressData, errorLoading } = completeAddressData;
+  const errorLoading = false;
+  const addressData = emptyCompleteAddressInfoForRewardsPage;
   const {
     stakingInfo,
     distributionsHistory,
@@ -124,7 +133,8 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     delegatingToValidGuardian,
   } = addressData;
   const relevantGuardianInfo = isGuardian
-    ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
+    // ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
+  ? guardianInfo
     : guardianInfo;
 
   const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
