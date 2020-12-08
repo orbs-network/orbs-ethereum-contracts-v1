@@ -96,7 +96,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   );
 
   // Account specific State
-  const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress);
+  const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
 
   // Updates the form's address and the effective election block when query-address change
   useEffect(() => {

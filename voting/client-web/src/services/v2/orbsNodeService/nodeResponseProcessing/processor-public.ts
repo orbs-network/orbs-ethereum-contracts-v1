@@ -100,6 +100,8 @@ function readVirtualChains(rootNodeData: IManagementStatusResponse, config: Conf
 }
 
 function extractGuardians(rootNodeData: IManagementStatusResponse, currentTimestamp: number): Guardian[] {
+  // DEV_NOTE : O.L : The "mapValues" dose not return an array, fix this if we decide to keep the Guardian table here
+  // @ts-ignore
   return _.mapValues(rootNodeData.Payload.Guardians, (guardianData: IGuardianData) => {
     const ip = _.isString(guardianData.Ip) ? guardianData.Ip : '';
     const guardian: Guardian = {
