@@ -20,10 +20,7 @@ import { DelegationInfoTable } from './DelegationInfoTable';
 import { RewardsTable } from './RewardsTable';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { renderToString } from 'react-dom/server';
-import {
-  emptyCompleteAddressInfoForRewardsPage,
-  useCompleteAddressInfoForRewardsPage,
-} from './rewardsPageHooks';
+import { emptyCompleteAddressInfoForRewardsPage, useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
 import { observer } from 'mobx-react';
 import { Page } from '../../components/structure/Page';
 import { PageSection } from '../../components/structure/PageSection';
@@ -104,7 +101,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   // const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
   const completeAddressDataFromStatic = useCompleteAddressInfoForRewardsPageFromStaticData(queryAddress || undefined);
 
-  console.log({completeAddressDataFromStatic})
+  console.log({ completeAddressDataFromStatic });
 
   // Updates the form's address and the effective election block when query-address change
   useEffect(() => {
@@ -122,7 +119,8 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   // const { addressData, errorLoading } = completeAddressData;
   // const { addressData, errorLoading } = completeAddressData;
   const errorLoading = false;
-  const addressData = emptyCompleteAddressInfoForRewardsPage;
+  // const addressData = emptyCompleteAddressInfoForRewardsPage;
+  const addressData = completeAddressDataFromStatic;
   const {
     stakingInfo,
     distributionsHistory,
@@ -133,8 +131,8 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     delegatingToValidGuardian,
   } = addressData;
   const relevantGuardianInfo = isGuardian
-    // ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
-  ? guardianInfo
+    ? // ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
+      guardianInfo
     : guardianInfo;
 
   const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
