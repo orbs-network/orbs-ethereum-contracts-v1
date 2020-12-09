@@ -2,7 +2,8 @@
   "name": "orbs-voting-client",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://orbs-network.github.io",
+  "homepage": "https://orbs-network.github.io/v1-snapshot",
+
   "dependencies": {
     "@date-io/date-fns": "^2.10.6",
     "@material-ui/core": "^4.11.2",
@@ -75,7 +76,7 @@
     "eject": "react-scripts eject",
     "lint": "prettier --single-quote --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build --repo git@github.com:orbs-network/voting.git",
+    "deploy": "gh-pages -d build --repo git@github.com:orbs-network/v1-snapshot.git",
     "contracts:local": "./scripts/update-contracts-info.js",
     "contracts:prod": "./scripts/copy-contracts.sh",
     "mkd": "mkdir -p ./src/local && mkdir -p ./ganache-env/_out"

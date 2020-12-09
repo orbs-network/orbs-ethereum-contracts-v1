@@ -6,13 +6,15 @@ import { useEffect, useMemo } from 'react';
 import {
   emptyCompleteAddressInfoForRewardsPage,
   readCompleteDataForAddress,
-  TCompleteAddressInfoForRewardsPage, TStakingInfo,
+  TCompleteAddressInfoForRewardsPage,
+  TStakingInfo,
   TUseCompleteAddressInfoForRewardsPage,
 } from './rewardsPageHooks';
 import { useQuery } from 'react-query';
 import { IDelegationInfo } from 'orbs-pos-data/dist/interfaces/IDelegationInfo';
 import { TCurrentDelegationInfo, TRewardsSummary } from '../../services/IRemoteService';
 import { IGuardianInfo, IRewardsDistributionEvent } from 'orbs-pos-data';
+import { configs } from '../../config';
 
 export const useCompleteAddressInfoForRewardsPageFromStaticData = (address) => {
   const hasActiveDelegation = useHasActiveDelegation(address);
@@ -35,14 +37,22 @@ export const useCompleteAddressInfoForRewardsPageFromStaticData = (address) => {
     clonedData.stakingInfo = stakingInfo ? stakingInfo : clonedData.stakingInfo;
 
     return clonedData;
-  }, [hasActiveDelegation, delegatingToValidGuardian, delegatorInfo, distributionHistory, guardianInfo, rewardsSummary, stakingInfo]);
+  }, [
+    hasActiveDelegation,
+    delegatingToValidGuardian,
+    delegatorInfo,
+    distributionHistory,
+    guardianInfo,
+    rewardsSummary,
+    stakingInfo,
+  ]);
 
   return staticDataForAddress;
 };
 
 const useHasActiveDelegation = (address: string) => {
   const { isLoading, error, data } = useQuery('hasActiveDelegationSet', () =>
-    fetch('/staticRewardsData/hasActiveDelegationSet.json').then(async (res) => {
+    fetch(configs.staticDataRelativePath + 'hasActiveDelegationSet.json').then(async (res) => {
       // console.log({ res });
       const jsonRes = await res.json();
       // console.log({jsonRes})
@@ -74,7 +84,7 @@ const useHasActiveDelegation = (address: string) => {
 
 const useIsDelegatingToValidGuardian = (address: string) => {
   const { isLoading, error, data } = useQuery('delegatingToValidGuardianSet', () =>
-    fetch('/staticRewardsData/delegatingToValidGuardianSet.json').then(async (res) => {
+    fetch(configs.staticDataRelativePath + 'delegatingToValidGuardianSet.json').then(async (res) => {
       // console.log({ res });
       const jsonRes = await res.json();
       // console.log({jsonRes})
@@ -106,7 +116,7 @@ const useIsDelegatingToValidGuardian = (address: string) => {
 
 const useStaticDelegatorInfo = (address: string) => {
   const { isLoading, error, data } = useQuery('delegatorInfoMap', () =>
-    fetch('/staticRewardsData/delegatorInfoMap.json').then(async (res) => {
+    fetch(configs.staticDataRelativePath + 'delegatorInfoMap.json').then(async (res) => {
       // console.log({ res });
       const jsonRes = await res.json();
       // console.log({jsonRes})
@@ -134,7 +144,7 @@ const useStaticDelegatorInfo = (address: string) => {
 
 const useStaticDistributionHistory = (address: string) => {
   const { isLoading, error, data } = useQuery('distributionHistoryMap', () =>
-    fetch('/staticRewardsData/distributionHistoryMap.json').then(async (res) => {
+    fetch(configs.staticDataRelativePath + 'distributionHistoryMap.json').then(async (res) => {
       // console.log({ res });
       const jsonRes = await res.json();
       // console.log({jsonRes})
@@ -162,7 +172,7 @@ const useStaticDistributionHistory = (address: string) => {
 
 const useStaticGuardianInfo = (address: string) => {
   const { isLoading, error, data } = useQuery('guardianInfoMap', () =>
-    fetch('/staticRewardsData/guardianInfoMap.json').then(async (res) => {
+    fetch(configs.staticDataRelativePath + 'guardianInfoMap.json').then(async (res) => {
       // console.log({ res });
       const jsonRes = await res.json();
       // console.log({jsonRes})
@@ -190,7 +200,7 @@ const useStaticGuardianInfo = (address: string) => {
 
 const useStaticRewardsSummary = (address: string) => {
   const { isLoading, error, data } = useQuery('rewardsSummaryMap', () =>
-    fetch('/staticRewardsData/rewardsSummaryMap.json').then(async (res) => {
+    fetch(configs.staticDataRelativePath + 'rewardsSummaryMap.json').then(async (res) => {
       // console.log({ res });
       const jsonRes = await res.json();
       // console.log({jsonRes})
@@ -218,7 +228,7 @@ const useStaticRewardsSummary = (address: string) => {
 
 const useStaticStakingInfo = (address: string) => {
   const { isLoading, error, data } = useQuery('stakingInfoMap', () =>
-    fetch('/staticRewardsData/stakingInfoMap.json').then(async (res) => {
+    fetch(configs.staticDataRelativePath + 'stakingInfoMap.json').then(async (res) => {
       // console.log({ res });
       const jsonRes = await res.json();
       // console.log({jsonRes})
@@ -243,4 +253,3 @@ const useStaticStakingInfo = (address: string) => {
     return stakingInfoRecord[address];
   }
 };
-

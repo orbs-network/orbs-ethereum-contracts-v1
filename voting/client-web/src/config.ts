@@ -27,11 +27,12 @@ const orbsAuditNodeEndpoint_prod = 'https://orbs-voting-proxy-server.herokuapp.c
 
 export interface IConfig {
   orbsAuditNodeEndpoint: string;
+  staticDataRelativePath: string;
   ETHEREUM_PROVIDER_WS: string;
   contractsAddressesOverride: Partial<IOrbsPosContractsAddresses & { stakingContract: string }> | undefined;
   v2ContractsAddressesOverride: {
     stakingRewardsContactAddress?: string;
-  }
+  };
   earliestBlockForDelegationOverride?: number;
 }
 
@@ -46,6 +47,7 @@ const contractsAddressesOverride: Partial<IOrbsPosContractsAddresses & { staking
 
 const configsObject: IConfig = {
   orbsAuditNodeEndpoint: IS_DEV ? orbsAuditNodeEndpoint_dev : orbsAuditNodeEndpoint_prod,
+  staticDataRelativePath: IS_DEV ? '/staticRewardsData/' : '/v1-snapshot/staticRewardsData/',
   ETHEREUM_PROVIDER_WS: 'wss://mainnet.infura.io/ws/v3/3fe9b03bd8374639809addf2164f7287',
   contractsAddressesOverride,
   // Only override in dev
