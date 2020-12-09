@@ -20,3 +20,7 @@ export function useOrbsNodeStore(): OrbsNodeStore {
   // @ts-ignore
   return null;
 }
+
+export function useOrbsNodeStore(): OrbsNodeStore {
+  return useStores().orbsNodeStore;
+}

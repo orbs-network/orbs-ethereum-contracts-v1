@@ -90,7 +90,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   // General Eco-system state & functions
   // DEV_NOTE : HARD_CODED to the snapshot block
   // TODO : ORL : Add this
-  const [electionBlock, setElectionBlock] = useState('0');
+  const [electionBlock, setElectionBlock] = useState(11368900);
   // const fetchEffectiveElectionBlock = useCallback(
   //   () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock),
   //   [remoteService],
@@ -328,7 +328,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
           {': '}
         </Typography>
         <Typography display={'inline'} variant='subtitle1' color='secondary'>
-          {parseInt(electionBlock, 10).toLocaleString()}
+          {electionBlock.toLocaleString()}
         </Typography>
       </section>
     </Page>
