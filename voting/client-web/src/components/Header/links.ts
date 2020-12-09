@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 
-const links = [
-  { translationKey: 'Home', url: '/' },
-  { translationKey: 'Guardians', url: '/delegator' },
-  { translationKey: 'Validators', url: '/guardian' },
-  { translationKey: 'Elected Validators', url: '/validator' },
-  { translationKey: 'Rewards', url: '/reward' },
+const links: {url: string, translationKey: string}[] = [
+  // { translationKey: 'Home', url: '/' },
+  // { translationKey: 'Guardians', url: '/delegator' },
+  // { translationKey: 'Validators', url: '/guardian' },
+  // { translationKey: 'Elected Validators', url: '/validator' },
+  // { translationKey: 'Rewards', url: '/reward' },
 ];
 
 export type TLinkDescriptor = {

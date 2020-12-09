@@ -15,14 +15,19 @@ import { useApi } from '../../services/ApiContext';
 import { DelegationStatusDialog } from '../../components/DelegationStatusDialog/DelegationStatusDialog';
 import { ManualDelegationDialog } from '../../components/ManualDelegationDialog/ManualDelegationDialog';
 import { GuardiansList } from './GuardiansList';
-import { useGuardiansStore } from '../../Store/storeHooks';
+import { useGuardiansStore, useOrbsNodeStore } from '../../Store/storeHooks';
 import { observer } from 'mobx-react';
 import { Page } from '../../components/structure/Page';
+import { GuardiansTable } from '../../components/Shared/GuardiansTable/GuardiansTable';
+import { useGuardiansDelegatorsCut } from '../../services/v2/v2ServicesHooks';
+import { useOrbsStakingRewardsService } from '../../services/ServicesHooks';
 
 // TODO : O.L : Add loading indicator
 export const DelegatorsPage = observer(() => {
   const { remoteService, metamask } = useApi();
   const guardiansStore = useGuardiansStore();
+  const orbsNodeStore = useOrbsNodeStore();
+  const stakingRewardsService = useOrbsStakingRewardsService();
 
   const [manualDelegationDialogState, setManualDelegationDialogState] = useState(false);
 
@@ -66,6 +71,9 @@ export const DelegatorsPage = observer(() => {
     [fetchDelegatedTo, metamask],
   );
 
+  const guardianAddressToDelegatorsCut = useGuardiansDelegatorsCut(orbsNodeStore.guardians, stakingRewardsService);
+
+
   const manualDelegateHandler = (address) => {
     delegate(address);
     setTimeout(() => {
@@ -96,61 +104,34 @@ export const DelegatorsPage = observer(() => {
 
   return (
     <Page>
-      <header style={centerContent}>
-        <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
-          {t('Guardians List')}
-        </Typography>
-        <DelegationStatusDialog remoteService={remoteService} />
-      </header>
+      {/*<header style={centerContent}>*/}
+      {/*  <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>*/}
+      {/*    {t('Guardians List')}*/}
+      {/*  </Typography>*/}
+      {/*  <DelegationStatusDialog remoteService={remoteService} />*/}
+      {/*</header>*/}
 
-      <div style={centerContent}>
-        <Typography variant='body1' gutterBottom color='textPrimary'>
-          {t('Next election round will take place at Ethereum block') + ':'}{' '}
-          <Link
-            color='secondary'
-            target='_blank'
-            rel='noopener'
-            href={`//etherscan.io/block/countdown/${upcomingElectionsBlockNumber}`}
-            style={{ marginRight: '1rem' }}
-          >
-            {upcomingElectionsBlockNumber}
-          </Link>
-        </Typography>
-
-        <Typography variant='body1' gutterBottom color='textPrimary'>
-          {t('Participating stake')}
-          {': '}
-          {totalParticipatingTokens} ORBS
-        </Typography>
-      </div>
+      {/*<div style={centerContent}>*/}
+      {/*  <Typography variant='body1' gutterBottom color='textPrimary'>*/}
+      {/*    {t('Participating stake')}*/}
+      {/*    {': '}*/}
+      {/*    {totalParticipatingTokens} ORBS*/}
+      {/*  </Typography>*/}
+      {/*</div>*/}
 
       {guardiansStore.doneLoading}
-      <GuardiansList
-        delegatedTo={delegatedTo}
-        enableDelegation={metamask !== undefined}
-        guardians={guardiansStore.guardiansList}
-        onSelect={setDelegationCandidate}
-      />
-
-      {metamask && (
-        <Typography paragraph variant='body1' color='textPrimary'>
-          <Trans i18nKey='delegateMessage'>Want to delegate manually to another address? Click {hereElement}.</Trans>
-        </Typography>
+      {!orbsNodeStore.doneLoading && <Typography>{t('Loading')}...</Typography>}
+      {orbsNodeStore.doneLoading && (
+        <GuardiansTable
+          guardianSelectionMode={'None'}
+          selectedGuardian={''}
+          guardians={orbsNodeStore.guardians}
+          onGuardianSelect={() => null}
+          committeeMembers={orbsNodeStore.committeeMembers}
+          // guardiansToDelegatorsCut={guardianAddressToDelegatorsCut}
+          guardiansToDelegatorsCut={guardianAddressToDelegatorsCut}
+        />
       )}
-
-      <ManualDelegationDialog
-        dialogState={manualDelegationDialogState}
-        onClose={() => setManualDelegationDialogState(false)}
-        onDelegate={manualDelegateHandler}
-      />
-
-      <div style={{ textAlign: 'center' }}>
-        {metamask && (
-          <Button variant='outlined' color='secondary' onClick={() => delegate(delegationCandidate)}>
-            {t('Delegate')}
-          </Button>
-        )}
-      </div>
     </Page>
   );
 });

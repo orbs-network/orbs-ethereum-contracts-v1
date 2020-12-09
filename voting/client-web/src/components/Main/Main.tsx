@@ -34,13 +34,14 @@ export const Main = React.memo((props) => {
   return (
     <main className={classes.content} data-testid='main'>
       <Switch>
-        <Route exact path='/' component={Home} />
-        <Route exact path='/delegator' component={(props: RouteProps) => <DelegatorsPage />} />
-        <Route exact path='/guardian' component={(props: RouteProps) => <GuardiansPage {...props} />} />
-        <Route exact path='/validator' component={(props: RouteProps) => <ValidatorsPage {...props} />} />
+        {/*<Route exact path='/' component={Home} />*/}
+        <Route exact path='/' component={(props: RouteProps) => <RewardsPage {...props} />} />
+        {/*<Route exact path='/delegator' component={(props: RouteProps) => <DelegatorsPage />} />*/}
+        {/*<Route exact path='/guardian' component={(props: RouteProps) => <GuardiansPage {...props} />} />*/}
+        {/*<Route exact path='/validator' component={(props: RouteProps) => <ValidatorsPage {...props} />} />*/}
         <Route exact path='/reward' component={(props: RouteProps) => <RewardsPage {...props} />} />
-        <Route exact path='/guardian/new' component={(props: RouteProps) => <NewGuardian {...props} />} />
-        <Route exact path='/validator/new' component={(props: RouteProps) => <NewValidator {...props} />} />
+        {/*<Route exact path='/guardian/new' component={(props: RouteProps) => <NewGuardian {...props} />} />*/}
+        {/*<Route exact path='/validator/new' component={(props: RouteProps) => <NewValidator {...props} />} />*/}
       </Switch>
     </main>
   );

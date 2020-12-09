@@ -32,7 +32,7 @@ export type TCompleteAddressInfoForRewardsPage = {
 // DEV_NOTE : O.L : This was added for the V1 state preserving
 export type TCompleteAddressInfoForRewardsPageWithAddress = TCompleteAddressInfoForRewardsPage & { address: string };
 
-const emptyObject: TCompleteAddressInfoForRewardsPage = {
+export const emptyCompleteAddressInfoForRewardsPage: TCompleteAddressInfoForRewardsPage = {
   distributionsHistory: [],
   delegatorInfo: {
     delegatedTo: '',
@@ -64,9 +64,10 @@ export type TUseCompleteAddressInfoForRewardsPage = (
   address?: string,
 ) => { addressData: TCompleteAddressInfoForRewardsPage; errorLoading: boolean };
 
+
 export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRewardsPage = (address) => {
   const errorLoading = useBoolean(false);
-  const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyObject);
+  const addressData = useStateful<TCompleteAddressInfoForRewardsPage>(emptyCompleteAddressInfoForRewardsPage);
   const guardianService = useGuardiansService();
   const guardiansStore = useGuardiansStore();
 
@@ -98,7 +99,7 @@ export const useCompleteAddressInfoForRewardsPage: TUseCompleteAddressInfoForRew
 
   if (!address) {
     return {
-      addressData: emptyObject,
+      addressData: emptyCompleteAddressInfoForRewardsPage,
       errorLoading: false,
     };
   }

@@ -20,12 +20,12 @@ import { DelegationInfoTable } from './DelegationInfoTable';
 import { RewardsTable } from './RewardsTable';
 import { useQueryParam, StringParam } from 'use-query-params';
 import { renderToString } from 'react-dom/server';
-import { useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
+import { emptyCompleteAddressInfoForRewardsPage, useCompleteAddressInfoForRewardsPage } from './rewardsPageHooks';
 import { observer } from 'mobx-react';
-import { useGuardiansStore } from '../../Store/storeHooks';
 import { Page } from '../../components/structure/Page';
 import { PageSection } from '../../components/structure/PageSection';
 import { RewardsHistoryTable } from './RewardsHistoryTable';
+import { useCompleteAddressInfoForRewardsPageFromStaticData } from './rewardsPageStaticHooks';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -66,21 +66,17 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const guardiansStore = useGuardiansStore();
-
   // Display flags
   const showNoSelectedGuardianError = useBoolean(false);
   const showDelegatingToANonGuardianAlert = useBoolean(false);
   const showAddressNotParticipatingAlert = useBoolean(false);
 
-  // Api service, should be removed
-  const { remoteService } = useApi();
-
   // Page state
   const [queryAddress, setQueryAddress] = useQueryParam('address', StringParam);
 
   // Account in question state
-  const isGuardian = guardiansStore.isGuardian(queryAddress || '');
+  // const isGuardian = guardiansStore.isGuardian(queryAddress || '');
+  const isGuardian = false;
 
   // Form state & functions
   const [formAddress, setFormAddress] = useState('');
@@ -89,20 +85,17 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   }, [setQueryAddress, formAddress]);
 
   // General Eco-system state & functions
-  const [electionBlock, setElectionBlock] = useState('0');
-  const fetchEffectiveElectionBlock = useCallback(
-    () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock),
-    [remoteService],
-  );
+  // DEV_NOTE : HARD_CODED to the snapshot block
+  // TODO : ORL : Add this
+  const electionBlock = 11368900;
 
   // Account specific State
-  const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress);
+  // const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
+  const completeAddressDataFromStatic = useCompleteAddressInfoForRewardsPageFromStaticData(queryAddress || undefined);
 
   // Updates the form's address and the effective election block when query-address change
   useEffect(() => {
     async function asyncInnerFunction() {
-      await fetchEffectiveElectionBlock();
-
       if (!queryAddress) {
         return;
       }
@@ -111,9 +104,11 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     }
 
     asyncInnerFunction();
-  }, [fetchEffectiveElectionBlock, queryAddress]);
+  }, [queryAddress]);
 
-  const { addressData, errorLoading } = completeAddressData;
+  // const { addressData, errorLoading } = completeAddressData;
+  const errorLoading = false;
+  const addressData = completeAddressDataFromStatic;
   const {
     stakingInfo,
     distributionsHistory,
@@ -124,7 +119,8 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     delegatingToValidGuardian,
   } = addressData;
   const relevantGuardianInfo = isGuardian
-    ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
+    ? // ? guardiansStore.guardiansList.find((g) => g.address.toLowerCase() === queryAddress?.toLowerCase())
+      guardianInfo
     : guardianInfo;
 
   const hasUnstakedOrbs = delegatorInfo.delegatorBalance > 0;
@@ -144,47 +140,47 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   const isActiveInStaking = hasStakedOrbs && hasSelectedGuardian;
 
   // Checks if any alerts should be displayed
-  useEffect(() => {
-    if (!hasAddress) {
-      showNoSelectedGuardianError.setFalse();
-      showAddressNotParticipatingAlert.setFalse();
-
-      return;
-    }
-
-    // DEV_NOTE : O.L :  Guardians always have themselves as their selected Guardian.
-    // Do we have staked ORBS but no guardian selected ?
-    if (!isGuardian && hasStakedOrbs && !hasSelectedGuardian) {
-      showNoSelectedGuardianError.setTrue();
-    } else {
-      showNoSelectedGuardianError.setFalse();
-    }
-
-    // Do we have a selected guardian but we are not staking yet ?
-    if (!hasStakedOrbs && hasUnstakedOrbs) {
-      showAddressNotParticipatingAlert.setTrue();
-    } else {
-      showAddressNotParticipatingAlert.setFalse();
-    }
-
-    // Do we have d delegation to someone who is not a guardian ?
-    if (hasActiveDelegation && !delegatingToValidGuardian) {
-      showDelegatingToANonGuardianAlert.setTrue();
-    } else {
-      showDelegatingToANonGuardianAlert.setFalse();
-    }
-  }, [
-    showNoSelectedGuardianError,
-    showAddressNotParticipatingAlert,
-    hasAddress,
-    hasStakedOrbs,
-    hasSelectedGuardian,
-    hasUnstakedOrbs,
-    isGuardian,
-    hasActiveDelegation,
-    delegatingToValidGuardian,
-    showDelegatingToANonGuardianAlert,
-  ]);
+  // useEffect(() => {
+  //   if (!hasAddress) {
+  //     showNoSelectedGuardianError.setFalse();
+  //     showAddressNotParticipatingAlert.setFalse();
+  //
+  //     return;
+  //   }
+  //
+  //   // DEV_NOTE : O.L :  Guardians always have themselves as their selected Guardian.
+  //   // Do we have staked ORBS but no guardian selected ?
+  //   if (!isGuardian && hasStakedOrbs && !hasSelectedGuardian) {
+  //     showNoSelectedGuardianError.setTrue();
+  //   } else {
+  //     showNoSelectedGuardianError.setFalse();
+  //   }
+  //
+  //   // Do we have a selected guardian but we are not staking yet ?
+  //   if (!hasStakedOrbs && hasUnstakedOrbs) {
+  //     showAddressNotParticipatingAlert.setTrue();
+  //   } else {
+  //     showAddressNotParticipatingAlert.setFalse();
+  //   }
+  //
+  //   // Do we have d delegation to someone who is not a guardian ?
+  //   if (hasActiveDelegation && !delegatingToValidGuardian) {
+  //     showDelegatingToANonGuardianAlert.setTrue();
+  //   } else {
+  //     showDelegatingToANonGuardianAlert.setFalse();
+  //   }
+  // }, [
+  //   showNoSelectedGuardianError,
+  //   showAddressNotParticipatingAlert,
+  //   hasAddress,
+  //   hasStakedOrbs,
+  //   hasSelectedGuardian,
+  //   hasUnstakedOrbs,
+  //   isGuardian,
+  //   hasActiveDelegation,
+  //   delegatingToValidGuardian,
+  //   showDelegatingToANonGuardianAlert,
+  // ]);
 
   const tetraUrl = 'https://staking.orbs.network';
   const tetraV1Url = 'https://staking-v1.orbs.network';
@@ -219,15 +215,20 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     ),
   });
 
-  // TODO : O.L : RESP : ADWR : Fix alignment.
-  // TODO : O.L : RESP : ADWR : Fix dimension-shifting-after-data-load.
-
   return (
     <Page>
       {/* Title & input */}
       <PageSection>
         <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
           {t('Rewards & Delegation Info')}
+        </Typography>
+        <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
+          {/*{t('message_orbsWillTransitionToV2On')}*/}
+          {t('message_orbsHasTransitionedToV20On')}
+        </Typography>
+
+        <Typography variant='h5' component='h5' gutterBottom color='textPrimary'>
+          {t('message_thisPageDisplaysSnapshotData')}
         </Typography>
         {/* TODO : O.L : We might want to add a UX indicator that the account is a guardian */}
         <FormControl className={classes.form} variant='standard' margin='normal'>
@@ -249,26 +250,26 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
         </FormControl>
       </PageSection>
 
-      {showNoSelectedGuardianError.value && (
-        <Alert className={classes.alert} severity='error'>
-          <Typography>{t('alert_stakingWithoutGuardian')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
-        </Alert>
-      )}
+      {/*{showNoSelectedGuardianError.value && (*/}
+      {/*  <Alert className={classes.alert} severity='error'>*/}
+      {/*    <Typography>{t('alert_stakingWithoutGuardian')}</Typography> <br /> <br />{' '}*/}
+      {/*    <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />*/}
+      {/*  </Alert>*/}
+      {/*)}*/}
 
-      {showDelegatingToANonGuardianAlert.value && (
-        <Alert className={classes.alert} severity='error'>
-          <Typography>{t('alert_delegatingToNonGuardian')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
-        </Alert>
-      )}
+      {/*{showDelegatingToANonGuardianAlert.value && (*/}
+      {/*  <Alert className={classes.alert} severity='error'>*/}
+      {/*    <Typography>{t('alert_delegatingToNonGuardian')}</Typography> <br /> <br />{' '}*/}
+      {/*    <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />*/}
+      {/*  </Alert>*/}
+      {/*)}*/}
 
-      {showAddressNotParticipatingAlert.value && (
-        <Alert className={classes.alert} severity='info'>
-          <Typography>{t('alert_notParticipating')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
-        </Alert>
-      )}
+      {/*{showAddressNotParticipatingAlert.value && (*/}
+      {/*  <Alert className={classes.alert} severity='info'>*/}
+      {/*    <Typography>{t('alert_notParticipating')}</Typography> <br /> <br />{' '}*/}
+      {/*    <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />*/}
+      {/*  </Alert>*/}
+      {/*)}*/}
 
       <br />
 
@@ -295,8 +296,6 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
       <PageSection>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
-          {' - '}
-          {t('message_orbsWillTransitionToV2On')}
         </Typography>
         <Typography
           variant='h6'
@@ -322,7 +321,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
           {': '}
         </Typography>
         <Typography display={'inline'} variant='subtitle1' color='secondary'>
-          {parseInt(electionBlock, 10).toLocaleString()}
+          {electionBlock.toLocaleString()}
         </Typography>
       </section>
     </Page>
