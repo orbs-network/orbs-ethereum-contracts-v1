@@ -71,9 +71,6 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   const showDelegatingToANonGuardianAlert = useBoolean(false);
   const showAddressNotParticipatingAlert = useBoolean(false);
 
-  // Api service, should be removed
-  const { remoteService } = useApi();
-
   // Page state
   const [queryAddress, setQueryAddress] = useQueryParam('address', StringParam);
 
@@ -90,14 +87,9 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   // General Eco-system state & functions
   // DEV_NOTE : HARD_CODED to the snapshot block
   // TODO : ORL : Add this
-  const [electionBlock, setElectionBlock] = useState(11368900);
-  // const fetchEffectiveElectionBlock = useCallback(
-  //   () => remoteService.getEffectiveElectionBlockNumber().then(setElectionBlock),
-  //   [remoteService],
-  // );
+  const electionBlock = 11368900;
 
   // Account specific State
-  // const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
   // const completeAddressData = useCompleteAddressInfoForRewardsPage(queryAddress || undefined);
   const completeAddressDataFromStatic = useCompleteAddressInfoForRewardsPageFromStaticData(queryAddress || undefined);
 
@@ -115,9 +107,7 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   }, [queryAddress]);
 
   // const { addressData, errorLoading } = completeAddressData;
-  // const { addressData, errorLoading } = completeAddressData;
   const errorLoading = false;
-  // const addressData = emptyCompleteAddressInfoForRewardsPage;
   const addressData = completeAddressDataFromStatic;
   const {
     stakingInfo,
@@ -150,47 +140,47 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
   const isActiveInStaking = hasStakedOrbs && hasSelectedGuardian;
 
   // Checks if any alerts should be displayed
-  useEffect(() => {
-    if (!hasAddress) {
-      showNoSelectedGuardianError.setFalse();
-      showAddressNotParticipatingAlert.setFalse();
-
-      return;
-    }
-
-    // DEV_NOTE : O.L :  Guardians always have themselves as their selected Guardian.
-    // Do we have staked ORBS but no guardian selected ?
-    if (!isGuardian && hasStakedOrbs && !hasSelectedGuardian) {
-      showNoSelectedGuardianError.setTrue();
-    } else {
-      showNoSelectedGuardianError.setFalse();
-    }
-
-    // Do we have a selected guardian but we are not staking yet ?
-    if (!hasStakedOrbs && hasUnstakedOrbs) {
-      showAddressNotParticipatingAlert.setTrue();
-    } else {
-      showAddressNotParticipatingAlert.setFalse();
-    }
-
-    // Do we have d delegation to someone who is not a guardian ?
-    if (hasActiveDelegation && !delegatingToValidGuardian) {
-      showDelegatingToANonGuardianAlert.setTrue();
-    } else {
-      showDelegatingToANonGuardianAlert.setFalse();
-    }
-  }, [
-    showNoSelectedGuardianError,
-    showAddressNotParticipatingAlert,
-    hasAddress,
-    hasStakedOrbs,
-    hasSelectedGuardian,
-    hasUnstakedOrbs,
-    isGuardian,
-    hasActiveDelegation,
-    delegatingToValidGuardian,
-    showDelegatingToANonGuardianAlert,
-  ]);
+  // useEffect(() => {
+  //   if (!hasAddress) {
+  //     showNoSelectedGuardianError.setFalse();
+  //     showAddressNotParticipatingAlert.setFalse();
+  //
+  //     return;
+  //   }
+  //
+  //   // DEV_NOTE : O.L :  Guardians always have themselves as their selected Guardian.
+  //   // Do we have staked ORBS but no guardian selected ?
+  //   if (!isGuardian && hasStakedOrbs && !hasSelectedGuardian) {
+  //     showNoSelectedGuardianError.setTrue();
+  //   } else {
+  //     showNoSelectedGuardianError.setFalse();
+  //   }
+  //
+  //   // Do we have a selected guardian but we are not staking yet ?
+  //   if (!hasStakedOrbs && hasUnstakedOrbs) {
+  //     showAddressNotParticipatingAlert.setTrue();
+  //   } else {
+  //     showAddressNotParticipatingAlert.setFalse();
+  //   }
+  //
+  //   // Do we have d delegation to someone who is not a guardian ?
+  //   if (hasActiveDelegation && !delegatingToValidGuardian) {
+  //     showDelegatingToANonGuardianAlert.setTrue();
+  //   } else {
+  //     showDelegatingToANonGuardianAlert.setFalse();
+  //   }
+  // }, [
+  //   showNoSelectedGuardianError,
+  //   showAddressNotParticipatingAlert,
+  //   hasAddress,
+  //   hasStakedOrbs,
+  //   hasSelectedGuardian,
+  //   hasUnstakedOrbs,
+  //   isGuardian,
+  //   hasActiveDelegation,
+  //   delegatingToValidGuardian,
+  //   showDelegatingToANonGuardianAlert,
+  // ]);
 
   const tetraUrl = 'https://staking.orbs.network';
   const tetraV1Url = 'https://staking-v1.orbs.network';
@@ -225,15 +215,20 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
     ),
   });
 
-  // TODO : O.L : RESP : ADWR : Fix alignment.
-  // TODO : O.L : RESP : ADWR : Fix dimension-shifting-after-data-load.
-
   return (
     <Page>
       {/* Title & input */}
       <PageSection>
         <Typography variant='h2' component='h2' gutterBottom color='textPrimary'>
           {t('Rewards & Delegation Info')}
+        </Typography>
+        <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
+          {/*{t('message_orbsWillTransitionToV2On')}*/}
+          {t('message_orbsHasTransitionedToV20On')}
+        </Typography>
+
+        <Typography variant='h5' component='h5' gutterBottom color='textPrimary'>
+          {t('message_thisPageDisplaysSnapshotData')}
         </Typography>
         {/* TODO : O.L : We might want to add a UX indicator that the account is a guardian */}
         <FormControl className={classes.form} variant='standard' margin='normal'>
@@ -255,26 +250,26 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
         </FormControl>
       </PageSection>
 
-      {showNoSelectedGuardianError.value && (
-        <Alert className={classes.alert} severity='error'>
-          <Typography>{t('alert_stakingWithoutGuardian')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
-        </Alert>
-      )}
+      {/*{showNoSelectedGuardianError.value && (*/}
+      {/*  <Alert className={classes.alert} severity='error'>*/}
+      {/*    <Typography>{t('alert_stakingWithoutGuardian')}</Typography> <br /> <br />{' '}*/}
+      {/*    <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />*/}
+      {/*  </Alert>*/}
+      {/*)}*/}
 
-      {showDelegatingToANonGuardianAlert.value && (
-        <Alert className={classes.alert} severity='error'>
-          <Typography>{t('alert_delegatingToNonGuardian')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
-        </Alert>
-      )}
+      {/*{showDelegatingToANonGuardianAlert.value && (*/}
+      {/*  <Alert className={classes.alert} severity='error'>*/}
+      {/*    <Typography>{t('alert_delegatingToNonGuardian')}</Typography> <br /> <br />{' '}*/}
+      {/*    <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />*/}
+      {/*  </Alert>*/}
+      {/*)}*/}
 
-      {showAddressNotParticipatingAlert.value && (
-        <Alert className={classes.alert} severity='info'>
-          <Typography>{t('alert_notParticipating')}</Typography> <br /> <br />{' '}
-          <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />
-        </Alert>
-      )}
+      {/*{showAddressNotParticipatingAlert.value && (*/}
+      {/*  <Alert className={classes.alert} severity='info'>*/}
+      {/*    <Typography>{t('alert_notParticipating')}</Typography> <br /> <br />{' '}*/}
+      {/*    <Typography dangerouslySetInnerHTML={{ __html: stakeAndDelegateWithTetraLinkInnerHtml }} />*/}
+      {/*  </Alert>*/}
+      {/*)}*/}
 
       <br />
 
@@ -301,8 +296,6 @@ export const RewardsPage = observer<React.FunctionComponent>(() => {
       <PageSection>
         <Typography variant='h4' component='h4' gutterBottom color='textPrimary'>
           {t('Delegation Details')}
-          {' - '}
-          {t('message_orbsWillTransitionToV2On')}
         </Typography>
         <Typography
           variant='h6'

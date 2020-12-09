@@ -108,6 +108,8 @@ export const resources: Resource = {
       message_orbsWillTransitionToV2On: 'Orbs will transition to V2 on Nov 30',
       message_toChangeDelegationsUseV1Tetra: 'To change your V1 Delegation please use {{tetraLink}}',
       concept_tetraV1: 'Tetra V1',
+      message_orbsHasTransitionedToV20On: 'Orbs had transitioned to V2 on November 30, 2020',
+      message_thisPageDisplaysSnapshotData: 'This page displays static data from the last snapshot of V1.',
 
       // Rewards table
       delegatorNonStakedOrbs: 'デリゲータの未ステーキングORBS',
@@ -155,6 +157,8 @@ export const resources: Resource = {
       message_orbsWillTransitionToV2On: 'Orbs will transition to V2 on Nov 30',
       message_toChangeDelegationsUseV1Tetra: 'To change your V1 Delegation please use {{tetraLink}}',
       concept_tetraV1: 'Tetra V1',
+      message_orbsHasTransitionedToV20On: 'Orbs had transitioned to V2 on November 30, 2020',
+      message_thisPageDisplaysSnapshotData: 'This page displays static data from the last snapshot of V1.',
 
       // Rewards table
       delegatorNonStakedOrbs: 'Delegator’s  non-staked ORBS',
@@ -282,6 +286,8 @@ export const resources: Resource = {
       message_orbsWillTransitionToV2On: 'Orbs will transition to V2 on Nov 30',
       message_toChangeDelegationsUseV1Tetra: 'To change your V1 Delegation please use {{tetraLink}}',
       concept_tetraV1: 'Tetra V1',
+      message_orbsHasTransitionedToV20On: 'Orbs had transitioned to V2 on November 30, 2020',
+      message_thisPageDisplaysSnapshotData: 'This page displays static data from the last snapshot of V1.',
 
       // Rewards table
       delegatorNonStakedOrbs: '스테이킹하고 있지 않는 ORBS',
