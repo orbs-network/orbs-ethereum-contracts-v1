@@ -125,13 +125,13 @@ function _updateAccReward(address, reward, rewardMap) {
     return rewardMap[address];
 }
 
-function _participationRewardCalculation(obj, maxTotal, maxParticipationReward, participatsRewards) {
+function _participationRewardCalculation(obj, maxTotal, maxParticipationReward, participantsRewards) {
     obj.percentStake = obj.selfStake * 100.0 / maxTotal;
     obj.reward = Math.trunc(obj.percentStake * maxParticipationReward / 100.0);
-    obj.accReward = _updateAccReward(obj.address.toLowerCase(), obj.reward, participatsRewards);
+    obj.accReward = _updateAccReward(obj.address.toLowerCase(), obj.reward, participantsRewards);
 }
 
-function _voteRewardsCalculations(result, maxGuardianReward, guardiansRewards, maxParticipationReward, participatsRewards) {
+function _voteRewardsCalculations(result, maxGuardianReward, guardiansRewards, maxParticipationReward, participantsRewards) {
     for (let i = 0; i < result.guardians.length;i++) {
         let guardian = result.guardians[i];
         if (i < EXCELLENCE_MAX) {
@@ -146,10 +146,10 @@ function _voteRewardsCalculations(result, maxGuardianReward, guardiansRewards, m
             }
         }
 
-        _participationRewardCalculation(guardian, result.totalStake, maxParticipationReward, participatsRewards);
+        _participationRewardCalculation(guardian, result.totalStake, maxParticipationReward, participantsRewards);
 
         for (let j = 0; j < guardian.delegators.length; j++) {
-            _participationRewardCalculation(guardian.delegators[j], result.totalStake, maxParticipationReward, participatsRewards);
+            _participationRewardCalculation(guardian.delegators[j], result.totalStake, maxParticipationReward, participantsRewards);
         }
     }
 }
@@ -173,6 +173,22 @@ function _nonVoteFillOldRewards(result, guardiansRewards, participantsRewards) {
             if(!delegator.accReward) {
                 delegator.accReward = 0;
             }
+        }
+    }
+
+    for (let i = 0; i < result.delegatorsGuardianLeft.length; i++) {
+        let delegator = result.delegatorsGuardianLeft[i];
+        delegator.accReward = participantsRewards[delegator.address.toLowerCase()];
+        if(!delegator.accReward) {
+            delegator.accReward = 0;
+        }
+    }
+
+    for (let i = 0; i < result.nonDelegators.length; i++) {
+        let delegator = result.nonDelegators[i];
+        delegator.accReward = participantsRewards[delegator.address.toLowerCase()];
+        if(!delegator.accReward) {
+            delegator.accReward = 0;
         }
     }
 }
@@ -206,7 +222,7 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
     let csvStr = `Voted@${currentElectionBlock}\nGuardian,Name,Delegator,Vote Stake,%of Total,Participation Reward,Accumulated Participation Reward,Vote Weight,% of Total,Excellence Reward,Accumulated Excellence Reward,Voted@Block,VoteOut1,VoteOut2,VoteOut3\n`;
     for (let i = 0; i < result.guardians.length; i++) {
         let guardian = result.guardians[i];
-        csvStr += `${guardian.address},"${guardian.name}",,${guardian.selfStake},${guardian.percentStake}%,${guardian.reward},${guardian.accReward},`;
+        csvStr += `${guardian.address},"${guardian.name}",${guardian.address},${guardian.selfStake},${guardian.percentStake}%,${guardian.reward},${guardian.accReward},`;
         let percent = guardian.voteWeight * 100.0 / result.totalStake;
         csvStr += `${guardian.voteWeight},${percent}%,${guardian.excellenceReward},${guardian.accExcellenceReward},@${guardian.voteBlock},`;
         if (guardian.vote.length > 0) {
@@ -237,7 +253,7 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
 
     for (let i = 0; i < result.guardiansNonVote.length; i++) {
         let guardian = result.guardiansNonVote[i];
-        csvStr += `${guardian.address},"${guardian.name}",,${guardian.selfStake},0%,0,${guardian.accReward},${guardian.voteWeight},0%,0,${guardian.accExcellenceReward}\n`;
+        csvStr += `${guardian.address},"${guardian.name}",${guardian.address},${guardian.selfStake},0%,0,${guardian.accReward},${guardian.voteWeight},0%,0,${guardian.accExcellenceReward}\n`;
         guardian.delegators.sort((a, b) => b.selfStake - a.selfStake);
         for (let j = 0; j < guardian.delegators.length; j++) {
             let delegator = guardian.delegators[j];
@@ -249,14 +265,14 @@ function writeToFile(result, filenamePrefix, currentElectionBlock) {
     result.delegatorsGuardianLeft.sort((a, b) => b.selfStake - a.selfStake);
     for (let i = 0; i < result.delegatorsGuardianLeft.length; i++) {
         let delegator = result.delegatorsGuardianLeft[i];
-        csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},\n`;
+        csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},0%,0,${delegator.accReward}\n`;
     }
 
     csvStr += `\nBad Delegation\nGuardian,,Delegator,Stake\n`;
     result.nonDelegators.sort((a, b) => b.selfStake - a.selfStake);
     for (let i = 0; i < result.nonDelegators.length; i++) {
         let delegator = result.nonDelegators[i];
-        csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},\n`;
+        csvStr += `${delegator.delegatee},,${delegator.address},${delegator.selfStake},0%,0,${delegator.accReward}\n`;
     }
 
     let path = getFileName(currentElectionBlock, filenamePrefix);
@@ -285,14 +301,19 @@ async function readHistoryRewardsFromFile(participationMap, guardianMap, blockNu
 
     let counter = 0;
     for await (const line of rl) {
-        let fixname = line.split('"'); // code to remove name of guardian because it can contains a comma
-        let fixedLine = fixname[0] + fixname[2];
+        let fixname = line.split('"'); // code to remove comma from name of guardian
+        if (fixname[1] && fixname[1].length > 0) {
+            fixname[1] = fixname[1].replace(/,/gi, '');
+            fixname[1] = fixname[1] + fixname[2];
+        }
+
+        let fixedLine = fixname[0] + fixname[1];
 
         let parts = fixedLine.split(',');
         if (parts.length < 5) {
             continue;
         }
-        if (parts[0].length !== 0 && parts[0].indexOf('0x') === 0) { // guardian
+        if (parts[0].length !== 0 && parts[0].indexOf('0x') === 0 && parts[1]) { // guardian
             let guardianAddr = parts[0].toLowerCase();
             let participationReward = parseInt(parts[6]);
             let excellenceReward = parseInt(parts[10]);

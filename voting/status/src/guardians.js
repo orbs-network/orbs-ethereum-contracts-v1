@@ -15,12 +15,12 @@ if (process.env.VERBOSE) {
     verbose = true;
 }
 
-async function readFullGuardianDataFromAddresses(guardianMap, guardianAddresses, web3, guardiansContract, votingContract, tokenContract, stateBlock, votingValidityPeriod) {
+async function readFullGuardianDataFromAddresses(guardianMap, guardianAddresses, web3, guardiansContract, votingContract, tokenContract, stakingContract ,stateBlock, votingValidityPeriod) {
     let txs = [];
     for (let i = 0; i < guardianAddresses.length;i++){
         txs.push(guardiansContract.methods.getGuardianData(guardianAddresses[i]).call({}, stateBlock)) ;
         txs.push(votingContract.methods.getCurrentVote(guardianAddresses[i]).call({}, stateBlock));
-        txs.push(stakes.readOne(guardianAddresses[i], web3, tokenContract, stateBlock));
+        txs.push(stakes.readOne(guardianAddresses[i], web3, tokenContract, stakingContract, stateBlock));
     }
     let res = await Promise.all(txs);
     for (let i = 0; i < guardianAddresses.length;i++){
@@ -36,7 +36,7 @@ async function readFullGuardianDataFromAddresses(guardianMap, guardianAddresses,
     }
 }
 
-async function read(web3, guardiansContract, votingContract, tokenContract, stateBlock, votingValidityPeriod) {
+async function read(web3, guardiansContract, votingContract, tokenContract, stakingContract, stateBlock, votingValidityPeriod) {
     let start = 0, page = 50;
     let guardianMap = {};
     let gAddrs = [];
@@ -45,7 +45,7 @@ async function read(web3, guardiansContract, votingContract, tokenContract, stat
         if (verbose) {
             console.log('\x1b[33m%s\x1b[0m', `reading next batch of ${gAddrs.length} guardians`);
         }
-        await readFullGuardianDataFromAddresses(guardianMap, gAddrs, web3, guardiansContract, votingContract, tokenContract, stateBlock, votingValidityPeriod);
+        await readFullGuardianDataFromAddresses(guardianMap, gAddrs, web3, guardiansContract, votingContract, tokenContract, stakingContract, stateBlock, votingValidityPeriod);
         start = start + page;
     } while (gAddrs.length >= page);
 

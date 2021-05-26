@@ -20,12 +20,21 @@ function parseStake(web3, str) {
     return parseFloat(stakeStr) / 100.0;
 }
 
-async function readOne(address, web3, tokenContract, stateBlock) {
-    return tokenContract.methods.balanceOf(address).call({}, stateBlock).then(balanceStr => parseStake(web3, balanceStr));
+async function readOne(address, web3, tokenContract, stakingContract, stateBlock) {
+    let stakeV1 = 0;
+    let stakeV2 = 0;
+    if (stateBlock > 9831680) { // this is contract creation block
+        stakeV2 = await stakingContract.methods.getStakeBalanceOf(address).call({}, stateBlock).then(balanceStr => parseStake(web3, balanceStr));
+    }
+    if (stateBlock <= 10368900) { // this is cut-off for V1(no lock) staking
+        stakeV1 = await tokenContract.methods.balanceOf(address).call({}, stateBlock).then(balanceStr => parseStake(web3, balanceStr));
+    }
+    var stakeSum = stakeV1 + stakeV2;
+    return stakeSum;
 }
 
 let stakePace = 250;
-async function read(objectsMap, web3, tokenContract, stateBlock) {
+async function read(objectsMap, web3, tokenContract, stakingContract, stateBlock) {
     let objectList = _.values(objectsMap);
     for (let i = 0; i < objectList.length; i=i+stakePace) {
         let txs = [];
@@ -33,7 +42,7 @@ async function read(objectsMap, web3, tokenContract, stateBlock) {
             console.log('\x1b[33m%s\x1b[0m', `reading stakes, currently ${i} out of ${objectList.length}`);
         }
         for (let j = 0; j < stakePace && j+i< objectList.length; j++) {
-            txs.push(readOne(objectList[i + j].address, web3, tokenContract, stateBlock).then(balance => {
+            txs.push(readOne(objectList[i + j].address, web3, tokenContract, stakingContract, stateBlock).then(balance => {
                 objectsMap[objectList[i + j].address.toLowerCase()].stake = balance;
             }));
         }
