@@ -65,9 +65,9 @@ acorn-jsx@^5.0.0:
   integrity sha512-HJ7CfNHrfJLlNTzIEUTj43LNWGkqpRLxm3YjAlcD0ACydk9XynzYsCBHxut+iqt+1aBXkx9UP/w/ZqMr13XIzg==
 
 acorn@^6.0.7:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.1.1.tgz#7d25ae05bb8ad1f9b699108e1094ecd7884adc1f"
-  integrity sha512-jPTiwtOxaHNaAPg/dmrJ/beuzLRnXtB0kQPQ8JpotKJgTB6rX6c8mlf315941pyjBSaPg8NHXS9fhP4u17DpGA==
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.4.1.tgz#531e58ba3f51b9dacb9a6646ca4debf5b14ca474"
+  integrity sha512-ZVA9k326Nwrj3Cj9jlh3wGFutC2ZornPNARZwsNYqQYgN0EsV2d53w5RN/co65Ohn4sUAUtb1rSUAOD6XN9idA==
 
 aes-js@3.0.0:
   version "3.0.0"
@@ -5032,7 +5032,7 @@ strip-json-comments@2.0.1, strip-json-comments@^2.0.1:
   version "1.0.0"
   dependencies:
     openzeppelin-solidity "2.0.0"
-    orbs-voting "file:../../../../../../Library/Caches/Yarn/v4/npm-subscription-1.0.0-0060534b-8a1b-4bc7-96e5-c48c6b698a2d-1559052855351/voting/ethereum"
+    orbs-voting "file:../voting/ethereum"
     truffle "^5.0.5"
     truffle-hdwallet-provider "^1.0.3"
 
