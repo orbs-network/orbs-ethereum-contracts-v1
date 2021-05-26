@@ -60,10 +60,13 @@ The function parameter for the `voteOut` call will appear in the form.
 with the Ethereum addresses of the Validators that you wish to **vote out / remove from the network**
 An empty list implies all validators are approved by the voting guardians.
     - The list will be represented as a JSON array. for example:
-    - `"["0x1234567890123456789012345678901234567890", "0x0987654321098765432109876543210987654321"]"`
-    - to represent an empty list enter `"[]"`
-    - Addresses that do not match a registered Validator are ignored.
+    - `["0x1234567890123456789012345678901234567890", "0x0987654321098765432109876543210987654321"]`
+    - to represent an empty list enter `[]`
+    - Addresses that do not match a registered Validator are ignored.  
+    In the image below we cast an empty vote. This means all validators are approved.
 ![](./voting_4.png)
+    In the next image we vote out a single validator:
+![](./voting_4a.png)
 1. Choose one of the options under *How would you like to access your wallet?*
 and provide your wallet information/credentials.
 In this example we choose to work with a HW Ledger:
