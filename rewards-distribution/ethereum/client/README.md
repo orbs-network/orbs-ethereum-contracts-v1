@@ -7,7 +7,7 @@ Used as an infrastructure to distribute rewards, it will
 
 In order to use it, you will first need to
 * Have the address of a deployed `OrbsRewardsDistribution` contract. The mainnet address is [0xB52daF3f853bF570814d6AeA1ec7BFF30339BD0c](https://etherscan.io/address/0xb52daf3f853bf570814d6aea1ec7bff30339bd0c)
-   -- Previous distribution contract (non-staking) was at [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
+   - Previous distribution contract (non-staking) was at [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
 * Have a csv file with the distribution details
 * Have the distribution event name
 * Create a new wallet (mnemonic) for executing the batches
@@ -137,7 +137,8 @@ After the transactions are committed, run batch execution script. Make sure your
 ./node_modules/.bin/truffle exec client/executeBatches.js [rewards contract address] [rewards csv file] [batchSize] [distribution event name] --network mainnet
 ```
 
-* Contract address is the one for `OrbsRewardsDistribution` where the batches were set. The mainnet address is [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
+* Contract address is the one for `OrbsRewardsDistribution` where the batches were set. The mainnet address is [0xB52daF3f853bF570814d6AeA1ec7BFF30339BD0c](https://etherscan.io/address/0xb52daf3f853bf570814d6aea1ec7bff30339bd0c) 
+  - Old address [0xb2969e54668394bca9b8af61bc39b92754b7a7a0](https://etherscan.io/address/0xb2969e54668394bca9b8af61bc39b92754b7a7a0)
 * The CSV file is the same as the one used for generating the batches
 * The batch size is the same as used when generating
 * The distribution event name must be the same as used when setting the batches into the contract
